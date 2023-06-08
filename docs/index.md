@@ -41,4 +41,9 @@ tutorials/contracts-and-documents/submit-documents
 tutorials/contracts-and-documents/retrieve-documents
 tutorials/contracts-and-documents/update-documents
 tutorials/contracts-and-documents/delete-documents
+tutorials/send-funds
+tutorials/use-dapi-client-methods
+tutorials/node-setup/setup-a-node
+tutorials/node-setup/connect-to-a-network-dash-masternode
+tutorials/node-setup/connect-to-a-network-dash-core-full-node
 ```
