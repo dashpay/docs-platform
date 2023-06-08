@@ -1,4 +1,4 @@
-# Overview
+# Retrieve a data contract
 
 In this tutorial we will retrieve the data contract created in the [Register a Data Contract tutorial](tutorial-register-a-data-contract).
 

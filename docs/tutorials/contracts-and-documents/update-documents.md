@@ -1,4 +1,4 @@
-# Overview
+# Update documents
 
 In this tutorial we will update existing data on Dash Platform. Data is stored in the form of [documents](explanation-platform-protocol-document) which are encapsulated in a [state transition](explanation-platform-protocol-state-transition) before being submitted to DAPI. 
 

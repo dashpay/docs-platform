@@ -1,4 +1,4 @@
-# Overview
+# Register a data contract
 
 In this tutorial we will register a data contract.
 

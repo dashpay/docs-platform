@@ -1,6 +1,8 @@
+# Dash masternode
+
 The purpose of this tutorial is to walk through the steps necessary to set up a masternode with Dash Platform services.
 
-# Prerequisites
+## Prerequisites
 - [Docker](https://docs.docker.com/engine/install/) (v20.10.0+) and [docker-compose](https://docs.docker.com/compose/install/) (v1.25.0+) installed
 - An installation of [NodeJS](https://nodejs.org/en/download/) (v16, NPM v8.0+)
 
@@ -18,7 +20,7 @@ Use NPM to install dashmate globally in your system:
 npm install -g dashmate
 ``` 
 
-# Local Network
+## Local Network
 
 Dashmate can be used to create a local network on a single computer. This network contains multiple nodes to mimic conditions and features found in testnet/mainnet settings.
 
@@ -26,7 +28,7 @@ Dashmate can be used to create a local network on a single computer. This networ
 >
 > Dashmate local networks use the [regtest network type](reference-glossary#regtest) so layer 1 blocks can be easily mined as needed. 
 
-## Setup
+### Setup
 
 Run the following command to start the setup wizard, then accept the default values at each step to create a local network:
 
@@ -64,7 +66,7 @@ Example (partial) output of the setup wizard showing important information:
 >
 > Make a note of the key and identity information displayed during setup as they may be required in the future.
 
-## Operation
+### Operation
 
 Once the setup completes, start/stop/restart the network via the following commands:
 
@@ -80,7 +82,7 @@ The status of the network's nodes can be check via the group status command:
 dashmate group status
 ``` 
 
-## Mining Dash
+### Mining Dash
 
 During development it may be necessary to obtain Dash to create and topup [identities](docs/explanation-identity). This can be done using the dashmate `wallet:mint` command. First obtain an address to fund via the [Create and Fund a Wallet](doc:tutorial-create-and-fund-a-wallet) tutorial and then mine Dash to it as shown below:
 
@@ -118,7 +120,7 @@ Example output of `dashmate wallet mint 10 --address=yYqfdpePzn2kWtMxr9nz22HBFM7
   ✔ Stop Core
 ``` 
 
-## Using the network
+### Using the network
 
 Once the address is funded, you can begin creating identities, data contracts, etc. and experimenting with Dash Platform. The [other tutorials](tutorials-introduction) in this section will help you get started.
 
@@ -133,7 +135,7 @@ const clientOpts = {
 const client = new Dash.Client(clientOpts);
 ``` 
 
-# Testnet Masternode Setup
+## Testnet Masternode Setup
 
 > ❗️ Advanced Topic
 >
@@ -155,7 +157,7 @@ To setup a testnet masternode, please refer to the comprehensive documentation o
 > dashmate start
 > ```
 
-# Remote Development Network
+## Remote Development Network
 
 > 📘 Connecting to a remote development network
 >

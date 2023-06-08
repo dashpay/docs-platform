@@ -1,4 +1,4 @@
-# Overview
+# Delete documents
 
 In this tutorial we will update delete data from Dash Platform. Data is stored in the form of [documents](explanation-platform-protocol-document) which are encapsulated in a [state transition](explanation-platform-protocol-state-transition) before being submitted to DAPI. 
 

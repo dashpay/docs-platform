@@ -29,7 +29,5 @@ tutorials/identities-and-names
 tutorials/contracts-and-documents
 tutorials/send-funds
 tutorials/use-dapi-client-methods
-tutorials/node-setup/setup-a-node
-tutorials/node-setup/connect-to-a-network-dash-masternode
-tutorials/node-setup/connect-to-a-network-dash-core-full-node
+tutorials/setup-a-node
 ```
