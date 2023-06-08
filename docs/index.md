@@ -33,4 +33,12 @@ tutorials/identities-and-names/update-an-identity
 tutorials/identities-and-names/retrieve-an-accounts-identities
 tutorials/identities-and-names/register-a-name-for-an-identity
 tutorials/identities-and-names/retrieve-a-name
+tutorials/contracts-and-documents
+tutorials/contracts-and-documents/register-a-data-contract
+tutorials/contracts-and-documents/retrieve-a-data-contract
+tutorials/contracts-and-documents/update-a-data-contract
+tutorials/contracts-and-documents/submit-documents
+tutorials/contracts-and-documents/retrieve-documents
+tutorials/contracts-and-documents/update-documents
+tutorials/contracts-and-documents/delete-documents
 ```
