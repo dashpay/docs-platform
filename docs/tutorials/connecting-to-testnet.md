@@ -1,6 +1,8 @@
+# Connect to a network
+
 The purpose of this tutorial is to walk through the steps necessary to access the network.
 
-# Overview
+## Overview
 
 Platform services are provided via a combination of HTTP and gRPC connections to DAPI, and some connections to an Insight API. Although one could interact with DAPI by connecting to these directly, or by using [DAPI-client](https://github.com/dashevo/platform/tree/master/packages/js-dapi-client), the easiest approach is to use the [JavaScript Dash SDK](https://github.com/dashevo/platform/tree/master/packages/js-dash-sdk).
 
@@ -9,12 +11,12 @@ Platform services are provided via a combination of HTTP and gRPC connections to
 > The Dash SDK connects to testnet by default.
 
 
-# Prerequisites
+## Prerequisites
 - An installation of [NodeJS v12 or higher](https://nodejs.org/en/download/)
 
-# Connect via Dash SDK
+## Connect via Dash SDK
 
-## 1. Install the Dash SDK
+### 1. Install the Dash SDK
 
 The JavaScript SDK package is available from npmjs.com and can be installed by running `npm install dash` from the command line:
 
@@ -22,7 +24,7 @@ The JavaScript SDK package is available from npmjs.com and can be installed by r
 npm install dash
 ``` 
 
-## 2. Connect to Dash Platform
+### 2. Connect to Dash Platform
 
 Create a file named `dashConnect.js` with the following contents. Then run it by typing `node dashConnect.js` from the command line:
 
@@ -42,11 +44,11 @@ connect()
 ``` 
 Once this returns successfully, you're ready to begin developing! See the [Quickstart](tutorials-introduction#quickstart) for recommended next steps. For details on all SDK options and methods, please refer to the [SDK documentation](https://dashevo.github.io/platform/SDK/).
 
-# Connect to a Devnet
+## Connect to a Devnet
 
 The SDK also supports connecting to development networks (devnets). Since devnets can be created by anyone, the client library will be unaware of them unless connection information is provided using one of the options described below.
 
-## Connect via Seed
+### Connect via Seed
 
 Using a seed node is the preferred method in most cases. The client uses the provided seed node to a retrieve a list of available masternodes on the network so requests can be spread across the entire network.
 
@@ -71,7 +73,7 @@ connect()
   .finally(() => client.disconnect());
 ``` 
 
-## Connect via Address
+### Connect via Address
 
 Custom addresses may be directly specified via `dapiAddresses` in cases where it is beneficial to know exactly what node(s) are being accessed (e.g. debugging, local development, etc.).
 
@@ -94,7 +96,7 @@ connect()
   .catch((e) => console.error('Something went wrong:\n', e))
   .finally(() => client.disconnect());
 ``` 
-# Connect Directly to DAPI (Optional) 
+## Connect Directly to DAPI (Optional) 
 
 > 🚧 Advanced Topic
 >
