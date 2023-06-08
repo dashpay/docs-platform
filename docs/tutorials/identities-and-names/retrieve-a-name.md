@@ -1,9 +1,11 @@
+# Retrieve a name
+
 In this tutorial we will retrieve the name created in the [Register a Name for an Identity tutorial](tutorial-register-a-name-for-an-identity). Additional details regarding identities can be found in the [Identity description](explanation-identity).
 
-## Prerequisites
+### Prerequisites
 - [General prerequisites](tutorials-introduction#prerequisites) (Node.js / Dash SDK installed)
 
-# Code
+## Code
 
 ```javascript JavaScript - Resolve by Name
 const Dash = require('dash');
@@ -58,7 +60,7 @@ retrieveNameBySearch()
   .finally(() => client.disconnect());
 ```
 
-# Example Name
+## Example Name
 
 The following example response shows a retrieved name (`user-9999.dash`):
 
@@ -81,7 +83,7 @@ The following example response shows a retrieved name (`user-9999.dash`):
 }
 ``` 
 
-# What's Happening
+## What's Happening
 
 After we initialize the Client, we request a name. The [code examples](#code) demonstrate the three ways to request a name:
 

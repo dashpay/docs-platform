@@ -1,13 +1,15 @@
+# Register an Identity
+
 The purpose of this tutorial is to walk through the steps necessary to register an identity.
 
-# Overview
+## Overview
 Identities serve as the basis for interactions with Dash Platform. They consist primarily of a public key used to register a unique entity on the network. Additional details regarding identities can be found in the [Identity description](explanation-identity).
 
-## Prerequisites
+### Prerequisites
 - [General prerequisites](tutorials-introduction#prerequisites) (Node.js / Dash SDK installed)
 - A wallet mnemonic with some funds in it: [How to Create and Fund a Wallet](tutorial-create-and-fund-a-wallet)
 
-# Code
+## Code
 
 > 📘 Wallet Operations
 >
@@ -45,6 +47,6 @@ The Identity will be output to the console. The Identity will need to have one c
 >
 > **Make a note of the returned identity `id` as it will be used used in subsequent tutorials throughout the documentation.**
 
-# What's Happening
+## What's Happening
 
 After connecting to the Client, we call `platform.identities.register`. This will generate a keypair and submit an _Identity Create State Transaction_. After the Identity is registered, we output it to the console.

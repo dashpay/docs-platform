@@ -1,4 +1,4 @@
-# Overview
+# Update an identity
 
 Since Dash Platform v0.23, it is possible to update identities to add new keys or disable existing ones. 
 

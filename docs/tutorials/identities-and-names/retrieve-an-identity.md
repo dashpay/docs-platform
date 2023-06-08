@@ -1,4 +1,4 @@
-# Overview
+# Retrieve an identity
 
 In this tutorial we will retrieve the identity created in the [Register an Identity tutorial](tutorial-register-an-identity).
 

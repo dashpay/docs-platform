@@ -1,17 +1,19 @@
+# Register a name for an identity
+
 The purpose of this tutorial is to walk through the steps necessary to register a [Dash Platform Name Service (DPNS)](reference-glossary#dash-platform-naming-service-dpns) name.
 
-# Overview
+## Overview
 Dash Platform names make cryptographic identities easy to remember and communicate. An identity may have multiple alias names (`dashAliasIdentityId`) in addition to its default name (`dashUniqueIdentityId`). Additional details regarding identities can be found in the [Identity description](explanation-identity).
 
 **Note**: An identity must have a default name before any aliases can be created for the identity.
 
-## Prerequisites
+### Prerequisites
 - [General prerequisites](tutorials-introduction#prerequisites) (Node.js / Dash SDK installed)
 - A wallet mnemonic with some funds in it: [Tutorial: Create and Fund a Wallet](tutorial-create-and-fund-a-wallet)
 - A Dash Platform identity: [Tutorial: Register an Identity](tutorial-register-an-identity) 
 - A name you want to register: [Name restrictions](explanation-dpns#implementation)
 
-# Code
+## Code
 
  The examples below demonstrate creating both the default name and alias names.
 
@@ -83,7 +85,7 @@ registerAlias()
   .finally(() => client.disconnect());
 ```
 
-# What's Happening
+## What's Happening
 
 After initializing the Client, we fetch the Identity we'll be associating with a name. This is an asynchronous method so we use _await_ to pause until the request is complete. Next, we call `platform.names.register` and pass in the name we want to register, the type of identity record to create, and the identity we just fetched. We wait for the result, and output it to the console.
 
