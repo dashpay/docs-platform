@@ -1,10 +1,12 @@
-# Overview
+# Drive
+
+## Overview
 
 Using the traditional, layer 1 blockchain for data storage is widely known to be expensive and inefficient. Consequently, data for Dash Platform applications is stored in Drive, a layer 2 component that provides decentralized storage hosted by masternodes. As data changes over time, Drive maintains a record of the current state of each item to support easy retrieval using [DAPI](explanation-dapi).
 
-# Details
+## Details
 
-## Drive Components
+### Drive Components
 
 There are a number of components working together to facilitate Drive's overall functionality. These components are listed below along with a brief description of service they provide:
 
@@ -13,7 +15,7 @@ There are a number of components working together to facilitate Drive's overall 
  - [Platform state](explanation-drive-platform-state) (represents current data)
  - Storage (record of state transitions)
 
-## Data Update Process
+### Data Update Process
 
 The process of adding or updating data in Drive consists of several steps to ensure data is validated, propagated, and stored properly. This description provides a simplified overview of the process:
 
@@ -38,3 +40,12 @@ The process of adding or updating data in Drive consists of several steps to ens
   ]
 }
 [/block]
+
+```{toctree}
+:maxdepth: 2
+:titlesonly:
+:hidden:
+
+drive-platform-chain
+drive-platform-state
+```

@@ -1,4 +1,6 @@
-# Overview
+# State Transition
+
+## Overview
 
 At any given point in time, the data stored by each application (and more broadly, the entire platform) is in a specific state. State transitions are the means for submitting data that creates, updates, or deletes platform data and results in a change to a new state.
 
@@ -20,11 +22,11 @@ For example, Alice may have already added Bob and Carol as friends in [DashPay](
 }
 [/block]
 
-# Implementation Overview
+## Implementation Overview
 
 To ensure the consistency and integrity of data stored on Layer 2, all data is governed by the [Dash Platform Protocol](explanation-platform-protocol) (DPP) which describes serialization and validation rules. Since state transitions are the vehicle for delivering data to the platform, the implementation of state transitions resides in DPP alongside the validation logic. 
 
-## Structure
+### Structure
 
 To support the various data types used on the platform and enable future updates, state transitions were designed to be flexible. Each state transition consists of a:
 
@@ -42,7 +44,7 @@ The following table contains a list of currently defined payload types:
 | [Identity Topup](platform-protocol-reference-identity#identity-topup) (`3`) | Information including proof of a transaction containing an amount to add to the provided identity's balance |
 | [Data Contract Update](platform-protocol-reference-data-contract#data-contract-update) (`4`) | An updated [database schema](explanation-platform-protocol-data-contract) to modify an existing application |
 
-## Application Usage
+### Application Usage
 
 State transitions are constructed by client-side libraries and then submitted to the platform via [DAPI](explanation-dapi). Based on the validation rules described in [DPP](explanation-platform-protocol) (and an application [data contract](explanation-platform-protocol-data-contract) where relevant), Dash Platform first validates the state transition. 
 

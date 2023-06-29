@@ -1,3 +1,5 @@
+# Platform Consensus
+
 Dash Platform is a decentralized network that requires its own consensus algorithm for decision-making and verifying state transitions. This consensus algorithm must fulfill the following three requirements:
  
 **  * Fast write operations:** The Drive block time needs to be small since state transitions must be confirmed and applied to the state as quickly as possible.
@@ -6,7 +8,7 @@ Dash Platform is a decentralized network that requires its own consensus algorit
  
 Tendermint was selected as the consensus solution that most closely aligned with the requirements and goals of Dash Platform.
 
-# Tendermint
+## Tendermint
 
 Tendermint is a mostly asynchronous, pBFT-based consensus protocol. Here is a quick overview of how it works:
  
@@ -35,7 +37,7 @@ Tendermint has been mainly designed to enable efficient verification and authent
 >
 > Additional information about Tendermint is available in the <a href="https://docs.tendermint.com/master/spec/#overview" target="_blank">Tendermint Core spec</a>.
 
-## Tendermint Limitations
+### Tendermint Limitations
 
 While Tendermint provided a great starting point, implementing the classic version of the algorithm would have required us to start from scratch. For example, Tendermint validators use [EdDSA](https://en.wikipedia.org/wiki/EdDSA) cryptographic keys to sign votes during the consensus process. 
  
@@ -43,7 +45,7 @@ However, Dash already has a well-established network of Masternodes that use BLS
  
 Rather than reinventing the wheel, Dash chose to fork the Tendermint code and integrate masternode quorums into the process to create a new consensus algorithm called "Tenderdash."
 
-# Tenderdash
+## Tenderdash
 
 As with Tendermint, Tenderdash provides Byzantine Fault Tolerant (BFT) State Machine Replication via blocks containing transactions. Additionally, it has been updated to integrate some improvements that leverage Dash's LLMQs. Key mechanisms of the Tenderdash algorithm include:
  
@@ -57,7 +59,7 @@ As with Tendermint, Tenderdash provides Byzantine Fault Tolerant (BFT) State Mac
  
 This allows Dash Platform to leverage the best of both worlds – the speed and finality of Tendermint and the security of PoW.
 
-## Dynamic Validator Set Rotation
+### Dynamic Validator Set Rotation
 
 Rather than having a static validator set, Tenderdash periodically changes to a new set of validator nodes. These validator sets are a subset of masternodes that belong to the LLMQs. 
  

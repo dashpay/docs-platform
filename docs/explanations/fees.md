@@ -1,4 +1,6 @@
-# Overview
+# Fees
+
+## Overview
 
 Since Dash Platform is a decentralized system with inherent costs to its functionality, an adequate fee system is necessary in order to incentive the hosts (masternodes) to maintain it.
 
@@ -12,7 +14,7 @@ Storage fees cover the costs to store the various types of data throughout the n
 >
 > Comprehensive details regarding fees will be available in an upcoming *Dash Platform Fee System* DIP.
 
-# Costs
+## Costs
 
 The current cost schedule is outlined in the table below:
 [block:parameters]
@@ -45,7 +47,7 @@ The current cost schedule is outlined in the table below:
 >
 > Refer to the [Identity explanation](explanation-identity) section for information regarding how credits are created.
 
-# Fee Multiplier
+## Fee Multiplier
 
 Given fluctuations of the Dash price, a variable *Fee Multiplier* provides a way to balance the cost of fees with network hosting requirements. All fees are multiplied by the Fee Multiplier:
 
@@ -59,15 +61,15 @@ The Fee Multiplier is subject to change at any time at the discretion of the mas
 An in-depth look at the Fee Multiplier can be found at **link**
 -->
 
-# Storage Refund
+## Storage Refund
 
 In an attempt to minimize Dash Platform's storage requirements, users are incentivized to remove data that they no longer want to be stored in the Dash Platform state for a refund. Data storage fees are distributed to masternodes over the data's lifetime which is 50 years for permanent storage. Therefore, at any time before the data's fees are entirely distributed, there will be fees remaining which can be refunded to the user if they decide to delete the data.
 
-# User Tip
+## User Tip
 
 Wallets will be enabled to give users the option to provide a tip to the block proposer in hopes of incentivizing them to include their state transition in the next block. This feature will be especially useful in times of high traffic.
 
-# Formula
+## Formula
 
 The high level formula for a state transition's fee is:
 

@@ -31,3 +31,19 @@ tutorials/send-funds
 tutorials/use-dapi-client-methods
 tutorials/setup-a-node
 ```
+
+```{toctree}
+:maxdepth: 2
+:titlesonly:
+:caption: Explanations
+:hidden:
+
+explanations/dapi
+explanations/platform-protocol
+explanations/identity
+explanations/dpns
+explanations/drive
+explanations/platform-consensus
+explanations/dashpay
+explanations/fees
+```

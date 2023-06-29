@@ -1,4 +1,4 @@
-# Overview
+# Platform State
 
 Platform state represents the current state of all the data stored on the platform. You can think about this as one large database, where each application has its own database (Application State) defined by the Data Contract associated with the application. Therefore, the platform state can be thought of as a global view of all Dash Platform data, whereas the application state is a local view of one application's data.
 

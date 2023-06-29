@@ -1,4 +1,6 @@
-# Overview
+# Identity
+
+## Overview
 
 Identities are foundational to Dash Platform. They provide a familiar, easy-to-use way for users to interact and identify one another using names rather than complicated cryptocurrency identifiers such as public key hashes.
 
@@ -8,13 +10,13 @@ Identities are separate from names and can be thought of as a lower-level primit
 >
 > The [Identities Dash Improvement Proposal (DIP)](https://github.com/dashpay/dips/blob/master/dip-0011.md) provides more extensive background information and details.
 
-# Identity Management
+## Identity Management
 
 In order to [create an identity](#identity-create-process), a user pays the network to store their public key(s) on the platform chain. Since new users may not have existing Dash funds, an invitation process will allow users to create an identity despite lacking their own funds. The invitation process will effectively separate the funding and registration steps that are required for any new identity to be created.
 
 Once an identity is created, its credit balance is used to pay for activity (e.g. use of applications). The [topup process ](#identity-balance-topup-process) provides a way to add additional funds to the balance when necessary.
 
-## Identity Create Process
+### Identity Create Process
 
 > 📘 Testnet Faucet
 >
@@ -26,7 +28,7 @@ After the transaction is broadcast and confirmed, the sponsor sends information 
 
 Users who already have Dash funds can act as their own sponsor if they wish, using the same steps listed here.
 
-## Identity Balance Topup Process
+### Identity Balance Topup Process
 
 The identity balance topup process works in a similar way to the initial identity creation funding. As with identity creation, a lock transaction is created on the layer 1 core blockchain. This lock transaction is then referenced in the [identity topup state transition](https://github.com/dashpay/dips/blob/master/dip-0011.md#identity-topup-transition) which increases the identity's balance by the designated amount.
 
@@ -34,7 +36,7 @@ The identity balance topup process works in a similar way to the initial identit
 >
 > Since anyone can topup either their own account or any other account, application developers can easily subsidize the cost of using their application by topping up their user's identities.
 
-## Identity Update Process
+### Identity Update Process
 
 > 👍 
 >
@@ -44,13 +46,13 @@ Identity owners may find it necessary to update their identity keys periodically
 
 Identity updates only require the creation of a state transition that includes a list of keys being added and/or disabled. Platform retains disabled keys so that any existing data they signed can still be verified while preventing them from signing new data.
 
-## Masternode Identities
+### Masternode Identities
 
 Dash Platform v0.22 introduced identities for masternode owners and operators, and a future release will introduce identities for masternode voters. The system automatically creates and updates these identities based on information in the layer 1 masternode registration transactions. For example, owner/operator withdraw keys on Platform are aligned with the keys assigned on the Core blockchain.
 
 In a future release, the credits paid as fees for state transitions will be distributed to masternode-related identities similar to how rewards are currently distributed to masternodes on the core blockchain. Credits will be split between owner and operator in the same ratio as on layer 1, and masternode owners will also have the flexibility to further split their portion between multiple identities to support reward-sharing use cases.
 
-# Credits
+## Credits
 
 > 👍  Added in Dash Platform Protocol v0.13
 >

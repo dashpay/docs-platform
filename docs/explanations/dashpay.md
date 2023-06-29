@@ -1,4 +1,6 @@
-# Overview
+# DashPay
+
+## Overview
 
 DashPay is one of the first applications of Dash Platform's [data contracts](explanation-platform-protocol-data-contract) . At its core DashPay is a data contract that enables a decentralized application that creates bidirectional [direct settlement payment channels](reference-glossary#direct-settlement-payment-channel-dspc) between [identities](explanation-identity).
 
@@ -16,11 +18,11 @@ The DashPay contract enables an improved Dash wallet experience with features in
 
 - **Payment Participant Protection**: The extended public keys in contact requests are encrypted in such a way that only the two users involved in a contact's two way relationship can decrypt those keys. This ensures that when any two users make payments in DashPay, only they know the sender and receiver while 3rd parties do not.
 
-# Details
+## Details
 
 The contract defines three document types: `contactRequest`, `profile` and `contactInfo`. ContactRequest documents are the most important. They are used to establish relationships and payment channels between Dash identities. Profile documents are used to store public facing information about Dash identities including avatars and display names. ContactInfo documents can be used to store private information about other Dash identities.
 
-## Establishing a Contact
+### Establishing a Contact
 
 1. Bob installs wallet software that supports DashPay.
 2. Bob [registers an identity](tutorial-register-an-identity) and then [creates a username](tutorial-register-a-name-for-an-identity) through [DPNS](explanation-dpns).
@@ -46,7 +48,7 @@ The contract defines three document types: `contactRequest`, `profile` and `cont
   ]
 }
 [/block]
-## Implementation
+### Implementation
 
 DashPay has many constraints as defined in the [DashPay data contract](https://github.com/dashevo/platform/blob/master/packages/dashpay-contract/schema/dashpay.schema.json). Additionally, the DashPay data triggers defined in [js-dpp](https://github.com/dashevo/platform/tree/master/packages/js-dpp/lib/dataTrigger/dashpayDataTriggers) enforce additional validation rules related to the `contactRequest` document.
 
