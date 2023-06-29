@@ -19,7 +19,7 @@ Since all application data is submitted in the form of documents, data triggers 
 As an example, DPP contains several [data triggers for DPNS](https://github.com/dashevo/platform/tree/master/packages/js-dpp/lib/dataTrigger/). The `domain` document has added constraints for creation. All DPNS document types have constraints on replacing or deleting:
 
 | Data Contract | Document | Action(s) | Trigger Description |
-| - | - | - |
+| - | - | - | - |
 | DPNS | `domain` | [`CREATE`](https://github.com/dashevo/platform/blob/master/packages/js-dpp/lib/dataTrigger/dpnsTriggers/createDomainDataTrigger.js) | Enforces DNS compatibility, validate provided hashes, and restrict top-level domain (TLD) registration |
 | ---- | ----| ---- | ---- |
 | DPNS | All Document Types | [`REPLACE`](https://github.com/dashevo/platform/blob/master/packages/js-dpp/lib/dataTrigger/rejectDataTrigger.js) | Prevents updates to any DPNS document type |
