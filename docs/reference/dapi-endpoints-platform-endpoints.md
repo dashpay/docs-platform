@@ -1,6 +1,8 @@
+# Platform gRPC Endpoints
+
 Please refer to the [gRPC Overview](reference-dapi-endpoints-grpc-overview) for details regarding running the examples shown below, encoding/decoding the request/response data, and clients available for several languages.
 
-# Data Proofs and Metadata
+## Data Proofs and Metadata
 
 Since Dash Platform 0.20.0, Platform gRPC endpoints can provide [proofs](https://github.com/dashpay/platform/blob/master/packages/dapi-grpc/protos/platform/v0/platform.proto#L17-L22) so the data returned for a request can be verified as being valid. Full support is not yet available in the JavaScript client, but can be used via the low level [dapi-grpc library](https://github.com/dashevo/platform/tree/master/packages/dapi-grpc).
 
@@ -13,9 +15,9 @@ Some [additional metadata](https://github.com/dashevo/platform/blob/master/packa
 | `timeMs`                | Unix timestamp in milliseconds for the response       |
 | `protocolVersion`       | Platform protocol version                             |
 
-# Endpoint Details
+## Endpoint Details
 
-## broadcastStateTransition
+### broadcastStateTransition
 
 > 📘 
 > 
@@ -130,9 +132,9 @@ dpp.stateTransition.createFromObject(stateTransitionObject, { skipValidation: tr
   .catch((e) => console.error(e));
 ```
 ```shell gRPCurl
-# Submit an identity create State Transition
-# `state_transition` must be represented in base64
-# Replace `state_transition` with your own state transition object before running
+## Submit an identity create State Transition
+## `state_transition` must be represented in base64
+## Replace `state_transition` with your own state transition object before running
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "state_transition":"pWR0eXBlAmlzaWduYXR1cmV4WEg3TWhFWDQ0Z3JzMVIwTE9XTU5IZjAxWFNpYVFQcUlVZ1JLRXQyMkxHVERsUlUrZ1BwQUlUZk5JUmhXd3IvYTVHd0lzWm1idGdYVVFxcVhjbW9lQWtUOD1qcHVibGljS2V5c4GkYmlkAGRkYXRheCxBdzh2UmYxeFFCTlVLbzNiY2llaHlaR2NhM0hBSThkY0ZvVWJTK3hLb0lITmR0eXBlAGlpc0VuYWJsZWT1bmxvY2tlZE91dFBvaW50eDBLT1VUSHB5YnFPek9DNnhEVUhFWm9uc1lNSVpqcGppTHFZNnkxYmlWNWxRQUFBQUFvcHJvdG9jb2xWZXJzaW9uAA=="
@@ -144,7 +146,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 **Response**: No response except on error
 
-## getIdentity
+### getIdentity
 
 > 🚧 Breaking changes
 > 
@@ -214,7 +216,7 @@ platformPromiseClient.getIdentity(getIdentityRequest)
   .catch((e) => console.error(e));
 ```
 ```shell gRPCurl
-# `id` must be represented in base64
+## `id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "id":"rZWT0bOj+rIDYD4yQtR/oC/2Q4BJtMYq+0q2YlYi2IU="
@@ -269,7 +271,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 }
 ```
 
-## getIdentitiesByPublicKeyHashes
+### getIdentitiesByPublicKeyHashes
 
 **Returns**: [Identity](explanation-identity) an array of identities associated with the provided public key hashes  
 **Parameters**:
@@ -349,7 +351,7 @@ dpp.initialize()
   	});
 ```
 ```shell gRPCurl
-# `public_key_hashes` must be represented in base64
+## `public_key_hashes` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
       "public_key_hashes":"Z+Cw4xM/W3yqIOn9jyc04zhD/U4="
@@ -407,7 +409,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 }
 ```
 
-## getDataContract
+### getDataContract
 
 **Returns**: [Data Contract](explanation-platform-protocol-data-contract) information for the requested data contract  
 **Parameters**:
@@ -472,7 +474,7 @@ platformPromiseClient.getDataContract(getDataContractRequest)
   .catch((e) => console.error(e));
 ```
 ```shell gRPCurl
-# `id` must be represented in base64
+## `id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "id":"5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU="
@@ -638,7 +640,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 }
 ```
 
-## getDocuments
+### getDocuments
 
 **Returns**: [Document](explanation-platform-protocol-document) information for the requested document(s)  
 **Parameters**:
@@ -731,8 +733,8 @@ platformPromiseClient.getDocuments(getDocumentsRequest)
   .catch((e) => console.error(e));
 ```
 ```shell Request (gRPCurl)
-# Request documents
-# `id` must be represented in base64
+## Request documents
+## `id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "data_contract_id":"5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
@@ -774,7 +776,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 }
 ```
 
-## waitForStateTransitionResult
+### waitForStateTransitionResult
 
 **Returns**: The state transition hash and either a proof that the state transition was confirmed in a block or an error.  
 **Parameters**:
@@ -903,8 +905,8 @@ dpp.stateTransition.createFromObject(stateTransitionObject, { skipValidation: tr
   });
 ```
 ```shell Request (gRPCurl)
-# `state_transition_hash` must be represented in base64
-# Replace `state_transition_hash` with your own before running
+## `state_transition_hash` must be represented in base64
+## Replace `state_transition_hash` with your own before running
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "state_transition_hash":"wEiwFu9WvAtylrwTph5v0uXQm743N+75C+C9DhmZBkw=",
@@ -920,11 +922,11 @@ grpcurl -proto protos/platform/v0/platform.proto \
 }
 [/block]
 
-# Deprecated Endpoints
+## Deprecated Endpoints
 
 No endpoints were deprecated in Dash Platform v0.24, but the previous version of documentation can be [viewed here](https://dashplatform.readme.io/v0.23.0/docs/reference-dapi-endpoints-platform-endpoints).
 
-# Code Reference
+## Code Reference
 
 Implementation details related to the information on this page can be found in:
 

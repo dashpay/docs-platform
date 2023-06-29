@@ -47,3 +47,16 @@ explanations/platform-consensus
 explanations/dashpay
 explanations/fees
 ```
+
+```{toctree}
+:maxdepth: 2
+:titlesonly:
+:caption: Reference
+:hidden:
+
+reference/dapi-endpoints
+reference/query-syntax
+reference/data-contracts
+reference/glossary
+reference/frequently-asked-questions
+```

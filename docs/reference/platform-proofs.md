@@ -1,10 +1,12 @@
+# Platform Proofs
+
 >❗️ Platform v0.22.0
 >
 > Note: As part of the transition from MongoDB to Dash's [GroveDB](https://github.com/dashevo/grovedb), proofs will be not be available for at least the initial version of Platform v0.22.
 
 Since data verification is a critical aspect of Dash Platform, all [Platform endpoints](reference-dapi-endpoints-platform-endpoints) can provide an optional proof that the response is correct. Set the optional `prove` parameter (`"prove": true`) in the request to receive a proof that contains the requested data.
 
-# Proof Structure
+## Proof Structure
 
 Each proof consists of four parts:
 
@@ -33,13 +35,13 @@ Each proof consists of four parts:
 }
 ``` 
 
-## Root tree proof
+### Root tree proof
 
 > 📘
 >
 > Details regarding the root tree proofs and their verification will be provided in a future update to this page.
 
-## Store tree proof
+### Store tree proof
 
 Store tree proofs are based on a modified version of [Merk](https://github.com/nomic-io/merk/). Some details from the Merk documentation are included below. Additional details are available in the [Algorithms document](https://github.com/nomic-io/merk/blob/develop/docs/algorithms.md) on the Merk repository.
 
@@ -54,7 +56,7 @@ Dash Platform 0.21.0 introduced updates to support returning multiple store tree
 >
 > Dash Platform 0.21.0 introduced a 4 byte [protocol version](https://github.com/dashevo/js-dpp/pull/325) that is prepended to the binary format and is not part of the CBOR-encoded data. When parsing proofs it is necessary to exclude these bytes before decoding the returned data with CBOR.
 
-### Structure 
+#### Structure 
 
 Merk proofs are a list of stack-based operators and node data, with 3 possible operators: `Push(node)`, `Parent`, and `Child`. A stream of these operators can be processed by a verifier in order to reconstruct a sparse representation of part of the tree, in a way where the data can be verified against a known root hash.
 
@@ -64,7 +66,7 @@ The value of `node` in a `Push` operation can be one of three types:
 * `KVHash(hash)` - The key/value hash of a node
 * `KV(key, value)` - The key and value of a node
 
-### Binary Format
+#### Binary Format
 
 We can efficiently encode these proofs by encoding each operator as follows:
 
@@ -76,7 +78,7 @@ We can efficiently encode these proofs by encoding each operator as follows:
 
 This results in a compact binary representation, with a very small space overhead (roughly 2 bytes per node in the proof (1 byte for the Push operator type flag, and 1 byte for a Parent or Child operator), plus 3 bytes per key/value pair (1 byte for the key length, and 2 bytes for the value length)).
 
-# Retrieving response data from proofs
+## Retrieving response data from proofs
 
 The function below shows a simple example of parsing a response's `storeTreeProof` to retrieve the data asked for by the request:
 

@@ -1,4 +1,6 @@
-# Overview
+# Query Syntax
+
+## Overview
 
 Generally queries will consist of a `where` clause plus optional [modifiers](#query-modifiers) controlling the specific subset of results returned. 
 
@@ -8,7 +10,7 @@ Generally queries will consist of a `where` clause plus optional [modifiers](#qu
 >
 > Query validation details may be found [here](https://github.com/dashevo/platform/blob/master/packages/js-drive/lib/document/query/validateQueryFactory.js) along with the associated validation [tests](https://github.com/dashevo/platform/blob/master/packages/js-drive/test/unit/document/query/validateQueryFactory.spec.js).
 
-# Where Clause
+## Where Clause
 
 The Where clause must be a non-empty array containing not more than 10 conditions. For some operators, `value` will be an array. See the following general syntax example:
 
@@ -25,7 +27,7 @@ The Where clause must be a non-empty array containing not more than 10 condition
 }
 ``` 
 
-## Fields
+### Fields
 
 Valid fields consist of the indices defined for the document being queried. For example, the [DPNS data contract](https://github.com/dashevo/platform/blob/master/packages/dpns-contract/schema/dpns-contract-documents.json) defines three indices:
 
@@ -41,15 +43,15 @@ Valid fields consist of the indices defined for the document being queried. For 
 }
 [/block]
 
-## Comparison Operators
+### Comparison Operators
 
-### Equal
+#### Equal
 
 | Name | Description |
 | :-: | - |
 | == | Matches values that are equal to a specified value |
 
-### Range
+#### Range
 
 > 🚧 Dash Platform v0.22 notes
 >
@@ -67,7 +69,7 @@ Valid fields consist of the indices defined for the document being queried. For 
 | > | Matches values that are greater than a specified value |
 | in | Matches all document(s) where the value of the field equals any value in the specified array <br>Array may include up to 100 (unique) elements |
 
-## Array Operators
+### Array Operators
 
 | Name | Description |
 | :-: | - |
@@ -75,13 +77,13 @@ Valid fields consist of the indices defined for the document being queried. For 
 | contains | **Not available in Dash Platform v0.22**<br>- Matches arrays that contain all elements specified in the query condition array <br>- 100 element maximum
 | elementMatch |  **Not available in Dash Platform v0.22**<br>- Matches documents that contain an array field with at least one element that matches all the criteria in the query condition array <br>- Two or more conditions must be provided
 
-## Evaluation Operators
+### Evaluation Operators
 
 | Name | Description |
 | :-: | - |
 | startsWith | Selects documents where the value of a field begins with the specified characters (string, <= 255 characters). Must include an `orderBy` statement. |
 
-## Operator Examples
+### Operator Examples
 
 ```json <
 {
@@ -146,7 +148,7 @@ Valid fields consist of the indices defined for the document being queried. For 
 }
 ```
 
-# Query Modifiers
+## Query Modifiers
 The query modifiers described here determine how query results will be sorted and what subset of data matching the query will be returned.
 
 >❗️ Breaking changes
@@ -166,7 +168,7 @@ The query modifiers described here determine how query results will be sorted an
 >
 > Please refer to [pull request 230](https://github.com/dashevo/platform/pull/230) for additional information related to compound index constraints in Platform v0.22.
 
-# Example query
+## Example query
 The following query combines both a where clause and query modifiers.
 
 ```javascript

@@ -1,8 +1,10 @@
-# Overview
+# JSON-RPC Endpoints
+
+## Overview
 
 The endpoints described on this page provide access to information from the Core chain (layer 1).
 
-## Required Parameters
+### Required Parameters
 
 All valid JSON-RPC requests require the inclusion the parameters listed in the following table.
 
@@ -14,14 +16,14 @@ All valid JSON-RPC requests require the inclusion the parameters listed in the f
 
 Additional information may be found in the [JSON-RPC 2.0 specification](https://www.jsonrpc.org/specification#request_object).
 
-# Endpoint Details
+## Endpoint Details
 
-## getBestBlockHash
+### getBestBlockHash
 
 **Returns**: the block hash of the chaintip  
 **Parameters**: none
 
-### Example Request and Response
+#### Example Request and Response
 
 ```curl Curl
 curl -k --request POST \
@@ -114,7 +116,7 @@ puts response.read_body
 }
 ```
 
-## getBlockHash
+### getBlockHash
 
 **Returns**:  the block hash for the given height  
 **Parameters**:
@@ -123,7 +125,7 @@ puts response.read_body
 | -------- | ------- | -------- | ------------ |
 | `height` | Integer | Yes      | Block height |
 
-### Example Request and Response
+#### Example Request and Response
 
 ```shell Curl
 curl -k --request POST \
@@ -189,7 +191,7 @@ puts response.read_body
 }
 ```
 
-## getMnListDiff
+### getMnListDiff
 
 **Returns**: a masternode list diff for the provided block hashes  
 **Parameters**:
@@ -199,7 +201,7 @@ puts response.read_body
 | `baseBlockHash` | String | Yes      | Block hash for the starting block |
 | `blockHash`     | String | Yes      | Block hash for the ending block   |
 
-### Example Request and Response
+#### Example Request and Response
 
 ```shell Curl
 curl -k --request POST \
@@ -311,11 +313,11 @@ puts response.read_body
 
 ```
 
-# Deprecated Endpoints
+## Deprecated Endpoints
 
 There are no recently deprecated endpoint, but the previous version of documentation can be [viewed here](https://dashplatform.readme.io/v0.23.0/docs/reference-dapi-endpoints-json-rpc-endpoints).
 
-# Code Reference
+## Code Reference
 
 Implementation details related to the information on this page can be found in:
 

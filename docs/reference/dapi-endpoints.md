@@ -1,6 +1,8 @@
+# DAPI Endpoints
+
 [DAPI](explanation-dapi) currently provides 2 types of endpoints: [JSON-RPC](https://www.jsonrpc.org/) and [gRPC](https://grpc.io/docs/guides/). The JSON-RPC endpoints expose some layer 1 information while the gRPC endpoints support layer 2 as well as streaming of events related to blocks and transactions/transitions.
 
-# JSON-RPC Endpoints
+## JSON-RPC Endpoints
 
 | Layer | Endpoint                                                                           | Description                                                |
 | :---: | ---------------------------------------------------------------------------------- | ---------------------------------------------------------- |
@@ -8,9 +10,9 @@
 |   1   | [`getBlockHash`](reference-dapi-endpoints-json-rpc-endpoints#getblockhash)         | Returns block hash of the requested block                  |
 |   1   | [`getMnListDiff`](reference-dapi-endpoints-json-rpc-endpoints#getmnlistdiff)       | Returns masternode list diff for the provided block hashes |
 
-# gRPC Endpoints
+## gRPC Endpoints
 
-## Core gRPC Service
+### Core gRPC Service
 
 | Layer | Endpoint                                                                                                                         |                                                                                                                                                                                                                                                                                           |
 | :---: | -------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -21,7 +23,7 @@
 |   1   | [`subscribeTo` `BlockHeadersWithChainLocks`](reference-dapi-endpoints-core-grpc-endpoints#subscribetoblockheaderswithchainlocks) | Returns the requested block headers along with the associated ChainLocks.<br>_Added in Dash Platform v0.22_                                                                                                                                                                               |
 |   1   | [`subscribeTo` `TransactionsWithProofs`](reference-dapi-endpoints-core-grpc-endpoints#subscribetotransactionswithproofs)         | Returns transactions matching the provided bloom filter along with the associated [`islock` message](https://dashcore.readme.io/docs/core-ref-p2p-network-instantsend-messages#islock) and [merkle block](https://dashcore.readme.io/docs/core-ref-p2p-network-data-messages#merkleblock) |
 
-## Platform gRPC Service
+### Platform gRPC Service
 
 In addition to providing the request data, the following endpoints can also provide proofs that the data returned is valid and complete.
 
@@ -43,3 +45,14 @@ In addition to providing the request data, the following endpoints can also prov
 > 📘 
 > 
 > The previous version of documentation can be [viewed here](https://dashplatform.readme.io/v0.22.0/docs/reference-dapi-endpoints).
+
+```{toctree}
+:maxdepth: 2
+:titlesonly:
+:hidden:
+
+dapi-endpoints-json-rpc-endpoints
+dapi-endpoints-grpc-overview
+dapi-endpoints-core-grpc-endpoints
+dapi-endpoints-platform-endpoints
+```

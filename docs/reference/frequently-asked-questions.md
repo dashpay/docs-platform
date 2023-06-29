@@ -1,3 +1,5 @@
+# Frequently Asked Questions
+
 ## What is Evolution?
 "Evolution" is a codename used to reference various products. It includes "Dash Platform," a FireBase-like platform for developing backends for websites and applications, hosted on the masternode network. 
 

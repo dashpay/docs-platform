@@ -1,3 +1,5 @@
+# Glossary
+
 ## Application
 The combination of Application Identity, Data Contract, and Application State that together represent a Dash Platform Application
 

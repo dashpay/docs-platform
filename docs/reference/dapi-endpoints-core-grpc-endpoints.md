@@ -1,8 +1,10 @@
+# Core gRPC Endpoints
+
 Please refer to the [gRPC Overview](reference-dapi-endpoints-grpc-overview) for details regarding running the examples shown below, encoding/decoding the request/response data, and clients available for several languages.
 
-# Endpoint Details
+## Endpoint Details
 
-## broadcastTransaction
+### broadcastTransaction
 
 **Returns**: The transaction id (TXID) if successful  
 **Parameters**:
@@ -13,7 +15,7 @@ Please refer to the [gRPC Overview](reference-dapi-endpoints-grpc-overview) for 
 | `allow_high_fees` | Boolean | No       | Enables bypassing the high fee check |
 | `bypass_limits`   | Boolean | No       |                                      |
 
-### Example Request and Response
+#### Example Request and Response
 
 ```javascript JavaScript (dapi-client)
 const DAPIClient = require('@dashevo/dapi-client');
@@ -55,12 +57,12 @@ corePromiseClient.client.broadcastTransaction({ transaction: tx.toBuffer() })
 }
 ```
 
-## getStatus
+### getStatus
 
 **Returns**: Status information from the Core chain  
 **Parameters**: None
 
-### Example Request and Response
+#### Example Request and Response
 
 ```javascript JavaScript (dapi-client)
 const DAPIClient = require('@dashevo/dapi-client');
@@ -89,7 +91,7 @@ corePromiseClient.client.getStatus(new GetStatusRequest())
   .then((response) => console.log(response));
 ```
 ```text Request (gRPCurl)
-# Run in the platform repository's `packages/dapi-grpc/` directory
+## Run in the platform repository's `packages/dapi-grpc/` directory
 grpcurl -proto protos/core/v0/core.proto \
   seed-1.testnet.networks.dash.org:1443 \
   org.dash.platform.dapi.v0.Core/getStatus
@@ -178,7 +180,7 @@ grpcurl -proto protos/core/v0/core.proto \
 }
 ```
 
-## getBlock
+### getBlock
 
 **Returns**: A raw block  
 **Parameters**:
@@ -189,7 +191,7 @@ grpcurl -proto protos/core/v0/core.proto \
 | `hash`                    | Bytes   | No       | Return the block matching the block hash provided   |
 | `height`                  | Integer | No       | Return the block matching the block height provided |
 
-### Example Request and Response
+#### Example Request and Response
 
 ```javascript JavaScript (dapi-client)
 const DAPIClient = require('@dashevo/dapi-client');
@@ -253,7 +255,7 @@ grpcurl -proto protos/core/v0/core.proto \
 }
 ```
 
-## getTransaction
+### getTransaction
 
 **Returns**: A raw transaction  
 **Parameters**:
@@ -262,7 +264,7 @@ grpcurl -proto protos/core/v0/core.proto \
 | ---- | ------ | -------- | ----------------------- |
 | `id` | String | Yes      | A transaction id (TXID) |
 
-### Example Request and Response
+#### Example Request and Response
 
 ```javascript JavaScript (dapi-client)
 const DAPIClient = require('@dashevo/dapi-client');
@@ -341,7 +343,7 @@ GetTransactionResponse {
 }
 ```
 
-## subscribeToBlockHeadersWithChainLocks
+### subscribeToBlockHeadersWithChainLocks
 
 This endpoint helps support simplified payment verification ([SPV](https://dashcore.readme.io/docs/core-guide-operating-modes-simplified-payment-verification-spv)) via DAPI by providing access to block headers which can then be used to verify transactions and simplified masternode lists.
 
@@ -386,7 +388,7 @@ grpcurl -proto protos/core/v0/core.proto \
 }
 ```
 
-## subscribeToTransactionsWithProofs
+### subscribeToTransactionsWithProofs
 
 **Returns**: streams the requested transaction information  
 **Parameters**:
@@ -446,11 +448,11 @@ grpcurl -proto protos/core/v0/core.proto \
 }
 [/block]
 
-# Deprecated Endpoints
+## Deprecated Endpoints
 
 There are no recently deprecated endpoints, but the previous version of documentation can be [viewed here](https://dashplatform.readme.io/v0.23.0/docs/reference-dapi-endpoints-core-grpc-endpoints).
 
-# Code Reference
+## Code Reference
 
 Implementation details related to the information on this page can be found in:
 
