@@ -75,3 +75,17 @@ protocol-ref/document
 protocol-ref/data-trigger
 protocol-ref/consensus-errors
 ```
+
+```{toctree}
+:maxdepth: 2
+:titlesonly:
+:caption: Resources
+:hidden:
+
+resources/repository-overview
+Testnet Block Explorer <https://testnet-insight.dashevo.org/insight/>
+Testnet Faucet <http://faucet.testnet.networks.dash.org/>
+JavaScript SDK <https://github.com/dashevo/platform/tree/master/packages/js-dash-sdk#readme>
+resources/source-code
+Previous Version of Docs <https://dashplatform.readme.io/v0.23.0/docs>
+```
