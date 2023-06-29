@@ -1,14 +1,16 @@
-# Data Contract Overview
+# Data Contract
+
+## Data Contract Overview
 
 Data contracts define the schema (structure) of data an application will store on Dash Platform. Contracts are described using [JSON Schema](https://json-schema.org/understanding-json-schema/) which allows the platform to validate the contract-related data submitted to it.
 
 The following sections provide details that developers need to construct valid contracts: [documents](#data-contract-documents) and [definitions](#data-contract-definitions). All data contracts must define one or more documents, whereas definitions are optional and may not be used for simple contracts.
 
-## General Constraints
+### General Constraints
 
 There are a variety of constraints currently defined for performance and security reasons. The following constraints are applicable to all aspects of data contracts. Unless otherwise noted, these constraints are defined in the platform's JSON Schema rules (e.g. [rs-dpp data contract meta schema](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json)).
 
-### Keyword
+#### Keyword
 
 > 🚧 
 > 
@@ -28,13 +30,13 @@ There are a variety of constraints currently defined for performance and securit
 | `patternProperties`                                    | Restricted - cannot be used for data contracts                                                                     |
 | `pattern`                                              | Accept only [RE2](https://github.com/google/re2/wiki/Syntax) compatible regular expressions (defined in DPP logic) |
 
-### Data Size
+#### Data Size
 
 **Note:** These constraints are defined in the Dash Platform Protocol logic (not in JSON Schema).
 
 All serialized data (including state transitions) is limited to a maximum size of [16 KB](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/util/serializer.rs#L8).
 
-### Additional Properties
+#### Additional Properties
 
 Although JSON Schema allows additional, undefined properties [by default](https://json-schema.org/understanding-json-schema/reference/object.html?#properties), they are not allowed in Dash Platform data contracts. Data contract validation will fail if they are not explicitly forbidden using the `additionalProperties` keyword anywhere `properties` are defined (including within document properties of type `object`).
 
@@ -44,7 +46,7 @@ Include the following at the same level as the `properties` keyword to ensure pr
 "additionalProperties": false
 ```
 
-# Data Contract Object
+## Data Contract Object
 
 The data contract object consists of the following fields as defined in the JavaScript reference client ([rs-dpp](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json)):
 
@@ -58,7 +60,7 @@ The data contract object consists of the following fields as defined in the Java
 | documents       | object         | Yes      | Document definitions (see [Documents](#data-contract-documents) for details)                                                                                                                                                                                                                             |
 | $defs           | object         | No       | Definitions for `$ref` references used in the `documents` object (if present, must be a non-empty object with \<= 100 valid properties)                                                                                                                                                                  |
 
-## Data Contract Schema
+### Data Contract Schema
 
 Details regarding the data contract object may be found in the [rs-dpp data contract meta schema](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json). A truncated version is shown below for reference:
 
@@ -210,7 +212,7 @@ Details regarding the data contract object may be found in the [rs-dpp data cont
 }
 ```
 
-## Data Contract id
+### Data Contract id
 
 The data contract `$id` is a hash of the `ownerId` and entropy as shown [here](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/data_contract/generate_data_contract.rs).
 
@@ -226,12 +228,12 @@ pub fn generate_data_contract_id(owner_id: impl AsRef<[u8]>, entropy: impl AsRef
 }
 ```
 
-## Data Contract version
+### Data Contract version
 
 The data contract `version` is an integer representing the current version of the contract. This  
 property must be incremented if the contract is updated.
 
-## Data Contract Documents
+### Data Contract Documents
 
 The `documents` object defines each type of document required by the data contract. At a minimum, a document must consist of 1 or more properties. Documents may also define [indices](#document-indices) and a list of [required properties](#required-properties-optional). The `additionalProperties` properties keyword must be included as described in the [constraints](#additional-properties) section.
 
@@ -251,7 +253,7 @@ The following example shows a minimal `documents` object defining a single docum
 }
 ```
 
-### Document Properties
+#### Document Properties
 
 The `properties` object defines each field that will be used by a document. Each field consists of an object that, at a minimum, must define its data `type` (`string`, `number`, `integer`, `boolean`, `array`, `object`). Fields may also apply a variety of optional JSON Schema constraints related to the format, range, length, etc. of the data.
 
@@ -282,7 +284,7 @@ const contractDocuments = {
 
 **Note:** A full explanation of the capabilities of JSON Schema is beyond the scope of this document. For more information regarding its data types and the constraints that can be applied, please refer to the [JSON Schema reference](https://json-schema.org/understanding-json-schema/reference/index.html) documentation.
 
-#### Property Constraints
+##### Property Constraints
 
 There are a variety of constraints currently defined for performance and security reasons.
 
@@ -296,7 +298,7 @@ There are a variety of constraints currently defined for performance and securit
 
 Prior to Dash Platform v0.23 there were stricter limitations on minimum property name length and the characters that could be used in property names.
 
-#### Required Properties (Optional)
+##### Required Properties (Optional)
 
 Each document may have some fields that are required for the document to be valid and other fields that are optional. Required fields are defined via the `required` array which consists of a list of the field names from the document that must be present. The `required` object should be excluded for documents without any required properties.
 
@@ -321,7 +323,7 @@ The following example (excerpt from the DPNS contract's `domain` document) demon
 ]
 ```
 
-### Document Indices
+#### Document Indices
 
 Document indices may be defined if indexing on document fields is required.
 
@@ -358,7 +360,7 @@ The `indices` array consists of:
 ]
 ```
 
-#### Index Constraints
+##### Index Constraints
 
 For performance and security reasons, indices have the following constraints. These constraints are subject to change over time.
 
@@ -390,7 +392,7 @@ The following example (excerpt from the DPNS contract's `preorder` document) cre
 ]
 ```
 
-### Full Document Syntax
+#### Full Document Syntax
 
 This example syntax shows the structure of a documents object that defines two documents, an index, and a required field.
 
@@ -437,11 +439,11 @@ This example syntax shows the structure of a documents object that defines two d
 }
 ```
 
-### Document Schema
+#### Document Schema
 
 Full document schema details may be found in this section of the [rs-dpp data contract meta schema](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L368-L471).
 
-## Data Contract Definitions
+### Data Contract Definitions
 
 > ❗️ Definitions are currently unavailable
 
@@ -475,11 +477,11 @@ The following example shows a definition for a `message` object consisting of tw
 }
 ```
 
-# Data Contract State Transition Details
+## Data Contract State Transition Details
 
 There are two data contract-related state transitions: [data contract create](#data-contract-creation) and [data contract update](#data-contract-update). Details are provided in this section.
 
-## Data Contract Creation
+### Data Contract Creation
 
 Data contracts are created on the platform by submitting the [data contract object](#data-contract-object) in a data contract create state transition consisting of:
 
@@ -569,7 +571,7 @@ Each data contract state transition must comply with this JSON-Schema definition
 }
 ```
 
-## Data Contract Update
+### Data Contract Update
 
 Existing data contracts can be updated in certain backwards-compatible ways. The following aspects  
 of a data contract can be updated:
@@ -662,7 +664,7 @@ Each data contract state transition must comply with this JSON-Schema definition
 }
 ```
 
-## Data Contract State Transition Signing
+### Data Contract State Transition Signing
 
 Data contract state transitions must be signed by a private key associated with the contract owner's identity.
 

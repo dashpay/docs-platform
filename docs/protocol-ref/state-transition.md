@@ -1,19 +1,21 @@
-# State Transition Overview
+# State Transition
+
+## State Transition Overview
 
  State transitions are the means for submitting data that creates, updates, or deletes platform data and results in a change to a new state. Each one must contain:
 
 - [Common fields](#common-fields) present in all state transitions
 - Additional fields specific to the type of action the state transition provides (e.g. [creating an identity](platform-protocol-reference-identity#identity-create-schema))
 
-## Fees
+### Fees
 
 State transition fees are paid via the credits established when an identity is created. Credits are created at a rate of [1000 credits/satoshi](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/identity/credits_converter.rs#L3). Fees for actions vary based on parameters related to storage and computational effort that are defined in [rs-dpp](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/state_transition/fee/constants.rs).
 
-## Size
+### Size
 
 All serialized data (including state transitions) is limited to a maximum size of [16 KB](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/util/serializer.rs#L8).
 
-## Common Fields
+### Common Fields
 
 All state transitions include the following fields:
 
@@ -29,9 +31,9 @@ Additionally, all state transitions except the identity create and topup state t
 | -------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | signaturePublicKeyId | integer | The `id` of the [identity public key](platform-protocol-reference-identity#identity-publickeys) that signed the state transition (`=> 0`) |
 
-# State Transition Types
+## State Transition Types
 
-## Data Contract Create
+### Data Contract Create
 
 | Field        | Type                                                                                   | Description                                                                                |
 | ------------ | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
@@ -40,7 +42,7 @@ Additionally, all state transitions except the identity create and topup state t
 
 More detailed information about the `dataContract` object can be found in the [data contract section](platform-protocol-reference-data-contract).
 
-### Entropy Generation
+#### Entropy Generation
 
 Entropy is included in [Data Contracts](platform-protocol-reference-data-contract#data-contract-creation) and [Documents](platform-protocol-reference-document#document-create-transition).
 
@@ -54,7 +56,7 @@ fn generate(&self) -> anyhow::Result<[u8; 32]> {
 }
 ```
 
-## Data Contract Update
+### Data Contract Update
 
 | Field        | Type                                                                                   | Description                                                                                |
 | ------------ | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
@@ -62,7 +64,7 @@ fn generate(&self) -> anyhow::Result<[u8; 32]> {
 
 More detailed information about the `dataContract` object can be found in the [data contract section](platform-protocol-reference-data-contract).
 
-## Documents Batch
+### Documents Batch
 
 | Field       | Type                        | Description                                                                            |
 | ----------- | --------------------------- | -------------------------------------------------------------------------------------- |
@@ -71,7 +73,7 @@ More detailed information about the `dataContract` object can be found in the [d
 
 More detailed information about the `transitions` array can be found in the [document section](platform-protocol-reference-document).
 
-## Identity Create
+### Identity Create
 
 | Field          | Type           | Description                                                                                                                                          |
 | -------------- | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -80,14 +82,14 @@ More detailed information about the `transitions` array can be found in the [doc
 
 More detailed information about the `publicKeys` object can be found in the [identity section](platform-protocol-reference-identity).
 
-## Identity TopUp
+### Identity TopUp
 
 | Field          | Type           | Description                                                                                                                                          |
 | -------------- | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
 | assetLockProof | array of bytes | Lock [outpoint](https://docs.dash.org/projects/core/en/stable/docs/resources/glossary.html#outpoint) from the layer 1 locking transaction (36 bytes) |
 | identityId     | array of bytes | An [Identity ID](platform-protocol-reference-identity#identity-id) for the identity receiving the topup (can be any identity) (32 bytes)             |
 
-## Identity Update
+### Identity Update
 
 | Field                | Type                 | Description                                                                                                                                                                                             |
 | -------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -97,7 +99,7 @@ More detailed information about the `publicKeys` object can be found in the [ide
 | disablePublicKeys    | array of integers    | (Optional) Array of up to 10 existing identity public key ID(s) to disable for the identity. Required if disabling keys.                                                                                |
 | publicKeysDisabledAt | integer              | (Optional) Timestamp when keys were disabled. Required if `disablePublicKeys` is present.                                                                                                               |
 
-# State Transition Signing
+## State Transition Signing
 
 State transitions must be signed by a private key associated with the identity creating the state transition. Since v0.23, each identity must have at least two keys: a primary key (security level `0`) that is only used when signing identity update state transitions and an additional key (security level `2`) that is used to sign all other state transitions.
 
@@ -108,7 +110,7 @@ The process to sign a state transition consists of the following steps:
 3. Set the state transition `signature` to the value of the signature created in the previous step
 4. For all state transitions _other than identity create or topup_, set the state transition`signaturePublicKeyId` to the [public key `id`](platform-protocol-reference-identity#public-key-id) corresponding to the key used to sign
 
-## Signature Validation
+### Signature Validation
 
 The `signature` validation (see [js-dpp](https://github.com/dashpay/platform/blob/v0.24.5/packages/js-dpp/test/unit/stateTransition/validation/validateStateTransitionIdentitySignatureFactory.spec.js)) verifies that:
 

@@ -1,4 +1,6 @@
-# Document Submission
+# Document
+
+## Document Submission
 
 Documents are sent to the platform by submitting the them in a document batch state transition consisting of:
 
@@ -64,7 +66,7 @@ Each document batch state transition must comply with this JSON-Schema definitio
 }
 ```
 
-## Document Base Transition
+### Document Base Transition
 
 All document transitions in a document batch state transition are built on the base schema and include the following fields:
 
@@ -114,7 +116,7 @@ Each document transition must comply with the document transition [base schema](
 }
 ```
 
-### Document id
+#### Document id
 
 The document `$id` is created by hashing the document's `dataContractId`, `ownerId`, `type`, and `entropy` as shown in [rs-dpp](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/document/generate_document_id.rs).
 
@@ -138,7 +140,7 @@ pub fn generate_document_id(
 }
 ```
 
-### Document Transition Action
+#### Document Transition Action
 
 | Action | Name | Description |
 | :-: | - | - |
@@ -147,7 +149,7 @@ pub fn generate_document_id(
 | 2 | `RESERVED` | Unused action |
 | 3 | Delete | Delete the referenced document |
 
-## Document Create Transition
+### Document Create Transition
 
 The document create transition extends the base schema to include the following additional fields:
 
@@ -210,7 +212,7 @@ The following example document create transition and subsequent table demonstrat
 | $entropy | Document [create transition](#document-create-transition) |
 | message | Data Contract (the `message` document defined in the referenced data contract -`5wpZAEWndYcTeuwZpkmSa8s49cHXU5q2DhdibesxFSu8`) |
 
-## Document Replace Transition
+### Document Replace Transition
 
 The document replace transition extends the base schema to include the following additional fields:
 
@@ -266,11 +268,11 @@ The following example document create transition and subsequent table demonstrat
 | $revision | Document revision |
 | message | Data Contract (the `message` document defined in the referenced data contract -`5wpZAEWndYcTeuwZpkmSa8s49cHXU5q2DhdibesxFSu8`) |
 
-## Document Delete Transition
+### Document Delete Transition
 
 The document delete transition only requires the fields found in the [base document transition](#document-base-transition).
 
-## Example Document Batch State Transition
+### Example Document Batch State Transition
 
 ```json
 {
@@ -292,7 +294,7 @@ The document delete transition only requires the fields found in the [base docum
 }
 ```
 
-# Document Object
+## Document Object
 
 The document object represents the data provided by the platform in response to a query. Responses consist of an array of these objects containing the following fields as defined in the Rust reference client ([rs-dpp](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/schema/document/documentExtended.json)):
 
@@ -367,7 +369,7 @@ Each document object must comply with this JSON-Schema definition established in
 }
 ```
 
-## Example Document Object
+### Example Document Object
 
 ```json
 {

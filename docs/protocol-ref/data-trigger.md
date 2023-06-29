@@ -1,8 +1,10 @@
-# Data Trigger Overview
+# Data Trigger
+
+## Data Trigger Overview
 
 Although [data contracts](platform-protocol-reference-data-contract) provide much needed constraints on the structure of the data being stored on Dash Platform, there are limits to what they can do. Certain system data contracts may require server-side validation logic to operate effectively. For example, [DPNS](https://dashplatform.readme.io/docs/explanation-dpns) must enforce some rules to ensure names remain DNS compatible. Dash Platform Protocol (DPP) supports this application-specific custom logic using Data Triggers.
 
-# Details
+## Details
 
 Since all application data is submitted in the form of documents, data triggers are defined in the context of documents. To provide even more granularity, they also incorporate the [document transition action](platform-protocol-reference-document#document-transition-action) so separate triggers can be created for the CREATE, REPLACE, or DELETE actions.
 
@@ -10,7 +12,7 @@ When document state transitions are received, DPP checks if there is a trigger a
 
 **Note:** Successful execution of the trigger logic is necessary for the document to be accepted and applied to the platform state.
 
-## Example
+### Example
 
 As an example, DPP contains several data triggers for DPNS as defined in the [data triggers factory](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/data_trigger/get_data_triggers_factory.rs). The `domain` document has added constraints for creation. All DPNS document types have constraints on replacing or deleting:
 

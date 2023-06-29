@@ -60,3 +60,18 @@ reference/data-contracts
 reference/glossary
 reference/frequently-asked-questions
 ```
+
+```{toctree}
+:maxdepth: 2
+:titlesonly:
+:caption: Platform Protocol Reference
+:hidden:
+
+protocol-ref/overview
+protocol-ref/identity
+protocol-ref/data-contract
+protocol-ref/state-transition
+protocol-ref/document
+protocol-ref/data-trigger
+protocol-ref/consensus-errors
+```

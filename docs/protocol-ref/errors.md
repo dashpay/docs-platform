@@ -1,4 +1,6 @@
-# Platform Error Codes
+# Consensus Errors
+
+## Platform Error Codes
 
 A comprehensive set of consensus error codes were introduced  in Dash Platform v0.21. The tables below follow the codes found in [code.js](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/src/errors/consensus/codes.rs) of the consensus source code.
 
@@ -11,11 +13,11 @@ The error codes are organized into four categories that each span 1000 error cod
 | [Fee](#fee)             | 3000 - 3999 | Errors encountered while validating an identity's balance is sufficient to pay fees   |
 | [State](#state)         | 4000 - 4999 | Errors encounter while validating state transitions against the platform state        |
 
-# Basic
+## Basic
 
 Basic errors occupy the codes ranging from 1000 to 1999. This range is divided into several categories for clarity.
 
-## Decoding Errors
+### Decoding Errors
 
 | Code | Error Description                | Comment |
 | :--: | -------------------------------- | ------- |
@@ -24,7 +26,7 @@ Basic errors occupy the codes ranging from 1000 to 1999. This range is divided i
 | 1002 | UnsupportedProtocolVersionError  |         |
 | 1003 | IncompatibleProtocolVersionError |         |
 
-## Structure Errors
+### Structure Errors
 
 | Code | Error Description          | Comment            |
 | :--: | -------------------------- | ------------------ |
@@ -33,7 +35,7 @@ Basic errors occupy the codes ranging from 1000 to 1999. This range is divided i
 | 1006 | InvalidIdentifierError     |                    |
 | 1060 | ValueError                 | **Added in v0.24** |
 
-## Data Contract Errors
+### Data Contract Errors
 
 | Code | Error Description                             | Comment              |
 | :--: | --------------------------------------------- | -------------------- |
@@ -56,7 +58,7 @@ Basic errors occupy the codes ranging from 1000 to 1999. This range is divided i
 | 1054 | DataContractInvalidIndexDefinitionUpdateError | Added in v0.23       |
 | 1055 | DataContractHaveNewUniqueIndexError           | Added in v0.23       |
 
-## Document Errors
+### Document Errors
 
 | Code | Error Description                            | Comment |
 | :--: | -------------------------------------------- | ------- |
@@ -72,7 +74,7 @@ Basic errors occupy the codes ranging from 1000 to 1999. This range is divided i
 | 1027 | MissingDocumentTransitionTypeError           |         |
 | 1028 | MissingDocumentTypeError                     |         |
 
-## Identity Errors
+### Identity Errors
 
 | Code | Error Description                                            | Comment            |
 | :--: | ------------------------------------------------------------ | ------------------ |
@@ -97,7 +99,7 @@ Basic errors occupy the codes ranging from 1000 to 1999. This range is divided i
 | 1058 | InvalidIdentityCreditWithdrawalTransitionCoreFeeError        | **Added in v0.24** |
 | 1059 | NotImplementedIdentityCreditWithdrawalTransitionPoolingError | **Added in v0.24** |
 
-## State Transition Errors
+### State Transition Errors
 
 | Code | Error Description                   | Comment |
 | :--: | ----------------------------------- | ------- |
@@ -105,7 +107,7 @@ Basic errors occupy the codes ranging from 1000 to 1999. This range is divided i
 | 1044 | MissingStateTransitionTypeError     |         |
 | 1045 | StateTransitionMaxSizeExceededError |         |
 
-# Signature Errors
+## Signature Errors
 
 Signature errors occupy the codes ranging from 2000 to 2999.
 
@@ -120,7 +122,7 @@ Signature errors occupy the codes ranging from 2000 to 2999.
 | 2006 | PublicKeyIsDisabledError                    | Added in v0.23 |
 | 2007 | PublicKeySecurityLevelNotMetError           | Added in v0.23 |
 
-# Fee Errors
+## Fee Errors
 
 Fee errors occupy the codes ranging from 3000 to 3999.
 
@@ -128,17 +130,17 @@ Fee errors occupy the codes ranging from 3000 to 3999.
 | :--: | ----------------------- | -------------------------------------------------- |
 | 3000 | BalanceIsNotEnoughError | Current credits balance is insufficient to pay fee |
 
-# State
+## State
 
 State errors occupy the codes ranging from 4000 to 4999. This range is divided into several categories for clarity.
 
-## Data Contract Errors
+### Data Contract Errors
 
 | Code | Error Description               | Comment |
 | :--: | ------------------------------- | ------- |
 | 4000 | DataContractAlreadyPresentError |         |
 
-## Document Errors
+### Document Errors
 
 | Code | Error Description                     | Comment |
 | :--: | :------------------------------------ | :------ |
@@ -150,7 +152,7 @@ State errors occupy the codes ranging from 4000 to 4999. This range is divided i
 | 4009 | DuplicateUniqueIndexError             |         |
 | 4010 | InvalidDocumentRevisionError          |         |
 
-## Identity Errors
+### Identity Errors
 
 | Code | Error Description                               | Comment            |
 | :--: | ----------------------------------------------- | ------------------ |
@@ -165,7 +167,7 @@ State errors occupy the codes ranging from 4000 to 4999. This range is divided i
 | 4023 | IdentityPublicKeyIsDisabledError                | Added in v0.23     |
 | 4024 | IdentityInsufficientBalanceError                | **Added in v0.24** |
 
-## Data Trigger Errors
+### Data Trigger Errors
 
 | Code | Error Description             | Comment |
 | :--: | ----------------------------- | ------- |

@@ -1,4 +1,6 @@
-# Identity Overview
+# Identity
+
+## Identity Overview
 
 Identities are a low-level construct that provide the foundation for user-facing functionality on the platform. An identity is a public key (or set of public keys) recorded on the platform chain that can be used to prove ownership of data. Please see the [Identity DIP](https://github.com/dashpay/dips/blob/master/dip-0011.md) for additional information.
 
@@ -77,7 +79,7 @@ Each identity must comply with this JSON-Schema definition established in [rs-dp
 }
 ```
 
-## Identity id
+### Identity id
 
 The identity `id` is calculated by Base58 encoding the double sha256 hash of the [outpoint](https://docs.dash.org/projects/core/en/stable/docs/resources/glossary.html#outpoint) used to fund the identity creation.
 
@@ -85,7 +87,7 @@ The identity `id` is calculated by Base58 encoding the double sha256 hash of the
 
 **Note:** The identity `id` uses the Dash Platform specific `application/x.dash.dpp.identifier` content media type. For additional information, please refer to the [js-dpp PR 252](https://github.com/dashevo/js-dpp/pull/252) that introduced it and [identifier.rs](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-platform-value/src/types/identifier.rs).
 
-## Identity publicKeys
+### Identity publicKeys
 
 The identity `publicKeys` array stores information regarding each public key associated with the identity. Multiple identities may use the same public key.
 
@@ -267,11 +269,11 @@ Each identity public key must comply with this JSON-Schema definition establishe
 }
 ```
 
-### Public Key `id`
+#### Public Key `id`
 
 Each public key in an identity's `publicKeys` array must be assigned a unique index number (`id`).
 
-### Public Key `type`
+#### Public Key `type`
 
 The `type` field indicates the algorithm used to derive the key.
 
@@ -282,11 +284,11 @@ The `type` field indicates the algorithm used to derive the key.
 |   2  | ECDSA Secp256k1 Hash160                                                                               |
 |   3  | [BIP13](https://github.com/bitcoin/bips/blob/master/bip-0013.mediawiki) pay-to-script-hash public key |
 
-### Public Key `data`
+#### Public Key `data`
 
 The `data` field contains the compressed public key.
 
-### Public Key `purpose`
+#### Public Key `purpose`
 
 The `purpose` field describes which operations are supported by the key. Please refer to [DIP11 - Identities](https://github.com/dashpay/dips/blob/master/dip-0011.md#keys) for additional information regarding this.
 
@@ -297,7 +299,7 @@ The `purpose` field describes which operations are supported by the key. Please 
 |   2  | Decryption     |
 |   3  | Withdraw       |
 
-### Public Key `securityLevel`
+#### Public Key `securityLevel`
 
 The `securityLevel` field indicates how securely the key should be stored by clients. Please refer to [DIP11 - Identities](https://github.com/dashpay/dips/blob/master/dip-0011.md#keys) for additional information regarding this.
 
@@ -308,24 +310,24 @@ The `securityLevel` field indicates how securely the key should be stored by cli
 |   2   | High        | Should be available as long as the user has authenticated at least once during a session. Typically used to sign state transitions, but cannot be used for identity update transitions. |
 |   3   | Medium      | Should not require user authentication but must require access to the client device                                                                                                     |
 
-### Public Key `readOnly`
+#### Public Key `readOnly`
 
 The `readOnly` field indicates that the public key can't be modified if it is set to `true`. The  
 value of this field cannot be changed after adding the key.
 
-### Public Key `disabledAt`
+#### Public Key `disabledAt`
 
 The `disabledAt` field indicates that the key has been disabled. Its value equals the timestamp when the key was disabled.
 
-## Identity balance
+### Identity balance
 
 Each identity has a balance of credits established by value locked via a layer 1 lock transaction. This credit balance is used to pay the fees associated with state transitions.
 
-# Identity State Transition Details
+## Identity State Transition Details
 
 There are three identity-related state transitions: [identity create](#identity-creation), [identity topup](#identity-topup), and [identity update](#identity-update). Details are provided in this section including information about [asset locking](#asset-lock) and [signing](#identity-state-transition-signing) required for these state transitions.
 
-## Identity Creation
+### Identity Creation
 
 Identities are created on the platform by submitting the identity information in an identity create state transition.
 
@@ -406,7 +408,7 @@ Each identity must comply with this JSON-Schema definition established in [rs-dp
 }
 ```
 
-## Identity TopUp
+### Identity TopUp
 
 Identity credit balances are increased by submitting the topup information in an identity topup state transition.
 
@@ -479,7 +481,7 @@ Each identity must comply with this JSON-Schema definition established in [rs-dp
 }
 ```
 
-## Identity Update
+### Identity Update
 
 Identities are updated on the platform by submitting the identity information in an identity update state transition. This state transition requires either a set of one or more new public keys to add to the identity or a list of existing keys to disable.
 
@@ -585,13 +587,13 @@ Each identity must comply with this JSON-Schema definition established in [rs-dp
 }
 ```
 
-## Asset Lock
+### Asset Lock
 
 The [identity create](#identity-creation) and [identity topup](#identity-topup) state transitions both include an asset lock proof object. This object references the layer 1 lock transaction and includes proof that the transaction is locked.
 
 Currently there are two types of asset lock proofs: InstantSend and ChainLock. Transactions almost always receive InstantSend locks, so the InstantSend asset lock proof is the predominate type.
 
-### InstantSend Asset Lock Proof
+#### InstantSend Asset Lock Proof
 
 The InstantSend asset lock proof is used for transactions that have received an InstantSend lock.
 
@@ -640,7 +642,7 @@ Asset locks using an InstantSend lock as proof must comply with this JSON-Schema
 }
 ```
 
-### ChainLock Asset Lock Proof
+#### ChainLock Asset Lock Proof
 
 The ChainLock asset lock proof is used for transactions that have note received an InstantSend lock, but have been included in a block that has received a ChainLock.
 
@@ -682,7 +684,7 @@ Asset locks using a ChainLock as proof must comply with this JSON-Schema definit
 }
 ```
 
-## Identity State Transition Signing
+### Identity State Transition Signing
 
 **Note:** The identity create and topup state transition signatures are unique in that they must be signed by the private key used in the layer 1 locking transaction. All other state transitions will be signed by a private key of the identity submitting them.
 
@@ -692,7 +694,7 @@ The process to sign an identity create state transition consists of the followin
 2. Sign the encoded data with private key associated with a lock transaction public key
 3. Set the state transition `signature` to the value of the signature created in the previous step
 
-### Code snipits related to signing
+#### Code snipits related to signing
 
 ```rust
 /// From rs-dpp
