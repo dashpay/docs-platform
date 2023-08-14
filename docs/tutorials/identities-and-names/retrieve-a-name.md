@@ -2,7 +2,7 @@
 
 In this tutorial we will retrieve the name created in the [Register a Name for an Identity tutorial](tutorial-register-a-name-for-an-identity). Additional details regarding identities can be found in the [Identity description](explanation-identity).
 
-### Prerequisites
+## Prerequisites
 - [General prerequisites](tutorials-introduction#prerequisites) (Node.js / Dash SDK installed)
 
 ## Code

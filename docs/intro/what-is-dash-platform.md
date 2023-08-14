@@ -1,4 +1,4 @@
-## What is Dash Platform
+# What is Dash Platform
 
 Dash Platform is a [Web3](https://en.wikipedia.org/wiki/Web3) technology stack for building decentralized applications on the Dash network. The two main architectural components, [Drive](explanation-drive) and [DAPI](explanation-dapi), turn the Dash P2P network into a cloud that developers can integrate with their applications. 
 
