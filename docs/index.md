@@ -73,7 +73,7 @@ protocol-ref/data-contract
 protocol-ref/state-transition
 protocol-ref/document
 protocol-ref/data-trigger
-protocol-ref/consensus-errors
+protocol-ref/errors
 ```
 
 ```{toctree}
