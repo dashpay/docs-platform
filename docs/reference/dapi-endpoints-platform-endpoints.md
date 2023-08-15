@@ -23,7 +23,7 @@ Some [additional metadata](https://github.com/dashevo/platform/blob/master/packa
 > 
 > **Note:** The [`waitForStateTransitionResult` endpoint](#waitforstatetransitionresult) should be used in conjunction with this one for instances where proof of block confirmation is required.
 
-Broadcasts a [state transition](explanation-platform-protocol-state-transition) to the platform via DAPI to make a change to layer 2 data. The `broadcastStateTransition` call returns once the state transition has been accepted into the mempool. 
+Broadcasts a [state transition](../explanations/platform-protocol-state-transition.md) to the platform via DAPI to make a change to layer 2 data. The `broadcastStateTransition` call returns once the state transition has been accepted into the mempool. 
 
 **Returns**: Nothing or error
 
@@ -31,7 +31,7 @@ Broadcasts a [state transition](explanation-platform-protocol-state-transition) 
 
 | Name               | Type           | Required | Description                                                          |
 | ------------------ | -------------- | -------- | -------------------------------------------------------------------- |
-| `state_transition` | Bytes (Base64) | Yes      | A [state transition](explanation-platform-protocol-state-transition) |
+| `state_transition` | Bytes (Base64) | Yes      | A [state transition](../explanations/platform-protocol-state-transition.md) |
 
 ** Example Request and Response **
 
@@ -152,7 +152,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 > 
 > As of Dash Platform 0.24 the `protocolVersion` is no longer included in the CBOR-encoded data. It is instead prepended as a varint to the data following CBOR encoding.
 
-**Returns**: [Identity](explanation-identity) information for the requested identity  
+**Returns**: [Identity](../explanations/identity.md) information for the requested identity  
 **Parameters**:
 
 | Name    | Type    | Required | Description                                                           |
@@ -273,7 +273,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ### getIdentitiesByPublicKeyHashes
 
-**Returns**: [Identity](explanation-identity) an array of identities associated with the provided public key hashes  
+**Returns**: [Identity](../explanations/identity.md) an array of identities associated with the provided public key hashes  
 **Parameters**:
 
 | Name                | Type    | Required | Description                                                             |
@@ -411,7 +411,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ### getDataContract
 
-**Returns**: [Data Contract](explanation-platform-protocol-data-contract) information for the requested data contract  
+**Returns**: [Data Contract](../explanations/platform-protocol-data-contract.md) information for the requested data contract  
 **Parameters**:
 
 | Name    | Type    | Required | Description                                                                |
@@ -642,12 +642,12 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ### getDocuments
 
-**Returns**: [Document](explanation-platform-protocol-document) information for the requested document(s)  
+**Returns**: [Document](../explanations/platform-protocol-document.md) information for the requested document(s)  
 **Parameters**:
 
 > 🚧 - Parameter constraints
 > 
-> The `where`, `order_by`, `limit`, `start_at`, and `start_after` parameters must comply with the limits defined on the [Query Syntax](reference-query-syntax) page.
+> The `where`, `order_by`, `limit`, `start_at`, and `start_after` parameters must comply with the limits defined on the [Query Syntax](../reference/query-syntax.md) page.
 > 
 > Additionally, note that `where` and `order_by` must be [CBOR](https://tools.ietf.org/html/rfc7049) encoded.
 

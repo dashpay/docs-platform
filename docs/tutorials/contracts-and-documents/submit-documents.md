@@ -1,13 +1,13 @@
 # Submit documents
 
-In this tutorial we will submit some data to an application on Dash Platform. Data is stored in the form of [documents](explanation-platform-protocol-document) which are encapsulated in a [state transition](explanation-platform-protocol-state-transition) before being submitted to DAPI. 
+In this tutorial we will submit some data to an application on Dash Platform. Data is stored in the form of [documents](../../explanations/platform-protocol-document.md) which are encapsulated in a [state transition](../../explanations/platform-protocol-state-transition.md) before being submitted to DAPI. 
 
 ## Prerequisites
 
-- [General prerequisites](tutorials-introduction#prerequisites) (Node.js / Dash SDK installed)
-- A wallet mnemonic with some funds in it: [Tutorial: Create and Fund a Wallet](tutorial-create-and-fund-a-wallet)
-- A Dash Platform Identity: [Tutorial: Register an Identity](tutorial-register-an-identity)
-- A Dash Platform Contract ID: [Tutorial: Register a Data Contract](tutorial-register-a-data-contract) 
+- [General prerequisites](../../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
+- A wallet mnemonic with some funds in it: [Tutorial: Create and Fund a Wallet](../../tutorials/create-and-fund-a-wallet.md)
+- A Dash Platform Identity: [Tutorial: Register an Identity](../../tutorials/identities-and-names/register-an-identity.md)
+- A Dash Platform Contract ID: [Tutorial: Register a Data Contract](../../tutorials/contracts-and-documents/register-a-data-contract.md) 
 
 # Code
 
@@ -68,11 +68,11 @@ submitNoteDocument()
 
 # What's happening
 
-After we initialize the Client, we create a document that matches the structure defined by the data contract of the application being referenced (e.g. a `note` document for the contract registered in the [data contract tutorial](tutorial-register-a-data-contract#section-code)). The `platform.documents.create` method takes three arguments: a document locator, an identity, and the document data. The document locator consists of an application name (e.g. `tutorialContract`) and the document type being created (e.g. `note`). The document data should contain values for each of the properties defined for it in the data contract (e.g. `message` for the tutorial contract's note).
+After we initialize the Client, we create a document that matches the structure defined by the data contract of the application being referenced (e.g. a `note` document for the contract registered in the [data contract tutorial](../../tutorials/contracts-and-documents/register-a-data-contract.md#code)). The `platform.documents.create` method takes three arguments: a document locator, an identity, and the document data. The document locator consists of an application name (e.g. `tutorialContract`) and the document type being created (e.g. `note`). The document data should contain values for each of the properties defined for it in the data contract (e.g. `message` for the tutorial contract's note).
 
-Once the document has been created, we still need to submit it to [DAPI](explanation-dapi). Documents are submitted in batches that may contain multiple documents to be created, replaced, or deleted. In this example, a single document is being created. The `documentBatch` object defines the action to be completed for the document (the empty action arrays - `replace` and `delete` in this example - may be excluded and are shown for reference only here).
+Once the document has been created, we still need to submit it to [DAPI](../../explanations/dapi.md). Documents are submitted in batches that may contain multiple documents to be created, replaced, or deleted. In this example, a single document is being created. The `documentBatch` object defines the action to be completed for the document (the empty action arrays - `replace` and `delete` in this example - may be excluded and are shown for reference only here).
 
-The `platform.documents.broadcast` method then takes the document batch and an identity parameter. Internally, it creates a [State Transition](explanation-platform-protocol-state-transition) containing the previously created document, signs the state transition, and submits the signed state transition to DAPI.
+The `platform.documents.broadcast` method then takes the document batch and an identity parameter. Internally, it creates a [State Transition](../../explanations/platform-protocol-state-transition.md) containing the previously created document, signs the state transition, and submits the signed state transition to DAPI.
 
 > 📘 Wallet Operations
 > 

@@ -138,13 +138,13 @@ The application that validates state transitions and updates state in Drive
 The change a user does to the application and platforms states. Consists of an array of documents _or_ one data contract, the id of the application to which the change is made, and a user signature
 
 ## Tenderdash
-Dash fork of [Tendermint](https://tendermint.com/core) modified for use in Dash Platform. See [Platform Consensus](doc:explanation-platform-consensus) for more information.
+Dash fork of [Tendermint](https://tendermint.com/core) modified for use in Dash Platform. See [Platform Consensus](../explanations/platform-consensus.md) for more information.
 
 ## Testnet
 
 A global testing environment in which developers can obtain and spend Dash that has no real-world value on a network that is very similar to the Dash [mainnet](#mainnet). See the <a href="https://dashcore.readme.io/docs/core-examples-testing-applications" target="_blank">Testing Applications page</a> for a more detailed description of network types.
 
-See: [Intro to Testnet](doc:intro-to-testnet) for more information
+See: [Intro to Testnet](../intro/to-testnet.md) for more information
 
 ## Validator Set
 The group of masternodes responsible for the layer 2 blockchain (platform chain) consensus at a given time. They vote on the content of each platform chain block and are analogous to miners on the layer 1's core blockchain

@@ -2,14 +2,14 @@
 
 ## Overview
 
-Dash Platform Name Service (DPNS) is a service used to register names on Dash Platform. It is a general service that is used to provide usernames and application names for [identities](explanation-identity) but can also be extended in the future to resolve other cryptocurrency addresses, websites, and more. DPNS is implemented as an application on top of the platform and leverages platform capabilities.
+Dash Platform Name Service (DPNS) is a service used to register names on Dash Platform. It is a general service that is used to provide usernames and application names for [identities](../explanations/identity.md) but can also be extended in the future to resolve other cryptocurrency addresses, websites, and more. DPNS is implemented as an application on top of the platform and leverages platform capabilities.
 
 > 👍 DPNS DIP
 >
 > The [DPNS Dash Improvement Proposal (DIP)](https://github.com/dashpay/dips/blob/master/dip-0012.md) provides more extensive background information and details.
 
 ###  Relationship to identities
-DPNS names and [Identities](explanation-identity) are tightly integrated. Identities provide a foundation that DPNS builds on to enable name-based interactions -- a user experience similar to what is found in non-cryptocurrency applications. With DPNS, users or application developers register a name and associate it with an identity. Once linked, the identity's private keys allow them to prove ownership of the name to establish trust when they interact with other users and applications.
+DPNS names and [Identities](../explanations/identity.md) are tightly integrated. Identities provide a foundation that DPNS builds on to enable name-based interactions -- a user experience similar to what is found in non-cryptocurrency applications. With DPNS, users or application developers register a name and associate it with an identity. Once linked, the identity's private keys allow them to prove ownership of the name to establish trust when they interact with other users and applications.
 
 ## Details
 
@@ -40,7 +40,7 @@ DPNS names currently have several constraints as defined in the [DPNS data contr
 > "^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]$"
 > ```
 
-Additionally, the DPNS [data triggers](explanation-platform-protocol-data-trigger) defined in [js-dpp](https://github.com/dashevo/platform/tree/master/packages/js-dpp/lib/dataTrigger) enforce additional validation rules related to the `domain` document.
+Additionally, the DPNS [data triggers](../explanations/platform-protocol-data-trigger.md) defined in [js-dpp](https://github.com/dashevo/platform/tree/master/packages/js-dpp/lib/dataTrigger) enforce additional validation rules related to the `domain` document.
 
 For more implementation details, please reference the open-source JavaScript DPNS client reference implementation found in the [js-dpns-client](https://github.com/dashevo/js-dpns-client) repository. Additionally, the DPNS data contract is available in the [dpns-contract](https://github.com/dashevo/platform/blob/master/packages/dpns-contract/schema/dpns-contract-documents.json) repository.
 

@@ -13,7 +13,7 @@ npm: `dash`
 
 ## js-dapi-client
 
-Client library for accessing [DAPI Endpoints](../reference/dapi-endpoints.md) . Enables interaction with Dash platform through the [DAPI](explanation-dapi) hosted on masternodes. Provides automatic masternode discovery starting from any initial masternode.
+Client library for accessing [DAPI Endpoints](../reference/dapi-endpoints.md) . Enables interaction with Dash platform through the [DAPI](../explanations/dapi.md) hosted on masternodes. Provides automatic masternode discovery starting from any initial masternode.
 
 npm: `@dashevo/dapi-client`  
 [Repository](https://github.com/dashevo/platform/tree/master/packages/js-dapi-client)
@@ -26,7 +26,7 @@ A decentralized API for the Dash network. Exposes endpoints for interacting with
 
 ## js-dpp
 
-JavaScript implementation of [Dash Platform Protocol](explanation-platform-protocol). Performs validation of all data submitted to the platform.
+JavaScript implementation of [Dash Platform Protocol](../explanations/platform-protocol.md). Performs validation of all data submitted to the platform.
 
 npm: `@dashevo/dpp`  
 [Repository](https://github.com/dashevo/platform/tree/master/packages/js-dpp)

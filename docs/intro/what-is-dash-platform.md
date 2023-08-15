@@ -1,6 +1,6 @@
 # What is Dash Platform
 
-Dash Platform is a [Web3](https://en.wikipedia.org/wiki/Web3) technology stack for building decentralized applications on the Dash network. The two main architectural components, [Drive](explanation-drive) and [DAPI](explanation-dapi), turn the Dash P2P network into a cloud that developers can integrate with their applications. 
+Dash Platform is a [Web3](https://en.wikipedia.org/wiki/Web3) technology stack for building decentralized applications on the Dash network. The two main architectural components, [Drive](../explanations/drive.md) and [DAPI](../explanations/dapi.md), turn the Dash P2P network into a cloud that developers can integrate with their applications. 
 
 ## Key Advantages
 
@@ -55,7 +55,7 @@ The source for both DAPI and dapi-client are available on GitHub:
 
 ### Drive - Decentralized Storage
 
-Drive is Dash Platform's storage component, allowing for consensus-based verification and validation of user-created data. In order for this to occur, developers create a [data contract](explanation-platform-protocol-data-contract). This data contract describes the data structures that comprise an application, similar to creating a schema for a document-oriented database like MongoDB.
+Drive is Dash Platform's storage component, allowing for consensus-based verification and validation of user-created data. In order for this to occur, developers create a [data contract](../explanations/platform-protocol-data-contract.md). This data contract describes the data structures that comprise an application, similar to creating a schema for a document-oriented database like MongoDB.
 
 Data created by users of the application is validated and verified against this contract. Upon successful validation/verification, application data is submitted to Drive (via DAPI), where it is stored on the masternode network. Drive uses Dash's purpose-built database, [GroveDB](https://github.com/dashevo/grovedb/), to provide efficient proofs with query responses, so you don't have to trust the API provider to be certain your data is authentic.
 

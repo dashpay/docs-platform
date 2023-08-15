@@ -1,10 +1,10 @@
 # Retrieve a data contract
 
-In this tutorial we will retrieve the data contract created in the [Register a Data Contract tutorial](tutorial-register-a-data-contract).
+In this tutorial we will retrieve the data contract created in the [Register a Data Contract tutorial](../../tutorials/contracts-and-documents/register-a-data-contract.md).
 
 ## Prerequisites
-- [General prerequisites](tutorials-introduction#prerequisites) (Node.js / Dash SDK installed)
-- A Dash Platform Contract ID: [Tutorial: Register a Data Contract](tutorial-register-a-data-contract) 
+- [General prerequisites](../../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
+- A Dash Platform Contract ID: [Tutorial: Register a Data Contract](../../tutorials/contracts-and-documents/register-a-data-contract.md) 
 
 # Code
 
@@ -78,7 +78,7 @@ The following example response shows a retrieved contract:
 
 > 📘
 >
-> Please refer to the [data contract reference page](reference-data-contracts) for more comprehensive details related to contracts and documents.
+> Please refer to the [data contract reference page](../../reference/data-contracts.md) for more comprehensive details related to contracts and documents.
 
 # What's Happening
 

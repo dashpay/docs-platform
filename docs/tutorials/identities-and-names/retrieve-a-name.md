@@ -1,9 +1,9 @@
 # Retrieve a name
 
-In this tutorial we will retrieve the name created in the [Register a Name for an Identity tutorial](tutorial-register-a-name-for-an-identity). Additional details regarding identities can be found in the [Identity description](explanation-identity).
+In this tutorial we will retrieve the name created in the [Register a Name for an Identity tutorial](../../tutorials/identities-and-names/register-a-name-for-an-identity.md). Additional details regarding identities can be found in the [Identity description](../../explanations/identity.md).
 
 ## Prerequisites
-- [General prerequisites](tutorials-introduction#prerequisites) (Node.js / Dash SDK installed)
+- [General prerequisites](../../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
 
 ## Code
 

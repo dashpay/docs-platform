@@ -1,12 +1,12 @@
 # Update documents
 
-In this tutorial we will update existing data on Dash Platform. Data is stored in the form of [documents](explanation-platform-protocol-document) which are encapsulated in a [state transition](explanation-platform-protocol-state-transition) before being submitted to DAPI. 
+In this tutorial we will update existing data on Dash Platform. Data is stored in the form of [documents](../../explanations/platform-protocol-document.md) which are encapsulated in a [state transition](../../explanations/platform-protocol-state-transition.md) before being submitted to DAPI. 
 
 ## Prerequisites
 
-- [General prerequisites](tutorials-introduction#prerequisites) (Node.js / Dash SDK installed)
-- A wallet mnemonic with some funds in it: [Tutorial: Create and Fund a Wallet](tutorial-create-and-fund-a-wallet)
-- Access to a previously created document (e.g., one created using the [Submit Documents tutorial](tutorial-submit-documents))
+- [General prerequisites](../../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
+- A wallet mnemonic with some funds in it: [Tutorial: Create and Fund a Wallet](../../tutorials/create-and-fund-a-wallet.md)
+- Access to a previously created document (e.g., one created using the [Submit Documents tutorial](../../tutorials/contracts-and-documents/submit-documents.md))
 
 # Code
 
@@ -61,9 +61,9 @@ updateNoteDocument()
 
 # What's happening
 
-After we initialize the Client, we retrieve the document to be updated via `platform.documents.get` using its `id`. Once the document has been retrieved, we must submit it to [DAPI](explanation-dapi) with the desired data updates. Documents are submitted in batches that may contain multiple documents to be created, replaced, or deleted. In this example, a single document is being updated.
+After we initialize the Client, we retrieve the document to be updated via `platform.documents.get` using its `id`. Once the document has been retrieved, we must submit it to [DAPI](../../explanations/dapi.md) with the desired data updates. Documents are submitted in batches that may contain multiple documents to be created, replaced, or deleted. In this example, a single document is being updated.
 
-The `platform.documents.broadcast` method then takes the document batch (e.g. `{replace: [noteDocument]}`) and an identity parameter. Internally, it creates a [State Transition](explanation-platform-protocol-state-transition) containing the previously created document, signs the state transition, and submits the signed state transition to DAPI.
+The `platform.documents.broadcast` method then takes the document batch (e.g. `{replace: [noteDocument]}`) and an identity parameter. Internally, it creates a [State Transition](../../explanations/platform-protocol-state-transition.md) containing the previously created document, signs the state transition, and submits the signed state transition to DAPI.
 
 > 📘 Wallet Operations
 > 

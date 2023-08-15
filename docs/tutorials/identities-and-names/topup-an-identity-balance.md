@@ -4,12 +4,12 @@ The purpose of this tutorial is to walk through the steps necessary to add credi
 
 # Overview
 
-As users interact with Dash Platform applications, the credit balance associated with their identity will decrease. Eventually it will be necessary to topup the balance by converting some Dash to credits.  Additional details regarding credits can be found in the [Credits description](explanation-identity#credits).
+As users interact with Dash Platform applications, the credit balance associated with their identity will decrease. Eventually it will be necessary to topup the balance by converting some Dash to credits.  Additional details regarding credits can be found in the [Credits description](../../explanations/identity.md#credits).
 
 ## Prerequisites
-- [General prerequisites](tutorials-introduction#prerequisites) (Node.js / Dash SDK installed)
-- A wallet mnemonic with some funds in it: [Tutorial: Create and Fund a Wallet](tutorial-create-and-fund-a-wallet)
-- A Dash Platform Identity: [Tutorial: Register an Identity](tutorial-register-an-identity) 
+- [General prerequisites](../../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
+- A wallet mnemonic with some funds in it: [Tutorial: Create and Fund a Wallet](../../tutorials/create-and-fund-a-wallet.md)
+- A Dash Platform Identity: [Tutorial: Register an Identity](../../tutorials/identities-and-names/register-an-identity.md) 
 
 # Code
 

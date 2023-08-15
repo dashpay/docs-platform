@@ -2,7 +2,7 @@
 
 ## Overview
 
-DashPay is one of the first applications of Dash Platform's [data contracts](explanation-platform-protocol-data-contract) . At its core DashPay is a data contract that enables a decentralized application that creates bidirectional [direct settlement payment channels](reference-glossary#direct-settlement-payment-channel-dspc) between [identities](explanation-identity).
+DashPay is one of the first applications of Dash Platform's [data contracts](../explanations/platform-protocol-data-contract.md) . At its core DashPay is a data contract that enables a decentralized application that creates bidirectional [direct settlement payment channels](../reference/glossary.md#direct-settlement-payment-channel-dspc) between [identities](../explanations/identity.md).
 
 > 📘
 >
@@ -25,8 +25,8 @@ The contract defines three document types: `contactRequest`, `profile` and `cont
 ### Establishing a Contact
 
 1. Bob installs wallet software that supports DashPay.
-2. Bob [registers an identity](tutorial-register-an-identity) and then [creates a username](tutorial-register-a-name-for-an-identity) through [DPNS](explanation-dpns).
-3. Bob searches for Carol by her username. Behind the scenes this search returns the unique identifier for Carol's identity. An example of doing this can be seen in the [Retrieve a Name tutorial](doc:tutorial-retrieve-a-name).
+2. Bob [registers an identity](../tutorials/identities-and-names/register-an-identity.md) and then [creates a username](../tutorials/identities-and-names/register-a-name-for-an-identity.md) through [DPNS](../explanations/dpns.md).
+3. Bob searches for Carol by her username. Behind the scenes this search returns the unique identifier for Carol's identity. An example of doing this can be seen in the [Retrieve a Name tutorial](../tutorials/identities-and-names/retrieve-a-name.md).
 4. Bob sends a contact request containing an encrypted extended public key to Carol. This establishes a one way relationship from Bob to Carol.
 5. Carol accepts the request by sending a contact request containing an encrypted extended public key back to Bob. This establishes a one way relationship from Carol to Bob.
 6. Bob and Carol are now contacts of one another and can make payments to each other by decrypting the extended public key received from the other party and deriving payment addresses from it. Since both have established one way relationships with each other, they now have a two way relationship. If Bob gets a new device, he can use his recovery phrase from step one and restore his wallet, contacts (including Carol) and payments to and from his contacts.
