@@ -25,10 +25,10 @@ Release notes for past versions are located on the [dashpay/platform GitHub rele
 
 [Data Contracts](platform-protocol-reference-data-contract)
 
-- [Documents](platform-protocol-reference-data-contract#data-contract-documents)
-  - [Properties](platform-protocol-reference-data-contract#document-properties)
-  - [Indices](platform-protocol-reference-data-contract#document-indices)
-- [Definitions](platform-protocol-reference-data-contract#data-contract-definitions)
+- [Documents](../protocol-ref/data-contract.md#data-contract-documents)
+  - [Properties](../protocol-ref/data-contract.md#document-properties)
+  - [Indices](../protocol-ref/data-contract.md#document-indices)
+- [Definitions](../protocol-ref/data-contract.md#data-contract-definitions)
 
 [Document](platform-protocol-reference-document)
 
@@ -37,7 +37,7 @@ Release notes for past versions are located on the [dashpay/platform GitHub rele
 - [Overview / general structure](platform-protocol-reference-state-transition)
 - Types
   - [Identity Create ST](platform-protocol-reference-identity#identity-creation)
-  - [Data Contract ST](platform-protocol-reference-data-contract#data-contract-creation)
+  - [Data Contract ST](../protocol-ref/data-contract.md#data-contract-creation)
   - [Document Batch ST](platform-protocol-reference-document)
     - Document Transitions
       - [Document Transition Base](platform-protocol-reference-document#document-base-transition)

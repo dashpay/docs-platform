@@ -38,11 +38,11 @@ The following table contains a list of currently defined payload types:
 
 | Payload Type | Payload Description |
 | - | - |
-| [Data Contract Create](platform-protocol-reference-data-contract#data-contract-creation) (`0`) | [Database schema](explanation-platform-protocol-data-contract) for a single application |
+| [Data Contract Create](../protocol-ref/data-contract.md#data-contract-creation) (`0`) | [Database schema](explanation-platform-protocol-data-contract) for a single application |
 | [Documents Batch](platform-protocol-reference-document#document-submission) (`1`) | An array of 1 or more [document](explanation-platform-protocol-document) transition objects containing application data |
 | [Identity Create](platform-protocol-reference-identity#identity-creation) (`2`) | Information including the public keys required to create a new [Identity](explanation-identity) |
 | [Identity Topup](platform-protocol-reference-identity#identity-topup) (`3`) | Information including proof of a transaction containing an amount to add to the provided identity's balance |
-| [Data Contract Update](platform-protocol-reference-data-contract#data-contract-update) (`4`) | An updated [database schema](explanation-platform-protocol-data-contract) to modify an existing application |
+| [Data Contract Update](../protocol-ref/data-contract.md#data-contract-update) (`4`) | An updated [database schema](explanation-platform-protocol-data-contract) to modify an existing application |
 
 ### Application Usage
 

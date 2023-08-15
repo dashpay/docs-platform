@@ -10,7 +10,7 @@ Clients for a number of languages are built automatically from the protocol defi
 
 ### Command Line Examples
 
-Some examples shown in the endpoint details pages use a command-line tool named [gRPCurl](https://github.com/fullstorydev/grpcurl) that allows interacting with gRPC servers in a similar way as `curl` does for the [JSON-RPCs](reference-dapi-endpoints-json-rpc-endpoints). Additional information may be found in the [gRPC documentation](https://grpc.io/docs/guides/).
+Some examples shown in the endpoint details pages use a command-line tool named [gRPCurl](https://github.com/fullstorydev/grpcurl) that allows interacting with gRPC servers in a similar way as `curl` does for the [JSON-RPCs](../reference/dapi-endpoints-json-rpc-endpoints.md). Additional information may be found in the [gRPC documentation](https://grpc.io/docs/guides/).
 
 To use gRPCurl as shown in the detailed examples, clone the [platform](https://github.com/dashevo/platform/) repository and execute the example requests from the `packages/dapi-grpc` directory of that repository as shown in this example:
 
@@ -31,7 +31,7 @@ Canonical encoding is used for state transitions, identities, data contracts, an
 
 Libraries such as [`cbor` (JavaScript)](https://www.npmjs.com/package/cbor) and [`cbor2` (Python)](https://pypi.org/project/cbor2/) can be used to encode/decode data for DAPI gRPC endpoints.
 
-The examples below use the response from a [`getIdentity` gPRC request](reference-dapi-endpoints-platform-endpoints#getidentity) to demonstrate how to both encode data for sending and decode received data:
+The examples below use the response from a [`getIdentity` gPRC request](../reference/dapi-endpoints-platform-endpoints.md#getidentity) to demonstrate how to both encode data for sending and decode received data:
 
 ```javascript NodeJS - Decode Identity
 const cbor = require('cbor');

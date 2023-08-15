@@ -31,4 +31,4 @@ dapiClientMethods()
 
 > 📘
 >
-> Examples using DAPI client to access many of the DAPI endpoints can be found in the [DAPI Endpoint Reference section](reference-dapi-endpoints).
+> Examples using DAPI client to access many of the DAPI endpoints can be found in the [DAPI Endpoint Reference section](../reference/dapi-endpoints.md).
