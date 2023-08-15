@@ -1,5 +1,14 @@
 #!/bin/bash
 
+# This script converts the readme.io link to one that will work with ReadTheDocs
+#
+# The format here is:
+# 's~](<this is the old link from readme.io>~](\.\./<this is the directory in the repo containing the file>/<this is the actual filename in the repo>~g'
+#
+# So in this example: 's~](reference-dapi-endpoints-core-grpc-endpoints~](\.\./reference/dapi-endpoints-core-grpc-endpoints.md~g'
+# The repo directory is "reference"
+# And the file in that repository is "dapi-endpoints-core-grpc-endpoints.md"
+
 # Introduction
 
 # Tutorials
