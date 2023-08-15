@@ -42,7 +42,7 @@ connect()
   .catch((e) => console.error('Something went wrong:\n', e))
   .finally(() => client.disconnect());
 ``` 
-Once this returns successfully, you're ready to begin developing! See the [Quickstart](tutorials-introduction#quickstart) for recommended next steps. For details on all SDK options and methods, please refer to the [SDK documentation](https://dashevo.github.io/platform/SDK/).
+Once this returns successfully, you're ready to begin developing! See the [Quickstart](../tutorials/introduction.md#quickstart) for recommended next steps. For details on all SDK options and methods, please refer to the [SDK documentation](https://dashevo.github.io/platform/SDK/).
 
 ## Connect to a Devnet
 

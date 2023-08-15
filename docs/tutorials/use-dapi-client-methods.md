@@ -4,7 +4,7 @@ In addition to the SDK methods for interacting with identities, names, contracts
 
 ## Prerequisites
 
-- [General prerequisites](tutorials-introduction#prerequisites) (Node.js / Dash SDK installed)
+- [General prerequisites](../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
 
 # Code
 
@@ -31,4 +31,4 @@ dapiClientMethods()
 
 > 📘
 >
-> Examples using DAPI client to access many of the DAPI endpoints can be found in the [DAPI Endpoint Reference section](reference-dapi-endpoints).
+> Examples using DAPI client to access many of the DAPI endpoints can be found in the [DAPI Endpoint Reference section](../reference/dapi-endpoints.md).

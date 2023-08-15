@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The Dash Platform Protocol (DPP) defines a protocol for the data objects (e.g.  [identities](platform-protocol-reference-identity), data contracts, documents, state transitions) that can be stored on [Dash's layer 2 platform](https://dashplatform.readme.io/docs/introduction-what-is-dash-platform). All data stored on Dash Platform is governed by DPP to ensure data consistency and integrity is maintained.
+The Dash Platform Protocol (DPP) defines a protocol for the data objects (e.g.  [identities](../protocol-ref/identity.md), data contracts, documents, state transitions) that can be stored on [Dash's layer 2 platform](https://dashplatform.readme.io/docs/introduction-what-is-dash-platform). All data stored on Dash Platform is governed by DPP to ensure data consistency and integrity is maintained.
 
 Dash Platform data objects consist of JSON and are validated using the JSON Schema specification via pre-defined JSON Schemas and meta-schemas described in these sections. The meta-schemas allow for creation of DPP-compliant schemas which define fields for third-party Dash Platform applications.
 
@@ -18,32 +18,32 @@ Release notes for past versions are located on the [dashpay/platform GitHub rele
 
 ## Topics
 
-[Identities](platform-protocol-reference-identity)
+[Identities](../protocol-ref/identity.md)
 
-- [Create](platform-protocol-reference-identity#identity-creation)
-- [TopUp](platform-protocol-reference-identity#identity-topup)
+- [Create](../protocol-ref/identity.md#identity-creation)
+- [TopUp](../protocol-ref/identity.md#identity-topup)
 
-[Data Contracts](platform-protocol-reference-data-contract)
+[Data Contracts](../protocol-ref/data-contract.md)
 
-- [Documents](platform-protocol-reference-data-contract#data-contract-documents)
-  - [Properties](platform-protocol-reference-data-contract#document-properties)
-  - [Indices](platform-protocol-reference-data-contract#document-indices)
-- [Definitions](platform-protocol-reference-data-contract#data-contract-definitions)
+- [Documents](../protocol-ref/data-contract.md#data-contract-documents)
+  - [Properties](../protocol-ref/data-contract.md#document-properties)
+  - [Indices](../protocol-ref/data-contract.md#document-indices)
+- [Definitions](../protocol-ref/data-contract.md#data-contract-definitions)
 
-[Document](platform-protocol-reference-document)
+[Document](../protocol-ref/document.md)
 
-[State Transitions](platform-protocol-reference-state-transition)
+[State Transitions](../protocol-ref/state-transition.md)
 
-- [Overview / general structure](platform-protocol-reference-state-transition)
+- [Overview / general structure](../protocol-ref/state-transition.md)
 - Types
-  - [Identity Create ST](platform-protocol-reference-identity#identity-creation)
-  - [Data Contract ST](platform-protocol-reference-data-contract#data-contract-creation)
-  - [Document Batch ST](platform-protocol-reference-document)
+  - [Identity Create ST](../protocol-ref/identity.md#identity-creation)
+  - [Data Contract ST](../protocol-ref/data-contract.md#data-contract-creation)
+  - [Document Batch ST](../protocol-ref/document.md)
     - Document Transitions
-      - [Document Transition Base](platform-protocol-reference-document#document-base-transition)
-      - [Document Create Transition](platform-protocol-reference-document#document-create-transition)
-      - [Document Replace Transition](platform-protocol-reference-document#document-replace-transition)
-      - [Document Delete Transition](platform-protocol-reference-document#document-delete-transition)
-- [Signing](platform-protocol-reference-state-transition#state-transition-signing)
+      - [Document Transition Base](../protocol-ref/document.md#document-base-transition)
+      - [Document Create Transition](../protocol-ref/document.md#document-create-transition)
+      - [Document Replace Transition](../protocol-ref/document.md#document-replace-transition)
+      - [Document Delete Transition](../protocol-ref/document.md#document-delete-transition)
+- [Signing](../protocol-ref/state-transition.md#state-transition-signing)
 
-[Data Triggers](platform-protocol-reference-data-trigger)
+[Data Triggers](../protocol-ref/data-trigger.md)

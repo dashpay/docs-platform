@@ -8,9 +8,9 @@ Documents are sent to the platform by submitting the them in a document batch st
 | - | - | - |
 | protocolVersion | integer | The platform protocol version (currently `1`) |
 | type | integer | State transition type (`1` for document batch) |
-| ownerId | array | [Identity](platform-protocol-reference-identity) submitting the document(s) (32 bytes) |
+| ownerId | array | [Identity](../protocol-ref/identity.md) submitting the document(s) (32 bytes) |
 | transitions | array of transition objects | Document `create`, `replace`, or `delete` transitions (up to 10 objects) |
-| signaturePublicKeyId | number | The `id` of the [identity public key](platform-protocol-reference-identity#identity-publickeys) that signed the state transition |
+| signaturePublicKeyId | number | The `id` of the [identity public key](../protocol-ref/identity.md#identity-publickeys) that signed the state transition |
 | signature | array | Signature of state transition data (65 or 96 bytes) |
 
 Each document batch state transition must comply with this JSON-Schema definition established in [rs-dpp](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/document/stateTransition/documentsBatch.json):
@@ -75,7 +75,7 @@ All document transitions in a document batch state transition are built on the b
 | $id | array | The [document ID](#document-id) (32 bytes)|
 | $type | string | Name of a document type found in the data contract associated with the `dataContractId` (1-64 characters) |
 | $action | array of integers | [Action](#document-transition-action) the platform should take for the associated document |
-| $dataContractId | array | Data contract ID [generated](platform-protocol-reference-data-contract#data-contract-id) from the data contract's `ownerId` and `entropy` (32 bytes) |
+| $dataContractId | array | Data contract ID [generated](../protocol-ref/data-contract.md#data-contract-id) from the data contract's `ownerId` and `entropy` (32 bytes) |
 
 Each document transition must comply with the document transition [base schema](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/document/stateTransition/documentTransition/base.json):
 
@@ -155,7 +155,7 @@ The document create transition extends the base schema to include the following 
 
 | Field | Type | Description|
 | - | - | - |
-| $entropy | array | Entropy used in creating the [document ID](#document-id). Generated as [shown here](platform-protocol-reference-state-transition#entropy-generation). (32 bytes) |
+| $entropy | array | Entropy used in creating the [document ID](#document-id). Generated as [shown here](../protocol-ref/state-transition.md#entropy-generation). (32 bytes) |
 | $createdAt | integer | (Optional)  | Time (in milliseconds) the document was created |
 | $updatedAt | integer | (Optional)  | Time (in milliseconds) the document was last updated |
 
@@ -304,8 +304,8 @@ The document object represents the data provided by the platform in response to 
 | $id | array | Yes | The [document ID](#document-id) (32 bytes)|
 | $type | string | Yes  | Document type defined in the referenced contract (1-64 characters) |
 | $revision | integer | No | Document revision (=>1) |
-| $dataContractId | array | Yes | Data contract ID [generated](platform-protocol-reference-data-contract#data-contract-id) from the data contract's `ownerId` and `entropy` (32 bytes) |
-| $ownerId | array | Yes | [Identity](platform-protocol-reference-identity) of the user submitting the document (32 bytes) |
+| $dataContractId | array | Yes | Data contract ID [generated](../protocol-ref/data-contract.md#data-contract-id) from the data contract's `ownerId` and `entropy` (32 bytes) |
+| $ownerId | array | Yes | [Identity](../protocol-ref/identity.md) of the user submitting the document (32 bytes) |
 | $createdAt | integer | (Optional)  | Time (in milliseconds) the document was created |
 | $updatedAt | integer | (Optional)  | Time (in milliseconds) the document was last updated |
 

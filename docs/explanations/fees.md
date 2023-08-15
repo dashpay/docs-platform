@@ -45,7 +45,7 @@ The current cost schedule is outlined in the table below:
 [/block]
 > 📘 Credits
 >
-> Refer to the [Identity explanation](explanation-identity) section for information regarding how credits are created.
+> Refer to the [Identity explanation](../explanations/identity.md) section for information regarding how credits are created.
 
 ## Fee Multiplier
 

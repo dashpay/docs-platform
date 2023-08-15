@@ -26,7 +26,7 @@ Dashmate can be used to create a local network on a single computer. This networ
 
 > 📘 
 >
-> Dashmate local networks use the [regtest network type](reference-glossary#regtest) so layer 1 blocks can be easily mined as needed. 
+> Dashmate local networks use the [regtest network type](../../reference/glossary.md#regtest) so layer 1 blocks can be easily mined as needed. 
 
 ### Setup
 
@@ -84,7 +84,7 @@ dashmate group status
 
 ### Mining Dash
 
-During development it may be necessary to obtain Dash to create and topup [identities](docs/explanation-identity). This can be done using the dashmate `wallet:mint` command. First obtain an address to fund via the [Create and Fund a Wallet](doc:tutorial-create-and-fund-a-wallet) tutorial and then mine Dash to it as shown below:
+During development it may be necessary to obtain Dash to create and topup [identities](../../explanations/identity.md). This can be done using the dashmate `wallet:mint` command. First obtain an address to fund via the [Create and Fund a Wallet](../../tutorials/create-and-fund-a-wallet.md) tutorial and then mine Dash to it as shown below:
 
 ```shell Mine to provided address
 # Stop the devnet first
@@ -122,7 +122,7 @@ Example output of `dashmate wallet mint 10 --address=yYqfdpePzn2kWtMxr9nz22HBFM7
 
 ### Using the network
 
-Once the address is funded, you can begin creating identities, data contracts, etc. and experimenting with Dash Platform. The [other tutorials](tutorials-introduction) in this section will help you get started.
+Once the address is funded, you can begin creating identities, data contracts, etc. and experimenting with Dash Platform. The [other tutorials](../../tutorials/introduction.md) in this section will help you get started.
 
 To make the Dash SDK connect to your local network, set the `network` option to `'local'`:
 
@@ -161,6 +161,6 @@ To setup a testnet masternode, please refer to the comprehensive documentation o
 
 > 📘 Connecting to a remote development network
 >
-> In order to connect to a remote [devnet](reference-glossary#devnet) (e.g. one run by Dash Core Group), please use one of the methods described in the [Connect to a Devnet](tutorial-connecting-to-testnet#connect-to-a-devnet) section.
+> In order to connect to a remote [devnet](../../reference/glossary.md#devnet) (e.g. one run by Dash Core Group), please use one of the methods described in the [Connect to a Devnet](../../tutorials/connecting-to-testnet.md#connect-to-a-devnet) section.
 
 For development we recommend using either a local network created via dashmate as [described above](#local-network) or using Testnet. While configuring a remote development network is possible using the Dash network deployment tool, it is beyond the scope of this documentation. For details regarding this tool, please refer to the [GitHub repository](https://github.com/dashevo/dash-network-deploy).

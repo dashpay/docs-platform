@@ -4,19 +4,19 @@ In this tutorial we will register a data contract.
 
 ## Prerequisites
 
-- [General prerequisites](tutorials-introduction#prerequisites) (Node.js / Dash SDK installed)
-- A wallet mnemonic with some funds in it: [Tutorial: Create and Fund a Wallet](tutorial-create-and-fund-a-wallet)
-- A Dash Platform Identity: [Tutorial: Register an Identity](tutorial-register-an-identity) 
+- [General prerequisites](../../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
+- A wallet mnemonic with some funds in it: [Tutorial: Create and Fund a Wallet](../../tutorials/create-and-fund-a-wallet.md)
+- A Dash Platform Identity: [Tutorial: Register an Identity](../../tutorials/identities-and-names/register-an-identity.md) 
 
 # Code
 
 ## Defining contract documents
 
-As described in the [data contract explanation](explanation-platform-protocol-data-contract#structure), data contracts must include one or more developer-defined [documents](explanation-platform-protocol-document). 
+As described in the [data contract explanation](../../explanations/platform-protocol-data-contract.md#structure), data contracts must include one or more developer-defined [documents](../../explanations/platform-protocol-document.md). 
 
 The most basic example below (tab 1) demonstrates a data contract containing a single document type (`note`) which has a single string property (`message`). 
 
-The second tab shows the same data contract with an index defined on the `$ownerId` field. This would allow querying for documents owned by a specific identity using a [where clause](reference-query-syntax#where-clause).
+The second tab shows the same data contract with an index defined on the `$ownerId` field. This would allow querying for documents owned by a specific identity using a [where clause](../../reference/query-syntax.md#where-clause).
 
 > 🚧 
 > 
@@ -28,7 +28,7 @@ The third tab shows a data contract using the [JSON-Schema $ref feature](https:/
 > 
 > The `$ref` keyword has been [temporarily disabled](https://github.com/dashevo/platform/pull/300) since Platform v0.22.
 
-The fourth tab shows a data contract requiring the optional `$createdAt` and `$updatedAt` [base fields](explanation-platform-protocol-document#base-fields). Using these fields enables retrieving timestamps that indicate when a document was created or modified.
+The fourth tab shows a data contract requiring the optional `$createdAt` and `$updatedAt` [base fields](../../explanations/platform-protocol-document.md#base-fields). Using these fields enables retrieving timestamps that indicate when a document was created or modified.
 
 ```json 1. Minimal contract
 {
@@ -148,7 +148,7 @@ array of bytes (e.g. a NodeJS Buffer).
 
 > 📘 
 > 
-> Please refer to the [data contract reference page](reference-data-contracts) for more comprehensive details related to contracts and documents.
+> Please refer to the [data contract reference page](../../reference/data-contracts.md) for more comprehensive details related to contracts and documents.
 
 ## Registering the data contract
 

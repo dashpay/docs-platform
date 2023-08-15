@@ -25,17 +25,17 @@ A data contract is a database schema that a developer needs to register with the
 >
 > Dash's data contracts support backwards-compatible modifications after their initial deployment unlike many smart contract based systems. This provides developers with additional flexibility when designing applications.
 
-For additional detail, see the [Data Contract](explanation-platform-protocol-data-contract) explanation.
+For additional detail, see the [Data Contract](../explanations/platform-protocol-data-contract.md) explanation.
 
 ### Document
 
-A document is an atomic entity used by the platform to store user-submitted data. It resembles the documents stored in a document-oriented DB (e.g. MongoDB). All documents must follow some specific rules that are defined by a generic document schema. Additionally, documents are always related to a particular application, so they must comply with the rules defined by the application’s data contract. Documents are submitted to the platform API ([DAPI](explanation-dapi)) by clients during their use of the application.
+A document is an atomic entity used by the platform to store user-submitted data. It resembles the documents stored in a document-oriented DB (e.g. MongoDB). All documents must follow some specific rules that are defined by a generic document schema. Additionally, documents are always related to a particular application, so they must comply with the rules defined by the application’s data contract. Documents are submitted to the platform API ([DAPI](../explanations/dapi.md)) by clients during their use of the application.
 
 > 📘 Document-Oriented Databases
 >
 > Information about document-oriented databases can be found on the [MongoDB site](https://www.mongodb.com/document-databases) and in this [Wikipedia article](https://en.wikipedia.org/wiki/Document-oriented_database).
 
-For additional detail, see the [Document](explanation-platform-protocol-document) explanation.
+For additional detail, see the [Document](../explanations/platform-protocol-document.md) explanation.
 
 ### State Transition
 
@@ -46,9 +46,9 @@ A state transition represents a change made by a user to the application and pla
  -  The contract ID of the application to which the change is made
  - The user's signature.
 
-The user signature is made for the binary representation of the state transition using a private key associated with an [identity](explanation-identity). A state transition is constructed by a client-side library when the user creates documents and submits them to the platform API.
+The user signature is made for the binary representation of the state transition using a private key associated with an [identity](../explanations/identity.md). A state transition is constructed by a client-side library when the user creates documents and submits them to the platform API.
 
-For additional detail, see the [State Transition](explanation-platform-protocol-state-transition) explanation.
+For additional detail, see the [State Transition](../explanations/platform-protocol-state-transition.md) explanation.
 
 ```{toctree}
 :maxdepth: 2

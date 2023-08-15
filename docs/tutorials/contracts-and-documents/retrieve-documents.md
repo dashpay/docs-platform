@@ -1,10 +1,10 @@
 # Retrieve documents
 
-In this tutorial we will retrieve some of the current data from a data contract. Data is stored in the form of documents as described in the Dash Platform Protocol [Document explanation](explanation-platform-protocol-document).
+In this tutorial we will retrieve some of the current data from a data contract. Data is stored in the form of documents as described in the Dash Platform Protocol [Document explanation](../../explanations/platform-protocol-document.md).
 
 ## Prerequisites
-- [General prerequisites](tutorials-introduction#prerequisites) (Node.js / Dash SDK installed)
-- A Dash Platform Contract ID: [Tutorial: Register a Data Contract](tutorial-register-a-data-contract) 
+- [General prerequisites](../../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
+- A Dash Platform Contract ID: [Tutorial: Register a Data Contract](../../tutorials/contracts-and-documents/register-a-data-contract.md) 
 
 # Code
 
@@ -43,7 +43,7 @@ getDocuments()
 
 ## Queries
 
-The example code uses a very basic query to return only one result. More extensive querying capabilities are covered in the [query syntax reference](reference-query-syntax).
+The example code uses a very basic query to return only one result. More extensive querying capabilities are covered in the [query syntax reference](../../reference/query-syntax.md).
 
 # Example Document
 
@@ -55,7 +55,7 @@ The values returned by `.toJSON()` include the base document properties (prefixe
 >
 > Note: When using `.toJSON()`, binary data is displayed as a base64 string (since JSON is a text-based format).
 
-The values returned by `.getData()` (and also shown in the console.dir() `data` property) represent _only_ the properties defined in the `note` document described by the [tutorial data contract](tutorial-register-a-data-contract#code).
+The values returned by `.getData()` (and also shown in the console.dir() `data` property) represent _only_ the properties defined in the `note` document described by the [tutorial data contract](../../tutorials/contracts-and-documents/register-a-data-contract.md#code).
 
 ```json .toJSON()
 {

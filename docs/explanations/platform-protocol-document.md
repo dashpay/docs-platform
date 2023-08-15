@@ -2,9 +2,9 @@
 
 ## Overview
 
-Dash Platform is based on [document-oriented database](https://en.wikipedia.org/wiki/Document-oriented_database) concepts and uses related terminology. In short, JSON documents are stored into document collections which can then be fetched back using a [query language](reference-query-syntax) similar to common document-oriented databases like [MongoDB](https://www.mongodb.com/), [CouchDB](https://couchdb.apache.org/), or [Firebase](https://firebase.google.com/). 
+Dash Platform is based on [document-oriented database](https://en.wikipedia.org/wiki/Document-oriented_database) concepts and uses related terminology. In short, JSON documents are stored into document collections which can then be fetched back using a [query language](../reference/query-syntax.md) similar to common document-oriented databases like [MongoDB](https://www.mongodb.com/), [CouchDB](https://couchdb.apache.org/), or [Firebase](https://firebase.google.com/). 
 
-Documents are defined in an application's [Data Contract](explanation-platform-protocol-data-contract) and represent the structure of application-specific data. Each document consists of one or more fields and the indices necessary to support querying.
+Documents are defined in an application's [Data Contract](../explanations/platform-protocol-data-contract.md) and represent the structure of application-specific data. Each document consists of one or more fields and the indices necessary to support querying.
 
 ## Details
 
@@ -19,17 +19,17 @@ Dash Platform Protocol (DPP) defines a set of base fields that must be present i
 | $type | Document type defined in the referenced contract |
 | $revision | Document revision (=>1) |
 | $dataContractId | Data contract ID generated from the data contract's `ownerId` and `entropy` (32 bytes) |
-| $ownerId | [Identity](explanation-identity) of the user submitting the document (32 bytes) |
+| $ownerId | [Identity](../explanations/identity.md) of the user submitting the document (32 bytes) |
 | $createdAt | Time (in milliseconds) the document was created |
 | $updatedAt | Time (in milliseconds) the document was last updated |
 
 > 🚧 Timestamp fields
 >
-> Note: The `$createdAt` and `$updatedAt` fields will only be present in documents that add them to the list of [required properties](reference-data-contracts#required-properties-optional).
+> Note: The `$createdAt` and `$updatedAt` fields will only be present in documents that add them to the list of [required properties](../reference/data-contracts.md#required-properties-optional).
 
 ### Data Contract Fields
 
-Each application defines its own fields via document definitions in its data contract. Details of the [DPNS data contract documents](https://github.com/dashevo/platform/blob/master/packages/dpns-contract/schema/dpns-contract-documents.json) are described below as an example. This contract defines two document types (`preorder` and `domain`) and provides the functionality described in the [Name Service explanation](explanation-dpns).
+Each application defines its own fields via document definitions in its data contract. Details of the [DPNS data contract documents](https://github.com/dashevo/platform/blob/master/packages/dpns-contract/schema/dpns-contract-documents.json) are described below as an example. This contract defines two document types (`preorder` and `domain`) and provides the functionality described in the [Name Service explanation](../explanations/dpns.md).
 
 | Document Type | Field Name | Data Type |
 | - | - | - |
@@ -72,7 +72,7 @@ The following example shows the structure of a DPNS `domain` document as output 
 
 ## Document Submission
 
-Once a document has been created, it must be encapsulated in a State Transition to be sent to the platform. The structure of a document state transition is shown below. For additional details, see the [State Transition](explanation-platform-protocol-state-transition) explanation.
+Once a document has been created, it must be encapsulated in a State Transition to be sent to the platform. The structure of a document state transition is shown below. For additional details, see the [State Transition](../explanations/platform-protocol-state-transition.md) explanation.
 
 | Field Name | Description |
 | - | - | 
@@ -108,4 +108,4 @@ The document delete transition is used to delete an existing Dash Platform docum
 
 > 📘
 >
-> For more detailed information, see the [Platform Protocol Reference - Document](platform-protocol-reference-document) page.
+> For more detailed information, see the [Platform Protocol Reference - Document](../protocol-ref/document.md) page.

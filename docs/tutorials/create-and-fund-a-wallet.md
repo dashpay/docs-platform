@@ -4,7 +4,7 @@ In order to make changes on Dash Platform, you need a wallet with a balance. Thi
 
 ## Prerequisites
 
-- [General prerequisites](tutorials-introduction#prerequisites) (Node.js / Dash SDK installed)
+- [General prerequisites](../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
 
 # Code
 

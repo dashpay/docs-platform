@@ -2,15 +2,15 @@
 
 ## Overview
 
-As described briefly in the [Dash Platform Protocol explanation](explanation-platform-protocol#data-contract), Dash Platform uses data contracts to define the schema (structure) of data it stores. Therefore, an application must first register a data contract before using the platform to store its data. Then, when the application attempts to store or change data, the request will only succeed if the new data matches the data contract's schema.
+As described briefly in the [Dash Platform Protocol explanation](../explanations/platform-protocol.md#data-contract), Dash Platform uses data contracts to define the schema (structure) of data it stores. Therefore, an application must first register a data contract before using the platform to store its data. Then, when the application attempts to store or change data, the request will only succeed if the new data matches the data contract's schema.
 
-The first two data contracts are the [DashPay wallet](https://www.dash.org/dashpay/) and [Dash Platform Name Service (DPNS)](explanation-dpns). The concept of the social, username-based DashPay wallet served as the catalyst for development of the platform, with DPNS providing the mechanism to support usernames.
+The first two data contracts are the [DashPay wallet](https://www.dash.org/dashpay/) and [Dash Platform Name Service (DPNS)](../explanations/dpns.md). The concept of the social, username-based DashPay wallet served as the catalyst for development of the platform, with DPNS providing the mechanism to support usernames.
 
 ## Details
 
 ### Ownership
 
-Data contracts are owned by the [identity](explanation-identity) that registers them. Each identity may be used to create multiple data contracts and data contract updates can only be made using the identity that owns it.
+Data contracts are owned by the [identity](../explanations/identity.md) that registers them. Each identity may be used to create multiple data contracts and data contract updates can only be made using the identity that owns it.
 
 ### Structure
 
@@ -23,7 +23,7 @@ In the [example contract](#example-contract) shown below, a `contact` document a
 
 ### Registration
 
-Once a [Dash Platform Protocol](explanation-platform-protocol) compliant data contract has been defined, it may be registered on the platform. Registration is completed by submitting a state transition containing the data contract to [DAPI](explanation-dapi).
+Once a [Dash Platform Protocol](../explanations/platform-protocol.md) compliant data contract has been defined, it may be registered on the platform. Registration is completed by submitting a state transition containing the data contract to [DAPI](../explanations/dapi.md).
 
 The drawing below illustrates the steps an application developer follows to complete registration.
 [block:image]
@@ -48,7 +48,7 @@ Since Dash Platform v0.22, it is possible to update existing data contracts in c
 
 > 📘
 >
-> For more detailed information, see the [Platform Protocol Reference - Data Contract](platform-protocol-reference-data-contract) page.
+> For more detailed information, see the [Platform Protocol Reference - Data Contract](../protocol-ref/data-contract.md) page.
 
 ## Example Contract
 

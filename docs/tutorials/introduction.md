@@ -14,7 +14,7 @@ The tutorials in this section are written in JavaScript and use [Node.js](https:
 
 - [Node.js](https://nodejs.org/en/) (v12+)
 - Familiarity with JavaScript asynchronous functions using [async/await](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Async_await)
-- The Dash JavaScript SDK (see [Connecting to a Network](tutorial-connecting-to-testnet#1-install-the-dash-sdk))
+- The Dash JavaScript SDK (see [Connecting to a Network](../tutorials/connecting-to-testnet.md#1-install-the-dash-sdk))
 
 ## Quickstart
 [block:image]
@@ -33,10 +33,10 @@ The tutorials in this section are written in JavaScript and use [Node.js](https:
 }
 [/block]
 While going through each tutorial is advantageous, the subset of tutorials listed below get you from a start to storing data on Dash Platform most quickly:
-- [Obtaining test funds](tutorial-create-and-fund-a-wallet)
-- [Registering an Identity](tutorial-register-an-identity)
-- [Registering a Data Contract](tutorial-register-a-data-contract)
-- [Submitting data](tutorial-submit-documents)
+- [Obtaining test funds](../tutorials/create-and-fund-a-wallet.md)
+- [Registering an Identity](../tutorials/identities-and-names/register-an-identity.md)
+- [Registering a Data Contract](../tutorials/contracts-and-documents/submit-documents.md)
+- [Submitting data](../tutorials/contracts-and-documents/submit-documents.md)
 
 [block:html]
 {

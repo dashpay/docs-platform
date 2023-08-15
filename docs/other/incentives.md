@@ -6,7 +6,7 @@ In a decentralized network, there is no authority directing each part of the sys
 
 **DAPI (Masternodes):** Masternodes operate a public API which receives platform data requests and alterations. They must have the resources to respond quickly and consistently.
 
-**Miners:** Masternode data is hashed to a separate blockchain (the [platform chain](explanation-drive-platform-chain)) operated just by the masternodes, so miners' only contribution to Dash Platform is to store transactions from users converting Dash to credits, or from masternodes converting credits back to Dash.
+**Miners:** Masternode data is hashed to a separate blockchain (the [platform chain](../explanations/drive-platform-chain.md)) operated just by the masternodes, so miners' only contribution to Dash Platform is to store transactions from users converting Dash to credits, or from masternodes converting credits back to Dash.
 
 In general, masternodes and miners are incentivized to perform this work by fees that the users pay as they use Dash Platform. In some cases, such as new user creation, someone else may pay the fee for the user. This may be expanded in the future to allow organizations to pay for their own users' platform activity.
 
@@ -16,8 +16,8 @@ In general, masternodes and miners are incentivized to perform this work by fees
 
 Dash Platform collects fees for three activities:
 
-* [Registering a new identity](tutorial-register-an-identity)
-* [Registering a Data Contract](tutorial-register-a-data-contract)
+* [Registering a new identity](../tutorials/identities-and-names/register-an-identity.md)
+* [Registering a Data Contract](../tutorials/contracts-and-documents/submit-documents.md)
 * [Updating Application Data](tutorial-submit-a-state-transition)
 
 New users may not have any Dash of their own, so when registering an identity, some Dash is converted into _credits_, which is Dash that can only be spent on Platform activity. Users can also convert Dash into credits after registration as needed.
