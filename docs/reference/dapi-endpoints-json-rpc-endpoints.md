@@ -134,7 +134,7 @@ puts response.read_body
 
 ::::{tab-set-code}
 
-```{code-block} shell
+```shell Curl
 curl -k --request POST \
   --url https://seed-1.testnet.networks.dash.org:1443/ \
   --header 'content-type: application/json' \
@@ -147,7 +147,7 @@ curl -k --request POST \
        }
     }'
 ```
-```{code-block} python
+```python Python
 import requests
 import json
 
@@ -167,7 +167,7 @@ response = requests.request("POST", url, data=json.dumps(payload_json), headers=
 
 print(response.text)
 ```
-```{code-block} ruby
+```ruby Ruby
 require 'uri'
 require 'net/http'
 
@@ -211,6 +211,8 @@ puts response.read_body
 | `blockHash`     | String | Yes      | Block hash for the ending block   |
 
 #### Example Request and Response
+
+::::{tab-set-code}
 
 ```shell Curl
 curl -k --request POST \
@@ -270,6 +272,8 @@ request.body = '{
 response = http.request(request)
 puts response.read_body
 ```
+
+::::
 
 ```json
 {
