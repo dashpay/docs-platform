@@ -5,7 +5,7 @@
  State transitions are the means for submitting data that creates, updates, or deletes platform data and results in a change to a new state. Each one must contain:
 
 - [Common fields](#common-fields) present in all state transitions
-- Additional fields specific to the type of action the state transition provides (e.g. [creating an identity](../protocol-ref/identity.md#identity-create-schema))
+- Additional fields specific to the type of action the state transition provides (e.g. [creating an identity](../protocol-ref/identity.md#identity-creation))
 
 ### Fees
 

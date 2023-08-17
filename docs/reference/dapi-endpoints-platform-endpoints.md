@@ -33,116 +33,11 @@ Broadcasts a [state transition](../explanations/platform-protocol-state-transiti
 | ------------------ | -------------- | -------- | -------------------------------------------------------------------- |
 | `state_transition` | Bytes (Base64) | Yes      | A [state transition](../explanations/platform-protocol-state-transition.md) |
 
-** Example Request and Response **
-
-```javascript JavaScript (dapi-client)
-const DAPIClient = require('@dashevo/dapi-client');
-const DashPlatformProtocol = require('@dashevo/dpp');
-
-const client = new DAPIClient();
-const dpp = new DashPlatformProtocol();
-
-// Data Contract Create State Transition (JSON)
-// Replace with your own state transition object before running
-const stateTransitionObject = {
-  protocolVersion: 0,
-  type: 0,
-  signature: 'HxAipUsLWQBE++C1suSRNQiQh91rI1LZbblvQhk2erUaIvRneAagxGYYsXXYNvEeO+lBzlF1a9KHGGTHgnO/8Ts=',
-  signaturePublicKeyId: 0,
-  dataContract: {
-    protocolVersion: 0,
-    '$id': 'CMc7RghKkHeHtFdwfSX5Hzy7CUdpCEJnwsbfHdsbmJ32',
-    '$schema': 'https://schema.dash.org/dpp-0-4-0/meta/data-contract',
-    ownerId: '8Z3ps3tNoGoPEDYerUNCd4yi7zDwgBh2ejgSMExxvkfD',
-    documents: {
-      note: {
-        properties: { message: { type: 'string' } },
-        additionalProperties: false,
-      },
-    },
-  },
-  entropy: '+RqUArypdL8f/gCMAo4b6c3CoQvxHzsQG0BdYrT5QT0=',
-};
-
-// Convert signature and entropy to buffer
-stateTransitionObject.signature = Buffer.from(stateTransitionObject.signature, 'base64');
-stateTransitionObject.entropy = Buffer.from(stateTransitionObject.entropy, 'base64');
-
-dpp.stateTransition.createFromObject(stateTransitionObject, { skipValidation: true })
-  .then((stateTransition) => {
-    client.platform.broadcastStateTransition(stateTransition.toBuffer())
-      .then(() => console.log('State Transition broadcast successfully'));
-  });
-```
-```javascript JavaScript (dapi-grpc)
-const {
-  v0: {
-    PlatformPromiseClient,
-    BroadcastStateTransitionRequest,
-  },
-} = require('@dashevo/dapi-grpc');
-const DashPlatformProtocol = require('@dashevo/dpp');
-
-const platformPromiseClient = new PlatformPromiseClient(
-  'https://seed-1.testnet.networks.dash.org:1443',
-);
-
-const dpp = new DashPlatformProtocol();
-
-// Data Contract Create State Transition (JSON)
-// Replace with your own state transition object before running
-const stateTransitionObject = {
-  protocolVersion: 0,
-  type: 0,
-  signature: 'HxAipUsLWQBE++C1suSRNQiQh91rI1LZbblvQhk2erUaIvRneAagxGYYsXXYNvEeO+lBzlF1a9KHGGTHgnO/8Ts=',
-  signaturePublicKeyId: 0,
-  dataContract: {
-    protocolVersion: 0,
-    '$id': 'CMc7RghKkHeHtFdwfSX5Hzy7CUdpCEJnwsbfHdsbmJ32',
-    '$schema': 'https://schema.dash.org/dpp-0-4-0/meta/data-contract',
-    ownerId: '8Z3ps3tNoGoPEDYerUNCd4yi7zDwgBh2ejgSMExxvkfD',
-    documents: {
-      note: {
-        properties: { message: { type: 'string' } },
-        additionalProperties: false,
-      },
-    },
-  },
-  entropy: '+RqUArypdL8f/gCMAo4b6c3CoQvxHzsQG0BdYrT5QT0=',
-};
-
-// Convert signature and entropy to buffer
-stateTransitionObject.signature = Buffer.from(stateTransitionObject.signature, 'base64');
-stateTransitionObject.entropy = Buffer.from(stateTransitionObject.entropy, 'base64');
-
-const broadcastStateTransitionRequest = new BroadcastStateTransitionRequest();
-
-dpp.stateTransition.createFromObject(stateTransitionObject, { skipValidation: true })
-  .then((stateTransition) => {
-    console.log(stateTransition);
-    broadcastStateTransitionRequest.setStateTransition(stateTransition.toBuffer());
-
-    platformPromiseClient.broadcastStateTransition(broadcastStateTransitionRequest)
-      .then(() => console.log('State Transition broadcast successfully'))
-      .catch((e) => {
-        console.error(e);
-        console.error(e.metadata);
-      });
-  })
-  .catch((e) => console.error(e));
-```
-```shell gRPCurl
-## Submit an identity create State Transition
-## `state_transition` must be represented in base64
-## Replace `state_transition` with your own state transition object before running
-grpcurl -proto protos/platform/v0/platform.proto \
-  -d '{
-    "state_transition":"pWR0eXBlAmlzaWduYXR1cmV4WEg3TWhFWDQ0Z3JzMVIwTE9XTU5IZjAxWFNpYVFQcUlVZ1JLRXQyMkxHVERsUlUrZ1BwQUlUZk5JUmhXd3IvYTVHd0lzWm1idGdYVVFxcVhjbW9lQWtUOD1qcHVibGljS2V5c4GkYmlkAGRkYXRheCxBdzh2UmYxeFFCTlVLbzNiY2llaHlaR2NhM0hBSThkY0ZvVWJTK3hLb0lITmR0eXBlAGlpc0VuYWJsZWT1bmxvY2tlZE91dFBvaW50eDBLT1VUSHB5YnFPek9DNnhEVUhFWm9uc1lNSVpqcGppTHFZNnkxYmlWNWxRQUFBQUFvcHJvdG9jb2xWZXJzaW9uAA=="
-
-    }' \
-  seed-1.testnet.networks.dash.org:1443 \
-  org.dash.platform.dapi.v0.Platform/broadcastStateTransition
-```
+[block:html]
+{
+  "html": "<!--\nJavaScript (dapi-client) example (old)\nconst DAPIClient = require('@dashevo/dapi-client');\nconst DashPlatformProtocol = require('@dashevo/dpp');\n\nconst client = new DAPIClient();\nconst dpp = new DashPlatformProtocol();\n\n// Data Contract Create State Transition (JSON)\n// Replace with your own state transition object before running\nconst stateTransitionObject = {\n  protocolVersion: 0,\n  type: 0,\n  signature: 'HxAipUsLWQBE++C1suSRNQiQh91rI1LZbblvQhk2erUaIvRneAagxGYYsXXYNvEeO+lBzlF1a9KHGGTHgnO/8Ts=',\n  signaturePublicKeyId: 0,\n  dataContract: {\n    protocolVersion: 0,\n    '$id': 'CMc7RghKkHeHtFdwfSX5Hzy7CUdpCEJnwsbfHdsbmJ32',\n    '$schema': 'https://schema.dash.org/dpp-0-4-0/meta/data-contract',\n    ownerId: '8Z3ps3tNoGoPEDYerUNCd4yi7zDwgBh2ejgSMExxvkfD',\n    documents: {\n      note: {\n        properties: { message: { type: 'string' } },\n        additionalProperties: false,\n      },\n    },\n  },\n  entropy: '+RqUArypdL8f/gCMAo4b6c3CoQvxHzsQG0BdYrT5QT0=',\n};\n\n// Convert signature and entropy to buffer\nstateTransitionObject.signature = Buffer.from(stateTransitionObject.signature, 'base64');\nstateTransitionObject.entropy = Buffer.from(stateTransitionObject.entropy, 'base64');\n\ndpp.stateTransition.createFromObject(stateTransitionObject, { skipValidation: true })\n  .then((stateTransition) => {\n    client.platform.broadcastStateTransition(stateTransition.toBuffer())\n      .then(() => console.log('State Transition broadcast successfully'));\n  });\n-->\n\n<!--\nJavaScript (dapi-grpc) example (old)\nconst {\n  v0: {\n    PlatformPromiseClient,\n    BroadcastStateTransitionRequest,\n  },\n} = require('@dashevo/dapi-grpc');\nconst DashPlatformProtocol = require('@dashevo/dpp');\n\nconst platformPromiseClient = new PlatformPromiseClient(\n  'https://seed-1.testnet.networks.dash.org:1443',\n);\n\nconst dpp = new DashPlatformProtocol();\n\n// Data Contract Create State Transition (JSON)\n// Replace with your own state transition object before running\nconst stateTransitionObject = {\n  protocolVersion: 0,\n  type: 0,\n  signature: 'HxAipUsLWQBE++C1suSRNQiQh91rI1LZbblvQhk2erUaIvRneAagxGYYsXXYNvEeO+lBzlF1a9KHGGTHgnO/8Ts=',\n  signaturePublicKeyId: 0,\n  dataContract: {\n    protocolVersion: 0,\n    '$id': 'CMc7RghKkHeHtFdwfSX5Hzy7CUdpCEJnwsbfHdsbmJ32',\n    '$schema': 'https://schema.dash.org/dpp-0-4-0/meta/data-contract',\n    ownerId: '8Z3ps3tNoGoPEDYerUNCd4yi7zDwgBh2ejgSMExxvkfD',\n    documents: {\n      note: {\n        properties: { message: { type: 'string' } },\n        additionalProperties: false,\n      },\n    },\n  },\n  entropy: '+RqUArypdL8f/gCMAo4b6c3CoQvxHzsQG0BdYrT5QT0=',\n};\n\n// Convert signature and entropy to buffer\nstateTransitionObject.signature = Buffer.from(stateTransitionObject.signature, 'base64');\nstateTransitionObject.entropy = Buffer.from(stateTransitionObject.entropy, 'base64');\n\nconst broadcastStateTransitionRequest = new BroadcastStateTransitionRequest();\n\ndpp.stateTransition.createFromObject(stateTransitionObject, { skipValidation: true })\n  .then((stateTransition) => {\n    console.log(stateTransition);\n    broadcastStateTransitionRequest.setStateTransition(stateTransition.toBuffer());\n\n    platformPromiseClient.broadcastStateTransition(broadcastStateTransitionRequest)\n      .then(() => console.log('State Transition broadcast successfully'))\n      .catch((e) => {\n        console.error(e);\n        console.error(e.metadata);\n      });\n  })\n  .catch((e) => console.error(e));\n-->\n\n<!--\ngRPCurl example (old)\n# Submit an identity create State Transition\n# `state_transition` must be represented in base64\n# Replace `state_transition` with your own state transition object before running\ngrpcurl -proto protos/platform/v0/platform.proto \\\n  -d '{\n    \"state_transition\":\"pWR0eXBlAmlzaWduYXR1cmV4WEg3TWhFWDQ0Z3JzMVIwTE9XTU5IZjAxWFNpYVFQcUlVZ1JLRXQyMkxHVERsUlUrZ1BwQUlUZk5JUmhXd3IvYTVHd0lzWm1idGdYVVFxcVhjbW9lQWtUOD1qcHVibGljS2V5c4GkYmlkAGRkYXRheCxBdzh2UmYxeFFCTlVLbzNiY2llaHlaR2NhM0hBSThkY0ZvVWJTK3hLb0lITmR0eXBlAGlpc0VuYWJsZWT1bmxvY2tlZE91dFBvaW50eDBLT1VUSHB5YnFPek9DNnhEVUhFWm9uc1lNSVpqcGppTHFZNnkxYmlWNWxRQUFBQUFvcHJvdG9jb2xWZXJzaW9uAA==\"\n\n    }' \\\n  seed-1.testnet.networks.dash.org:1443 \\\n  org.dash.platform.dapi.v0.Platform/broadcastStateTransition\n-->"
+}
+[/block]
 
 **Response**: No response except on error
 
@@ -174,7 +69,7 @@ const varint = require('varint');
 
 const client = new DAPIClient();
 
-const identityId = Identifier.from('CgbpVEz3aVvF4wkLieF8Vj7SRY7E6NVHaQVWhKJ6ChyE');
+const identityId = Identifier.from('4EfA9Jrvv3nnCFdSf7fad59851iiTRZ6Wcu6YVJ4iSeF');
 client.platform.getIdentity(identityId).then((response) => {
   // Strip off protocol version (leading varint) and decode
   const identityBuffer = Buffer.from(response.getIdentity());
@@ -197,7 +92,7 @@ const platformPromiseClient = new PlatformPromiseClient(
   'https://seed-1.testnet.networks.dash.org:1443',
 );
 
-const id = Identifier.from('CgbpVEz3aVvF4wkLieF8Vj7SRY7E6NVHaQVWhKJ6ChyE');
+const id = Identifier.from('4EfA9Jrvv3nnCFdSf7fad59851iiTRZ6Wcu6YVJ4iSeF');
 const idBuffer = Buffer.from(id);
 const getIdentityRequest = new GetIdentityRequest();
 getIdentityRequest.setId(idBuffer);
@@ -216,10 +111,10 @@ platformPromiseClient.getIdentity(getIdentityRequest)
   .catch((e) => console.error(e));
 ```
 ```shell gRPCurl
-## `id` must be represented in base64
+# `id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
-    "id":"rZWT0bOj+rIDYD4yQtR/oC/2Q4BJtMYq+0q2YlYi2IU="
+    "id":"MBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/aw="
     }' \
   seed-1.testnet.networks.dash.org:1443 \
   org.dash.platform.dapi.v0.Platform/getIdentity
@@ -227,13 +122,13 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ```json Response (JavaScript)
 {
-  id: <Buffer ad 95 93 d1 b3 a3 fa b2 03 60 3e 32 42 d4 7f a0 2f f6 43 80 49 b4 c6 2a fb 4a b6 62 56 22 d8 85>,
-  balance: 831034175,
-  revision: 2,
+  id: <Buffer 30 12 c1 9b 98 ec 00 33 ad db 36 cd 64 b7 f5 10 67 0f 2a 35 1a 43 04 b5 f6 99 41 44 28 6e fd ac>,
+  balance: 5255234422,
+  revision: 0,
   publicKeys: [
     {
       id: 0,
-      data: <Buffer 02 e1 d0 65 46 1d 6c 07 1e fe 73 3f fe 89 78 97 c7 20 d0 58 dc 3c 3f 83 45 2d f2 59 52 d6 c6 02 9a>,
+      data: <Buffer 02 c8 b4 74 7b 52 8c ac 5f dd f7 a6 cc 63 70 2e e0 4e d7 d1 33 29 04 e0 85 10 34 3e a0 0d ce 54 6a>,
       type: 0,
       purpose: 0,
       readOnly: false,
@@ -241,31 +136,22 @@ grpcurl -proto protos/platform/v0/platform.proto \
     },
     {
       id: 1,
-      data: <Buffer 02 fc e8 f3 6e c6 83 a3 68 38 fd 48 d0 86 dd 34 7f df ad 13 1c 1b 26 7d 45 37 51 a1 6a 84 39 7a b3>,
+      data: <Buffer 02 01 ee 28 f8 4f 54 85 39 05 67 e9 39 c2 b5 86 01 0b 63 a6 9e c9 2c ab 53 5d c9 6a 8c 71 91 36 02>,
       type: 0,
       purpose: 0,
       readOnly: false,
       securityLevel: 2
-    },
-    {
-      id: 2,
-      data: <Buffer 03 54 3f bf 49 1c 91 f5 b7 18 a8 48 57 2f 3b 12 b9 7e d0 0c 14 b5 4e e4 74 38 b2 0d f7 45 2b f0 87>,
-      type: 0,
-      purpose: 0,
-      readOnly: false,
-      disabledAt: 1684331343721,
-      securityLevel: 1
     }
   ]
 }
 ```
 ```json Response (gRPCurl)
 {
-  "identity": "AaRiaWRYIK2Vk9Gzo/qyA2A+MkLUf6Av9kOASbTGKvtKtmJWItiFZ2JhbGFuY2UaMYiTP2hyZXZpc2lvbgJqcHVibGljS2V5c4OmYmlkAGRkYXRhWCEC4dBlRh1sBx7+cz/+iXiXxyDQWNw8P4NFLfJZUtbGAppkdHlwZQBncHVycG9zZQBocmVhZE9ubHn0bXNlY3VyaXR5TGV2ZWwApmJpZAFkZGF0YVghAvzo827Gg6NoOP1I0IbdNH/frRMcGyZ9RTdRoWqEOXqzZHR5cGUAZ3B1cnBvc2UAaHJlYWRPbmx59G1zZWN1cml0eUxldmVsAqdiaWQCZGRhdGFYIQNUP79JHJH1txioSFcvOxK5ftAMFLVO5HQ4sg33RSvwh2R0eXBlAGdwdXJwb3NlAGhyZWFkT25sefRqZGlzYWJsZWRBdBsAAAGIKfivaW1zZWN1cml0eUxldmVsAQ==",
+  "identity": "AaRiaWRYIDASwZuY7AAzrds2zWS39RBnDyo1GkMEtfaZQUQobv2sZ2JhbGFuY2UbAAAAATk8g3ZocmV2aXNpb24AanB1YmxpY0tleXOCpmJpZABkZGF0YVghAsi0dHtSjKxf3femzGNwLuBO19EzKQTghRA0PqANzlRqZHR5cGUAZ3B1cnBvc2UAaHJlYWRPbmx59G1zZWN1cml0eUxldmVsAKZiaWQBZGRhdGFYIQIB7ij4T1SFOQVn6TnCtYYBC2Omnsksq1NdyWqMcZE2AmR0eXBlAGdwdXJwb3NlAGhyZWFkT25sefRtc2VjdXJpdHlMZXZlbAI=",
   "metadata": {
-    "height": "4252",
-    "coreChainLockedHeight": 889434,
-    "timeMs": "1684440574593",
+    "height": "4217",
+    "coreChainLockedHeight": 858833,
+    "timeMs": "1688058824358",
     "protocolVersion": 1
   }
 }
@@ -311,7 +197,7 @@ const DashPlatformProtocol = require('@dashevo/dpp');
 const client = new DAPIClient();
 const dpp = new DashPlatformProtocol();
 
-const publicKeyHash = '67e0b0e3133f5b7caa20e9fd8f2734e33843fd4e';
+const publicKeyHash = 'b8d1591aa74d440e0af9c0be16c55bbc141847f7';
 const publicKeysBuffer = [Buffer.from(publicKeyHash, 'hex')];
 
 dpp.initialize().then(() => {
@@ -336,7 +222,7 @@ dpp.initialize()
       'https://seed-1.testnet.networks.dash.org:1443',
     );
 
-    const publicKeyHash = '67e0b0e3133f5b7caa20e9fd8f2734e33843fd4e';
+    const publicKeyHash = 'b8d1591aa74d440e0af9c0be16c55bbc141847f7';
     const publicKeysBuffer = [Buffer.from(publicKeyHash, 'hex')];
 
     const getIdentitiesByPublicKeyHashesRequest = new GetIdentitiesByPublicKeyHashesRequest();
@@ -351,10 +237,10 @@ dpp.initialize()
   	});
 ```
 ```shell gRPCurl
-## `public_key_hashes` must be represented in base64
+# `public_key_hashes` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
-      "public_key_hashes":"Z+Cw4xM/W3yqIOn9jyc04zhD/U4="
+      "public_key_hashes":"uNFZGqdNRA4K+cC+FsVbvBQYR/c="
     }' \
   seed-1.testnet.networks.dash.org:1443 \
   org.dash.platform.dapi.v0.Platform/getIdentitiesByPublicKeyHashes
@@ -363,14 +249,14 @@ grpcurl -proto protos/platform/v0/platform.proto \
 ```json Response (JavaScript)
 {
   protocolVersion: 1,
-  id: 'CgbpVEz3aVvF4wkLieF8Vj7SRY7E6NVHaQVWhKJ6ChyE',
+  id: '4EfA9Jrvv3nnCFdSf7fad59851iiTRZ6Wcu6YVJ4iSeF',
   publicKeys: [
     {
       id: 0,
       type: 0,
       purpose: 0,
       securityLevel: 0,
-      data: 'AuHQZUYdbAce/nM//ol4l8cg0FjcPD+DRS3yWVLWxgKa',
+      data: 'Asi0dHtSjKxf3femzGNwLuBO19EzKQTghRA0PqANzlRq',
       readOnly: false
     },
     {
@@ -378,32 +264,23 @@ grpcurl -proto protos/platform/v0/platform.proto \
       type: 0,
       purpose: 0,
       securityLevel: 2,
-      data: 'Avzo827Gg6NoOP1I0IbdNH/frRMcGyZ9RTdRoWqEOXqz',
+      data: 'AgHuKPhPVIU5BWfpOcK1hgELY6aeySyrU13JaoxxkTYC',
       readOnly: false
-    },
-    {
-      id: 2,
-      type: 0,
-      purpose: 0,
-      securityLevel: 1,
-      data: 'A1Q/v0kckfW3GKhIVy87Erl+0AwUtU7kdDiyDfdFK/CH',
-      readOnly: false,
-      disabledAt: 1684331343721
     }
   ],
-  balance: 831034175,
-  revision: 2
+  balance: 5255234422,
+  revision: 0
 }
 ```
 ```json Response (gRPCurl)
 {
   "identities": [
-    "AaRiaWRYIK2Vk9Gzo/qyA2A+MkLUf6Av9kOASbTGKvtKtmJWItiFZ2JhbGFuY2UaMYiTP2hyZXZpc2lvbgJqcHVibGljS2V5c4OmYmlkAGRkYXRhWCEC4dBlRh1sBx7+cz/+iXiXxyDQWNw8P4NFLfJZUtbGAppkdHlwZQBncHVycG9zZQBocmVhZE9ubHn0bXNlY3VyaXR5TGV2ZWwApmJpZAFkZGF0YVghAvzo827Gg6NoOP1I0IbdNH/frRMcGyZ9RTdRoWqEOXqzZHR5cGUAZ3B1cnBvc2UAaHJlYWRPbmx59G1zZWN1cml0eUxldmVsAqdiaWQCZGRhdGFYIQNUP79JHJH1txioSFcvOxK5ftAMFLVO5HQ4sg33RSvwh2R0eXBlAGdwdXJwb3NlAGhyZWFkT25sefRqZGlzYWJsZWRBdBsAAAGIKfivaW1zZWN1cml0eUxldmVsAQ=="
+    "AaRiaWRYIDASwZuY7AAzrds2zWS39RBnDyo1GkMEtfaZQUQobv2sZ2JhbGFuY2UbAAAAATk8g3ZocmV2aXNpb24AanB1YmxpY0tleXOCpmJpZABkZGF0YVghAsi0dHtSjKxf3femzGNwLuBO19EzKQTghRA0PqANzlRqZHR5cGUAZ3B1cnBvc2UAaHJlYWRPbmx59G1zZWN1cml0eUxldmVsAKZiaWQBZGRhdGFYIQIB7ij4T1SFOQVn6TnCtYYBC2Omnsksq1NdyWqMcZE2AmR0eXBlAGdwdXJwb3NlAGhyZWFkT25sefRtc2VjdXJpdHlMZXZlbAI="
   ],
   "metadata": {
-    "height": "4252",
-    "coreChainLockedHeight": 889434,
-    "timeMs": "1684440574593",
+    "height": "4216",
+    "coreChainLockedHeight": 858832,
+    "timeMs": "1688058626337",
     "protocolVersion": 1
   }
 }
@@ -474,7 +351,7 @@ platformPromiseClient.getDataContract(getDataContractRequest)
   .catch((e) => console.error(e));
 ```
 ```shell gRPCurl
-## `id` must be represented in base64
+# `id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "id":"5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU="
@@ -733,8 +610,8 @@ platformPromiseClient.getDocuments(getDocumentsRequest)
   .catch((e) => console.error(e));
 ```
 ```shell Request (gRPCurl)
-## Request documents
-## `id` must be represented in base64
+# Request documents
+# `id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "data_contract_id":"5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
@@ -792,124 +669,32 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ** Example Request**
 
+[block:html]
+{
+  "html": "<!--\nJavaScript (dapi-client) example (old)\nconst DAPIClient = require('@dashevo/dapi-client');\nconst DashPlatformProtocol = require('@dashevo/dpp');\nconst crypto = require('crypto');\n\nconst client = new DAPIClient();\nconst dpp = new DashPlatformProtocol();\n\n// Replace with your own state transition object before running\nconst stateTransitionObject = {\n  protocolVersion: 0,\n  type: 0,\n  signature: 'HxAipUsLWQBE++C1suSRNQiQh91rI1LZbblvQhk2erUaIvRneAagxGYYsXXYNvEeO+lBzlF1a9KHGGTHgnO/8Ts=',\n  signaturePublicKeyId: 0,\n  dataContract: {\n    protocolVersion: 0,\n    '$id': 'CMc7RghKkHeHtFdwfSX5Hzy7CUdpCEJnwsbfHdsbmJ32',\n    '$schema': 'https://schema.dash.org/dpp-0-4-0/meta/data-contract',\n    ownerId: '8Z3ps3tNoGoPEDYerUNCd4yi7zDwgBh2ejgSMExxvkfD',\n    documents: {\n      note: {\n        properties: { message: { type: 'string' } },\n        additionalProperties: false,\n      },\n    },\n  },\n  entropy: '+RqUArypdL8f/gCMAo4b6c3CoQvxHzsQG0BdYrT5QT0=',\n};\n\n// Convert signature and entropy to buffer\nstateTransitionObject.signature = Buffer.from(stateTransitionObject.signature, 'base64');\nstateTransitionObject.entropy = Buffer.from(stateTransitionObject.entropy, 'base64');\n\ndpp.stateTransition.createFromObject(stateTransitionObject, { skipValidation: true })\n  .then((stateTransition) => {\n    //  Calculate state transition hash\n    const hash = crypto.createHash('sha256')\n      .update(stateTransition.toBuffer())\n      .digest();\n\n    console.log(`Requesting proof of state transition with hash:\\n\\t${hash.toString('hex')}`);\n\n    client.platform.waitForStateTransitionResult(hash, { prove: true })\n      .then((response) => {\n        console.log(response);\n      });\n  });\n-->\n\n<!--\nJavaScript (dapi-grpc) example (old)\nconst {\n  v0: {\n    PlatformPromiseClient,\n    WaitForStateTransitionResultRequest,\n  },\n} = require('@dashevo/dapi-grpc');\nconst DashPlatformProtocol = require('@dashevo/dpp');\nconst crypto = require('crypto');\n\nconst platformPromiseClient = new PlatformPromiseClient(\n  'https://seed-1.testnet.networks.dash.org:1443',\n);\n\nconst dpp = new DashPlatformProtocol();\n\n// Replace with your own state transition object before running\nconst stateTransitionObject = {\n  protocolVersion: 0,\n  type: 0,\n  signature: 'HxAipUsLWQBE++C1suSRNQiQh91rI1LZbblvQhk2erUaIvRneAagxGYYsXXYNvEeO+lBzlF1a9KHGGTHgnO/8Ts=',\n  signaturePublicKeyId: 0,\n  dataContract: {\n    protocolVersion: 0,\n    '$id': 'CMc7RghKkHeHtFdwfSX5Hzy7CUdpCEJnwsbfHdsbmJ32',\n    '$schema': 'https://schema.dash.org/dpp-0-4-0/meta/data-contract',\n    ownerId: '8Z3ps3tNoGoPEDYerUNCd4yi7zDwgBh2ejgSMExxvkfD',\n    documents: {\n      note: {\n        properties: { message: { type: 'string' } },\n        additionalProperties: false,\n      },\n    },\n  },\n  entropy: '+RqUArypdL8f/gCMAo4b6c3CoQvxHzsQG0BdYrT5QT0=',\n};\n\n// Convert signature and entropy to buffer\nstateTransitionObject.signature = Buffer.from(stateTransitionObject.signature, 'base64');\nstateTransitionObject.entropy = Buffer.from(stateTransitionObject.entropy, 'base64');\n\ndpp.stateTransition.createFromObject(stateTransitionObject, { skipValidation: true })\n  .then((stateTransition) => {\n    //  Calculate state transition hash\n    const hash = crypto.createHash('sha256')\n      .update(stateTransition.toBuffer())\n      .digest();\n\n    const waitForStateTransitionResultRequest = new WaitForStateTransitionResultRequest();\n    waitForStateTransitionResultRequest.setStateTransitionHash(hash);\n    waitForStateTransitionResultRequest.setProve(true);\n\n    console.log(`Requesting proof of state transition with hash:\\n\\t${hash.toString('hex')}`);\n\n    platformPromiseClient.waitForStateTransitionResult(waitForStateTransitionResultRequest)\n      .then((response) => {\n        const rootTreeProof = Buffer.from(response.getProof().getRootTreeProof());\n        const storeTreeProof = Buffer.from(response.getProof().getStoreTreeProof());\n        console.log(`Root tree proof: ${rootTreeProof.toString('hex')}`);\n        console.log(`Store tree proof: ${storeTreeProof.toString('hex')}`);\n      })\n  \t\t.catch((e) => console.error(e));\n  });\n-->\n\n<!--\ngRPCurl example (old)\n# `state_transition_hash` must be represented in base64\n# Replace `state_transition_hash` with your own before running\ngrpcurl -proto protos/platform/v0/platform.proto \\\n  -d '{\n    \"state_transition_hash\":\"wEiwFu9WvAtylrwTph5v0uXQm743N+75C+C9DhmZBkw=\",\n    \"prove\": \"true\"\n    }' \\\n  seed-1.testnet.networks.dash.org:1443 \\\n  org.dash.platform.dapi.v0.Platform/waitForStateTransitionResult\n-->"
+}
+[/block]
+
 ```javascript JavaScript (dapi-client)
 const DAPIClient = require('@dashevo/dapi-client');
-const DashPlatformProtocol = require('@dashevo/dpp');
-const crypto = require('crypto');
 
 const client = new DAPIClient();
-const dpp = new DashPlatformProtocol();
 
-// Replace with your own state transition object before running
-const stateTransitionObject = {
-  protocolVersion: 0,
-  type: 0,
-  signature: 'HxAipUsLWQBE++C1suSRNQiQh91rI1LZbblvQhk2erUaIvRneAagxGYYsXXYNvEeO+lBzlF1a9KHGGTHgnO/8Ts=',
-  signaturePublicKeyId: 0,
-  dataContract: {
-    protocolVersion: 0,
-    '$id': 'CMc7RghKkHeHtFdwfSX5Hzy7CUdpCEJnwsbfHdsbmJ32',
-    '$schema': 'https://schema.dash.org/dpp-0-4-0/meta/data-contract',
-    ownerId: '8Z3ps3tNoGoPEDYerUNCd4yi7zDwgBh2ejgSMExxvkfD',
-    documents: {
-      note: {
-        properties: { message: { type: 'string' } },
-        additionalProperties: false,
-      },
-    },
-  },
-  entropy: '+RqUArypdL8f/gCMAo4b6c3CoQvxHzsQG0BdYrT5QT0=',
-};
-
-// Convert signature and entropy to buffer
-stateTransitionObject.signature = Buffer.from(stateTransitionObject.signature, 'base64');
-stateTransitionObject.entropy = Buffer.from(stateTransitionObject.entropy, 'base64');
-
-dpp.stateTransition.createFromObject(stateTransitionObject, { skipValidation: true })
-  .then((stateTransition) => {
-    //  Calculate state transition hash
-    const hash = crypto.createHash('sha256')
-      .update(stateTransition.toBuffer())
-      .digest();
-
-    console.log(`Requesting proof of state transition with hash:\n\t${hash.toString('hex')}`);
-
-    client.platform.waitForStateTransitionResult(hash, { prove: true })
-      .then((response) => {
-        console.log(response);
-      });
+// Replace <YOUR_STATE_TRANSITION_HASH> with your actual hash
+const hash = <YOUR_STATE_TRANSITION_HASH>;
+client.platform.waitForStateTransitionResult(hash, { prove: true })
+  .then((response) => {
+    console.log(response);
   });
-```
-```javascript JavaScript (dapi-grpc)
-const {
-  v0: {
-    PlatformPromiseClient,
-    WaitForStateTransitionResultRequest,
-  },
-} = require('@dashevo/dapi-grpc');
-const DashPlatformProtocol = require('@dashevo/dpp');
-const crypto = require('crypto');
 
-const platformPromiseClient = new PlatformPromiseClient(
-  'https://seed-1.testnet.networks.dash.org:1443',
-);
-
-const dpp = new DashPlatformProtocol();
-
-// Replace with your own state transition object before running
-const stateTransitionObject = {
-  protocolVersion: 0,
-  type: 0,
-  signature: 'HxAipUsLWQBE++C1suSRNQiQh91rI1LZbblvQhk2erUaIvRneAagxGYYsXXYNvEeO+lBzlF1a9KHGGTHgnO/8Ts=',
-  signaturePublicKeyId: 0,
-  dataContract: {
-    protocolVersion: 0,
-    '$id': 'CMc7RghKkHeHtFdwfSX5Hzy7CUdpCEJnwsbfHdsbmJ32',
-    '$schema': 'https://schema.dash.org/dpp-0-4-0/meta/data-contract',
-    ownerId: '8Z3ps3tNoGoPEDYerUNCd4yi7zDwgBh2ejgSMExxvkfD',
-    documents: {
-      note: {
-        properties: { message: { type: 'string' } },
-        additionalProperties: false,
-      },
-    },
-  },
-  entropy: '+RqUArypdL8f/gCMAo4b6c3CoQvxHzsQG0BdYrT5QT0=',
-};
-
-// Convert signature and entropy to buffer
-stateTransitionObject.signature = Buffer.from(stateTransitionObject.signature, 'base64');
-stateTransitionObject.entropy = Buffer.from(stateTransitionObject.entropy, 'base64');
-
-dpp.stateTransition.createFromObject(stateTransitionObject, { skipValidation: true })
-  .then((stateTransition) => {
-    //  Calculate state transition hash
-    const hash = crypto.createHash('sha256')
-      .update(stateTransition.toBuffer())
-      .digest();
-
-    const waitForStateTransitionResultRequest = new WaitForStateTransitionResultRequest();
-    waitForStateTransitionResultRequest.setStateTransitionHash(hash);
-    waitForStateTransitionResultRequest.setProve(true);
-
-    console.log(`Requesting proof of state transition with hash:\n\t${hash.toString('hex')}`);
-
-    platformPromiseClient.waitForStateTransitionResult(waitForStateTransitionResultRequest)
-      .then((response) => {
-        const rootTreeProof = Buffer.from(response.getProof().getRootTreeProof());
-        const storeTreeProof = Buffer.from(response.getProof().getStoreTreeProof());
-        console.log(`Root tree proof: ${rootTreeProof.toString('hex')}`);
-        console.log(`Store tree proof: ${storeTreeProof.toString('hex')}`);
-      })
-  		.catch((e) => console.error(e));
-  });
 ```
 ```shell Request (gRPCurl)
-## `state_transition_hash` must be represented in base64
-## Replace `state_transition_hash` with your own before running
+# Replace `your_state_transition_hash` with your own before running
+# `your_state_transition_hash` must be represented in base64
+#    Example: wEiwFu9WvAtylrwTph5v0uXQm743N+75C+C9DhmZBkw=
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
-    "state_transition_hash":"wEiwFu9WvAtylrwTph5v0uXQm743N+75C+C9DhmZBkw=",
+    "state_transition_hash":your_state_transition_hash,
     "prove": "true"
     }' \
   seed-1.testnet.networks.dash.org:1443 \
