@@ -67,15 +67,15 @@ An identity's documents are accessible via a query including a where clause like
 ```json 3. References ($ref)
 // NOTE: The `$ref` keyword is temporarily disabled for Platform v0.22.
 {
-  customer: {
-    type: "object",
-    properties: {
-      name: { type: "string" },
-      billing_address: { $ref: "#/$defs/address" },
-      shipping_address: { $ref: "#/$defs/address" }
+  "customer": {
+    "type": "object",
+    "properties": {
+      "name": { "type": "string" },
+      "billing_address": { "$ref": "#/$defs/address" },
+      "shipping_address": { "$ref": "#/$defs/address" }
     },
-    additionalProperties: false
-  },
+    "additionalProperties": false
+  }
 }
 
 /*
@@ -124,14 +124,14 @@ This information will be returned when the document is retrieved.
    "type": "object",
     "properties": {
       "hash": {
-        "type": 'array',
+        "type": "array",
         "byteArray": true,
         "maxItems": 64,
-        "description": 'Store block hashes',
-      },
+        "description": "Store block hashes"
+      }
     },
-    "additionalProperties": false,
-  },
+    "additionalProperties": false
+  }
 }
  
 /*

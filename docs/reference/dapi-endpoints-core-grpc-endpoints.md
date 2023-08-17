@@ -53,7 +53,7 @@ corePromiseClient.client.broadcastTransaction({ transaction: tx.toBuffer() })
 
 ```json
 {
-  transactionId: '552eaf24a60014edcbbb253dbc4dd68766532cab3854b44face051cedcfd578f'
+  "transactionId": "552eaf24a60014edcbbb253dbc4dd68766532cab3854b44face051cedcfd578f"
 }
 ```
 
@@ -119,15 +119,15 @@ grpcurl -proto protos/core/v0/core.proto \
     "name":"test",
     "headersCount":892412,
     "blocksCount":892412,
-    "bestBlockHash":<Buffer 00 00 00 96 7b 75 05 9c ad ff 07 71 89 74 1b 0a 8f f1 77 62 1d 3e 6e 45 e9 32 02 55 19 fe df a9>,
+    "bestBlockHash":"<Buffer 00 00 00 96 7b 75 05 9c ad ff 07 71 89 74 1b 0a 8f f1 77 62 1d 3e 6e 45 e9 32 02 55 19 fe df a9>",
     "difficulty":0.003254173843543036,
-    "chainWork":<Buffer 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 02 d6 8d 0c 89 2a 87 47>,
+    "chainWork":"<Buffer 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 02 d6 8d 0c 89 2a 87 47>",
     "isSynced":true,
     "syncProgress":0.9999992137956843
   },
   "masternode":{
     "status":"READY",
-    "proTxHash":<Buffer 3b 27 b5 ea 14 6a d9 d1 ff 6b c7 14 7e f2 5e f7 33 01 df 98 cc 2c 77 23 67 3c 3a 0f 39 fd b0 7a>,
+    "proTxHash":"<Buffer 3b 27 b5 ea 14 6a d9 d1 ff 6b c7 14 7e f2 5e f7 33 01 df 98 cc 2c 77 23 67 3c 3a 0f 39 fd b0 7a>",
     "posePenalty":0,
     "isSynced":true,
     "syncProgress":1
