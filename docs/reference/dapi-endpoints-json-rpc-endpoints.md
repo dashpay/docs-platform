@@ -27,7 +27,7 @@ Additional information may be found in the [JSON-RPC 2.0 specification](https://
 
 ::::{tab-set-code}
 
-```{code-block} shell
+```shell Curl
 curl -k --request POST \
   --url https://seed-1.testnet.networks.dash.org:1443/ \
   --header 'content-type: application/json' \
@@ -38,7 +38,7 @@ curl -k --request POST \
       "params":{}
     }'
 ```
-```{code-block} javascript
+```javascript JavaScript
 var request = require("request");
 
 var options = {
@@ -54,7 +54,8 @@ request(options, function (error, response, body) {
   console.log(body);
 });
 ```
-```{code-block} nodejs
+```javascript Node
+// Node.js
 var XMLHttpRequest = require('xhr2');
 var data = '{"method":"getBestBlockHash","id":1,"jsonrpc":"2.0"}';
 
@@ -71,7 +72,7 @@ xhr.setRequestHeader("content-type", "application/json");
 
 xhr.send(data);
 ```
-```{code-block} python
+```python Python
 import requests
 import json
 
@@ -89,7 +90,7 @@ response = requests.request("POST", url, data=json.dumps(payload_json), headers=
 
 print(response.text)
 ```
-```{code-block} ruby
+```ruby Ruby
 require 'uri'
 require 'net/http'
 
@@ -109,6 +110,7 @@ request.body = '{
 response = http.request(request)
 puts response.read_body
 ```
+
 ::::
 
 ```json
