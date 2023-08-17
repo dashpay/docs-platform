@@ -4,14 +4,10 @@ The purpose of this tutorial is to walk through the steps necessary to access th
 
 ## Overview
 
-Platform services are provided via a combination of HTTP and gRPC connections to DAPI, and some connections to an Insight API. Although one could interact with DAPI by connecting to these directly, or by using [DAPI-client](https://github.com/dashevo/platform/tree/master/packages/js-dapi-client), the easiest approach is to use the [JavaScript Dash SDK](https://github.com/dashevo/platform/tree/master/packages/js-dash-sdk).
-
-> 📘
->
-> The Dash SDK connects to testnet by default.
-
+Platform services are provided via a combination of HTTP and gRPC connections to DAPI, and some connections to an Insight API. Although one could interact with DAPI by connecting to these directly, or by using [DAPI-client](https://github.com/dashevo/platform/tree/master/packages/js-dapi-client), the easiest approach is to use the [JavaScript Dash SDK](https://github.com/dashevo/platform/tree/master/packages/js-dash-sdk). The Dash SDK connects to the testnet by default.
 
 ## Prerequisites
+
 - An installation of [NodeJS v12 or higher](https://nodejs.org/en/download/)
 
 ## Connect via Dash SDK
@@ -22,7 +18,7 @@ The JavaScript SDK package is available from npmjs.com and can be installed by r
 
 ```shell
 npm install dash
-``` 
+```
 
 ### 2. Connect to Dash Platform
 
@@ -41,7 +37,8 @@ connect()
   .then((d) => console.log('Connected. Best block hash:\n', d))
   .catch((e) => console.error('Something went wrong:\n', e))
   .finally(() => client.disconnect());
-``` 
+```
+
 Once this returns successfully, you're ready to begin developing! See the [Quickstart](../tutorials/introduction.md#quickstart) for recommended next steps. For details on all SDK options and methods, please refer to the [SDK documentation](https://dashevo.github.io/platform/SDK/).
 
 ## Connect to a Devnet
@@ -57,9 +54,7 @@ const Dash = require('dash');
 
 const client = new Dash.Client({
   seeds: [{
-    host: 'seed-1.testnet.networks.dash.org',
-    httpPort: 3000,
-    grpcPort: 3010,
+    host: 'seed-1.testnet.networks.dash.org:1443',
   }],
 });
 
@@ -71,7 +66,7 @@ connect()
   .then((d) => console.log('Connected. Best block hash:\n', d))
   .catch((e) => console.error('Something went wrong:\n', e))
   .finally(() => client.disconnect());
-``` 
+```
 
 ### Connect via Address
 
@@ -95,26 +90,26 @@ connect()
   .then((d) => console.log('Connected. Best block hash:\n', d))
   .catch((e) => console.error('Something went wrong:\n', e))
   .finally(() => client.disconnect());
-``` 
-## Connect Directly to DAPI (Optional) 
+```
+
+## Connect Directly to DAPI (Optional)
 
 > 🚧 Advanced Topic
->
+> 
 > Normally, the Dash SDK, dapi-client, or another library should be used to interact with DAPI. This may be helpful for debugging in some cases, but generally is not required.
-
 
 The example below demonstrates retrieving the hash of the best block hash directly from a DAPI node via command line and several languages:
 
 ```shell
 curl --request POST \
-  --url http://seed-1.testnet.networks.dash.org:3000/ \
+  --url https://seed-1.testnet.networks.dash.org:1443/ \
   --header 'content-type: application/json' \
   --data '{"method":"getBlockHash","id":1,"jsonrpc":"2.0","params":{"height": 100 }}'
 ```
 ```python
 import requests
 
-url = "http://seed-1.testnet.networks.dash.org:3000/"
+url = "https://seed-1.testnet.networks.dash.org:1443/"
 
 payload = "{\"method\":\"getBlockHash\",\"id\":1,\"jsonrpc\":\"2.0\",\"params\":{\"height\":100}}"
 headers = {'content-type': 'application/json'}
@@ -127,7 +122,7 @@ print(response.text)
 require 'uri'
 require 'net/http'
 
-url = URI("http://seed-1.testnet.networks.dash.org:3000/")
+url = URI("https://seed-1.testnet.networks.dash.org:1443/")
 
 http = Net::HTTP.new(url.host, url.port)
 

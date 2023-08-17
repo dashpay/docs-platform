@@ -6,12 +6,12 @@ A comprehensive set of consensus error codes were introduced  in Dash Platform v
 
 The error codes are organized into four categories that each span 1000 error codes. Each category may be further divided into sub-categories. The four categories and their error code ranges are:
 
-| Category                |  Code range | Description                                                                           |
-| ----------------------- | :---------: | ------------------------------------------------------------------------------------- |
-| [Basic](#basic)         | 1000 - 1999 | Errors encountered while validating structure and data                                |
+| Category                       |  Code range | Description                                                                           |
+| ------------------------------ | :---------: | ------------------------------------------------------------------------------------- |
+| [Basic](#basic)                | 1000 - 1999 | Errors encountered while validating structure and data                                |
 | [Signature](#signature-errors) | 2000 - 2999 | Errors encountered while validating identity existence and state transition signature |
 | [Fee](#fee-errors)             | 3000 - 3999 | Errors encountered while validating an identity's balance is sufficient to pay fees   |
-| [State](#state)         | 4000 - 4999 | Errors encounter while validating state transitions against the platform state        |
+| [State](#state)                | 4000 - 4999 | Errors encounter while validating state transitions against the platform state        |
 
 ## Basic
 
