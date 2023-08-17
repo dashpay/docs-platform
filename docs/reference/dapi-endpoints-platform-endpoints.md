@@ -122,25 +122,25 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ```json Response (JavaScript)
 {
-  id: <Buffer 30 12 c1 9b 98 ec 00 33 ad db 36 cd 64 b7 f5 10 67 0f 2a 35 1a 43 04 b5 f6 99 41 44 28 6e fd ac>,
-  balance: 5255234422,
-  revision: 0,
-  publicKeys: [
+  "id": "<Buffer 30 12 c1 9b 98 ec 00 33 ad db 36 cd 64 b7 f5 10 67 0f 2a 35 1a 43 04 b5 f6 99 41 44 28 6e fd ac>",
+  "balance": 5255234422,
+  "revision": 0,
+  "publicKeys": [
     {
-      id: 0,
-      data: <Buffer 02 c8 b4 74 7b 52 8c ac 5f dd f7 a6 cc 63 70 2e e0 4e d7 d1 33 29 04 e0 85 10 34 3e a0 0d ce 54 6a>,
-      type: 0,
-      purpose: 0,
-      readOnly: false,
-      securityLevel: 0
+      "id": 0,
+      "data": "<Buffer 02 c8 b4 74 7b 52 8c ac 5f dd f7 a6 cc 63 70 2e e0 4e d7 d1 33 29 04 e0 85 10 34 3e a0 0d ce 54 6a>",
+      "type": 0,
+      "purpose": 0,
+      "readOnly": false,
+      "securityLevel": 0
     },
     {
-      id: 1,
-      data: <Buffer 02 01 ee 28 f8 4f 54 85 39 05 67 e9 39 c2 b5 86 01 0b 63 a6 9e c9 2c ab 53 5d c9 6a 8c 71 91 36 02>,
-      type: 0,
-      purpose: 0,
-      readOnly: false,
-      securityLevel: 2
+      "id": 1,
+      "data": "<Buffer 02 01 ee 28 f8 4f 54 85 39 05 67 e9 39 c2 b5 86 01 0b 63 a6 9e c9 2c ab 53 5d c9 6a 8c 71 91 36 02>",
+      "type": 0,
+      "purpose": 0,
+      "readOnly": false,
+      "securityLevel": 2
     }
   ]
 }
@@ -177,12 +177,12 @@ grpcurl -proto protos/platform/v0/platform.proto \
 > 
 > ```json
 > {
->   id: 0,
->   type: 0,
->   purpose: 0,
->   securityLevel: 0,
->   data: 'A2GTAJk9eAWkMXVCb+rRKXH99POtR5OaW6zqZl7/yozp',
->   readOnly: false
+>   "id": 0,
+>   "type": 0,
+>   "purpose": 0,
+>   "securityLevel": 0,
+>   "data": "A2GTAJk9eAWkMXVCb+rRKXH99POtR5OaW6zqZl7/yozp",
+>   "readOnly": false
 > }
 > ```
 > 
@@ -248,28 +248,28 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ```json Response (JavaScript)
 {
-  protocolVersion: 1,
-  id: '4EfA9Jrvv3nnCFdSf7fad59851iiTRZ6Wcu6YVJ4iSeF',
-  publicKeys: [
+  "protocolVersion": 1,
+  "id": "4EfA9Jrvv3nnCFdSf7fad59851iiTRZ6Wcu6YVJ4iSeF",
+  "publicKeys": [
     {
-      id: 0,
-      type: 0,
-      purpose: 0,
-      securityLevel: 0,
-      data: 'Asi0dHtSjKxf3femzGNwLuBO19EzKQTghRA0PqANzlRq',
-      readOnly: false
+      "id": 0,
+      "type": 0,
+      "purpose": 0,
+      "securityLevel": 0,
+      "data": "Asi0dHtSjKxf3femzGNwLuBO19EzKQTghRA0PqANzlRq",
+      "readOnly": false
     },
     {
-      id: 1,
-      type: 0,
-      purpose: 0,
-      securityLevel: 2,
-      data: 'AgHuKPhPVIU5BWfpOcK1hgELY6aeySyrU13JaoxxkTYC',
-      readOnly: false
+      "id": 1,
+      "type": 0,
+      "purpose": 0,
+      "securityLevel": 2,
+      "data": "AgHuKPhPVIU5BWfpOcK1hgELY6aeySyrU13JaoxxkTYC",
+      "readOnly": false
     }
   ],
-  balance: 5255234422,
-  revision: 0
+  "balance": 5255234422,
+  "revision": 0
 }
 ```
 ```json Response (gRPCurl)
@@ -362,145 +362,145 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ```json Response (JavaScript)
 {
-  '$id': Buffer(32) [Uint8Array] [
+  "$id": "Buffer(32) [Uint8Array] [
     230, 104, 198,  89, 175, 102, 174, 225,
     231,  44,  24, 109, 222, 123,  91, 126,
      10,  29, 113,  42,   9, 196,  13,  87,
      33, 246,  34, 191,  83, 197,  49,  85
-  ],
-  '$schema': 'https://schema.dash.org/dpp-0-4-0/meta/data-contract',
-  ownerId: Buffer(32) [Uint8Array] [
+  ]",
+  "$schema": "https://schema.dash.org/dpp-0-4-0/meta/data-contract",
+  "ownerId": "Buffer(32) [Uint8Array] [
      48,  18, 193, 155, 152, 236,   0,  51,
     173, 219,  54, 205, 100, 183, 245,  16,
     103,  15,  42,  53,  26,  67,   4, 181,
     246, 153,  65,  68,  40, 110, 253, 172
-  ],
-  version: 1,
-  documents: {
-    domain: {
-      type: 'object',
-      indices: [
+  ]",
+  "version": 1,
+  "documents": {
+    "domain": {
+      "type": "object",
+      "indices": [
         {
-          name: 'parentNameAndLabel',
-          unique: true,
-          properties: [
-            { normalizedParentDomainName: 'asc' },
-            { normalizedLabel: 'asc' }
+          "name": "parentNameAndLabel",
+          "unique": true,
+          "properties": [
+            { "normalizedParentDomainName": "asc" },
+            { "normalizedLabel": "asc" }
           ]
         },
         {
-          name: 'dashIdentityId',
-          unique: true,
-          properties: [ { 'records.dashUniqueIdentityId': 'asc' } ]
+          "name": "dashIdentityId",
+          "unique": true,
+          "properties": [ { "records.dashUniqueIdentityId": "asc" } ]
         },
         {
-          name: 'dashAlias',
-          properties: [ { 'records.dashAliasIdentityId': 'asc' } ]
+          "name": "dashAlias",
+          "properties": [ { "records.dashAliasIdentityId": "asc" } ]
         }
       ],
-      '$comment': "In order to register a domain you need to create a preorder. The preorder step is needed to prevent man-in-the-middle attacks. normalizedLabel + '.' + normalizedParentDomain must not be longer than 253 chars length as defined by RFC 1035. Domain documents are immutable: modification and deletion are restricted",
-      required: [
-        'label',
-        'normalizedLabel',
-        'normalizedParentDomainName',
-        'preorderSalt',
-        'records',
-        'subdomainRules'
+      "$comment": "In order to register a domain you need to create a preorder. The preorder step is needed to prevent man-in-the-middle attacks. normalizedLabel + '.' + normalizedParentDomain must not be longer than 253 chars length as defined by RFC 1035. Domain documents are immutable: modification and deletion are restricted",
+      "required": [
+        "label",
+        "normalizedLabel",
+        "normalizedParentDomainName",
+        "preorderSalt",
+        "records",
+        "subdomainRules"
       ],
-      properties: {
-        label: {
-          type: 'string',
-          pattern: '^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]$',
-          maxLength: 63,
-          minLength: 3,
-          description: "Domain label. e.g. 'Bob'."
+      "properties": {
+        "label": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]$",
+          "maxLength": 63,
+          "minLength": 3,
+          "description": "Domain label. e.g. 'Bob'."
         },
-        records: {
-          type: 'object',
-          '$comment': 'Constraint with max and min properties ensure that only one identity record is used - either a `dashUniqueIdentityId` or a `dashAliasIdentityId`',
-          properties: {
-            dashAliasIdentityId: {
-              type: 'array',
-              '$comment': 'Must be equal to the document owner',
-              maxItems: 32,
-              minItems: 32,
-              byteArray: true,
-              description: 'Identity ID to be used to create alias names for the Identity',
-              contentMediaType: 'application/x.dash.dpp.identifier'
+        "records": {
+          "type": "object",
+          "$comment": "Constraint with max and min properties ensure that only one identity record is used - either a `dashUniqueIdentityId` or a `dashAliasIdentityId`",
+          "properties": {
+            "dashAliasIdentityId": {
+              "type": "array",
+              "$comment": "Must be equal to the document owner",
+              "maxItems": 32,
+              "minItems": 32,
+              "byteArray": true,
+              "description": "Identity ID to be used to create alias names for the Identity",
+              "contentMediaType": "application/x.dash.dpp.identifier"
             },
-            dashUniqueIdentityId: {
-              type: 'array',
-              '$comment': 'Must be equal to the document owner',
-              maxItems: 32,
-              minItems: 32,
-              byteArray: true,
-              description: 'Identity ID to be used to create the primary name the Identity',
-              contentMediaType: 'application/x.dash.dpp.identifier'
+            "dashUniqueIdentityId": {
+              "type": "array",
+              "$comment": "Must be equal to the document owner",
+              "maxItems": 32,
+              "minItems": 32,
+              "byteArray": true,
+              "description": "Identity ID to be used to create the primary name the Identity",
+              "contentMediaType": "application/x.dash.dpp.identifier"
             }
           },
-          maxProperties: 1,
-          minProperties: 1,
-          additionalProperties: false
+          "maxProperties": 1,
+          "minProperties": 1,
+          "additionalProperties": false
         },
-        preorderSalt: {
-          type: 'array',
-          maxItems: 32,
-          minItems: 32,
-          byteArray: true,
-          description: 'Salt used in the preorder document'
+        "preorderSalt": {
+          "type": "array",
+          "maxItems": 32,
+          "minItems": 32,
+          "byteArray": true,
+          "description": "Salt used in the preorder document"
         },
-        subdomainRules: {
-          type: 'object',
-          required: [ 'allowSubdomains' ],
-          properties: {
-            allowSubdomains: {
-              type: 'boolean',
-              '$comment': 'Only the domain owner is allowed to create subdomains for non top-level domains',
-              description: 'This option defines who can create subdomains: true - anyone; false - only the domain owner'
+        "subdomainRules": {
+          "type": "object",
+          "required": [ "allowSubdomains" ],
+          "properties": {
+            "allowSubdomains": {
+              "type": "boolean",
+              "$comment": "Only the domain owner is allowed to create subdomains for non top-level domains",
+              "description": "This option defines who can create subdomains: true - anyone; false - only the domain owner"
             }
           },
-          description: 'Subdomain rules allow domain owners to define rules for subdomains',
-          additionalProperties: false
+          "description": "Subdomain rules allow domain owners to define rules for subdomains",
+          "additionalProperties": false
         },
-        normalizedLabel: {
-          type: 'string',
-          pattern: '^[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$',
-          '$comment': 'Must be equal to the label in lowercase. This property will be deprecated due to case insensitive indices',
-          maxLength: 63,
-          description: "Domain label in lowercase for case-insensitive uniqueness validation. e.g. 'bob'"
+        "normalizedLabel": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$",
+          "$comment": "Must be equal to the label in lowercase. This property will be deprecated due to case insensitive indices",
+          "maxLength": 63,
+          "description": "Domain label in lowercase for case-insensitive uniqueness validation. e.g. 'bob'"
         },
-        normalizedParentDomainName: {
-          type: 'string',
-          pattern: '^$|^[a-z0-9][a-z0-9-\\.]{0,61}[a-z0-9]$',
-          '$comment': 'Must either be equal to an existing domain or empty to create a top level domain. Only the data contract owner can create top level domains.',
-          maxLength: 63,
-          minLength: 0,
-          description: "A full parent domain name in lowercase for case-insensitive uniqueness validation. e.g. 'dash'"
+        "normalizedParentDomainName": {
+          "type": "string",
+          "pattern": "^$|^[a-z0-9][a-z0-9-\\.]{0,61}[a-z0-9]$",
+          "$comment": "Must either be equal to an existing domain or empty to create a top level domain. Only the data contract owner can create top level domains.",
+          "maxLength": 63,
+          "minLength": 0,
+          "description": "A full parent domain name in lowercase for case-insensitive uniqueness validation. e.g. 'dash'"
         }
       },
-      additionalProperties: false
+      "additionalProperties": false
     },
-    preorder: {
-      type: 'object',
-      indices: [
+    "preorder": {
+      "type": "object",
+      "indices": [
         {
-          name: 'saltedHash',
-          unique: true,
-          properties: [ { saltedDomainHash: 'asc' } ]
+          "name": "saltedHash",
+          "unique": true,
+          "properties": [ { "saltedDomainHash": "asc" } ]
         }
       ],
-      '$comment': 'Preorder documents are immutable: modification and deletion are restricted',
-      required: [ 'saltedDomainHash' ],
-      properties: {
-        saltedDomainHash: {
-          type: 'array',
-          maxItems: 32,
-          minItems: 32,
-          byteArray: true,
-          description: 'Double sha-256 of the concatenation of a 32 byte random salt and a normalized domain name'
+      "$comment": "Preorder documents are immutable: modification and deletion are restricted",
+      "required": [ "saltedDomainHash" ],
+      "properties": {
+        "saltedDomainHash": {
+          "type": "array",
+          "maxItems": 32,
+          "minItems": 32,
+          "byteArray": true,
+          "description": "Double sha-256 of the concatenation of a 32 byte random salt and a normalized domain name"
         }
       },
-      additionalProperties: false
+      "additionalProperties": false
     }
   }
 }
@@ -624,19 +624,19 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ```json Response (JavaScript)
 {
-  '$id': <Buffer 01 a0 7c 69 43 82 cf fe 93 97 be c9 f4 be cd 67 81 8f 60 d2 a7 56 48 08 11 80 49 84 0b 2e 2c 5d>,
-  '$type': 'domain',
-  label: 'Dash01',
-  records: {
-    dashUniqueIdentityId: <Buffer f5 50 ed 37 1a 12 3f 54 00 59 31 84 f7 f7 37 f1 f4 b1 5d 05 6f 9c a8 0e 5f 00 52 82 08 77 7c 4a>
+  "$id": "<Buffer 01 a0 7c 69 43 82 cf fe 93 97 be c9 f4 be cd 67 81 8f 60 d2 a7 56 48 08 11 80 49 84 0b 2e 2c 5d>",
+  "$type": "domain",
+  "label": "Dash01",
+  "records": {
+    "dashUniqueIdentityId": "<Buffer f5 50 ed 37 1a 12 3f 54 00 59 31 84 f7 f7 37 f1 f4 b1 5d 05 6f 9c a8 0e 5f 00 52 82 08 77 7c 4a>"
   },
-  '$ownerId': <Buffer f5 50 ed 37 1a 12 3f 54 00 59 31 84 f7 f7 37 f1 f4 b1 5d 05 6f 9c a8 0e 5f 00 52 82 08 77 7c 4a>,
-  '$revision': 1,
-  preorderSalt: <Buffer 2c b4 1b e9 f4 40 03 9b 47 2f 31 74 46 df 7f 4f 43 fe 14 80 be ca 84 0d 63 0f a6 65 23 b9 9c a1>,
-  subdomainRules: { allowSubdomains: false },
-  '$dataContractId': <Buffer e6 68 c6 59 af 66 ae e1 e7 2c 18 6d de 7b 5b 7e 0a 1d 71 2a 09 c4 0d 57 21 f6 22 bf 53 c5 31 55>,
-  normalizedLabel: 'dash01',
-  normalizedParentDomainName: 'dash'
+  "$ownerId": "<Buffer f5 50 ed 37 1a 12 3f 54 00 59 31 84 f7 f7 37 f1 f4 b1 5d 05 6f 9c a8 0e 5f 00 52 82 08 77 7c 4a>",
+  "$revision": 1,
+  "preorderSalt": "<Buffer 2c b4 1b e9 f4 40 03 9b 47 2f 31 74 46 df 7f 4f 43 fe 14 80 be ca 84 0d 63 0f a6 65 23 b9 9c a1>",
+  "subdomainRules": { "allowSubdomains": false },
+  "$dataContractId": "<Buffer e6 68 c6 59 af 66 ae e1 e7 2c 18 6d de 7b 5b 7e 0a 1d 71 2a 09 c4 0d 57 21 f6 22 bf 53 c5 31 55>",
+  "normalizedLabel": "dash01",
+  "normalizedParentDomainName": "dash"
 }
 ```
 ```json Response (gRPCurl)

@@ -59,18 +59,18 @@ The values returned by `.getData()` (and also shown in the console.dir() `data` 
 
 ```json .toJSON()
 {
-  '$protocolVersion': 0,
-  '$id': '6LpCQhkXYV2vqkv1UWByew4xQ6BaxxnGkhfMZsN3SV9u',
-  '$type': 'note',
-  '$dataContractId': '3iaEhdyAVbmSjd59CT6SCrqPjfAfMdPTc8ksydgqSaWE',
-  '$ownerId': 'CEPMcuBgAWeaCXiP2gJJaStANRHW6b158UPvL1C8zw2W',
-  '$revision': 1,
-  message: 'Tutorial CI Test @ Fri, 23 Jul 2021 13:12:13 GMT'
+  "$protocolVersion": 0,
+  "$id": "6LpCQhkXYV2vqkv1UWByew4xQ6BaxxnGkhfMZsN3SV9u",
+  "$type": "note",
+  "$dataContractId": "3iaEhdyAVbmSjd59CT6SCrqPjfAfMdPTc8ksydgqSaWE",
+  "$ownerId": "CEPMcuBgAWeaCXiP2gJJaStANRHW6b158UPvL1C8zw2W",
+  "$revision": 1,
+  "message": "Tutorial CI Test @ Fri, 23 Jul 2021 13:12:13 GMT"
 }
 ```
 ```json .getData()
 {
-  'Tutorial CI Test @ Fri, 23 Jul 2021 13:12:13 GMT'
+  "Tutorial CI Test @ Fri, 23 Jul 2021 13:12:13 GMT"
 }
 ```
 ```text .data.message
