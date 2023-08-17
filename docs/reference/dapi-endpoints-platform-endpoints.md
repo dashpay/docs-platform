@@ -61,7 +61,10 @@ Broadcasts a [state transition](../explanations/platform-protocol-state-transiti
 
 ** Example Request and Response **
 
+::::{tab-set-code}
+
 ```javascript JavaScript (dapi-client)
+// JavaScript (dapi-client)
 const DAPIClient = require('@dashevo/dapi-client');
 const Identifier = require('@dashevo/dpp/lib/Identifier');
 const cbor = require('cbor');
@@ -81,6 +84,7 @@ client.platform.getIdentity(identityId).then((response) => {
 });
 ```
 ```javascript JavaScript (dapi-grpc)
+// JavaScript (dapi-grpc)
 const {
   v0: { PlatformPromiseClient, GetIdentityRequest },
 } = require('@dashevo/dapi-grpc');
@@ -111,6 +115,7 @@ platformPromiseClient.getIdentity(getIdentityRequest)
   .catch((e) => console.error(e));
 ```
 ```shell gRPCurl
+# gRPCurl
 # `id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
@@ -120,7 +125,12 @@ grpcurl -proto protos/platform/v0/platform.proto \
   org.dash.platform.dapi.v0.Platform/getIdentity
 ```
 
+::::
+
+::::{tab-set-code}
+
 ```json Response (JavaScript)
+// Response (JavaScript)
 {
   "id": "<Buffer 30 12 c1 9b 98 ec 00 33 ad db 36 cd 64 b7 f5 10 67 0f 2a 35 1a 43 04 b5 f6 99 41 44 28 6e fd ac>",
   "balance": 5255234422,
@@ -146,6 +156,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 }
 ```
 ```json Response (gRPCurl)
+// Response (gRPCurl)
 {
   "identity": "AaRiaWRYIDASwZuY7AAzrds2zWS39RBnDyo1GkMEtfaZQUQobv2sZ2JhbGFuY2UbAAAAATk8g3ZocmV2aXNpb24AanB1YmxpY0tleXOCpmJpZABkZGF0YVghAsi0dHtSjKxf3femzGNwLuBO19EzKQTghRA0PqANzlRqZHR5cGUAZ3B1cnBvc2UAaHJlYWRPbmx59G1zZWN1cml0eUxldmVsAKZiaWQBZGRhdGFYIQIB7ij4T1SFOQVn6TnCtYYBC2Omnsksq1NdyWqMcZE2AmR0eXBlAGdwdXJwb3NlAGhyZWFkT25sefRtc2VjdXJpdHlMZXZlbAI=",
   "metadata": {
@@ -156,6 +167,8 @@ grpcurl -proto protos/platform/v0/platform.proto \
   }
 }
 ```
+
+::::
 
 ### getIdentitiesByPublicKeyHashes
 
@@ -190,7 +203,10 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ** Example Request and Response **
 
+::::{tab-set-code}
+
 ```javascript JavaScript (dapi-client)
+// JavaScript (dapi-client)
 const DAPIClient = require('@dashevo/dapi-client');
 const DashPlatformProtocol = require('@dashevo/dpp');
 
@@ -209,6 +225,7 @@ dpp.initialize().then(() => {
 });
 ```
 ```javascript JavaScript (dapi-grpc)
+// JavaScript (dapi-grpc)
 const {
   v0: { PlatformPromiseClient, GetIdentitiesByPublicKeyHashesRequest },
 } = require('@dashevo/dapi-grpc');
@@ -237,6 +254,7 @@ dpp.initialize()
   	});
 ```
 ```shell gRPCurl
+# gRPCurl
 # `public_key_hashes` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
@@ -246,7 +264,12 @@ grpcurl -proto protos/platform/v0/platform.proto \
   org.dash.platform.dapi.v0.Platform/getIdentitiesByPublicKeyHashes
 ```
 
+::::
+
+::::{tab-set-code}
+
 ```json Response (JavaScript)
+// Response (JavaScript)
 {
   "protocolVersion": 1,
   "id": "4EfA9Jrvv3nnCFdSf7fad59851iiTRZ6Wcu6YVJ4iSeF",
@@ -273,6 +296,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 }
 ```
 ```json Response (gRPCurl)
+// Response (gRPCurl)
 {
   "identities": [
     "AaRiaWRYIDASwZuY7AAzrds2zWS39RBnDyo1GkMEtfaZQUQobv2sZ2JhbGFuY2UbAAAAATk8g3ZocmV2aXNpb24AanB1YmxpY0tleXOCpmJpZABkZGF0YVghAsi0dHtSjKxf3femzGNwLuBO19EzKQTghRA0PqANzlRqZHR5cGUAZ3B1cnBvc2UAaHJlYWRPbmx59G1zZWN1cml0eUxldmVsAKZiaWQBZGRhdGFYIQIB7ij4T1SFOQVn6TnCtYYBC2Omnsksq1NdyWqMcZE2AmR0eXBlAGdwdXJwb3NlAGhyZWFkT25sefRtc2VjdXJpdHlMZXZlbAI="
@@ -285,6 +309,8 @@ grpcurl -proto protos/platform/v0/platform.proto \
   }
 }
 ```
+
+::::
 
 ### getDataContract
 
@@ -302,7 +328,10 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ** Example Request and Response **
 
+::::{tab-set-code}
+
 ```javascript JavaScript (dapi-client)
+// JavaScript (dapi-client)
 const DAPIClient = require('@dashevo/dapi-client');
 const Identifier = require('@dashevo/dpp/lib/Identifier');
 const cbor = require('cbor');
@@ -322,6 +351,7 @@ client.platform.getDataContract(contractId).then((response) => {
 });
 ```
 ```javascript JavaScript (dapi-grpc)
+// JavaScript (dapi-grpc)
 const {
   v0: { PlatformPromiseClient, GetDataContractRequest },
 } = require('@dashevo/dapi-grpc');
@@ -351,6 +381,7 @@ platformPromiseClient.getDataContract(getDataContractRequest)
   .catch((e) => console.error(e));
 ```
 ```shell gRPCurl
+# gRPCurl
 # `id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
@@ -360,7 +391,12 @@ grpcurl -proto protos/platform/v0/platform.proto \
   org.dash.platform.dapi.v0.Platform/getDataContract
 ```
 
+::::
+
+::::{tab-set-code}
+
 ```json Response (JavaScript)
+// Response (JavaScript)
 {
   "$id": "Buffer(32) [Uint8Array] [
     230, 104, 198,  89, 175, 102, 174, 225,
@@ -506,6 +542,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 }
 ```
 ```json Response (gRPCurl)
+// Response (gRPCurl)
 {
   "dataContract": "AaVjJGlkWCDmaMZZr2au4ecsGG3ee1t+Ch1xKgnEDVch9iK/U8UxVWckc2NoZW1heDRodHRwczovL3NjaGVtYS5kYXNoLm9yZy9kcHAtMC00LTAvbWV0YS9kYXRhLWNvbnRyYWN0Z293bmVySWRYIDASwZuY7AAzrds2zWS39RBnDyo1GkMEtfaZQUQobv2sZ3ZlcnNpb24BaWRvY3VtZW50c6JmZG9tYWlupmR0eXBlZm9iamVjdGdpbmRpY2Vzg6NkbmFtZXJwYXJlbnROYW1lQW5kTGFiZWxmdW5pcXVl9Wpwcm9wZXJ0aWVzgqF4Gm5vcm1hbGl6ZWRQYXJlbnREb21haW5OYW1lY2FzY6Fvbm9ybWFsaXplZExhYmVsY2FzY6NkbmFtZW5kYXNoSWRlbnRpdHlJZGZ1bmlxdWX1anByb3BlcnRpZXOBoXgccmVjb3Jkcy5kYXNoVW5pcXVlSWRlbnRpdHlJZGNhc2OiZG5hbWVpZGFzaEFsaWFzanByb3BlcnRpZXOBoXgbcmVjb3Jkcy5kYXNoQWxpYXNJZGVudGl0eUlkY2FzY2gkY29tbWVudHkBN0luIG9yZGVyIHRvIHJlZ2lzdGVyIGEgZG9tYWluIHlvdSBuZWVkIHRvIGNyZWF0ZSBhIHByZW9yZGVyLiBUaGUgcHJlb3JkZXIgc3RlcCBpcyBuZWVkZWQgdG8gcHJldmVudCBtYW4taW4tdGhlLW1pZGRsZSBhdHRhY2tzLiBub3JtYWxpemVkTGFiZWwgKyAnLicgKyBub3JtYWxpemVkUGFyZW50RG9tYWluIG11c3Qgbm90IGJlIGxvbmdlciB0aGFuIDI1MyBjaGFycyBsZW5ndGggYXMgZGVmaW5lZCBieSBSRkMgMTAzNS4gRG9tYWluIGRvY3VtZW50cyBhcmUgaW1tdXRhYmxlOiBtb2RpZmljYXRpb24gYW5kIGRlbGV0aW9uIGFyZSByZXN0cmljdGVkaHJlcXVpcmVkhmVsYWJlbG9ub3JtYWxpemVkTGFiZWx4Gm5vcm1hbGl6ZWRQYXJlbnREb21haW5OYW1lbHByZW9yZGVyU2FsdGdyZWNvcmRzbnN1YmRvbWFpblJ1bGVzanByb3BlcnRpZXOmZWxhYmVspWR0eXBlZnN0cmluZ2dwYXR0ZXJueCpeW2EtekEtWjAtOV1bYS16QS1aMC05LV17MCw2MX1bYS16QS1aMC05XSRpbWF4TGVuZ3RoGD9pbWluTGVuZ3RoA2tkZXNjcmlwdGlvbngZRG9tYWluIGxhYmVsLiBlLmcuICdCb2InLmdyZWNvcmRzpmR0eXBlZm9iamVjdGgkY29tbWVudHiQQ29uc3RyYWludCB3aXRoIG1heCBhbmQgbWluIHByb3BlcnRpZXMgZW5zdXJlIHRoYXQgb25seSBvbmUgaWRlbnRpdHkgcmVjb3JkIGlzIHVzZWQgLSBlaXRoZXIgYSBgZGFzaFVuaXF1ZUlkZW50aXR5SWRgIG9yIGEgYGRhc2hBbGlhc0lkZW50aXR5SWRganByb3BlcnRpZXOic2Rhc2hBbGlhc0lkZW50aXR5SWSnZHR5cGVlYXJyYXloJGNvbW1lbnR4I011c3QgYmUgZXF1YWwgdG8gdGhlIGRvY3VtZW50IG93bmVyaG1heEl0ZW1zGCBobWluSXRlbXMYIGlieXRlQXJyYXn1a2Rlc2NyaXB0aW9ueD1JZGVudGl0eSBJRCB0byBiZSB1c2VkIHRvIGNyZWF0ZSBhbGlhcyBuYW1lcyBmb3IgdGhlIElkZW50aXR5cGNvbnRlbnRNZWRpYVR5cGV4IWFwcGxpY2F0aW9uL3guZGFzaC5kcHAuaWRlbnRpZmllcnRkYXNoVW5pcXVlSWRlbnRpdHlJZKdkdHlwZWVhcnJheWgkY29tbWVudHgjTXVzdCBiZSBlcXVhbCB0byB0aGUgZG9jdW1lbnQgb3duZXJobWF4SXRlbXMYIGhtaW5JdGVtcxggaWJ5dGVBcnJhefVrZGVzY3JpcHRpb254PklkZW50aXR5IElEIHRvIGJlIHVzZWQgdG8gY3JlYXRlIHRoZSBwcmltYXJ5IG5hbWUgdGhlIElkZW50aXR5cGNvbnRlbnRNZWRpYVR5cGV4IWFwcGxpY2F0aW9uL3guZGFzaC5kcHAuaWRlbnRpZmllcm1tYXhQcm9wZXJ0aWVzAW1taW5Qcm9wZXJ0aWVzAXRhZGRpdGlvbmFsUHJvcGVydGllc/RscHJlb3JkZXJTYWx0pWR0eXBlZWFycmF5aG1heEl0ZW1zGCBobWluSXRlbXMYIGlieXRlQXJyYXn1a2Rlc2NyaXB0aW9ueCJTYWx0IHVzZWQgaW4gdGhlIHByZW9yZGVyIGRvY3VtZW50bnN1YmRvbWFpblJ1bGVzpWR0eXBlZm9iamVjdGhyZXF1aXJlZIFvYWxsb3dTdWJkb21haW5zanByb3BlcnRpZXOhb2FsbG93U3ViZG9tYWluc6NkdHlwZWdib29sZWFuaCRjb21tZW50eE9Pbmx5IHRoZSBkb21haW4gb3duZXIgaXMgYWxsb3dlZCB0byBjcmVhdGUgc3ViZG9tYWlucyBmb3Igbm9uIHRvcC1sZXZlbCBkb21haW5za2Rlc2NyaXB0aW9ueFtUaGlzIG9wdGlvbiBkZWZpbmVzIHdobyBjYW4gY3JlYXRlIHN1YmRvbWFpbnM6IHRydWUgLSBhbnlvbmU7IGZhbHNlIC0gb25seSB0aGUgZG9tYWluIG93bmVya2Rlc2NyaXB0aW9ueEJTdWJkb21haW4gcnVsZXMgYWxsb3cgZG9tYWluIG93bmVycyB0byBkZWZpbmUgcnVsZXMgZm9yIHN1YmRvbWFpbnN0YWRkaXRpb25hbFByb3BlcnRpZXP0b25vcm1hbGl6ZWRMYWJlbKVkdHlwZWZzdHJpbmdncGF0dGVybnghXlthLXowLTldW2EtejAtOS1dezAsNjF9W2EtejAtOV0kaCRjb21tZW50eGlNdXN0IGJlIGVxdWFsIHRvIHRoZSBsYWJlbCBpbiBsb3dlcmNhc2UuIFRoaXMgcHJvcGVydHkgd2lsbCBiZSBkZXByZWNhdGVkIGR1ZSB0byBjYXNlIGluc2Vuc2l0aXZlIGluZGljZXNpbWF4TGVuZ3RoGD9rZGVzY3JpcHRpb254UERvbWFpbiBsYWJlbCBpbiBsb3dlcmNhc2UgZm9yIGNhc2UtaW5zZW5zaXRpdmUgdW5pcXVlbmVzcyB2YWxpZGF0aW9uLiBlLmcuICdib2IneBpub3JtYWxpemVkUGFyZW50RG9tYWluTmFtZaZkdHlwZWZzdHJpbmdncGF0dGVybngmXiR8XlthLXowLTldW2EtejAtOS1cLl17MCw2MX1bYS16MC05XSRoJGNvbW1lbnR4jE11c3QgZWl0aGVyIGJlIGVxdWFsIHRvIGFuIGV4aXN0aW5nIGRvbWFpbiBvciBlbXB0eSB0byBjcmVhdGUgYSB0b3AgbGV2ZWwgZG9tYWluLiBPbmx5IHRoZSBkYXRhIGNvbnRyYWN0IG93bmVyIGNhbiBjcmVhdGUgdG9wIGxldmVsIGRvbWFpbnMuaW1heExlbmd0aBg/aW1pbkxlbmd0aABrZGVzY3JpcHRpb254XkEgZnVsbCBwYXJlbnQgZG9tYWluIG5hbWUgaW4gbG93ZXJjYXNlIGZvciBjYXNlLWluc2Vuc2l0aXZlIHVuaXF1ZW5lc3MgdmFsaWRhdGlvbi4gZS5nLiAnZGFzaCd0YWRkaXRpb25hbFByb3BlcnRpZXP0aHByZW9yZGVypmR0eXBlZm9iamVjdGdpbmRpY2VzgaNkbmFtZWpzYWx0ZWRIYXNoZnVuaXF1ZfVqcHJvcGVydGllc4GhcHNhbHRlZERvbWFpbkhhc2hjYXNjaCRjb21tZW50eEpQcmVvcmRlciBkb2N1bWVudHMgYXJlIGltbXV0YWJsZTogbW9kaWZpY2F0aW9uIGFuZCBkZWxldGlvbiBhcmUgcmVzdHJpY3RlZGhyZXF1aXJlZIFwc2FsdGVkRG9tYWluSGFzaGpwcm9wZXJ0aWVzoXBzYWx0ZWREb21haW5IYXNopWR0eXBlZWFycmF5aG1heEl0ZW1zGCBobWluSXRlbXMYIGlieXRlQXJyYXn1a2Rlc2NyaXB0aW9ueFlEb3VibGUgc2hhLTI1NiBvZiB0aGUgY29uY2F0ZW5hdGlvbiBvZiBhIDMyIGJ5dGUgcmFuZG9tIHNhbHQgYW5kIGEgbm9ybWFsaXplZCBkb21haW4gbmFtZXRhZGRpdGlvbmFsUHJvcGVydGllc/Q=",
   "metadata": {
@@ -516,6 +553,8 @@ grpcurl -proto protos/platform/v0/platform.proto \
   }
 }
 ```
+
+::::
 
 ### getDocuments
 
@@ -548,7 +587,10 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ** Example Request and Response **
 
+::::{tab-set-code}
+
 ```javascript JavaScript (dapi-client)
+// JavaScript (dapi-client)
 const DAPIClient = require('@dashevo/dapi-client');
 const Identifier = require('@dashevo/dpp/lib/Identifier');
 const cbor = require('cbor');
@@ -570,6 +612,7 @@ client.platform.getDocuments(contractId, 'domain', { limit: 10 }).then((response
 });
 ```
 ```javascript JavaScript (dapi-grpc)
+// JavaScript (dapi-grpc)
 const {
   v0: { PlatformPromiseClient, GetDocumentsRequest },
 } = require('@dashevo/dapi-grpc');
@@ -610,6 +653,7 @@ platformPromiseClient.getDocuments(getDocumentsRequest)
   .catch((e) => console.error(e));
 ```
 ```shell Request (gRPCurl)
+# gRPCurl
 # Request documents
 # `id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
@@ -622,7 +666,12 @@ grpcurl -proto protos/platform/v0/platform.proto \
   org.dash.platform.dapi.v0.Platform/getDocuments
 ```
 
+::::
+
+::::{tab-set-code}
+
 ```json Response (JavaScript)
+// Response (JavaScript)
 {
   "$id": "<Buffer 01 a0 7c 69 43 82 cf fe 93 97 be c9 f4 be cd 67 81 8f 60 d2 a7 56 48 08 11 80 49 84 0b 2e 2c 5d>",
   "$type": "domain",
@@ -640,6 +689,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 }
 ```
 ```json Response (gRPCurl)
+// Response (gRPCurl)
 {
   "documents": [
     "AatjJGlkWCACod79ik2tILNnybx5VepoaX2cceXDSogwSgxdWi9zYmUkdHlwZWZkb21haW5lbGFiZWx0Yzg4OWMyM2FiY2ZkYzU3NGNmZWJncmVjb3Jkc6FzZGFzaEFsaWFzSWRlbnRpdHlJZFggMBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/axoJG93bmVySWRYIDASwZuY7AAzrds2zWS39RBnDyo1GkMEtfaZQUQobv2saSRyZXZpc2lvbgFscHJlb3JkZXJTYWx0WCAkJyav6iQVX7hFrUFagKC+xddHsyA5Wo/NdvejXt6aSG5zdWJkb21haW5SdWxlc6FvYWxsb3dTdWJkb21haW5z9W8kZGF0YUNvbnRyYWN0SWRYIOZoxlmvZq7h5ywYbd57W34KHXEqCcQNVyH2Ir9TxTFVb25vcm1hbGl6ZWRMYWJlbHRjODg5YzIzYWJjZmRjNTc0Y2ZlYngabm9ybWFsaXplZFBhcmVudERvbWFpbk5hbWVg"
@@ -652,6 +702,8 @@ grpcurl -proto protos/platform/v0/platform.proto \
   }
 }
 ```
+
+::::
 
 ### waitForStateTransitionResult
 
@@ -675,7 +727,10 @@ grpcurl -proto protos/platform/v0/platform.proto \
 }
 [/block]
 
+::::{tab-set-code}
+
 ```javascript JavaScript (dapi-client)
+// JavaScript (dapi-client)
 const DAPIClient = require('@dashevo/dapi-client');
 
 const client = new DAPIClient();
@@ -689,6 +744,7 @@ client.platform.waitForStateTransitionResult(hash, { prove: true })
 
 ```
 ```shell Request (gRPCurl)
+# gRPCurl
 # Replace `your_state_transition_hash` with your own before running
 # `your_state_transition_hash` must be represented in base64
 #    Example: wEiwFu9WvAtylrwTph5v0uXQm743N+75C+C9DhmZBkw=
@@ -700,6 +756,8 @@ grpcurl -proto protos/platform/v0/platform.proto \
   seed-1.testnet.networks.dash.org:1443 \
   org.dash.platform.dapi.v0.Platform/waitForStateTransitionResult
 ```
+
+::::
 
 [block:html]
 {
