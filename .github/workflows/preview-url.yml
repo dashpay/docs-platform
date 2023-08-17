@@ -20,4 +20,4 @@ jobs:
         with:
           description-message: |
             
-            Preview build: https://dash-docs--${{github.event.pull_request.number}}.org.readthedocs.build/projects/core/en/${{github.event.pull_request.number}}/
+            Preview build: https://dash-docs-platform--${{github.event.pull_request.number}}.org.readthedocs.build/en/${{github.event.pull_request.number}}/
