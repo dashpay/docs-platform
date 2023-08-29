@@ -7,7 +7,10 @@ In this tutorial we will retrieve the name created in the [Register a Name for a
 
 ## Code
 
+::::{tab-set-code}
+
 ```javascript JavaScript - Resolve by Name
+//  Resolve by Name
 const Dash = require('dash');
 
 const client = new Dash.Client({ network: 'testnet' });
@@ -23,6 +26,7 @@ retrieveName()
   .finally(() => client.disconnect());
 ```
 ```javascript JavaScript - Revolve by Record
+// Revolve by Record
 const Dash = require('dash');
 
 const client = new Dash.Client({ network: 'testnet' });
@@ -41,6 +45,7 @@ retrieveNameByRecord()
   .finally(() => client.disconnect());
 ```
 ```javascript JavaScript - Search for Name
+// Search for Name
 const Dash = require('dash');
 
 const client = new Dash.Client({ network: 'testnet' });
@@ -59,6 +64,8 @@ retrieveNameBySearch()
   .catch((e) => console.error('Something went wrong:\n', e))
   .finally(() => client.disconnect());
 ```
+
+::::
 
 ## Example Name
 

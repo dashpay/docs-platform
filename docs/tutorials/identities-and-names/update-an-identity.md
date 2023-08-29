@@ -16,7 +16,10 @@ The two examples below demonstrate updating an existing identity to add a new ke
 > 
 > The current SDK version signs all state transitions with public key id `1`. If it is disabled, the SDK will be unable to use the identity. Future SDK versions will provide a way to also sign using keys added in an identity update.
 
+::::{tab-set-code}
+
 ```javascript Disable identity key
+// Disable identity key
 const Dash = require('dash');
 
 const clientOpts = {
@@ -52,6 +55,7 @@ updateIdentityDisableKey()
   .finally(() => client.disconnect());
 ```
 ```javascript Add identity key
+// Add identity key
 const Dash = require('dash');
 const { IdentityPublicKey, IdentityPublicKeyWithWitness } = require('@dashevo/wasm-dpp');
 
@@ -108,6 +112,8 @@ updateIdentityAddKey()
   .catch((e) => console.error('Something went wrong:\n', e))
   .finally(() => client.disconnect());
 ```
+
+::::
 
 # What's Happening
 

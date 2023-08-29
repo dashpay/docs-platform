@@ -86,7 +86,11 @@ dashmate group status
 
 During development it may be necessary to obtain Dash to create and topup [identities](../../explanations/identity.md). This can be done using the dashmate `wallet:mint` command. First obtain an address to fund via the [Create and Fund a Wallet](../../tutorials/create-and-fund-a-wallet.md) tutorial and then mine Dash to it as shown below:
 
+::::{tab-set-code}
+
 ```shell Mine to provided address
+# Mine to provided address
+
 # Stop the devnet first
 dashmate group stop
 
@@ -97,6 +101,8 @@ dashmate wallet mint 10 --address=<your address> --config=local_seed
 dashmate group start
 ```
 ```shell Mine to new address
+# Mine to new address
+
 # Stop the devnet first
 dashmate group:stop
 
@@ -107,6 +113,8 @@ dashmate wallet:mint 10 --config=local_seed
 # Restart the devnet
 dashmate group:start
 ```
+
+::::
 
 Example output of `dashmate wallet mint 10 --address=yYqfdpePzn2kWtMxr9nz22HBFM7WBRmAqG --config=local_seed`:
 
