@@ -57,7 +57,10 @@ The values returned by `.toJSON()` include the base document properties (prefixe
 
 The values returned by `.getData()` (and also shown in the console.dir() `data` property) represent _only_ the properties defined in the `note` document described by the [tutorial data contract](../../tutorials/contracts-and-documents/register-a-data-contract.md#code).
 
+::::{tab-set-code}
+
 ```json .toJSON()
+//  .toJSON()
 {
   "$protocolVersion": 0,
   "$id": "6LpCQhkXYV2vqkv1UWByew4xQ6BaxxnGkhfMZsN3SV9u",
@@ -69,14 +72,17 @@ The values returned by `.getData()` (and also shown in the console.dir() `data` 
 }
 ```
 ```json .getData()
+// .getData()
 {
   "Tutorial CI Test @ Fri, 23 Jul 2021 13:12:13 GMT"
 }
 ```
 ```text .data.message
+# .data.message
 Tutorial CI Test @ Fri, 23 Jul 2021 13:12:13 GMT
 ```
 ```json console.dir(document)
+// console.dir(document)
 Document {
   dataContract: DataContract {
     protocolVersion: 0,
@@ -124,6 +130,8 @@ Document {
   metadata: Metadata { blockHeight: 526, coreChainLockedHeight: 542795 }
 }
 ```
+
+::::
 
 # What's happening
 

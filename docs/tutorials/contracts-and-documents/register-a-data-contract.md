@@ -26,7 +26,10 @@ The fourth tab shows a data contract requiring the optional `$createdAt` and `$u
 > 
 > Since Platform v0.23, an index can [only use the ascending order](https://github.com/dashevo/platform/pull/435) (`asc`). Future updates will remove this restriction.
 
+::::{tab-set-code}
+
 ```json 1. Minimal contract
+// 1. Minimal contract
 {
   "note": {
     "type": "object",
@@ -40,6 +43,7 @@ The fourth tab shows a data contract requiring the optional `$createdAt` and `$u
 }
 ```
 ```json 2. Indexed
+//  2. Indexed
 {
   "note": {
     "type": "object",
@@ -64,7 +68,8 @@ An identity's documents are accessible via a query including a where clause like
 }
 */
 ```
-```json 3. References ($ref)
+```json
+//  3. References ($ref)
 // NOTE: The `$ref` keyword is temporarily disabled for Platform v0.22.
 {
   "customer": {
@@ -96,7 +101,8 @@ being added to the contract via the contracts `.setDefinitions` method:
 }
 */
 ```
-```json 4. Timestamps
+```json
+//  4. Timestamps
 {
   "note": {
     "type": "object",
@@ -118,7 +124,8 @@ when the document was created or modified.
 This information will be returned when the document is retrieved.
 */
 ```
-```json 5. Binary data
+```json
+// 5. Binary data
 {
  "block": {
    "type": "object",
@@ -140,6 +147,8 @@ array of bytes (e.g. a NodeJS Buffer).
 */
 ```
 
+::::
+
 > 📘 
 > 
 > Please refer to the [data contract reference page](../../reference/data-contracts.md) for more comprehensive details related to contracts and documents.
@@ -148,7 +157,10 @@ array of bytes (e.g. a NodeJS Buffer).
 
 The following examples demonstrate the details of creating contracts using the features [described above](#defining-contract-documents):
 
+::::{tab-set-code}
+
 ```javascript 1. Minimal contract
+// 1. Minimal contract
 const Dash = require('dash');
 
 const clientOpts = {
@@ -199,6 +211,7 @@ registerContract()
   .finally(() => client.disconnect());
 ```
 ```javascript 2. Indexed
+// 2. Indexed
 const Dash = require('dash');
 
 const clientOpts = {
@@ -254,6 +267,7 @@ registerContract()
   .finally(() => client.disconnect());
 ```
 ```javascript 3. References ($ref)
+// 3. References ($ref)
 // NOTE: The `$ref` keyword is temporarily disabled for Platform v0.22.
 const Dash = require('dash');
 
@@ -323,6 +337,7 @@ registerContract()
   .finally(() => client.disconnect());
 ```
 ```javascript 4. Timestamps
+// 4. Timestamps
 const Dash = require('dash');
 
 const clientOpts = {
@@ -374,6 +389,7 @@ registerContract()
   .finally(() => client.disconnect());
 ```
 ```javascript 5. Binary data
+// 5. Binary data
 const Dash = require('dash');
 
 const clientOpts = {
@@ -426,6 +442,8 @@ registerContract()
   .catch((e) => console.error('Something went wrong:\n', e))
   .finally(() => client.disconnect());
 ```
+
+::::
 
 > 👍 
 > 

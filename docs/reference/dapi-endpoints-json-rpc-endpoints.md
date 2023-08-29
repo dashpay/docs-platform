@@ -25,7 +25,9 @@ Additional information may be found in the [JSON-RPC 2.0 specification](https://
 
 #### Example Request and Response
 
-```curl Curl
+::::{tab-set-code}
+
+```shell Curl
 curl -k --request POST \
   --url https://seed-1.testnet.networks.dash.org:1443/ \
   --header 'content-type: application/json' \
@@ -53,6 +55,7 @@ request(options, function (error, response, body) {
 });
 ```
 ```javascript Node
+// Node.js
 var XMLHttpRequest = require('xhr2');
 var data = '{"method":"getBestBlockHash","id":1,"jsonrpc":"2.0"}';
 
@@ -108,6 +111,8 @@ response = http.request(request)
 puts response.read_body
 ```
 
+::::
+
 ```json
 {
   "jsonrpc": "2.0",
@@ -126,6 +131,8 @@ puts response.read_body
 | `height` | Integer | Yes      | Block height |
 
 #### Example Request and Response
+
+::::{tab-set-code}
 
 ```shell Curl
 curl -k --request POST \
@@ -183,6 +190,8 @@ response = http.request(request)
 puts response.read_body
 ```
 
+::::
+
 ```json
 {
   "jsonrpc": "2.0",
@@ -202,6 +211,8 @@ puts response.read_body
 | `blockHash`     | String | Yes      | Block hash for the ending block   |
 
 #### Example Request and Response
+
+::::{tab-set-code}
 
 ```shell Curl
 curl -k --request POST \
@@ -261,6 +272,8 @@ request.body = '{
 response = http.request(request)
 puts response.read_body
 ```
+
+::::
 
 ```json
 {
