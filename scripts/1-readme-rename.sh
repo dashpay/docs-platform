@@ -2,6 +2,8 @@
 
 RENAME_ARGS="-d"
 
+find docs/dapi-client-js -iname "*.md" -type f -name 'dapi-client-*' -print0 | xargs -0 rename $RENAME_ARGS 's/dapi-client-//'
+find docs/dapi-client-js/usage -iname "*.md" -type f -name 'usage-*' -print0 | xargs -0 rename $RENAME_ARGS 's/usage-//'
 find docs/explanations -iname "*.md" -type f -name 'explanation-*' -print0 | xargs -0 rename $RENAME_ARGS 's/explanation-//'
 find docs/intro -iname "*.md" -type f -name 'introduction-*' -print0 | xargs -0 rename $RENAME_ARGS 's/introduction-//'
 find docs/intro -iname "*.md" -type f -name 'intro-*' -print0 | xargs -0 rename $RENAME_ARGS 's/intro-//'
