@@ -1,4 +1,4 @@
-# Usage
+# DAPIClient
 
 **Usage**: `new DAPIClient(options)`  
 **Description**: This method creates a new DAPIClient instance.
@@ -24,18 +24,4 @@ const client = new DAPIClient({
   retries: 3,
   network: 'livenet'
 });
-```
-
-**Notes**: 
-
-- Accessing the SimplifiedMasternodeListDAPIAddressProvider (or its overwrote instance), can be accessed via `client.dapiAddressProvider`.
-
-```{toctree}
-:maxdepth: 2
-:titlesonly:
-:caption: Core
-:hidden:
-
-core/core
-platform/platform
 ```

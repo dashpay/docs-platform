@@ -98,5 +98,5 @@ Previous Version of Docs <https://dashplatform.readme.io/v0.23.0/docs>
 
 dapi-client-js/overview
 dapi-client-js/quick-start
-dapi-client-js/usage/dapi-client
+dapi-client-js/usage/usage
 ```
