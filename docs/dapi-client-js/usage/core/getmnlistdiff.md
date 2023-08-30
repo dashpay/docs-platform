@@ -1,3 +1,5 @@
+# getmnlistdiff
+
 **Usage**: `await client.core.getMnListDiff(baseBlockHash, blockHash, options)`  
 **Description**: Allow to fetch a specific block hash from  its height
 

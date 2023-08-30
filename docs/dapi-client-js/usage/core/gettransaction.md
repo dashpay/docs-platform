@@ -1,3 +1,5 @@
+# gettransaction
+
 **Usage**: `await client.core.getTransaction(id, options)`  
 **Description**: Allow to fetch a transaction by ID
 

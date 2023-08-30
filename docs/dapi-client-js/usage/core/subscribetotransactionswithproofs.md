@@ -1,3 +1,5 @@
+# subscribetotransactionswithproofs
+
 **Usage**: `await client.core.subscribeToTransactionsWithProofs(bloomFilter, options = { count: 0 })`  
 **Description**: For any provided bloomfilter, it will return a ClientReadableStream streaming the transaction matching the filter.
 
