@@ -1,3 +1,5 @@
+# getdatacontract
+
 **Usage**: `async client.platform.getDataContract(contractId)`  
 **Description**: Fetch Data Contract by id
 

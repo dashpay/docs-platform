@@ -1,3 +1,5 @@
+# getdocuments
+
 **Usage**: `async client.platform.getDocuments(contractId, type, options)`  
 **Description**: Fetch Documents from Drive
 

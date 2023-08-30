@@ -1,3 +1,5 @@
+# broadcaststatetransition
+
 **Usage**: `async client.platform.broadcastStateTransition(stateTransition, options)`  
 **Description**: Send State Transition to machine
 

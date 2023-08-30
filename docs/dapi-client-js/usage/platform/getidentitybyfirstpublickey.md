@@ -1,3 +1,5 @@
+# getidentitybyfirstpublickey
+
 **Usage**: `async client.platform.getIdentityByFirstPublicKey(publicKeyHash)`  
 **Description**: Fetch the identity using the public key hash of the identity's first key
 

@@ -37,4 +37,5 @@ const client = new DAPIClient({
 :hidden:
 
 core/core
+platform/platform
 ```
