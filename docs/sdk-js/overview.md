@@ -7,7 +7,7 @@
 
 Dash library for JavaScript/TypeScript ecosystem (Wallet, DAPI, Primitives, BLS, ...)
 
-Dash library provides access via [DAPI](https://dashplatform.readme.io/docs/explanation-dapi) to use both the Dash Core network and Dash Platform on [supported networks](https://github.com/dashpay/platform/#supported-networks). The Dash Core network can be used to broadcast and receive payments. Dash Platform can be used to manage identities, register data contracts for applications, and submit or retrieve application data via documents.
+Dash library provides access via [DAPI](../explanations/dapi.md) to use both the Dash Core network and Dash Platform on [supported networks](https://github.com/dashpay/platform/#supported-networks). The Dash Core network can be used to broadcast and receive payments. Dash Platform can be used to manage identities, register data contracts for applications, and submit or retrieve application data via documents.
 
 ## Install
 
@@ -29,14 +29,14 @@ npm install dash
 
 ### Usage examples
 
-- [Generate a mnemonic](https://dashplatform.readme.io/docs/generate-a-new-mnemonic)
-- [Receive money and display balance](https://dashplatform.readme.io/docs/dash-sdk-examples-receive-money-and-check-balance)
-- [Pay to another address](https://dashplatform.readme.io/docs/dash-sdk-examples-paying-to-another-address)
-- [Use another BIP44 account](https://dashplatform.readme.io/docs/use-different-account)
+- [Generate a mnemonic](./examples/generate-a-new-mnemonic.md)
+- [Receive money and display balance](./examples/receive-money-and-check-balance.md)
+- [Pay to another address](./examples/paying-to-another-address.md)
+- [Use another BIP44 account](./examples/use-different-account.md)
 
 ### Dash Platform Tutorials
 
-See the [Tutorial section](https://dashplatform.readme.io/docs/tutorials-introduction) of the Dash Platform documentation for examples.
+See the [Tutorial section](../tutorials/introduction.md) of the Dash Platform documentation for examples.
 
 ## Licence
 

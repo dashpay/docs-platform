@@ -2,7 +2,7 @@
 
 ## Initialize client
 
-Initialize the SDK Client with your [generated mnemonic](https://dashplatform.readme.io/docs/dash-sdk-examples-generate-a-new-mnemonic) passed as an option.
+Initialize the SDK Client with your [generated mnemonic](../examples/generate-a-new-mnemonic.md) passed as an option.
 
 ```js
 const Dash = require("dash");
@@ -23,7 +23,7 @@ async function showBalance() {
 Having your `client` instance set up, you will be able to access the `account` and `wallet` instance generated from your mnemonic.
 
 By default `getAccount()` returns the first BIP44 account.  
-You can read more on [how to use a different account](https://dashplatform.readme.io/docs/dash-sdk-examples-use-different-account).
+You can read more on [how to use a different account](../examples/use-different-account.md).
 
 ## Generate a receiving address
 

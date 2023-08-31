@@ -16,7 +16,7 @@ Since the introduction of deterministic wallets ([BIP44](https://github.com/bitc
 
 It is the instance you will use most of the time for receiving or broadcasting payments.
 
-You can access your account with `client.getWalletAccount()`. See [how to use a different account](https://dashplatform.readme.io/docs/dash-sdk-examples-use-different-account) if you need to get an account at a specific index.
+You can access your account with `client.getWalletAccount()`. See [how to use a different account](../examples/use-different-account.md) if you need to get an account at a specific index.
 
 ## App Schema and Contracts
 
@@ -27,4 +27,4 @@ When registered, those applications schemas are called contracts and contains a 
 
 By default, this library supports Dash Platform Name Service (DPNS) (to attach a name to an identity), under the namespace `client.platform.names` for testnet.  
 
-See: [how to use multiple apps](https://dashplatform.readme.io/docs/dash-sdk-getting-started-working-with-multiple-apps)
+See: [how to use multiple apps](../getting-started/working-with-multiple-apps.md)
