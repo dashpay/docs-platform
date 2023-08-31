@@ -8,7 +8,6 @@ See the Dash Platform documentation for more information about [Data Contracts](
 
 ```{toctree}
 :maxdepth: 2
-:titleonly:
 
 create
 get

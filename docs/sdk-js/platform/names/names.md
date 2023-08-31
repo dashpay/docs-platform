@@ -14,7 +14,7 @@ Domain names are linked to an Identity.
 :maxdepth: 2
 
 register
-resovle
+resolve
 resolvebyrecord
 search
 ```
