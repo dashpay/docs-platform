@@ -1,3 +1,5 @@
+# Broadcast
+
 **Usage**: `client.platform.document.broadcast(documents, identity)`  
 **Description**: This method will broadcast the document on the Application Chain
 

@@ -1,3 +1,5 @@
+# Get
+
 **Usage**: `client.platform.contracts.get(contractId)`  
 **Description**: This method will allow you to fetch back a contract from its id. 
 

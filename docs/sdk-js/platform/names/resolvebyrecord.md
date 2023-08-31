@@ -1,3 +1,5 @@
+# ResolveByRecord
+
 **Usage**: `client.platform.names.resolveByRecord(record, value)`  
 **Description**: This method will allow you to resolve a DPNS record by identity ID. 
 

@@ -1,3 +1,5 @@
+# Topup
+
 **Usage**: `client.platform.identities.topUp(identity, amount)`  
 **Description**: This method will topup the provided identity's balance. 
 

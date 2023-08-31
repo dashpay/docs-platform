@@ -1,3 +1,5 @@
+# Create
+
 **Usage**: `client.platform.documents.create(typeLocator, identity, documentOpts)`  
 **Description**: This method will return a ExtendedDocument object initialized with the parameters defined and apply to the used identity. 
 

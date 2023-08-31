@@ -1,3 +1,5 @@
+# Get
+
 **Usage**: `client.platform.documents.get(typeLocator, opts)`  
 **Description**: This method will allow you to fetch back documents matching the provided parameters. 
 

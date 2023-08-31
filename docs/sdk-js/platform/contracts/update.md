@@ -1,3 +1,5 @@
+# Update
+
 **Usage**: `client.platform.contracts.update(contract, identity)`  
 **Description**: This method will sign and broadcast an updated valid contract.
 

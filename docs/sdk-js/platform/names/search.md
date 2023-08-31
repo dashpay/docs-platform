@@ -1,3 +1,5 @@
+# Search
+
 **Usage**: `client.platform.names.search(labelPrefix, parentDomain)`  
 **Description**: This method will allow you to search all records matching the label prefix on the specified parent domain. 
 

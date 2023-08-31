@@ -1,3 +1,5 @@
+# Register
+
 **Usage**: `client.platform.identities.register()`  
 **Description**: This method will register a new identity for you. 
 

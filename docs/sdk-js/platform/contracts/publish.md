@@ -1,3 +1,5 @@
+# Publish
+
 **Usage**: `client.platform.contracts.publish(contract, identity)`  
 **Description**: This method will sign and broadcast any valid contract.
 
