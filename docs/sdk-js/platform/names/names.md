@@ -1,3 +1,5 @@
+# Names
+
 ## What is DPNS
 
 DPNS is a special Dash Platform Application that is intended to provide a naming service for the Application Chain.  
@@ -7,3 +9,12 @@ Decoupling name from the blockchain identity enables a unique user experience co
 Limitation: max length of 63 characters on charset `0-9`,`A-Z`(case insensitive), `-`.
 
 Domain names are linked to an Identity.
+
+```{toctree}
+:maxdepth: 2
+
+register
+resovle
+resolvebyrecord
+search
+```

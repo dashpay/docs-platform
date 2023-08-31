@@ -1,3 +1,5 @@
+# Identities
+
 ## What is an identity
 
 An Identity is a blockchain-based identifier for individuals (users) and applications.  
@@ -9,3 +11,11 @@ You might also want to consult the usage for the [DPNS Name Service](https://das
 ## Credits
 
 Each identity contains a credit balance. The ratio is 1 duff = 1000 credits.
+
+```{toctree}
+:maxdepth: 2
+
+get
+register
+topup
+```
