@@ -1,3 +1,5 @@
+# TypeScript
+
 In order to use Dash SDK with TypeScript.    
 
 Create an index.ts file  

@@ -109,4 +109,5 @@ dapi-client-js/usage/usage
 
 sdk-js/overview
 sdk-js/examples/examples
+sdk-js/getting-started/getting-started
 ```

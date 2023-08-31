@@ -1,3 +1,5 @@
+# Dash Platform applications
+
 ## DPNS
 
 DPNS is handled in the Dash SDK Client under the namespace `client.platform.names.*'`. [Read more here](https://dashplatform.readme.io/docs/dash-sdk-names)
