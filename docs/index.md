@@ -100,6 +100,8 @@ sdk-js/overview
 sdk-js/examples/examples
 sdk-js/getting-started/getting-started
 sdk-js/platform/platform
+sdk-js/usage/usage
+sdk-js/wallet/wallet
 ```
 
 ```{toctree}

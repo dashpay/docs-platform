@@ -17,5 +17,7 @@ find docs/sdk-js/platform -iname "*.md" -type f -name 'dash-sdk-contracts-*' -pr
 find docs/sdk-js/platform -iname "*.md" -type f -name 'dash-sdk-documents-*' -print0 | xargs -0 rename $RENAME_ARGS 's/dash-sdk-documents-//'
 find docs/sdk-js/platform -iname "*.md" -type f -name 'dash-sdk-identities-*' -print0 | xargs -0 rename $RENAME_ARGS 's/dash-sdk-identities-//'
 find docs/sdk-js/platform -iname "*.md" -type f -name 'dash-sdk-names-*' -print0 | xargs -0 rename $RENAME_ARGS 's/dash-sdk-names-//'
+find docs/sdk-js/usage -iname "*.md" -type f -name 'dash-sdk-usage-*' -print0 | xargs -0 rename $RENAME_ARGS 's/dash-sdk-usage-//'
+find docs/sdk-js/wallet -iname "*.md" -type f -name 'dash-sdk-wallet-*' -print0 | xargs -0 rename $RENAME_ARGS 's/dash-sdk-wallet-//'
 find docs/tutorials -iname "*.md" -type f -name 'tutorials-*' -print0 | xargs -0 rename $RENAME_ARGS 's/tutorials-//'
 find docs/tutorials -iname "*.md" -type f -name 'tutorial-*' -print0 | xargs -0 rename $RENAME_ARGS 's/tutorial-//'

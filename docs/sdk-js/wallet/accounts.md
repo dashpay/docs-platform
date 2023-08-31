@@ -1,3 +1,5 @@
+# Accounts
+
 ## Getting an account
 
 When Wallet is initialized with `mnemonic`, it holds multiple Accounts according to BIP44.  
