@@ -1,3 +1,7 @@
+```{eval-rst}
+.. _resources-repository-overview:
+```
+
 # Repository Overview
 
 > 📘 Change to monorepo

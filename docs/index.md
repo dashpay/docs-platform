@@ -4,7 +4,93 @@
 
 # Platform docs
 
-Welcome to the Dash Platform developer documentation.
+Welcome to the Dash Platform developer documentation. You'll find guides and documentation to help
+you start working with Dash Platform and building decentralized applications based on the Dash
+cryptocurrency. Let's jump right in!
+
+```{eval-rst}
+.. grid:: 1 2 3 3
+
+    .. grid-item-card:: 💡 Introduction
+        :margin: 2 2 auto auto
+        :link-type: ref
+        :link: intro-index
+        
+        Background information about Dash
+        
+        +++
+        :ref:`Click to begin <intro-index>`
+
+    .. grid-item-card:: 💻 Tutorials
+        :margin: 2 2 auto auto
+        :link-type: ref
+        :link: tutorials-intro
+        
+        Basics of building with Dash Platform
+        
+        +++
+        :ref:`Click to begin <tutorials-intro>`
+
+    .. grid-item-card:: 📑 Explanations
+        :margin: 2 2 auto auto
+        :link-type: ref
+        :link: explanations-dapi
+        
+        Descriptions of Dash Platform features
+        
+        +++
+        :ref:`Click to begin <explanations-dapi>`
+
+    .. grid-item-card:: 📚 Reference
+        :margin: 2 2 auto auto
+        :link-type: ref
+        :link: reference-dapi-endpoints
+        
+        API endpoint details and technical information
+        
+        +++
+        :ref:`Click to begin <reference-dapi-endpoints>`
+
+    .. grid-item-card:: 🔍 Platform Protocol Reference
+        :margin: 2 2 auto auto
+        :link-type: ref
+        :link: protocol-ref-overview
+        
+        Dash Platform protocol reference
+        
+        +++
+        :ref:`Click to begin <protocol-ref-overview>`
+
+    .. grid-item-card:: 📖 Resources
+        :margin: 2 2 auto auto
+        :link-type: ref
+        :link: resources-repository-overview
+        
+        Links to helpful sites and tools
+        
+        +++
+        :ref:`Click to begin <resources-repository-overview>`
+
+    .. grid-item-card:: 🛠️ Dash SDK
+        :margin: 2 2 auto auto
+        :link-type: ref
+        :link: sdk-js-index
+        
+        JavaScript SDK documentation
+        
+        +++
+        :ref:`Click to begin <sdk-js-index>`
+
+    .. grid-item-card:: 🛠️ DAPI Client
+        :margin: 2 2 auto auto
+        :link-type: ref
+        :link: dapi-client-js-index
+        
+        JavaScript DAPI-Client documentation
+        
+        +++
+        :ref:`Click to begin <dapi-client-js-index>`
+```
 
 ```{toctree}
 :maxdepth: 2
