@@ -61,16 +61,6 @@ cryptocurrency. Let's jump right in!
         +++
         :ref:`Click to begin <protocol-ref-overview>`
 
-    .. grid-item-card:: 🛠️ Dash SDK
-        :margin: 2 2 auto auto
-        :link-type: ref
-        :link: sdk-js-index
-        
-        JavaScript SDK documentation
-        
-        +++
-        :ref:`Click to begin <sdk-js-index>`
-
     .. grid-item-card:: 📖 Resources
         :margin: 2 2 auto auto
         :link-type: ref
@@ -80,6 +70,16 @@ cryptocurrency. Let's jump right in!
         
         +++
         :ref:`Click to begin <resources-repository-overview>`
+
+    .. grid-item-card:: 🛠️ Dash SDK
+        :margin: 2 2 auto auto
+        :link-type: ref
+        :link: sdk-js-index
+        
+        JavaScript SDK documentation
+        
+        +++
+        :ref:`Click to begin <sdk-js-index>`
 
     .. grid-item-card:: 🛠️ DAPI Client
         :margin: 2 2 auto auto
