@@ -11,6 +11,6 @@ Parameters:
 
 **Example**: `await client.platform.identities.register()`
 
-**Note**: The created identity will be associated to the active account. You might want to know more about how to [change your active account](https://dashplatform.readme.io/docs/dash-sdk-examples-use-different-account).  
+**Note**: The created identity will be associated to the active account. You might want to know more about how to [change your active account](../../examples/use-different-account.md).  
 
 Returns: Identity.

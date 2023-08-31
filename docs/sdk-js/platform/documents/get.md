@@ -20,7 +20,7 @@ Parameters:
 | **startAt**    | integer | no       | number of objects to skip |
 | **startAfter** | integer | no       | exclusive skip            |
 
-[Learn more about query syntax](https://dashplatform.readme.io/docs/reference-query-syntax).
+[Learn more about query syntax](../../../reference/query-syntax.md).
 
 **Example**: 
 

@@ -7,7 +7,7 @@ Parameters:
 
 | parameters   | type     | required | Description                                                                                                   |
 | ------------ | -------- | -------- | ------------------------------------------------------------------------------------------------------------- |
-| **contract** | Contract | yes      | A valid [created contract](https://dashplatform.readme.io/docs/dash-sdk-contracts-create)                     |
-| **identity** | Identity | yes      | A valid [registered `application` identity](https://dashplatform.readme.io/docs/dash-sdk-identities-register) |
+| **contract** | Contract | yes      | A valid [created contract](../contracts/create.md)                     |
+| **identity** | Identity | yes      | A valid [registered `application` identity](../identities/register.md) |
 
 Returns: DataContractUpdateTransition.

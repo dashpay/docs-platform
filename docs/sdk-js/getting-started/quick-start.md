@@ -43,4 +43,4 @@ client.wallet.getAccount().then(async (account) => {
 
 ## Interact with Dash Platform
 
-See the [Tutorial section](https://dashplatform.readme.io/docs/tutorials-introduction) of the Dash Platform documentation for examples.
+See the [Tutorial section](../../tutorials/introduction.md) of the Dash Platform documentation for examples.

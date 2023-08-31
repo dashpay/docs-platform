@@ -9,7 +9,7 @@ Parameters:
 
 | parameters   | type     | required | Description                                                                                     |
 | ------------ | -------- | -------- | ----------------------------------------------------------------------------------------------- |
-| **identity** | Identity | yes      | A valid [registered identity](https://dashplatform.readme.io/docs/dash-sdk-identities-register) |
+| **identity** | Identity | yes      | A valid [registered identity](../identities/register.md) |
 | **amount**   | number   | yes      | A duffs (satoshis) value corresponding to the amount you want to top up to the identity.        |
 
 **Example**: 

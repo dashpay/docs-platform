@@ -11,7 +11,7 @@ Parameters:
 | **records**                      | Object   | yes      | records object having only one of the following items                                                                                                                                       |
 | **records.dashUniqueIdentityId** | String   | no       | Unique Identity ID for this name record                                                                                                                                                     |
 | **records.dashAliasIdentityId**  | String   | no       | Used to signify that this name is the alias for another id                                                                                                                                  |
-| **identity**                     | Identity | yes      | A valid [registered identity](https://dashplatform.readme.io/docs/dash-sdk-identities-register)                                                                                             |
+| **identity**                     | Identity | yes      | A valid [registered identity](../identities/register.md)                                                                                             |
 
 **Example**: `await client.platform.names.register('alice', { dashUniqueIdentityId: identity.getId() }, identity)`
 

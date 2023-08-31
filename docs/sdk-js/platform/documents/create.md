@@ -8,7 +8,7 @@ Parameters:
 | parameters     | type     | required | Description                                                                                     |
 | -------------- | -------- | -------- | ----------------------------------------------------------------------------------------------- |
 | **dotLocator** | string   | yes      | Field of a specific application, under the form `appName.fieldName`                             |
-| **identity**   | Identity | yes      | A valid [registered identity](https://dashplatform.readme.io/docs/dash-sdk-identities-register) |
+| **identity**   | Identity | yes      | A valid [registered identity](../identities/register.md) |
 | **docOpts**    | Object   | yes      | A valid data that match the data contract structure                                             |
 
 **Example**: 
@@ -25,6 +25,6 @@ const helloWorldDocument = await client.platform.documents.create(
   );
 ```
 
-**Note**: When your document is created, it will only exist locally, use the [broadcast](https://dashplatform.readme.io/docs/dash-sdk-documents-broadcast) method to register it.  
+**Note**: When your document is created, it will only exist locally, use the [broadcast](../documents/broadcast.md) method to register it.  
 
 Returns: ExtendedDocument

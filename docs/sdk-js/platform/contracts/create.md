@@ -7,8 +7,8 @@ Parameters:
 
 | parameters              | type             | required | Description                                                                                                            |
 | ----------------------- | ---------------- | -------- | ---------------------------------------------------------------------------------------------------------------------- |
-| **contractDefinitions** | JSONDataContract | yes      | The defined [JSON Application Schema](https://dashplatform.readme.io/docs/explanation-platform-protocol-data-contract) |
-| **identity**            | Identity         | yes      | A valid [registered `application` identity](https://dashplatform.readme.io/docs/dash-sdk-identities-register)          |
+| **contractDefinitions** | JSONDataContract | yes      | The defined [JSON Application Schema](../../../explanations/platform-protocol-data-contract.md) |
+| **identity**            | Identity         | yes      | A valid [registered `application` identity](../identities/register.md)          |
 
 **Example**:
 
@@ -33,6 +33,6 @@ Parameters:
   const validationResult = client.platform.dpp.dataContract.validate(contract);
 ```
 
-**Note**: When your contract is created, it will only exist locally. Use the [publish](https://dashplatform.readme.io/docs/dash-sdk-contracts-publish) method to register it.  
+**Note**: When your contract is created, it will only exist locally. Use the [publish](../contracts/publish.md) method to register it.  
 
 Returns: Contract.
