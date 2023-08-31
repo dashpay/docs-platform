@@ -1,4 +1,4 @@
-# Dash SDK
+# Overview
 
 [![NPM Version](https://img.shields.io/npm/v/dash)](https://www.npmjs.org/package/dash)  
 [![Release Packages](https://github.com/dashpay/platform/actions/workflows/release.yml/badge.svg)](https://github.com/dashpay/platform/actions/workflows/release.yml)  

@@ -1,4 +1,4 @@
-## Generate a new mnemonic
+# Generate a new mnemonic
 
 In order to be able to keep your private keys private, we encourage to create your own mnemonic instead of using those from the examples (that might be empty).
 Below, you will be proposed two options allowing you to create a new mnemonic, depending on the level of customisation you need. 

@@ -1,4 +1,6 @@
-## Receive money and display balance
+# Receive money and display balance
+
+## Initialize client
 
 Initialize the SDK Client with your [generated mnemonic](https://dashplatform.readme.io/docs/dash-sdk-examples-generate-a-new-mnemonic) passed as an option.
 

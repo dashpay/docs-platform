@@ -1,4 +1,4 @@
-## Using a different account
+# Using a different account
 
 Clients initialized with a mnemonic support multiple accounts as defined in [BIP44](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki).
 

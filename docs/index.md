@@ -100,3 +100,13 @@ dapi-client-js/overview
 dapi-client-js/quick-start
 dapi-client-js/usage/usage
 ```
+
+```{toctree}
+:maxdepth: 2
+:titlesonly:
+:caption: Dash SDK
+:hidden:
+
+sdk-js/overview
+sdk-js/examples/examples
+```

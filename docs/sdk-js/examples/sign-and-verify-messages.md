@@ -1,4 +1,4 @@
-## Sign and verify messages
+# Sign and verify messages
 
 Dash SDK exports the Message constructor inside the Core namespace `new Dash.Core.Message`
 

@@ -1,4 +1,4 @@
-## Paying to another address
+# Paying to another address
 
 In order to pay, you need to have an [existing balance](https://dashplatform.readme.io/docs/dash-sdk-examples-receive-money-and-check-balance).  
 The below code will allow you to pay to a single address a specific amount of satoshis.
