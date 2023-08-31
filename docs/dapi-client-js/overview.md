@@ -1,3 +1,7 @@
+```{eval-rst}
+.. _dapi-client-js-index:
+```
+
 # Overview
 
 ## DAPI-Client

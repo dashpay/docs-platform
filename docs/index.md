@@ -14,82 +14,82 @@ cryptocurrency. Let's jump right in!
     .. grid-item-card:: 💡 Introduction
         :margin: 2 2 auto auto
         :link-type: ref
-        :link: reference-index
+        :link: intro-index
         
         Background information about Dash
         
         +++
-        :ref:`Click to begin <reference-index>`
+        :ref:`Click to begin <intro-index>`
 
     .. grid-item-card:: 💻 Tutorials
         :margin: 2 2 auto auto
         :link-type: ref
-        :link: api-rpc
+        :link: tutorials-intro
         
         Basics of building with Dash Platform
         
         +++
-        :ref:`Click to begin <api-rpc>`
+        :ref:`Click to begin <tutorials-intro>`
 
     .. grid-item-card:: 📑 Explanations
         :margin: 2 2 auto auto
         :link-type: ref
-        :link: guide-index
+        :link: explanations-dapi
         
         Descriptions of Dash Platform features
         
         +++
-        :ref:`Click to begin <guide-index>`
+        :ref:`Click to begin <explanations-dapi>`
 
     .. grid-item-card:: 📚 Reference
         :margin: 2 2 auto auto
         :link-type: ref
-        :link: examples-index
+        :link: reference-dapi-endpoints
         
         API endpoint details and technical information
         
         +++
-        :ref:`Click to begin <examples-index>`
+        :ref:`Click to begin <reference-dapi-endpoints>`
 
     .. grid-item-card:: 🔍 Platform Protocol Reference
         :margin: 2 2 auto auto
         :link-type: ref
-        :link: dashcore-arguments-and-commands
+        :link: protocol-ref-overview
         
         Dash Platform protocol reference
         
         +++
-        :ref:`Click to begin <dashcore-arguments-and-commands>`
+        :ref:`Click to begin <protocol-ref-overview>`
 
     .. grid-item-card:: 🛠️ Dash SDK
         :margin: 2 2 auto auto
         :link-type: ref
-        :link: resources-glossary
+        :link: sdk-js-index
         
         JavaScript SDK documentation
         
         +++
-        :ref:`Click to begin <resources-glossary>`
+        :ref:`Click to begin <sdk-js-index>`
 
     .. grid-item-card:: 📖 Resources
         :margin: 2 2 auto auto
         :link-type: ref
-        :link: resources-glossary
+        :link: resources-repository-overview
         
         Links to helpful sites and tools
         
         +++
-        :ref:`Click to begin <resources-glossary>`
+        :ref:`Click to begin <resources-repository-overview>`
 
     .. grid-item-card:: 🛠️ DAPI Client
         :margin: 2 2 auto auto
         :link-type: ref
-        :link: resources-glossary
+        :link: dapi-client-js-index
         
         JavaScript DAPI-Client documentation
         
         +++
-        :ref:`Click to begin <resources-glossary>`
+        :ref:`Click to begin <dapi-client-js-index>`
 ```
 
 ```{toctree}

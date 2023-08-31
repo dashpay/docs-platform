@@ -1,3 +1,7 @@
+```{eval-rst}
+.. _sdk-js-index:
+```
+
 # Overview
 
 [![NPM Version](https://img.shields.io/npm/v/dash)](https://www.npmjs.org/package/dash)  

@@ -1,3 +1,7 @@
+```{eval-rst}
+.. _reference-dapi-endpoints:
+```
+
 # DAPI Endpoints
 
 [DAPI](../explanations/dapi.md) currently provides 2 types of endpoints: [JSON-RPC](https://www.jsonrpc.org/) and [gRPC](https://grpc.io/docs/guides/). The JSON-RPC endpoints expose some layer 1 information while the gRPC endpoints support layer 2 as well as streaming of events related to blocks and transactions/transitions.

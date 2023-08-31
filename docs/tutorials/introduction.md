@@ -1,3 +1,7 @@
+```{eval-rst}
+.. _tutorials-intro:
+```
+
 # Introduction
 
 The tutorials in this section walk through the steps necessary to begin building on Dash Platform using the Dash JavaScript SDK. As all communication happens via the masternode hosted decentralized API (DAPI), you can begin using Dash Platform immediately without running a local blockchain node.

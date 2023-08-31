@@ -1,3 +1,7 @@
+```{eval-rst}
+.. _explanations-dapi:
+```
+
 # Decentralized API (DAPI)
 
 ## Overview
