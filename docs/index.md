@@ -4,7 +4,93 @@
 
 # Platform docs
 
-Welcome to the Dash Platform developer documentation.
+Welcome to the Dash Platform developer documentation. You'll find guides and documentation to help
+you start working with Dash Platform and building decentralized applications based on the Dash
+cryptocurrency. Let's jump right in!
+
+```{eval-rst}
+.. grid:: 1 2 3 3
+
+    .. grid-item-card:: 💡 Introduction
+        :margin: 2 2 auto auto
+        :link-type: ref
+        :link: reference-index
+        
+        Background information about Dash
+        
+        +++
+        :ref:`Click to begin <reference-index>`
+
+    .. grid-item-card:: 💻 Tutorials
+        :margin: 2 2 auto auto
+        :link-type: ref
+        :link: api-rpc
+        
+        Basics of building with Dash Platform
+        
+        +++
+        :ref:`Click to begin <api-rpc>`
+
+    .. grid-item-card:: 📑 Explanations
+        :margin: 2 2 auto auto
+        :link-type: ref
+        :link: guide-index
+        
+        Descriptions of Dash Platform features
+        
+        +++
+        :ref:`Click to begin <guide-index>`
+
+    .. grid-item-card:: 📚 Reference
+        :margin: 2 2 auto auto
+        :link-type: ref
+        :link: examples-index
+        
+        API endpoint details and technical information
+        
+        +++
+        :ref:`Click to begin <examples-index>`
+
+    .. grid-item-card:: 🔍 Platform Protocol Reference
+        :margin: 2 2 auto auto
+        :link-type: ref
+        :link: dashcore-arguments-and-commands
+        
+        Dash Platform protocol reference
+        
+        +++
+        :ref:`Click to begin <dashcore-arguments-and-commands>`
+
+    .. grid-item-card:: 🛠️ Dash SDK
+        :margin: 2 2 auto auto
+        :link-type: ref
+        :link: resources-glossary
+        
+        JavaScript SDK documentation
+        
+        +++
+        :ref:`Click to begin <resources-glossary>`
+
+    .. grid-item-card:: 📖 Resources
+        :margin: 2 2 auto auto
+        :link-type: ref
+        :link: resources-glossary
+        
+        Links to helpful sites and tools
+        
+        +++
+        :ref:`Click to begin <resources-glossary>`
+
+    .. grid-item-card:: 🛠️ DAPI Client
+        :margin: 2 2 auto auto
+        :link-type: ref
+        :link: resources-glossary
+        
+        JavaScript DAPI-Client documentation
+        
+        +++
+        :ref:`Click to begin <resources-glossary>`
+```
 
 ```{toctree}
 :maxdepth: 2
