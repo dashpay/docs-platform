@@ -47,20 +47,15 @@ For more implementation details, please reference the open-source JavaScript DPN
 ### Contract Diagram
 
 This is a visualization of the JSON data contract as UML class diagram for better understanding of the structure. The left side shows the `domain` document and the right side shows the `preorder` document:
-[block:image]
-{
-  "images": [
-    {
-      "image": [
-        "https://files.readme.io/5d2ad91-dpns-plantuml.png",
-        "dpns-plantuml.png",
-        2585,
-        871,
-        "#f8f6ee"
-      ],
-      "caption": "DPNS Contract Diagram"
-    }
-  ]
-}
-[/block]
-Click [here](https://files.readme.io/5d2ad91-dpns-plantuml.png) to download a copy of this diagram.
+
+```{eval-rst}
+.. figure:: ./img/dpns-uml.png
+   :class: no-scaled-link
+   :align: center
+   :width: 90%
+   :alt: DPNS Contract Diagram
+
+   DPNS Contract Diagram
+```
+
+View [a full-size copy of this diagram](./img/dpns-uml.png).
