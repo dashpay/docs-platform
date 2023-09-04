@@ -17,32 +17,18 @@ Storage fees cover the costs to store the various types of data throughout the n
 ## Costs
 
 The current cost schedule is outlined in the table below:
-[block:parameters]
-{
-  "data": {
-    "0-0": "Permanent storage",
-    "0-1": "40000 / byte",
-    "h-0": "Operation",
-    "h-1": "Cost (credits)",
-    "1-0": "Base processing fee",
-    "2-0": "Write to storage",
-    "3-0": "Load from storage",
-    "4-0": "Seek storage",
-    "5-0": "Query",
-    "6-0": "Load from memory",
-    "7-0": "Blake3 hash function",
-    "1-1": "100000",
-    "2-1": "750 / byte",
-    "3-1": "3500 / byte",
-    "4-1": "2000",
-    "5-1": "75 / byte",
-    "6-1": "20 / byte",
-    "7-1": "400 + 64 / 64-byte block"
-  },
-  "cols": 2,
-  "rows": 8
-}
-[/block]
+
+| Operation | Cost (credits) |
+| - | - |
+| Permanent storage | 40000 / byte |
+| Base processing fee | 100000 |
+| Write to storage | 750 / byte |
+| Load from storage | 3500 / byte |
+| Seek storage | 2000 |
+| Query | 75 / byte |
+| Load from memory | 20 / byte |
+| Blake3 hash function | 400 + 64 / 64-byte block |
+
 > 📘 Credits
 >
 > Refer to the [Identity explanation](../explanations/identity.md) section for information regarding how credits are created.
