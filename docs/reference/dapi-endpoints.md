@@ -40,11 +40,16 @@ In addition to providing the request data, the following endpoints can also prov
 |   2   | [`getDocuments`](../reference/dapi-endpoints-platform-endpoints.md#getdocuments)                                     | Returns the requested document(s)                                                                                         |
 |   2   | [`waitForStateTransitionResult`](../reference/dapi-endpoints-platform-endpoints.md#waitforstatetransitionresult)     | Responds with the state transition hash and either a proof that the state transition was confirmed in a block or an error |
 
-[block:html]
-{
-  "html": "<div></div>\n<!--\nPrimarily for debugging, don't document - getConsensusParams\n-->\n<style></style>"
-}
-[/block]
+
+```{eval-rst}
+..
+  Commented out info
+  [block:html]
+  {
+    "html": "<div></div>\n<!--\nPrimarily for debugging, don't document - getConsensusParams\n-->\n<style></style>"
+  }
+  [/block]
+```
 
 > 📘 
 > 
