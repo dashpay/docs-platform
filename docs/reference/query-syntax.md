@@ -37,11 +37,15 @@ Valid fields consist of the indices defined for the document being queried. For 
 | [records.dashUniqueIdentityId](https://github.com/dashevo/platform/blob/master/packages/dpns-contract/schema/dpns-contract-documents.json#L17-L25) | Single Field | Yes |
 | [records.dashAliasIdentityId](https://github.com/dashevo/platform/blob/master/packages/dpns-contract/schema/dpns-contract-documents.json#L26-L33) | Single Field | No |
 
-[block:html]
-{
-  "html": "<div></div>\n<!--\nSpecial fields - `$id`, `$userId`\n-->\n<style></style>"
-}
-[/block]
+```{eval-rst}
+..
+  Commented out info
+  [block:html]
+  {
+    "html": "<div></div>\n<!--\nSpecial fields - `$id`, `$userId`\n-->\n<style></style>"
+  }
+  [/block]
+```
 
 ### Comparison Operators
 

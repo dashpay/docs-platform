@@ -20,23 +20,13 @@ Write code and integrate with Dash Platform using the languages that matter to y
 
 Unlike many blockchain-based networks, data stored on the platform is instantly confirmed by the Dash consensus algorithm to ensure the best user experience for users. With Dash Platform, you can gain the advantages of a blockchain-based storage network without the usual UX compromises.
 
-[block:image]
-{
-  "images": [
-    {
-      "image": [
-        "https://files.readme.io/2213390-join-community.svg",
-        "join-community.svg",
-        171
-      ],
-      "align": "center",
-      "sizing": "60"
-    }
-  ]
-}
-[/block]
-
-
+```{eval-rst}
+.. figure:: ../../img/join-community.svg
+   :class: no-scaled-link
+   :align: center
+   :width: 60%
+   :alt: Developer community image
+```
 
 ## Key Components
 

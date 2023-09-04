@@ -10,21 +10,15 @@ Historically, nodes in most cryptocurrency networks communicated with each other
 
 To overcome these obstacles, the Dash decentralized API (DAPI) uses Dash's robust masternode infrastructure to provide an API for accessing the network. DAPI supports both layer 1 (Core blockchain) and layer 2 (Dash Platform) functionality so all developers can interact with Dash via a single interface.
 
-[block:image]
-{
-  "images": [
-    {
-      "image": [
-        "https://files.readme.io/e011783-Decentralized_API_DAPI.svg",
-        "Decentralized API (DAPI).svg",
-        613
-      ],
-      "align": "center",
-      "caption": "DAPI Overview"
-    }
-  ]
-}
-[/block]
+```{eval-rst}
+.. figure:: ../../img/dapi.svg
+   :class: no-scaled-link
+   :align: center
+   :width: 90%
+   :alt: DAPI Overview
+
+   DAPI Overview
+```
 
 ## Security
 

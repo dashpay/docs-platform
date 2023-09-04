@@ -24,22 +24,16 @@ The process of adding or updating data in Drive consists of several steps to ens
 3. Valid state transitions are applied to the platform state
 4. The platform chain propagates a block containing the state transitions
 5. Receiving nodes update Drive data based on the valid state transitions in the block
-[block:image]
-{
-  "images": [
-    {
-      "image": [
-        "https://files.readme.io/5e35fd4-Drive.svg",
-        "Drive.svg",
-        612,
-        492,
-        "#fafafc"
-      ],
-      "caption": "Storing data in Drive"
-    }
-  ]
-}
-[/block]
+
+```{eval-rst}
+.. figure:: ../../img/drive.svg
+   :class: no-scaled-link
+   :align: center
+   :width: 80%
+   :alt: Storing data in Drive
+
+   Storing data in Drive
+```
 
 ```{toctree}
 :maxdepth: 2

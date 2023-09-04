@@ -26,22 +26,17 @@ In the [example contract](#example-contract) shown below, a `contact` document a
 Once a [Dash Platform Protocol](../explanations/platform-protocol.md) compliant data contract has been defined, it may be registered on the platform. Registration is completed by submitting a state transition containing the data contract to [DAPI](../explanations/dapi.md).
 
 The drawing below illustrates the steps an application developer follows to complete registration.
-[block:image]
-{
-  "images": [
-    {
-      "image": [
-        "https://files.readme.io/b372cf0-Data_Contract.svg",
-        "Data Contract.svg",
-        673,
-        531,
-        "#d9ead3"
-      ],
-      "caption": "Data Contract Registration"
-    }
-  ]
-}
-[/block]
+
+```{eval-rst}
+.. figure:: ../../img/data-contract.svg
+   :class: no-scaled-link
+   :align: center
+   :width: 80%
+   :alt: Data Contract Registration
+
+   Data Contract Registration
+```
+
 ### Updates
 
 Since Dash Platform v0.22, it is possible to update existing data contracts in certain backwards-compatible ways. This includes adding new documents, adding new optional properties to existing documents, and adding non-unique indices for properties added in the update.
@@ -276,23 +271,18 @@ An example contract for [DashPay](https://github.com/dashevo/platform/blob/maste
     "additionalProperties": false
   }
 }
-``` 
+```
 
 This is a visualization of the JSON data contract as UML class diagram for better understanding of the structure:
 
-[block:image]
-{
-  "images": [
-    {
-      "image": [
-        "https://files.readme.io/964c219-dashpay-plantuml.png",
-        "dashpay-plantuml.png",
-        962,
-        755,
-        "#f5f1e8"
-      ],
-      "caption": "Dashpay Contract Diagram"
-    }
-  ]
-}
-[/block]
+```{eval-rst}
+.. figure:: ./img/dashpay-uml.png
+   :class: no-scaled-link
+   :align: center
+   :width: 90%
+   :alt: Dashpay Contract Diagram
+
+   Dashpay Contract Diagram
+```
+
+View [a full-size copy of this diagram](./img/dashpay-uml.png).
