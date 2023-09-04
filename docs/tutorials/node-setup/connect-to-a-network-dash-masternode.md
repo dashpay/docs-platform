@@ -154,7 +154,7 @@ To setup a testnet masternode, please refer to the comprehensive documentation o
 ```{eval-rst}
 .. raw:: html
 
-    <div style="position: relative; padding-bottom: 56.25%; height: 0; margin-bottom: 1em; overflow: hidden; max-width: 70%; height: auto;">
+    <div style="position: relative; padding-bottom: 56.25%; height: 0; margin-bottom: 1em; overflow: hidden; max-width: 100%; height: auto;">
         <iframe src="//www.youtube.com/embed/LLiMMXSAfeU" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe>
     </div>
 ```
