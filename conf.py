@@ -78,7 +78,7 @@ html_css_files = [
 # to template names.
 #
 html_sidebars = {
-    # "index": ["sidebar-main.html"],
+    "index": ["sidebar-main.html"],
     "**": ["sidebar-nav-bs"]
 }
 
