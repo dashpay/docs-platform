@@ -31,23 +31,16 @@ The contract defines three document types: `contactRequest`, `profile` and `cont
 5. Carol accepts the request by sending a contact request containing an encrypted extended public key back to Bob. This establishes a one way relationship from Carol to Bob.
 6. Bob and Carol are now contacts of one another and can make payments to each other by decrypting the extended public key received from the other party and deriving payment addresses from it. Since both have established one way relationships with each other, they now have a two way relationship. If Bob gets a new device, he can use his recovery phrase from step one and restore his wallet, contacts (including Carol) and payments to and from his contacts.
 
-[block:image]
-{
-  "images": [
-    {
-      "image": [
-        "https://files.readme.io/158594c-Frame-78-2.png",
-        "Frame-78-2.png",
-        866,
-        750,
-        "#98afbd"
-      ],
-      "sizing": "80",
-      "caption": "Contact-based Wallet"
-    }
-  ]
-}
-[/block]
+```{eval-rst}
+.. figure:: ./img/dashpay.png
+   :class: no-scaled-link
+   :align: center
+   :height: 350
+   :alt: Contact-based Wallet
+
+   Contact-based Wallet
+```
+
 ### Implementation
 
 DashPay has many constraints as defined in the [DashPay data contract](https://github.com/dashevo/platform/blob/master/packages/dashpay-contract/schema/dashpay.schema.json). Additionally, the DashPay data triggers defined in [js-dpp](https://github.com/dashevo/platform/tree/master/packages/js-dpp/lib/dataTrigger/dashpayDataTriggers) enforce additional validation rules related to the `contactRequest` document.
