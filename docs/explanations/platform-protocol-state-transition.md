@@ -5,22 +5,16 @@
 At any given point in time, the data stored by each application (and more broadly, the entire platform) is in a specific state. State transitions are the means for submitting data that creates, updates, or deletes platform data and results in a change to a new state.
 
 For example, Alice may have already added Bob and Carol as friends in [DashPay](../explanations/dashpay.md) while also having a pending friend request to Dan. If Dan declines the friend request, the state will transition to a new one where Alice and Bob remain in Alice’s friend list while Dan moves to the declined list.
-[block:image]
-{
-  "images": [
-    {
-      "image": [
-        "https://files.readme.io/48c666f-State_Transition.svg",
-        "State Transition.svg",
-        610,
-        262,
-        "#e9f0fd"
-      ],
-      "caption": "State Transition Example"
-    }
-  ]
-}
-[/block]
+
+```{eval-rst}
+.. figure:: ../../img/state-transition.svg
+   :class: no-scaled-link
+   :align: center
+   :width: 90%
+   :alt: State transition example
+
+   State Transition Example
+```
 
 ## Implementation Overview
 

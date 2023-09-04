@@ -21,29 +21,9 @@ The tutorials in this section are written in JavaScript and use [Node.js](https:
 - The Dash JavaScript SDK (see [Connecting to a Network](../tutorials/connecting-to-testnet.md#1-install-the-dash-sdk))
 
 ## Quickstart
-[block:image]
-{
-  "images": [
-    {
-      "image": [
-        "https://files.readme.io/d38f3cf-benefits_speed-1.svg",
-        "benefits_speed-1.svg",
-        152,
-        132,
-        "#272724"
-      ]
-    }
-  ]
-}
-[/block]
+
 While going through each tutorial is advantageous, the subset of tutorials listed below get you from a start to storing data on Dash Platform most quickly:
 - [Obtaining test funds](../tutorials/create-and-fund-a-wallet.md)
 - [Registering an Identity](../tutorials/identities-and-names/register-an-identity.md)
 - [Registering a Data Contract](../tutorials/contracts-and-documents/submit-documents.md)
 - [Submitting data](../tutorials/contracts-and-documents/submit-documents.md)
-
-[block:html]
-{
-  "html": "<div>\n</div>\n\n<style>\n .markdown-body img {\n float: right;\n margin-left: 30px;\n /*width: 25%;*/\n max-width: 25%; /*400px;*/\n height: auto;  \n}\n</style>"
-}
-[/block]
