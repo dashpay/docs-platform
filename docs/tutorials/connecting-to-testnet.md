@@ -39,7 +39,7 @@ connect()
   .finally(() => client.disconnect());
 ```
 
-Once this returns successfully, you're ready to begin developing! See the [Quickstart](../tutorials/introduction.md#quickstart) for recommended next steps. For details on all SDK options and methods, please refer to the [SDK documentation](https://dashevo.github.io/platform/SDK/).
+Once this returns successfully, you're ready to begin developing! See the [Quickstart](../tutorials/introduction.md#quickstart) for recommended next steps. For details on all SDK options and methods, please refer to the [SDK documentation](../sdk-js/overview.md).
 
 ## Connect to a Devnet
 
