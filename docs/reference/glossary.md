@@ -144,7 +144,7 @@ Dash fork of [Tendermint](https://tendermint.com/core) modified for use in Dash 
 
 A global testing environment in which developers can obtain and spend Dash that has no real-world value on a network that is very similar to the Dash [mainnet](#mainnet). See the <a href="https://docs.dash.org/projects/core/en/stable/docs/examples/testing-applications.html" target="_blank">Testing Applications page</a> for a more detailed description of network types.
 
-See: [Intro to Testnet](../intro/to-testnet.md) for more information
+See: [Intro to Testnet](../intro/testnet.md) for more information
 
 ## Validator Set
 The group of masternodes responsible for the layer 2 blockchain (platform chain) consensus at a given time. They vote on the content of each platform chain block and are analogous to miners on the layer 1's core blockchain

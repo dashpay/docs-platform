@@ -99,7 +99,7 @@ cryptocurrency. Let's jump right in!
 
 intro/what-is-dash
 intro/what-is-dash-platform
-intro/to-testnet
+intro/testnet
 ```
 
 ```{toctree}
