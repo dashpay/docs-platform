@@ -1,4 +1,4 @@
-# generatetoaddress
+# generateToAddress
 
 **Usage**: `await client.core.generateToAddress(blockMumber, address, options)`  
 **Description**: Allow to broadcast a valid **signed** transaction to the network.  

@@ -1,4 +1,4 @@
-# getblockhash
+# getBlockHash
 
 **Usage**: `await client.core.getBlockHash(height, options)`  
 **Description**: Allow to fetch a specific block hash from  its height

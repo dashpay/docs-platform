@@ -1,4 +1,4 @@
-# getblockbyheight
+# getBlockByHeight
 
 **Usage**: `await client.core.getBlockByHeight(height, options)`  
 **Description**: Allow to fetch a specific block by its height

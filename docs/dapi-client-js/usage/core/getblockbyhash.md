@@ -1,4 +1,4 @@
-# getblockbyhash
+# getBlockByHash
 
 **Usage**: `await client.core.getBlockByHash(hash, options)`  
 **Description**: Allow to fetch a specific block by its hash

@@ -1,4 +1,4 @@
-# getstatus
+# getStatus
 
 **Usage**: `await client.core.getStatus(options)`  
 **Description**: Allow to fetch a specific block hash from  its height

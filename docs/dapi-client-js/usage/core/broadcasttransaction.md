@@ -1,4 +1,4 @@
-# broadcasttransaction
+# broadcastTransaction
 
 **Usage**: `await client.core.broadcastTransaction(transaction)`  
 **Description**: Allow to broadcast a valid **signed** transaction to the network.

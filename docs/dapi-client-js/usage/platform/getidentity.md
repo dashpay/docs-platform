@@ -1,4 +1,4 @@
-# getidentity
+# getIdentity
 
 **Usage**: `async client.platform.getIdentity(id)`  
 **Description**: Fetch the identity by id
