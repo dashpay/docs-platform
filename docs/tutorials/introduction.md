@@ -16,13 +16,14 @@ Building on Dash Platform requires first registering an Identity and then regist
 
 The tutorials in this section are written in JavaScript and use [Node.js](https://nodejs.org/en/about/). The following prerequisites are necessary to complete the tutorials:
 
-- [Node.js](https://nodejs.org/en/) (v12+)
+- [Node.js](https://nodejs.org/en/) (v16+)
 - Familiarity with JavaScript asynchronous functions using [async/await](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Async_await)
 - The Dash JavaScript SDK (see [Connecting to a Network](../tutorials/connecting-to-testnet.md#1-install-the-dash-sdk))
 
 ## Quickstart
 
 While going through each tutorial is advantageous, the subset of tutorials listed below get you from a start to storing data on Dash Platform most quickly:
+
 - [Obtaining test funds](../tutorials/create-and-fund-a-wallet.md)
 - [Registering an Identity](../tutorials/identities-and-names/register-an-identity.md)
 - [Registering a Data Contract](../tutorials/contracts-and-documents/submit-documents.md)
