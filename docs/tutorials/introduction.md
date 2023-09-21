@@ -26,5 +26,5 @@ While going through each tutorial is advantageous, the subset of tutorials liste
 
 - [Obtaining test funds](../tutorials/create-and-fund-a-wallet.md)
 - [Registering an Identity](../tutorials/identities-and-names/register-an-identity.md)
-- [Registering a Data Contract](../tutorials/contracts-and-documents/submit-documents.md)
+- [Registering a Data Contract](../tutorials/contracts-and-documents/register-a-data-contract.md)
 - [Submitting data](../tutorials/contracts-and-documents/submit-documents.md)

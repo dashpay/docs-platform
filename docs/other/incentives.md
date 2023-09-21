@@ -17,7 +17,7 @@ In general, masternodes and miners are incentivized to perform this work by fees
 Dash Platform collects fees for three activities:
 
 * [Registering a new identity](../tutorials/identities-and-names/register-an-identity.md)
-* [Registering a Data Contract](../tutorials/contracts-and-documents/submit-documents.md)
+* [Registering a Data Contract](../tutorials/contracts-and-documents/register-a-data-contract.md)
 * [Updating Application Data](tutorial-submit-a-state-transition)
 
 New users may not have any Dash of their own, so when registering an identity, some Dash is converted into _credits_, which is Dash that can only be spent on Platform activity. Users can also convert Dash into credits after registration as needed.
