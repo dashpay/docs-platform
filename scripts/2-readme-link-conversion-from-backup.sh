@@ -59,7 +59,7 @@ find . -iname "*.md" -exec sed -i 's~](doc:intro-to-testnet~](\.\./intro/to-test
 find . -iname "*.md" -exec sed -i 's~](tutorials-introduction~](\.\./tutorials/introduction.md~g' {} +
 find . -iname "*.md" -exec sed -i 's~](tutorial-create-and-fund-a-wallet~](\.\./tutorials/create-and-fund-a-wallet.md~g' {} +
 find . -iname "*.md" -exec sed -i 's~](tutorial-submit-documents~](\.\./tutorials/contracts-and-documents/submit-documents.md~g' {} +
-find . -iname "*.md" -exec sed -i 's~](tutorial-register-a-data-contract~](\.\./tutorials/contracts-and-documents/submit-documents.md~g' {} +
+find . -iname "*.md" -exec sed -i 's~](tutorial-register-a-data-contract~](\.\./tutorials/contracts-and-documents/register-a-data-contract.md~g' {} +
 find . -iname "*.md" -exec sed -i 's~](tutorial-register-an-identity~](\.\./tutorials/identities-and-names/register-an-identity.md~g' {} +
 find . -iname "*.md" -exec sed -i 's~](tutorial-register-a-name-for-an-identity~](\.\./tutorials/identities-and-names/register-a-name-for-an-identity.md~g' {} +
 find . -iname "*.md" -exec sed -i 's~](doc:tutorial-register-an-identity~](\.\./tutorials/identities-and-names/register-an-identity.md~g' {} +
