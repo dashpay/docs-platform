@@ -16,7 +16,7 @@ const Dash = require('dash');
 const client = new Dash.Client({ network: 'testnet' });
 
 const retrieveContract = async () => {
-  const contractId = '3iaEhdyAVbmSjd59CT6SCrqPjfAfMdPTc8ksydgqSaWE';
+  const contractId = '8cvMFwa2YbEsNNoc1PXfTacy2PVq2SzVnkZLeQSzjfi6';
   return client.platform.contracts.get(contractId);
 };
 
@@ -24,12 +24,12 @@ retrieveContract()
   .then((d) => console.dir(d.toJSON(), { depth: 5 }))
   .catch((e) => console.error('Something went wrong:\n', e))
   .finally(() => client.disconnect());
-``` 
+```
 
 ## Updating the client app list
 
-> 📘
->
+> 📘 
+> 
 > In many cases it may be desirable to work with a newly retrieved data contract using the `<contract name>.<contract document>` syntax (e.g. `dpns.domain`). Data contracts that were created after the client was initialized or not included in the initial client options can be added via `client.getApps().set(...)`.
 
 ```javascript
@@ -46,7 +46,7 @@ client.platform.contracts.get(myContractId)
       contract: myContract,
     });
   });
-``` 
+```
 
 # Example Data Contract
 
@@ -54,30 +54,33 @@ The following example response shows a retrieved contract:
 
 ```json
 {
-  "protocolVersion":1,
-  "$id":"G1FVmxxrnbT6CiQU7w2xgY9oMMqkkZb7vS6fkeRrSTXG",
-  "$schema":"https://schema.dash.org/dpp-0-4-0/meta/data-contract",
-  "version":2,
-  "ownerId":"8uFQj2ptknrcwykhQbTzQatoQUyxn4VJQn1J25fxeDvk",
-  "documents":{
-    "note":{
-      "type":"object",
-      "properties":{
-        "author":{
-          "type":"string"
-        },
-        "message":{
-          "type":"string"
-        }
-      },
-      "additionalProperties":false
+  "$format_version": "0",
+  "id": "8cvMFwa2YbEsNNoc1PXfTacy2PVq2SzVnkZLeQSzjfi6",
+  "config": {
+    "$format_version": "0",
+    "canBeDeleted": false,
+    "readonly": false,
+    "keepsHistory": false,
+    "documentsKeepHistoryContractDefault": false,
+    "documentsMutableContractDefault": true,
+    "requiresIdentityEncryptionBoundedKey": null,
+    "requiresIdentityDecryptionBoundedKey": null
+  },
+  "version": 1,
+  "ownerId": "AsdMKouqE5NB7CeQFi4wr5oj8vFUYTtdSvxFtAvtCbhh",
+  "schemaDefs": null,
+  "documentSchemas": {
+    "note": {
+      "type": "object",
+      "properties": { "message": { "type": "string" } },
+      "additionalProperties": false
     }
   }
 }
-``` 
+```
 
-> 📘
->
+> 📘 
+> 
 > Please refer to the [data contract reference page](../../reference/data-contracts.md) for more comprehensive details related to contracts and documents.
 
 # What's Happening

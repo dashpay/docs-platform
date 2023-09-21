@@ -15,7 +15,7 @@ const clientOpts = {
   network: 'testnet',
   apps: {
     tutorialContract: {
-      contractId: '3iaEhdyAVbmSjd59CT6SCrqPjfAfMdPTc8ksydgqSaWE',
+      contractId: '8cvMFwa2YbEsNNoc1PXfTacy2PVq2SzVnkZLeQSzjfi6',
     },
   },
 };

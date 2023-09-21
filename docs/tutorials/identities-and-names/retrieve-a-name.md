@@ -21,7 +21,7 @@ const retrieveName = async () => {
 };
 
 retrieveName()
-  .then((d) => console.log('Name retrieved:\n', d.toJSON()))
+  .then((d) => console.log('Name retrieved:\n', d.getData()))
   .catch((e) => console.error('Something went wrong:\n', e))
   .finally(() => client.disconnect());
 ```
@@ -40,7 +40,7 @@ const retrieveNameByRecord = async () => {
 };
 
 retrieveNameByRecord()
-  .then((d) => console.log('Name retrieved:\n', d[0].toJSON()))
+  .then((d) => console.log('Name retrieved:\n', d[0].getData()))
   .catch((e) => console.error('Something went wrong:\n', e))
   .finally(() => client.disconnect());
 ```
@@ -58,7 +58,7 @@ const retrieveNameBySearch = async () => {
 retrieveNameBySearch()
   .then((d) => {
     for (const name of d) {
-      console.log('Name retrieved:\n', name.toJSON());
+      console.log('Name retrieved:\n', name.getData());
     }
   })
   .catch((e) => console.error('Something went wrong:\n', e))
@@ -73,20 +73,17 @@ The following example response shows a retrieved name (`user-9999.dash`):
 
 ```json
 {
-  "$protocolVersion": 0,
-  "$id": "4veLBZPHDkaCPF9LfZ8fX3JZiS5q5iUVGhdBbaa9ga5E",
-  "$type": "domain",
-  "$dataContractId": "566vcJkmebVCAb2Dkj2yVMSgGFcsshupnQqtsz1RFbcy",
-  "$ownerId": "HBNMY5QWuBVKNFLhgBTC1VmpEnscrmqKPMXpnYSHwhfn",
-  "$revision": 1,
-  "label": "user-9999",
+  "label": "Alice",
+  "normalizedLabel": "alice",
+  "normalizedParentDomainName": "dash",
+  "preorderSalt": "lQEiixHMO5TJmbKwKtavg6eAkxuXzvSlrs/OX9glcYI=",
   "records": {
-    "dashUniqueIdentityId": "HBNMY5QWuBVKNFLhgBTC1VmpEnscrmqKPMXpnYSHwhfn"
-  },
-  "preorderSalt": "BzQi567XVqc8wYiVHS887sJtL6MDbxLHNnp+UpTFSB0",
-  "subdomainRules": { "allowSubdomains": false },
-  "normalizedLabel": "user-9999",
-  "normalizedParentDomainName": "dash"
+    "dashAliasIdentityId": null,
+    "dashUniqueIdentityId": "YhCPn6pSbZ11hCiFmFL6WJkmC3GSwuUSzhS4QAy84EF"
+  },  
+  "subdomainRules": {
+    "allowSubdomains": false
+  }
 }
 ``` 
 

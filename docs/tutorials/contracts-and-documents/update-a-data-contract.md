@@ -38,26 +38,17 @@ const updateContract = async () => {
   const identity = await platform.identities.get('an identity ID goes here');
 
   const existingDataContract = await platform.contracts.get('a contract ID goes here');
-  const documents = existingDataContract.getDocuments();
+  const documentSchema = existingDataContract.getDocumentSchema('note');
 
-  documents.note.properties.author = {
+  documentSchema.properties.author = {
     type: 'string',
   };
 
-  existingDataContract.setDocuments(documents);
+  existingDataContract.setDocumentSchema('note', documentSchema);
 
-  // Make sure contract passes validation checks
-  const validationResult = await platform.dpp.dataContract.validate(
-    existingDataContract,
-  );
-
-  if (validationResult.isValid()) {
-    console.log('Validation passed, broadcasting contract..');
-    // Sign and submit the data contract
-    return platform.contracts.update(existingDataContract, identity);
-  }
-  console.error(validationResult); // An array of detailed validation errors
-  throw validationResult.errors[0];
+  // Sign and submit the data contract
+  await platform.contracts.update(existingDataContract, identity);
+  return existingDataContract;
 };
 
 updateContract()
@@ -66,15 +57,13 @@ updateContract()
   .finally(() => client.disconnect());
 ```
 
-
-
 > 📘 
 > 
 > Please refer to the [data contract reference page](../../reference/data-contracts.md) for more comprehensive details related to contracts and documents.
 
 # What's Happening
 
-After we initialize the Client, we retrieve an existing contract owned by our identity. We then get the contract's documents and modify a document (adding an `author` property to the `note` document in the example).The `setDocuments` method takes one argument: the object containing the updated document types.
+After we initialize the Client, we retrieve an existing contract owned by our identity. We then get the contract's document schema and modify a document (adding an `author` property to the `note` document in the example). The `setDocumentSchema` method takes two arguments: the name of the document schema to be updated and the object containing the updated document types.
 
 Once the data contract has been updated, we still need to submit it to DAPI. The `platform.contracts.update` method takes a data contract and an identity parameter. Internally, it creates a State Transition containing the updated contract, signs the state transition, and submits the signed state transition to DAPI. A response will only be returned if an error is encountered.
 
