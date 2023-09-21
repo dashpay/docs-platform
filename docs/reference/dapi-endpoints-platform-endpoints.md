@@ -212,21 +212,22 @@ grpcurl -proto protos/platform/v0/platform.proto \
 ```javascript JavaScript (dapi-client)
 // JavaScript (dapi-client)
 const DAPIClient = require('@dashevo/dapi-client');
-const DashPlatformProtocol = require('@dashevo/dpp');
+const {
+  default: loadDpp, DashPlatformProtocol,
+} = require('@dashevo/wasm-dpp');
 
 const client = new DAPIClient();
+loadDpp();
 const dpp = new DashPlatformProtocol();
 
 const publicKeyHash = 'b8d1591aa74d440e0af9c0be16c55bbc141847f7';
 const publicKeysBuffer = [Buffer.from(publicKeyHash, 'hex')];
 
-dpp.initialize().then(() => {
-  client.platform.getIdentitiesByPublicKeyHashes(publicKeysBuffer)
-    .then((response) => {
-      const retrievedIdentity = dpp.identity.createFromBuffer(response.identities[0]);
-      console.log(retrievedIdentity.toJSON());
-    });
-});
+client.platform.getIdentitiesByPublicKeyHashes(publicKeysBuffer)
+  .then((response) => {
+    const retrievedIdentity = dpp.identity.createFromBuffer(response.identities[0]);
+    console.log(retrievedIdentity.toJSON());
+  });
 ```
 ```javascript JavaScript (dapi-grpc)
 // JavaScript (dapi-grpc)
@@ -275,27 +276,33 @@ grpcurl -proto protos/platform/v0/platform.proto \
 ```json Response (JavaScript)
 // Response (JavaScript)
 {
-  "protocolVersion": 1,
+  "$version": "0",
   "id": "4EfA9Jrvv3nnCFdSf7fad59851iiTRZ6Wcu6YVJ4iSeF",
   "publicKeys": [
     {
+      "$version": "0",
       "id": 0,
-      "type": 0,
       "purpose": 0,
       "securityLevel": 0,
+      "contractBounds": null,
+      "type": 0,
+      "readOnly": false,
       "data": "Asi0dHtSjKxf3femzGNwLuBO19EzKQTghRA0PqANzlRq",
-      "readOnly": false
+      "disabledAt": null
     },
     {
+      "$version": "0",
       "id": 1,
-      "type": 0,
       "purpose": 0,
       "securityLevel": 2,
+      "contractBounds": null,
+      "type": 0,
+      "readOnly": false,
       "data": "AgHuKPhPVIU5BWfpOcK1hgELY6aeySyrU13JaoxxkTYC",
-      "readOnly": false
+      "disabledAt": null
     }
   ],
-  "balance": 5255234422,
+  "balance": 2344694260,
   "revision": 0
 }
 ```
