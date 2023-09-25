@@ -524,7 +524,7 @@ grpcurl -proto protos/core/v0/core.proto \
 
 ## Deprecated Endpoints
 
-There are no recently deprecated endpoints, but the previous version of documentation can be [viewed here](https://dashplatform.readme.io/v0.23.0/docs/reference-dapi-endpoints-core-grpc-endpoints).
+There are no recently deprecated endpoints, but the previous version of documentation can be [viewed here](https://docs.dash.org/projects/platform/en/0.24.0/docs/reference/dapi-endpoints-core-grpc-endpoints.html).
 
 ## Code Reference
 

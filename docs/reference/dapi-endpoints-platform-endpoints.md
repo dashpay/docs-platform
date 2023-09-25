@@ -786,7 +786,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ## Deprecated Endpoints
 
-No endpoints were deprecated in Dash Platform v0.24, but the previous version of documentation can be [viewed here](https://dashplatform.readme.io/v0.23.0/docs/reference-dapi-endpoints-platform-endpoints).
+No endpoints were deprecated in Dash Platform v0.24, but the previous version of documentation can be [viewed here](https://docs.dash.org/projects/platform/en/0.24.0/docs/reference/dapi-endpoints-platform-endpoints.html).
 
 ## Code Reference
 

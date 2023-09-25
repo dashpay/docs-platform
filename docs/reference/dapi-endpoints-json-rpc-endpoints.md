@@ -328,7 +328,7 @@ puts response.read_body
 
 ## Deprecated Endpoints
 
-There are no recently deprecated endpoint, but the previous version of documentation can be [viewed here](https://dashplatform.readme.io/v0.23.0/docs/reference-dapi-endpoints-json-rpc-endpoints).
+There are no recently deprecated endpoint, but the previous version of documentation can be [viewed here](https://docs.dash.org/projects/platform/en/0.24.0/docs/reference/dapi-endpoints-json-rpc-endpoints.html).
 
 ## Code Reference
 

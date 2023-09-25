@@ -53,7 +53,7 @@ In addition to providing the request data, the following endpoints can also prov
 
 > 📘 
 > 
-> The previous version of documentation can be [viewed here](https://dashplatform.readme.io/v0.23.0/docs/reference-dapi-endpoints).
+> The previous version of documentation can be [viewed here](https://docs.dash.org/projects/platform/en/0.24.0/docs/reference/dapi-endpoints.html).
 
 ```{toctree}
 :maxdepth: 2
