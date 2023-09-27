@@ -358,21 +358,21 @@ grpcurl -proto protos/platform/v0/platform.proto \
 ```javascript JavaScript (dapi-client)
 // JavaScript (dapi-client)
 const DAPIClient = require('@dashevo/dapi-client');
-const Identifier = require('@dashevo/dpp/lib/Identifier');
-const cbor = require('cbor');
-const varint = require('varint');
+const {
+  default: loadDpp,
+  DashPlatformProtocol,
+  Identifier,
+} = require('@dashevo/wasm-dpp');
 
+  loadDpp();
+const dpp = new DashPlatformProtocol(null);
 const client = new DAPIClient();
 
 const contractId = Identifier.from('GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec');
 client.platform.getDataContract(contractId).then((response) => {
-    // Strip off protocol version (leading varint) and decode
-    const contractBuffer = Buffer.from(response.getDataContract());
-    const protocolVersion = varint.decode(contractBuffer);
-    const contract = cbor.decode(
-      contractBuffer.slice(varint.encodingLength(protocolVersion), contractBuffer.length),
-    );
-  console.dir(contract, { depth: 10 });
+  dpp.dataContract.createFromBuffer(response.getDataContract()).then((dataContract) => {
+    console.dir(dataContract.toJSON(), { depth: 10 });
+  });
 });
 ```
 ```javascript JavaScript (dapi-grpc)
@@ -380,9 +380,7 @@ client.platform.getDataContract(contractId).then((response) => {
 const {
   v0: { PlatformPromiseClient, GetDataContractRequest },
 } = require('@dashevo/dapi-grpc');
-const Identifier = require('@dashevo/dpp/lib/Identifier');
-const cbor = require('cbor');
-const varint = require('varint');
+const { default: loadDpp, DashPlatformProtocol, Identifier } = require('@dashevo/wasm-dpp');
 
 const platformPromiseClient = new PlatformPromiseClient(
   'https://seed-1.testnet.networks.dash.org:1443',
@@ -393,15 +391,12 @@ const contractIdBuffer = Buffer.from(contractId);
 const getDataContractRequest = new GetDataContractRequest();
 getDataContractRequest.setId(contractIdBuffer);
 
-platformPromiseClient.getDataContract(getDataContractRequest)
+platformPromiseClient
+  .getDataContract(getDataContractRequest)
   .then((response) => {
-    // Strip off protocol version (leading varint) and decode
-    const contractBuffer = Buffer.from(response.getDataContract());
-    const protocolVersion = varint.decode(contractBuffer);
-    const decodedDataContract = cbor.decode(
-      contractBuffer.slice(varint.encodingLength(protocolVersion), contractBuffer.length),
-    );
-    console.dir(decodedDataContract, { depth: 5 });
+    dpp.dataContract.createFromBuffer(response.getDataContract()).then((dataContract) => {
+      console.dir(dataContract.toJSON(), { depth: 10 });
+    });
   })
   .catch((e) => console.error(e));
 ```
@@ -423,43 +418,114 @@ grpcurl -proto protos/platform/v0/platform.proto \
 ```json Response (JavaScript)
 // Response (JavaScript)
 {
-  "$id": "Buffer(32) [Uint8Array] [
-    230, 104, 198,  89, 175, 102, 174, 225,
-    231,  44,  24, 109, 222, 123,  91, 126,
-     10,  29, 113,  42,   9, 196,  13,  87,
-     33, 246,  34, 191,  83, 197,  49,  85
-  ]",
-  "$schema": "https://schema.dash.org/dpp-0-4-0/meta/data-contract",
-  "ownerId": "Buffer(32) [Uint8Array] [
-     48,  18, 193, 155, 152, 236,   0,  51,
-    173, 219,  54, 205, 100, 183, 245,  16,
-    103,  15,  42,  53,  26,  67,   4, 181,
-    246, 153,  65,  68,  40, 110, 253, 172
-  ]",
+  "$format_version": "0",
+  "id": "GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec",
+  "config": {
+    "$format_version": "0",
+    "canBeDeleted": false,
+    "readonly": false,
+    "keepsHistory": false,
+    "documentsKeepHistoryContractDefault": false,
+    "documentsMutableContractDefault": true,
+    "requiresIdentityEncryptionBoundedKey": null,
+    "requiresIdentityDecryptionBoundedKey": null
+  },
   "version": 1,
-  "documents": {
+  "ownerId": "4EfA9Jrvv3nnCFdSf7fad59851iiTRZ6Wcu6YVJ4iSeF",
+  "schemaDefs": null,
+  "documentSchemas": {
     "domain": {
       "type": "object",
       "indices": [
         {
           "name": "parentNameAndLabel",
-          "unique": true,
           "properties": [
             { "normalizedParentDomainName": "asc" },
             { "normalizedLabel": "asc" }
-          ]
+          ],
+          "unique": true
         },
         {
           "name": "dashIdentityId",
-          "unique": true,
-          "properties": [ { "records.dashUniqueIdentityId": "asc" } ]
+          "properties": [ { "records.dashUniqueIdentityId": "asc" } ],
+          "unique": true
         },
         {
           "name": "dashAlias",
           "properties": [ { "records.dashAliasIdentityId": "asc" } ]
         }
       ],
-      "$comment": "In order to register a domain you need to create a preorder. The preorder step is needed to prevent man-in-the-middle attacks. normalizedLabel + '.' + normalizedParentDomain must not be longer than 253 chars length as defined by RFC 1035. Domain documents are immutable: modification and deletion are restricted",
+      "properties": {
+        "label": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]$",
+          "minLength": 3,
+          "maxLength": 63,
+          "description": "Domain label. e.g. 'Bob'."
+        },
+        "normalizedLabel": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$",
+          "maxLength": 63,
+          "description": "Domain label in lowercase for case-insensitive uniqueness validation. e.g. 'bob'",
+          "$comment": "Must be equal to the label in lowercase. This property will be deprecated due to case insensitive indices"
+        },
+        "normalizedParentDomainName": {
+          "type": "string",
+          "pattern": "^$|^[a-z0-9][a-z0-9-\\.]{0,61}[a-z0-9]$",
+          "minLength": 0,
+          "maxLength": 63,
+          "description": "A full parent domain name in lowercase for case-insensitive uniqueness validation. e.g. 'dash'",
+          "$comment": "Must either be equal to an existing domain or empty to create a top level domain. Only the data contract owner can create top level domains."
+        },
+        "preorderSalt": {
+          "type": "array",
+          "byteArray": true,
+          "minItems": 32,
+          "maxItems": 32,
+          "description": "Salt used in the preorder document"
+        },
+        "records": {
+          "type": "object",
+          "properties": {
+            "dashUniqueIdentityId": {
+              "type": "array",
+              "byteArray": true,
+              "minItems": 32,
+              "maxItems": 32,
+              "contentMediaType": "application/x.dash.dpp.identifier",
+              "description": "Identity ID to be used to create the primary name the Identity",
+              "$comment": "Must be equal to the document owner"
+            },
+            "dashAliasIdentityId": {
+              "type": "array",
+              "byteArray": true,
+              "minItems": 32,
+              "maxItems": 32,
+              "contentMediaType": "application/x.dash.dpp.identifier",
+              "description": "Identity ID to be used to create alias names for the Identity",
+              "$comment": "Must be equal to the document owner"
+            }
+          },
+          "$comment": "Constraint with max and min properties ensure that only one identity record is used - either a `dashUniqueIdentityId` or a `dashAliasIdentityId`",
+          "minProperties": 1,
+          "maxProperties": 1,
+          "additionalProperties": false
+        },
+        "subdomainRules": {
+          "type": "object",
+          "properties": {
+            "allowSubdomains": {
+              "type": "boolean",
+              "description": "This option defines who can create subdomains: true - anyone; false - only the domain owner",
+              "$comment": "Only the domain owner is allowed to create subdomains for non top-level domains"
+            }
+          },
+          "description": "Subdomain rules allow domain owners to define rules for subdomains",
+          "additionalProperties": false,
+          "required": [ "allowSubdomains" ]
+        }
+      },
       "required": [
         "label",
         "normalizedLabel",
@@ -468,100 +534,30 @@ grpcurl -proto protos/platform/v0/platform.proto \
         "records",
         "subdomainRules"
       ],
-      "properties": {
-        "label": {
-          "type": "string",
-          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]$",
-          "maxLength": 63,
-          "minLength": 3,
-          "description": "Domain label. e.g. 'Bob'."
-        },
-        "records": {
-          "type": "object",
-          "$comment": "Constraint with max and min properties ensure that only one identity record is used - either a `dashUniqueIdentityId` or a `dashAliasIdentityId`",
-          "properties": {
-            "dashAliasIdentityId": {
-              "type": "array",
-              "$comment": "Must be equal to the document owner",
-              "maxItems": 32,
-              "minItems": 32,
-              "byteArray": true,
-              "description": "Identity ID to be used to create alias names for the Identity",
-              "contentMediaType": "application/x.dash.dpp.identifier"
-            },
-            "dashUniqueIdentityId": {
-              "type": "array",
-              "$comment": "Must be equal to the document owner",
-              "maxItems": 32,
-              "minItems": 32,
-              "byteArray": true,
-              "description": "Identity ID to be used to create the primary name the Identity",
-              "contentMediaType": "application/x.dash.dpp.identifier"
-            }
-          },
-          "maxProperties": 1,
-          "minProperties": 1,
-          "additionalProperties": false
-        },
-        "preorderSalt": {
-          "type": "array",
-          "maxItems": 32,
-          "minItems": 32,
-          "byteArray": true,
-          "description": "Salt used in the preorder document"
-        },
-        "subdomainRules": {
-          "type": "object",
-          "required": [ "allowSubdomains" ],
-          "properties": {
-            "allowSubdomains": {
-              "type": "boolean",
-              "$comment": "Only the domain owner is allowed to create subdomains for non top-level domains",
-              "description": "This option defines who can create subdomains: true - anyone; false - only the domain owner"
-            }
-          },
-          "description": "Subdomain rules allow domain owners to define rules for subdomains",
-          "additionalProperties": false
-        },
-        "normalizedLabel": {
-          "type": "string",
-          "pattern": "^[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$",
-          "$comment": "Must be equal to the label in lowercase. This property will be deprecated due to case insensitive indices",
-          "maxLength": 63,
-          "description": "Domain label in lowercase for case-insensitive uniqueness validation. e.g. 'bob'"
-        },
-        "normalizedParentDomainName": {
-          "type": "string",
-          "pattern": "^$|^[a-z0-9][a-z0-9-\\.]{0,61}[a-z0-9]$",
-          "$comment": "Must either be equal to an existing domain or empty to create a top level domain. Only the data contract owner can create top level domains.",
-          "maxLength": 63,
-          "minLength": 0,
-          "description": "A full parent domain name in lowercase for case-insensitive uniqueness validation. e.g. 'dash'"
-        }
-      },
-      "additionalProperties": false
+      "additionalProperties": false,
+      "$comment": "In order to register a domain you need to create a preorder. The preorder step is needed to prevent man-in-the-middle attacks. normalizedLabel + '.' + normalizedParentDomain must not be longer than 253 chars length as defined by RFC 1035. Domain documents are immutable: modification and deletion are restricted"
     },
     "preorder": {
       "type": "object",
       "indices": [
         {
           "name": "saltedHash",
-          "unique": true,
-          "properties": [ { "saltedDomainHash": "asc" } ]
+          "properties": [ { "saltedDomainHash": "asc" } ],
+          "unique": true
         }
       ],
-      "$comment": "Preorder documents are immutable: modification and deletion are restricted",
-      "required": [ "saltedDomainHash" ],
       "properties": {
         "saltedDomainHash": {
           "type": "array",
-          "maxItems": 32,
-          "minItems": 32,
           "byteArray": true,
+          "minItems": 32,
+          "maxItems": 32,
           "description": "Double sha-256 of the concatenation of a 32 byte random salt and a normalized domain name"
         }
       },
-      "additionalProperties": false
+      "required": [ "saltedDomainHash" ],
+      "additionalProperties": false,
+      "$comment": "Preorder documents are immutable: modification and deletion are restricted"
     }
   }
 }
