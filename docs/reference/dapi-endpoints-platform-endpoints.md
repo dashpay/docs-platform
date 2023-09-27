@@ -19,11 +19,11 @@ Some [additional metadata](https://github.com/dashevo/platform/blob/master/packa
 
 ### broadcastStateTransition
 
-> 📘 
-> 
+> 📘
+>
 > **Note:** The [`waitForStateTransitionResult` endpoint](#waitforstatetransitionresult) should be used in conjunction with this one for instances where proof of block confirmation is required.
 
-Broadcasts a [state transition](../explanations/platform-protocol-state-transition.md) to the platform via DAPI to make a change to layer 2 data. The `broadcastStateTransition` call returns once the state transition has been accepted into the mempool. 
+Broadcasts a [state transition](../explanations/platform-protocol-state-transition.md) to the platform via DAPI to make a change to layer 2 data. The `broadcastStateTransition` call returns once the state transition has been accepted into the mempool.
 
 **Returns**: Nothing or error
 
@@ -49,7 +49,7 @@ Broadcasts a [state transition](../explanations/platform-protocol-state-transiti
 
 > 🚧 Breaking changes
 >
-> As of Dash Platform 0.24 the `protocolVersion` is no longer included in the CBOR-encoded data. It is instead prepended as a varint to the data following CBOR encoding.
+> Due to serialization changes in Dash Platform 0.25, using wasm-dpp is recommended when working with identities, data contracts, and documents.
 
 **Returns**: [Identity](../explanations/identity.md) information for the requested identity  
 **Parameters**:
@@ -339,6 +339,10 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ### getDataContract
 
+> 🚧 Breaking changes
+>
+> Due to serialization changes in Dash Platform 0.25, using wasm-dpp is recommended when working with identities, data contracts, and documents.
+
 **Returns**: [Data Contract](../explanations/platform-protocol-data-contract.md) information for the requested data contract  
 **Parameters**:
 
@@ -347,11 +351,11 @@ grpcurl -proto protos/platform/v0/platform.proto \
 | `id`    | Bytes   | Yes      | A data contract `id`                                                       |
 | `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested data contract |
 
-> 📘 
-> 
+> 📘
+>
 > **Note**: When requesting proofs, the data requested will be encoded as part of the proof in the response.
 
-** Example Request and Response **
+**Example Request and Response**
 
 ::::{tab-set-code}
 
@@ -375,6 +379,7 @@ client.platform.getDataContract(contractId).then((response) => {
   });
 });
 ```
+
 ```javascript JavaScript (dapi-grpc)
 // JavaScript (dapi-grpc)
 const {
@@ -400,6 +405,7 @@ platformPromiseClient
   })
   .catch((e) => console.error(e));
 ```
+
 ```shell gRPCurl
 # gRPCurl
 # `id` must be represented in base64
@@ -562,6 +568,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
   }
 }
 ```
+
 ```json Response (gRPCurl)
 // Response (gRPCurl)
 {
@@ -579,13 +586,17 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ### getDocuments
 
+> 🚧 Breaking changes
+>
+> Due to serialization changes in Dash Platform 0.25, using wasm-dpp is recommended when working with identities, data contracts, and documents.
+
 **Returns**: [Document](../explanations/platform-protocol-document.md) information for the requested document(s)  
 **Parameters**:
 
-> 🚧 - Parameter constraints
-> 
-> The `where`, `order_by`, `limit`, `start_at`, and `start_after` parameters must comply with the limits defined on the [Query Syntax](../reference/query-syntax.md) page.
-> 
+> 📘 Parameter constraints
+>
+> **Note**: The `where`, `order_by`, `limit`, `start_at`, and `start_after` parameters must comply with the limits defined on the [Query Syntax](../reference/query-syntax.md) page.
+>
 > Additionally, note that `where` and `order_by` must be [CBOR](https://tools.ietf.org/html/rfc7049) encoded.
 
 | Name                    | Type    | Required | Description                                                                                      |
@@ -602,11 +613,11 @@ grpcurl -proto protos/platform/v0/platform.proto \
 | ----------              |         |          |                                                                                                  |
 | `prove`                 | Boolean | No       | Set to `true` to receive a proof that contains the requested document(s)                         |
 
-> 📘 
-> 
+> 📘
+>
 > **Note**: When requesting proofs, the data requested will be encoded as part of the proof in the response.
 
-** Example Request and Response **
+**Example Request and Response**
 
 ::::{tab-set-code}
 
@@ -648,6 +659,7 @@ client.platform.getDataContract(contractId).then((contractResponse) => {
     });
 });
 ```
+
 ```javascript JavaScript (dapi-grpc)
 // JavaScript (dapi-grpc)
 const {
@@ -698,6 +710,7 @@ platformPromiseClient
   })
   .catch((e) => console.error(e));
 ```
+
 ```shell Request (gRPCurl)
 # gRPCurl
 # Request documents
@@ -754,6 +767,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
   "$type": "domain"
 }
 ```
+
 ```json Response (gRPCurl)
 // Response (gRPCurl)
 {
@@ -781,11 +795,11 @@ grpcurl -proto protos/platform/v0/platform.proto \
 | `state_transition_hash` | Bytes   | Yes      | Hash of the state transition     |
 | `prove`                 | Boolean | Yes      | Set to `true` to request a proof |
 
-> 📘 
-> 
+> 📘
+>
 > **Note**: When requesting proofs, the data requested will be encoded as part of the proof in the response.
 
-** Example Request**
+**Example Request**
 
 ```{eval-rst}
 ..
@@ -813,6 +827,7 @@ client.platform.waitForStateTransitionResult(hash, { prove: true })
   });
 
 ```
+
 ```shell Request (gRPCurl)
 # gRPCurl
 # Replace `your_state_transition_hash` with your own before running
@@ -847,5 +862,5 @@ No endpoints were deprecated in Dash Platform v0.24, but the previous version of
 
 Implementation details related to the information on this page can be found in:
 
-- The [Platform repository](https://github.com/dashevo/platform/tree/master/packages/dapi) `packages/dapi/lib/grpcServer/handlers/core` folder
-- The [Platform repository](https://github.com/dashevo/platform/tree/master/packages/dapi-grpc) `packages/dapi-grpc/protos` folder
+* The [Platform repository](https://github.com/dashevo/platform/tree/master/packages/dapi) `packages/dapi/lib/grpcServer/handlers/core` folder
+* The [Platform repository](https://github.com/dashevo/platform/tree/master/packages/dapi-grpc) `packages/dapi-grpc/protos` folder
