@@ -613,63 +613,88 @@ grpcurl -proto protos/platform/v0/platform.proto \
 ```javascript JavaScript (dapi-client)
 // JavaScript (dapi-client)
 const DAPIClient = require('@dashevo/dapi-client');
-const Identifier = require('@dashevo/dpp/lib/Identifier');
-const cbor = require('cbor');
-const varint = require('varint');
+const {
+  default: loadDpp,
+  DashPlatformProtocol,
+  Identifier,
+} = require('@dashevo/wasm-dpp');
 
+loadDpp();
+const dpp = new DashPlatformProtocol(null);
 const client = new DAPIClient();
 
 const contractId = Identifier.from('GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec');
-client.platform.getDocuments(contractId, 'domain', { limit: 10 }).then((response) => {
-  for (const rawData of response.documents) {
-    // Strip off protocol version (leading varint) and decode
-    const documentBuffer = Buffer.from(rawData);
-    const protocolVersion = varint.decode(documentBuffer);
-    const document = cbor.decode(
-      documentBuffer.slice(varint.encodingLength(protocolVersion), documentBuffer.length),
-    );
-    console.log(document);
-  }
+const type = 'domain';
+const limit = 1;
+client.platform.getDataContract(contractId).then((contractResponse) => {
+  dpp.dataContract
+    .createFromBuffer(contractResponse.getDataContract())
+    .then((contract) => {
+      // Get document(s)
+      client.platform
+        .getDocuments(contractId, type, {
+          limit,
+        })
+        .then((response) => {
+          for (const document of response.documents) {
+            const doc = dpp.document.createExtendedDocumentFromDocumentBuffer(
+              document,
+              type,
+              contract,
+            );
+            console.log(doc.toJSON());
+          }
+        });
+    });
 });
 ```
 ```javascript JavaScript (dapi-grpc)
 // JavaScript (dapi-grpc)
 const {
-  v0: { PlatformPromiseClient, GetDocumentsRequest },
+  v0: { PlatformPromiseClient, GetDataContractRequest, GetDocumentsRequest },
 } = require('@dashevo/dapi-grpc');
-const cbor = require('cbor');
-const Identifier = require('@dashevo/dpp/lib/Identifier');
-const varint = require('varint');
+const { default: loadDpp, DashPlatformProtocol, Identifier } = require('@dashevo/wasm-dpp');
 
+loadDpp();
+const dpp = new DashPlatformProtocol(null);
 const platformPromiseClient = new PlatformPromiseClient(
   'https://seed-1.testnet.networks.dash.org:1443',
 );
 
 const contractId = Identifier.from('GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec');
 const contractIdBuffer = Buffer.from(contractId);
-const getDocumentsRequest = new GetDocumentsRequest();
-const type = 'domain';
-const limit = 10;
+const getDataContractRequest = new GetDataContractRequest();
+getDataContractRequest.setId(contractIdBuffer);
 
-getDocumentsRequest.setDataContractId(contractIdBuffer);
-getDocumentsRequest.setDocumentType(type);
-// getDocumentsRequest.setWhere(whereSerialized);
-// getDocumentsRequest.setOrderBy(orderBySerialized);
-getDocumentsRequest.setLimit(limit);
-// getDocumentsRequest.setStartAfter(startAfter);
-// getDocumentsRequest.setStartAt(startAt);
+platformPromiseClient
+  .getDataContract(getDataContractRequest)
+  .then((contractResponse) => {
+    dpp.dataContract.createFromBuffer(contractResponse.getDataContract()).then((contract) => {
+      // Get documents
+      const getDocumentsRequest = new GetDocumentsRequest();
+      const type = 'domain';
+      const limit = 10;
 
-platformPromiseClient.getDocuments(getDocumentsRequest)
-  .then((response) => {
-    for (const document of response.getDocumentsList()) {
-      // Strip off protocol version (leading varint) and decode
-      const documentBuffer = Buffer.from(document);
-      const protocolVersion = varint.decode(documentBuffer);
-      const decodedDocument = cbor.decode(
-        documentBuffer.slice(varint.encodingLength(protocolVersion), documentBuffer.length),
-      );
-      console.log(decodedDocument);      
-    }
+      getDocumentsRequest.setDataContractId(contractIdBuffer);
+      getDocumentsRequest.setDocumentType(type);
+      // getDocumentsRequest.setWhere(whereSerialized);
+      // getDocumentsRequest.setOrderBy(orderBySerialized);
+      getDocumentsRequest.setLimit(limit);
+      // getDocumentsRequest.setStartAfter(startAfter);
+      // getDocumentsRequest.setStartAt(startAt);
+
+      platformPromiseClient.getDocuments(getDocumentsRequest).then((response) => {
+        for (const document of response.getDocuments().getDocumentsList()) {
+          const documentBuffer = Buffer.from(document);
+          const doc = dpp.document.createExtendedDocumentFromDocumentBuffer(
+            documentBuffer,
+            type,
+            contract,
+          );
+          console.log(doc.toJSON());
+        }
+      });
+    });
   })
   .catch((e) => console.error(e));
 ```
@@ -694,19 +719,39 @@ grpcurl -proto protos/platform/v0/platform.proto \
 ```json Response (JavaScript)
 // Response (JavaScript)
 {
-  "$id": "<Buffer 01 a0 7c 69 43 82 cf fe 93 97 be c9 f4 be cd 67 81 8f 60 d2 a7 56 48 08 11 80 49 84 0b 2e 2c 5d>",
-  "$type": "domain",
-  "label": "Dash01",
+  "$id": "AhWPYyM5eTFGFvGXEBPaqEPs93QyBTZRHYsQSVGn1Jg",
+  "$ownerId": "YhCPn6pSbZ11hCiFmFL6WJkmC3GSwuUSzhS4QAy84EF",
+  "label": "Alice007",
+  "normalizedLabel": "alice007",
+  "normalizedParentDomainName": "dash",
+  "preorderSalt": "WN/tDnACk4yyrYqXfABTpozmgtS05kvGWCz7ypt9310=",
   "records": {
-    "dashUniqueIdentityId": "<Buffer f5 50 ed 37 1a 12 3f 54 00 59 31 84 f7 f7 37 f1 f4 b1 5d 05 6f 9c a8 0e 5f 00 52 82 08 77 7c 4a>"
+    "dashAliasIdentityId": "CB50kDKQpfYnb1WdLv4ir1LOwJOW9cfXkhj9grusk+Q=",
+    "dashUniqueIdentityId": null
   },
-  "$ownerId": "<Buffer f5 50 ed 37 1a 12 3f 54 00 59 31 84 f7 f7 37 f1 f4 b1 5d 05 6f 9c a8 0e 5f 00 52 82 08 77 7c 4a>",
-  "$revision": 1,
-  "preorderSalt": "<Buffer 2c b4 1b e9 f4 40 03 9b 47 2f 31 74 46 df 7f 4f 43 fe 14 80 be ca 84 0d 63 0f a6 65 23 b9 9c a1>",
   "subdomainRules": { "allowSubdomains": false },
-  "$dataContractId": "<Buffer e6 68 c6 59 af 66 ae e1 e7 2c 18 6d de 7b 5b 7e 0a 1d 71 2a 09 c4 0d 57 21 f6 22 bf 53 c5 31 55>",
-  "normalizedLabel": "dash01",
-  "normalizedParentDomainName": "dash"
+  "$revision": 1,
+  "$createdAt": null,
+  "$updatedAt": null,
+  "$dataContract": {
+    "$format_version": "0",
+    "id": "GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec",
+    "config": {
+      "$format_version": "0",
+      "canBeDeleted": false,
+      "readonly": false,
+      "keepsHistory": false,
+      "documentsKeepHistoryContractDefault": false,
+      "documentsMutableContractDefault": true,
+      "requiresIdentityEncryptionBoundedKey": null,
+      "requiresIdentityDecryptionBoundedKey": null
+    },
+    "version": 1,
+    "ownerId": "4EfA9Jrvv3nnCFdSf7fad59851iiTRZ6Wcu6YVJ4iSeF",
+    "schemaDefs": null,
+    "documentSchemas": { "domain": ["Object"], "preorder": ["Object"] }
+  },
+  "$type": "domain"
 }
 ```
 ```json Response (gRPCurl)
