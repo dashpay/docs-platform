@@ -247,30 +247,30 @@ client.platform.getIdentitiesByPublicKeyHashes(publicKeysBuffer)
 const {
   v0: { PlatformPromiseClient, GetIdentitiesByPublicKeyHashesRequest },
 } = require('@dashevo/dapi-grpc');
-const DashPlatformProtocol = require('@dashevo/dpp');
+const { DashPlatformProtocol, default: loadDpp } = require('@dashevo/wasm-dpp');
 
+loadDpp();
 const dpp = new DashPlatformProtocol();
 
-dpp.initialize()
-  .then(() => {
-    const platformPromiseClient = new PlatformPromiseClient(
-      'https://seed-1.testnet.networks.dash.org:1443',
-    );
+const platformPromiseClient = new PlatformPromiseClient(
+  'https://seed-1.testnet.networks.dash.org:1443',
+);
 
-    const publicKeyHash = 'b8d1591aa74d440e0af9c0be16c55bbc141847f7';
-    const publicKeysBuffer = [Buffer.from(publicKeyHash, 'hex')];
+const publicKeyHash = 'b8d1591aa74d440e0af9c0be16c55bbc141847f7';
+const publicKeysBuffer = [Buffer.from(publicKeyHash, 'hex')];
 
-    const getIdentitiesByPublicKeyHashesRequest = new GetIdentitiesByPublicKeyHashesRequest();
-    getIdentitiesByPublicKeyHashesRequest.setPublicKeyHashesList(publicKeysBuffer);
+const getIdentitiesByPublicKeyHashesRequest = new GetIdentitiesByPublicKeyHashesRequest();
+getIdentitiesByPublicKeyHashesRequest.setPublicKeyHashesList(publicKeysBuffer);
 
-    platformPromiseClient.getIdentitiesByPublicKeyHashes(getIdentitiesByPublicKeyHashesRequest)
-      .then((response) => {
-        const identitiesResponse = response.getIdentitiesList();
-      	console.log(dpp.identity.createFromBuffer(Buffer.from(identitiesResponse[0])).toJSON());
-      })
-      .catch((e) => console.error(e));
-  	});
+platformPromiseClient
+  .getIdentitiesByPublicKeyHashes(getIdentitiesByPublicKeyHashesRequest)
+  .then((response) => {
+    const identitiesResponse = response.getIdentities().getIdentitiesList();
+    console.log(dpp.identity.createFromBuffer(Buffer.from(identitiesResponse[0])).toJSON());
+  })
+  .catch((e) => console.error(e));
 ```
+
 ```shell gRPCurl
 # gRPCurl
 # `public_key_hashes` must be represented in base64
@@ -315,10 +315,11 @@ grpcurl -proto protos/platform/v0/platform.proto \
       "disabledAt": null
     }
   ],
-  "balance": 2344694260,
+  "balance": 7327280900,
   "revision": 0
 }
 ```
+
 ```json Response (gRPCurl)
 // Response (gRPCurl)
 {
