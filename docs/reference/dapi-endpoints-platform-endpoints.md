@@ -70,21 +70,20 @@ Broadcasts a [state transition](../explanations/platform-protocol-state-transiti
 ```javascript JavaScript (dapi-client)
 // JavaScript (dapi-client)
 const DAPIClient = require('@dashevo/dapi-client');
-const Identifier = require('@dashevo/dpp/lib/Identifier');
-const cbor = require('cbor');
-const varint = require('varint');
+const {
+  default: loadDpp,
+  DashPlatformProtocol,
+  Identifier,
+} = require('@dashevo/wasm-dpp');
 
+loadDpp();
+const dpp = new DashPlatformProtocol();
 const client = new DAPIClient();
 
 const identityId = Identifier.from('4EfA9Jrvv3nnCFdSf7fad59851iiTRZ6Wcu6YVJ4iSeF');
 client.platform.getIdentity(identityId).then((response) => {
-  // Strip off protocol version (leading varint) and decode
-  const identityBuffer = Buffer.from(response.getIdentity());
-  const protocolVersion = varint.decode(identityBuffer);
-  const identity = cbor.decode(
-    identityBuffer.slice(varint.encodingLength(protocolVersion), identityBuffer.length),
-  );
-  console.log(identity);
+  const identity = dpp.identity.createFromBuffer(response.getIdentity());
+  console.log(identity.toJSON());
 });
 ```
 ```javascript JavaScript (dapi-grpc)
@@ -92,10 +91,14 @@ client.platform.getIdentity(identityId).then((response) => {
 const {
   v0: { PlatformPromiseClient, GetIdentityRequest },
 } = require('@dashevo/dapi-grpc');
-const Identifier = require('@dashevo/dpp/lib/Identifier');
-const cbor = require('cbor');
-const varint = require('varint');
+const {
+  default: loadDpp,
+  DashPlatformProtocol,
+  Identifier,
+} = require('@dashevo/wasm-dpp');
 
+loadDpp();
+const dpp = new DashPlatformProtocol(null);
 const platformPromiseClient = new PlatformPromiseClient(
   'https://seed-1.testnet.networks.dash.org:1443',
 );
@@ -106,15 +109,11 @@ const getIdentityRequest = new GetIdentityRequest();
 getIdentityRequest.setId(idBuffer);
 getIdentityRequest.setProve(false);
 
-platformPromiseClient.getIdentity(getIdentityRequest)
+platformPromiseClient
+  .getIdentity(getIdentityRequest)
   .then((response) => {
-    // Strip off protocol version (leading varint) and decode
-    const identityBuffer = Buffer.from(response.getIdentity());
-    const protocolVersion = varint.decode(identityBuffer);
-    const decodedIdentity = cbor.decode(
-      identityBuffer.slice(varint.encodingLength(protocolVersion), identityBuffer.length),
-    );
-    console.log(decodedIdentity);  
+    const identity = dpp.identity.createFromBuffer(response.getIdentity());
+    console.dir(identity.toJSON());
   })
   .catch((e) => console.error(e));
 ```
@@ -136,27 +135,34 @@ grpcurl -proto protos/platform/v0/platform.proto \
 ```json Response (JavaScript)
 // Response (JavaScript)
 {
-  "id": "<Buffer 30 12 c1 9b 98 ec 00 33 ad db 36 cd 64 b7 f5 10 67 0f 2a 35 1a 43 04 b5 f6 99 41 44 28 6e fd ac>",
-  "balance": 5255234422,
-  "revision": 0,
+  "$version": "0",
+  "id": "4EfA9Jrvv3nnCFdSf7fad59851iiTRZ6Wcu6YVJ4iSeF",
   "publicKeys": [
     {
+      "$version": "0",
       "id": 0,
-      "data": "<Buffer 02 c8 b4 74 7b 52 8c ac 5f dd f7 a6 cc 63 70 2e e0 4e d7 d1 33 29 04 e0 85 10 34 3e a0 0d ce 54 6a>",
-      "type": 0,
       "purpose": 0,
+      "securityLevel": 0,
+      "contractBounds": null,
+      "type": 0,
       "readOnly": false,
-      "securityLevel": 0
+      "data": "Asi0dHtSjKxf3femzGNwLuBO19EzKQTghRA0PqANzlRq",
+      "disabledAt": null
     },
     {
+      "$version": "0",
       "id": 1,
-      "data": "<Buffer 02 01 ee 28 f8 4f 54 85 39 05 67 e9 39 c2 b5 86 01 0b 63 a6 9e c9 2c ab 53 5d c9 6a 8c 71 91 36 02>",
-      "type": 0,
       "purpose": 0,
+      "securityLevel": 2,
+      "contractBounds": null,
+      "type": 0,
       "readOnly": false,
-      "securityLevel": 2
+      "data": "AgHuKPhPVIU5BWfpOcK1hgELY6aeySyrU13JaoxxkTYC",
+      "disabledAt": null
     }
-  ]
+  ],
+  "balance": 7327280900,
+  "revision": 0
 }
 ```
 ```json Response (gRPCurl)
