@@ -48,7 +48,7 @@ Broadcasts a [state transition](../explanations/platform-protocol-state-transiti
 ### getIdentity
 
 > 🚧 Breaking changes
-> 
+>
 > As of Dash Platform 0.24 the `protocolVersion` is no longer included in the CBOR-encoded data. It is instead prepended as a varint to the data following CBOR encoding.
 
 **Returns**: [Identity](../explanations/identity.md) information for the requested identity  
@@ -59,11 +59,11 @@ Broadcasts a [state transition](../explanations/platform-protocol-state-transiti
 | `id`    | Bytes   | Yes      | An identity `id`                                                      |
 | `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested identity |
 
-> 📘 
-> 
+> 📘
+>
 > **Note**: When requesting proofs, the data requested will be encoded as part of the proof in the response.
 
-** Example Request and Response **
+**Example Request and Response**
 
 ::::{tab-set-code}
 
@@ -86,6 +86,7 @@ client.platform.getIdentity(identityId).then((response) => {
   console.log(identity.toJSON());
 });
 ```
+
 ```javascript JavaScript (dapi-grpc)
 // JavaScript (dapi-grpc)
 const {
@@ -117,6 +118,7 @@ platformPromiseClient
   })
   .catch((e) => console.error(e));
 ```
+
 ```shell gRPCurl
 # gRPCurl
 # `id` must be represented in base64
@@ -165,6 +167,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
   "revision": 0
 }
 ```
+
 ```json Response (gRPCurl)
 // Response (gRPCurl)
 {
@@ -182,7 +185,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ### getIdentitiesByPublicKeyHashes
 
-**Returns**: [Identity](../explanations/identity.md) an array of identities associated with the provided public key hashes  
+**Returns**: An array of [identities](../explanations/identity.md) associated with the provided public key hashes  
 **Parameters**:
 
 | Name                | Type    | Required | Description                                                             |
@@ -190,28 +193,31 @@ grpcurl -proto protos/platform/v0/platform.proto \
 | `public_key_hashes` | Bytes   | Yes      | Public key hashes (sha256-ripemd160) of identity public keys            |
 | `prove`             | Boolean | No       | Set to `true` to receive a proof that contains the requested identities |
 
-> 📘 
-> 
+> 📘
+>
 > **Note**: When requesting proofs, the data requested will be encoded as part of the proof in the response.
 
 > 📘 Public key hash
-> 
+>
 > Note: the hash must be done using all fields of the identity public key object - e.g.
-> 
+>
 > ```json
 > {
+>   "$version": "0",
 >   "id": 0,
->   "type": 0,
 >   "purpose": 0,
 >   "securityLevel": 0,
->   "data": "A2GTAJk9eAWkMXVCb+rRKXH99POtR5OaW6zqZl7/yozp",
->   "readOnly": false
+>   "contractBounds": null,
+>   "type": 0,
+>   "readOnly": false,
+>   "data": "Asi0dHtSjKxf3femzGNwLuBO19EzKQTghRA0PqANzlRq",
+>   "disabledAt": null
 > }
 > ```
-> 
+>
 > When using the js-dpp library, the hash can be accessed via the [IdentityPublicKey object's](https://github.com/dashevo/platform/blob/master/packages/js-dpp/lib/identity/IdentityPublicKey.js) `hash` method (e.g. `identity.getPublicKeyById(0).hash()`).
 
-** Example Request and Response **
+**Example Request and Response**
 
 ::::{tab-set-code}
 
@@ -235,6 +241,7 @@ client.platform.getIdentitiesByPublicKeyHashes(publicKeysBuffer)
     console.log(retrievedIdentity.toJSON());
   });
 ```
+
 ```javascript JavaScript (dapi-grpc)
 // JavaScript (dapi-grpc)
 const {
