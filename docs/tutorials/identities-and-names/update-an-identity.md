@@ -99,7 +99,7 @@ const updateIdentityAddKey = async () => {
     [newPublicKey.getId()]: identityPrivateKey,
   });
 
-  return client.platform.identities.get(identityId);};
+  return client.platform.identities.get(identityId);
 };
 
 updateIdentityAddKey()
