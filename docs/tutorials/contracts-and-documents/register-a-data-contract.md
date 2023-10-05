@@ -155,7 +155,7 @@ array of bytes (e.g. a NodeJS Buffer).
 
 ### Registering the data contract
 
-The following examples demonstrate the details of creating contracts using the features [described above](#defining-contract-documents):
+The following examples demonstrate the details of creating contracts using the features [described above](#defining-contract-documents). Also note that the sixth tab shows a data contract with contract history enabled to store each contract revision so it can be retrieved as needed for future reference:
 
 ::::{tab-set-code}
 
