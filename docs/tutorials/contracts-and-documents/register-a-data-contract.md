@@ -22,6 +22,8 @@ The third tab shows a data contract using the [JSON-Schema $ref feature](https:/
 
 The fourth tab shows a data contract requiring the optional `$createdAt` and `$updatedAt` [base fields](../../explanations/platform-protocol-document.md#base-fields). Using these fields enables retrieving timestamps that indicate when a document was created or modified.
 
+The fifth tab shows a data contract using a byte array. This allows a contract to store binary data.
+
 > 🚧
 >
 > Since Platform v0.23, an index can [only use the ascending order](https://github.com/dashevo/platform/pull/435) (`asc`). Future updates will remove this restriction.
