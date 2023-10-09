@@ -8,6 +8,7 @@ The following tutorials cover working with data contracts as well as storing and
 
 contracts-and-documents/register-a-data-contract
 contracts-and-documents/retrieve-a-data-contract
+contracts-and-documents/retrieve-data-contract-history
 contracts-and-documents/update-a-data-contract
 contracts-and-documents/submit-documents
 contracts-and-documents/retrieve-documents
