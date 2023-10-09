@@ -6,7 +6,7 @@ In this tutorial we will retrieve some of the current data from a data contract.
 - [General prerequisites](../../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
 - A Dash Platform Contract ID: [Tutorial: Register a Data Contract](../../tutorials/contracts-and-documents/register-a-data-contract.md) 
 
-# Code
+## Code
 
 ```javascript
 const Dash = require('dash');
@@ -41,11 +41,11 @@ getDocuments()
 >
 > The example above shows how access to contract documents via `<contract name>.<contract document>` syntax (e.g. `tutorialContract.note`) can be enabled by passing a contract identity to the constructor. Please refer to the [Dash SDK documentation](https://github.com/dashevo/platform/blob/master/packages/js-dash-sdk/docs/getting-started/multiple-apps.md) for details.
 
-## Queries
+### Queries
 
 The example code uses a very basic query to return only one result. More extensive querying capabilities are covered in the [query syntax reference](../../reference/query-syntax.md).
 
-# Example Document
+## Example Document
 
 The following examples show the structure of a `note` document (from the data contract registered in the tutorial) returned from the SDK when retrieved with various methods. 
 
@@ -133,7 +133,7 @@ Document {
 
 ::::
 
-# What's happening
+## What's happening
 
 After we initialize the Client, we request some documents. The `client.platform.documents.get` method takes two arguments: a record locator and a query object. The records locator consists of an app name (e.g. `tutorialContract`) and the top-level document type requested, (e.g. `note`).
 

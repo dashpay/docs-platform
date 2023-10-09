@@ -15,7 +15,7 @@ In this tutorial we will update an existing data contract.
 - A Dash Platform Identity: [Tutorial: Register an Identity](../../tutorials/identities-and-names/register-an-identity.md)
 - A Dash Platform Contract ID: [Tutorial: Register a Data Contract](../../tutorials/contracts-and-documents/register-a-data-contract.md) 
 
-# Code
+## Code
 
 The following example demonstrates updating an existing contract to add a new property to an existing document:
 
@@ -61,7 +61,7 @@ updateContract()
 > 
 > Please refer to the [data contract reference page](../../reference/data-contracts.md) for more comprehensive details related to contracts and documents.
 
-# What's Happening
+## What's Happening
 
 After we initialize the Client, we retrieve an existing contract owned by our identity. We then get the contract's document schema and modify a document (adding an `author` property to the `note` document in the example). The `setDocumentSchema` method takes two arguments: the name of the document schema to be updated and the object containing the updated document types.
 

@@ -6,9 +6,9 @@ In this tutorial we will retrieve the data contract created in the [Register a D
 - [General prerequisites](../../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
 - A Dash Platform Contract ID: [Tutorial: Register a Data Contract](../../tutorials/contracts-and-documents/register-a-data-contract.md) 
 
-# Code
+## Code
 
-## Retrieving a data contract
+### Retrieving a data contract
 
 ```javascript
 const Dash = require('dash');
@@ -26,7 +26,7 @@ retrieveContract()
   .finally(() => client.disconnect());
 ```
 
-## Updating the client app list
+### Updating the client app list
 
 > 📘 
 > 
@@ -48,7 +48,7 @@ client.platform.contracts.get(myContractId)
   });
 ```
 
-# Example Data Contract
+## Example Data Contract
 
 The following example response shows a retrieved contract:
 
@@ -83,7 +83,7 @@ The following example response shows a retrieved contract:
 > 
 > Please refer to the [data contract reference page](../../reference/data-contracts.md) for more comprehensive details related to contracts and documents.
 
-# What's Happening
+## What's Happening
 
 After we initialize the Client, we request a contract. The `platform.contracts.get` method takes a single argument: a contract ID. After the contract is retrieved, it is displayed on the console.
 

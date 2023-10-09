@@ -8,7 +8,7 @@ In this tutorial we will update existing data on Dash Platform. Data is stored i
 - A wallet mnemonic with some funds in it: [Tutorial: Create and Fund a Wallet](../../tutorials/create-and-fund-a-wallet.md)
 - Access to a previously created document (e.g., one created using the [Submit Documents tutorial](../../tutorials/contracts-and-documents/submit-documents.md))
 
-# Code
+## Code
 
 ```javascript
 const Dash = require('dash');
@@ -58,7 +58,7 @@ updateNoteDocument()
 > 
 > The example above shows how access to contract documents via `<contract name>.<contract document>` syntax (e.g. `tutorialContract.note`) can be enabled by passing a contract identity to the constructor. Please refer to the [Dash SDK documentation](https://github.com/dashevo/platform/blob/master/packages/js-dash-sdk/docs/getting-started/multiple-apps.md) for details.
 
-# What's happening
+## What's happening
 
 After we initialize the Client, we retrieve the document to be updated via `platform.documents.get` using its `id`. Once the document has been retrieved, we must submit it to [DAPI](../../explanations/dapi.md) with the desired data updates. Documents are submitted in batches that may contain multiple documents to be created, replaced, or deleted. In this example, a single document is being updated.
 

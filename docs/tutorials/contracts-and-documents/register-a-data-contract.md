@@ -8,9 +8,9 @@ In this tutorial we will register a data contract.
 - A wallet mnemonic with some funds in it: [Tutorial: Create and Fund a Wallet](../../tutorials/create-and-fund-a-wallet.md)
 - A Dash Platform Identity: [Tutorial: Register an Identity](../../tutorials/identities-and-names/register-an-identity.md) 
 
-# Code
+## Code
 
-## Defining contract documents
+### Defining contract documents
 
 As described in the [data contract explanation](../../explanations/platform-protocol-data-contract.md#structure), data contracts must include one or more developer-defined [documents](../../explanations/platform-protocol-document.md). 
 
@@ -153,7 +153,7 @@ array of bytes (e.g. a NodeJS Buffer).
 > 
 > Please refer to the [data contract reference page](../../reference/data-contracts.md) for more comprehensive details related to contracts and documents.
 
-## Registering the data contract
+### Registering the data contract
 
 The following examples demonstrate the details of creating contracts using the features [described above](#defining-contract-documents):
 
@@ -410,7 +410,7 @@ registerContract()
 > 
 > **Make a note of the returned data contract `id` as it will be used used in subsequent tutorials throughout the documentation.**
 
-# What's Happening
+## What's Happening
 
 After we initialize the Client, we create an object defining the documents this data contract requires (e.g. a `note` document in the example). The `platform.contracts.create` method takes two arguments: a contract definitions JSON-schema object and an identity. The contract definitions object consists of the document types being created (e.g. `note`). It defines the properties and any indices. 
 
