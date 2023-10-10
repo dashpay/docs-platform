@@ -14,14 +14,8 @@ Contract tutorial](../../tutorials/contracts-and-documents/register-a-data-contr
 
 ```javascript
 const Dash = require('dash');
-const {
-  default: loadDpp,
-  DashPlatformProtocol,
-} = require('@dashevo/wasm-dpp');;
 
 const client = new Dash.Client({ network: 'testnet' });
-loadDpp();
-const dpp = new DashPlatformProtocol(null);
 
 const retrieveContractHistory = async () => {
   const contractId = '8cvMFwa2YbEsNNoc1PXfTacy2PVq2SzVnkZLeQSzjfi6'
@@ -31,7 +25,9 @@ const retrieveContractHistory = async () => {
 retrieveContractHistory()
   .then((d) => {
     Object.entries(d).forEach(([key, value]) => {
-      dpp.dataContract.createFromObject(value).then((contract) => console.dir(contract.toJSON(), {depth: 5}))
+      client.platform.dpp.dataContract
+        .createFromObject(value)
+        .then((contract) => console.dir(contract.toJSON(), { depth: 5 }));
     });
   })
   .catch((e) => console.error('Something went wrong:\n', e))
