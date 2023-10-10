@@ -1,7 +1,9 @@
 # Retrieve data contract history
 
-In this tutorial we will retrieve the history for a data contract created in the [Register a Data
-Contract tutorial](../../tutorials/contracts-and-documents/register-a-data-contract.md).
+In this tutorial we will retrieve the history of a data contract created in the [Register a Data
+Contract tutorial](../../tutorials/contracts-and-documents/register-a-data-contract.md). Only
+contracts that have enabled the `keepsHistory` option during contract creation will store revision
+information.
 
 ## Prerequisites
 
