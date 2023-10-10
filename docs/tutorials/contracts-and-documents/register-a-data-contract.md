@@ -6,7 +6,7 @@ In this tutorial we will register a data contract.
 
 * [General prerequisites](../../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
 * A wallet mnemonic with some funds in it: [Tutorial: Create and Fund a Wallet](../../tutorials/create-and-fund-a-wallet.md)
-* A Dash Platform Identity: [Tutorial: Register an Identity](../../tutorials/identities-and-names/register-an-identity.md) 
+* A Dash Platform Identity: [Tutorial: Register an Identity](../../tutorials/identities-and-names/register-an-identity.md)
 
 ## Code
 
@@ -44,6 +44,7 @@ The fifth tab shows a data contract using a byte array. This allows a contract t
   }
 }
 ```
+
 ```json 2. Indexed
 //  2. Indexed
 {
@@ -70,6 +71,7 @@ An identity's documents are accessible via a query including a where clause like
 }
 */
 ```
+
 ```json
 //  3. References ($ref)
 // NOTE: The `$ref` keyword is temporarily disabled for Platform v0.22.
@@ -103,6 +105,7 @@ being added to the contract via the contracts `.setDefinitions` method:
 }
 */
 ```
+
 ```json
 //  4. Timestamps
 {
@@ -126,6 +129,7 @@ when the document was created or modified.
 This information will be returned when the document is retrieved.
 */
 ```
+
 ```json
 // 5. Binary data
 {
@@ -157,7 +161,7 @@ array of bytes (e.g. a NodeJS Buffer).
 
 ### Registering the data contract
 
-The following examples demonstrate the details of creating contracts using the features [described above](#defining-contract-documents). Also note that the sixth tab shows a data contract with contract history enabled to store each contract revision so it can be retrieved as needed for future reference:
+The following examples demonstrate the details of creating contracts using the features [described above](#defining-contract-documents). Also, note that the sixth tab shows a data contract with contract history enabled to store each contract revision so it can be retrieved as needed for future reference:
 
 ::::{tab-set-code}
 
@@ -205,6 +209,7 @@ registerContract()
   .catch((e) => console.error('Something went wrong:\n', e))
   .finally(() => client.disconnect());
 ```
+
 ```javascript 2. Indexed
 // 2. Indexed
 const Dash = require('dash');
@@ -253,6 +258,7 @@ registerContract()
   .catch((e) => console.error('Something went wrong:\n', e))
   .finally(() => client.disconnect());
 ```
+
 ```javascript 3. References ($ref)
 // 3. References ($ref)
 // NOTE: The `$ref` keyword is temporarily disabled for Platform v0.22.
@@ -315,6 +321,7 @@ registerContract()
   .catch((e) => console.error('Something went wrong:\n', e))
   .finally(() => client.disconnect());
 ```
+
 ```javascript 4. Timestamps
 // 4. Timestamps
 const Dash = require('dash');
@@ -359,6 +366,7 @@ registerContract()
   .catch((e) => console.error('Something went wrong:\n', e))
   .finally(() => client.disconnect());
 ```
+
 ```javascript 5. Binary data
 // 5. Binary data
 const Dash = require('dash');
@@ -405,8 +413,9 @@ registerContract()
   .catch((e) => console.error('Something went wrong:\n', e))
   .finally(() => client.disconnect());
 ```
+
 ```javascript 6. Contract with history
-// Contract with history
+// 6. Contract with history
 const Dash = require('dash');
 
 const clientOpts = {

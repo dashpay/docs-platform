@@ -2,18 +2,18 @@
 
 Since Dash Platform v0.22, it is possible to update existing data contracts in certain backwards-compatible ways. This includes:
 
-- Adding new documents
-- Adding new optional properties to existing documents
-- Adding _non-unique_ indices for properties added in the update.
+* Adding new documents
+* Adding new optional properties to existing documents
+* Adding _non-unique_ indices for properties added in the update.
 
-In this tutorial we will update an existing data contract. 
+In this tutorial we will update an existing data contract.
 
 ## Prerequisites
 
-- [General prerequisites](../../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
-- A wallet mnemonic with some funds in it: [Tutorial: Create and Fund a Wallet](../../tutorials/create-and-fund-a-wallet.md)
-- A Dash Platform Identity: [Tutorial: Register an Identity](../../tutorials/identities-and-names/register-an-identity.md)
-- A Dash Platform Contract ID: [Tutorial: Register a Data Contract](../../tutorials/contracts-and-documents/register-a-data-contract.md) 
+* [General prerequisites](../../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
+* A wallet mnemonic with some funds in it: [Tutorial: Create and Fund a Wallet](../../tutorials/create-and-fund-a-wallet.md)
+* A Dash Platform Identity: [Tutorial: Register an Identity](../../tutorials/identities-and-names/register-an-identity.md)
+* A Dash Platform Contract ID: [Tutorial: Register a Data Contract](../../tutorials/contracts-and-documents/register-a-data-contract.md)
 
 ## Code
 
@@ -104,8 +104,8 @@ updateContract()
 
 ::::
 
-> 📘 
-> 
+> 📘
+>
 > Please refer to the [data contract reference page](../../reference/data-contracts.md) for more comprehensive details related to contracts and documents.
 
 ## What's Happening
@@ -115,7 +115,7 @@ After we initialize the Client, we retrieve an existing contract owned by our id
 Once the data contract has been updated, we still need to submit it to DAPI. The `platform.contracts.update` method takes a data contract and an identity parameter. Internally, it creates a State Transition containing the updated contract, signs the state transition, and submits the signed state transition to DAPI. A response will only be returned if an error is encountered.
 
 > 📘 Wallet Operations
-> 
-> The JavaScript SDK does not cache wallet information. It re-syncs the entire Core chain for some wallet operations (e.g. `client.getWalletAccount()`) which can result in wait times of  5+ minutes. 
-> 
+>
+> The JavaScript SDK does not cache wallet information. It re-syncs the entire Core chain for some wallet operations (e.g. `client.getWalletAccount()`) which can result in wait times of  5+ minutes.
+>
 > A future release will add caching so that access is much faster after the initial sync. For now, the `skipSynchronizationBeforeHeight` option can be used to sync the wallet starting at a certain block height.
