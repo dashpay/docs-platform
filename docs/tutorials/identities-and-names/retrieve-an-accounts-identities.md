@@ -7,7 +7,7 @@ In this tutorial we will retrieve the list of identities associated with a speci
 - A wallet mnemonic
 - A Dash Platform Identity: [Tutorial: Register an Identity](../../tutorials/identities-and-names/register-an-identity.md) 
 
-# Code
+## Code
 
 ```javascript
 const Dash = require('dash');
@@ -44,7 +44,7 @@ Example Response
 ]
 ``` 
 
-# What's Happening
+## What's Happening
 
 After we initialize the Client and getting the account, we call `account.identities.getIdentityIds()` to retrieve a list of all identities created with the wallet mnemonic. The list of identities is output to the console.
 

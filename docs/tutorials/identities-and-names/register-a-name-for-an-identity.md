@@ -7,7 +7,7 @@ Dash Platform names make cryptographic identities easy to remember and communica
 
 **Note**: An identity must have a default name before any aliases can be created for the identity.
 
-### Prerequisites
+## Prerequisites
 - [General prerequisites](../../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
 - A wallet mnemonic with some funds in it: [Tutorial: Create and Fund a Wallet](../../tutorials/create-and-fund-a-wallet.md)
 - A Dash Platform identity: [Tutorial: Register an Identity](../../tutorials/identities-and-names/register-an-identity.md) 

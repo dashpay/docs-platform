@@ -2,7 +2,7 @@
 
 The purpose of this tutorial is to walk through the steps necessary to add credits to an identity's balance.
 
-# Overview
+## Overview
 
 As users interact with Dash Platform applications, the credit balance associated with their identity will decrease. Eventually it will be necessary to topup the balance by converting some Dash to credits.  Additional details regarding credits can be found in the [Credits description](../../explanations/identity.md#credits).
 
@@ -12,7 +12,7 @@ As users interact with Dash Platform applications, the credit balance associated
 - A wallet mnemonic with some funds in it: [Tutorial: Create and Fund a Wallet](../../tutorials/create-and-fund-a-wallet.md)
 - A Dash Platform Identity: [Tutorial: Register an Identity](../../tutorials/identities-and-names/register-an-identity.md) 
 
-# Code
+## Code
 
 ```javascript
 const Dash = require('dash');
@@ -42,7 +42,7 @@ topupIdentity()
   .finally(() => client.disconnect());
 ```
 
-# What's Happening
+## What's Happening
 
 After connecting to the Client, we call `platform.identities.topUp` with an identity ID and a topup amount in duffs (1 duff = 1000 credits). This creates a lock transaction and increases the identity's credit balance by the relevant amount (minus fee). The updated balance is output to the console.
 

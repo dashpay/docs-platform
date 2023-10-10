@@ -6,7 +6,7 @@ In this tutorial we will retrieve the identity created in the [Register an Ident
 - [General prerequisites](../../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
 - A Dash Platform Identity: [Tutorial: Register an Identity](../../tutorials/identities-and-names/register-an-identity.md) 
 
-# Code
+## Code
 
 ```javascript
 const Dash = require('dash');
@@ -23,7 +23,7 @@ retrieveIdentity()
   .finally(() => client.disconnect());
 ``` 
 
-# Example Identity
+## Example Identity
 
 The following example response shows a retrieved identity:
 
@@ -43,6 +43,6 @@ The following example response shows a retrieved identity:
 }
 ``` 
 
-# What's Happening
+## What's Happening
 
 After we initialize the Client, we request an identity. The `platform.identities.get` method takes a single argument: an identity ID. After the identity is retrieved, it is displayed on the console.

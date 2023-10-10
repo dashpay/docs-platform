@@ -5,7 +5,7 @@ The purpose of this tutorial is to walk through the steps necessary to register 
 ## Overview
 Identities serve as the basis for interactions with Dash Platform. They consist primarily of a public key used to register a unique entity on the network. Additional details regarding identities can be found in the [Identity description](../../explanations/identity.md).
 
-### Prerequisites
+## Prerequisites
 - [General prerequisites](../../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
 - A wallet mnemonic with some funds in it: [How to Create and Fund a Wallet](../../tutorials/create-and-fund-a-wallet.md)
 

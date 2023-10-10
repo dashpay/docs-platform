@@ -2,13 +2,13 @@
 
 Since Dash Platform v0.23, it is possible to update identities to add new keys or disable existing ones. Platform retains disabled keys so that any existing data they signed can still be verified while preventing them from signing new data. 
 
-# Prerequisites
+## Prerequisites
 
 - [General prerequisites](../../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
 - A wallet mnemonic with some funds in it: [Tutorial: Create and Fund a Wallet](../../tutorials/create-and-fund-a-wallet.md)
 - A Dash Platform Identity: [Tutorial: Register an Identity](../../tutorials/identities-and-names/register-an-identity.md)
 
-# Code
+## Code
 
 The two examples below demonstrate updating an existing identity to add a new key and disabling an existing key:
 
@@ -110,9 +110,9 @@ updateIdentityAddKey()
 
 ::::
 
-# What's Happening
+## What's Happening
 
-## Disabling keys
+### Disabling keys
 
 After we initialize the Client, we retrieve our existing identity and provide the `id` of one (or more) of the identity keys to disable. The update is submitted to DAPI using the `platform.identities.update` method with two arguments:
 
@@ -121,7 +121,7 @@ After we initialize the Client, we retrieve our existing identity and provide th
 
 Internally, the method creates a State Transition containing the updated identity, signs the state transition, and submits the signed state transition to DAPI. After the identity is updated, we output it to the console.
 
-## Adding keys
+### Adding keys
 
 After we initialize the Client, we retrieve our existing identity and set an `id` for the key to be added. Next, we get an unused private key from our wallet and use it to derive a public key to add to our identity. The update is submitted to DAPI using the `platform.identities.update` method with three arguments:
 
