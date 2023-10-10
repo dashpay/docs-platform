@@ -17,9 +17,12 @@ In this tutorial we will update an existing data contract.
 
 ## Code
 
-The following example demonstrates updating an existing contract to add a new property to an existing document:
+The following examples demonstrate updating an existing contract to add a new property to an existing document. The second example shows how to update a contract that has contract history enabled:
 
-```javascript
+::::{tab-set-code}
+
+```javascript 1. Minimal contract
+// Minimal contract
 const Dash = require('dash');
 
 const clientOpts = {
@@ -56,6 +59,50 @@ updateContract()
   .catch((e) => console.error('Something went wrong:\n', e))
   .finally(() => client.disconnect());
 ```
+
+```javascript 2. Contract with history
+// Contract with history
+const Dash = require('dash');
+
+const clientOpts = {
+  network: 'testnet',
+  wallet: {
+    mnemonic: 'a Dash wallet mnemonic with funds goes here',
+    unsafeOptions: {
+      skipSynchronizationBeforeHeight: 650000, // only sync from early-2022
+    },    
+  },
+};
+const client = new Dash.Client(clientOpts);
+
+const updateContract = async () => {
+  const { platform } = client;
+  const identity = await platform.identities.get('an identity ID goes here');
+
+  const existingDataContract = await platform.contracts.get('a contract ID goes here');
+  const documentSchema = existingDataContract.getDocumentSchema('note');
+
+  documentSchema.properties.author = {
+    type: 'string',
+  };
+
+  existingDataContract.setDocumentSchema('note', documentSchema);
+  existingDataContract.setConfig({
+    keepsHistory: true, // Enable storing of contract history
+  });
+
+  // Sign and submit the data contract
+  await platform.contracts.update(existingDataContract, identity);
+  return existingDataContract;
+};
+
+updateContract()
+  .then((d) => console.log('Contract updated:\n', d.toJSON()))
+  .catch((e) => console.error('Something went wrong:\n', e))
+  .finally(() => client.disconnect());
+```
+
+::::
 
 > 📘 
 > 
