@@ -4,7 +4,10 @@
 
 # DAPI Endpoints
 
-[DAPI](../explanations/dapi.md) currently provides 2 types of endpoints: [JSON-RPC](https://www.jsonrpc.org/) and [gRPC](https://grpc.io/docs/guides/). The JSON-RPC endpoints expose some layer 1 information while the gRPC endpoints support layer 2 as well as streaming of events related to blocks and transactions/transitions.
+[DAPI](../explanations/dapi.md) currently provides 2 types of endpoints:
+[JSON-RPC](https://www.jsonrpc.org/) and [gRPC](https://grpc.io/docs/guides/). The JSON-RPC
+endpoints expose some layer 1 information while the gRPC endpoints support layer 2 as well as
+streaming of events related to blocks and transactions/transitions.
 
 ## JSON-RPC Endpoints
 
@@ -29,7 +32,8 @@
 
 ### Platform gRPC Service
 
-In addition to providing the request data, the following endpoints can also provide proofs that the data returned is valid and complete.
+In addition to providing the request data, the following endpoints can also provide proofs that the
+data returned is valid and complete.
 
 | Layer | Endpoint |   |
 | :---: | -------- | - |
@@ -53,7 +57,8 @@ In addition to providing the request data, the following endpoints can also prov
 
 > 📘
 >
-> The previous version of documentation can be [viewed here](https://docs.dash.org/projects/platform/en/0.24.0/docs/reference/dapi-endpoints.html).
+> The previous version of documentation can be [viewed
+> here](https://docs.dash.org/projects/platform/en/0.24.0/docs/reference/dapi-endpoints.html).
 
 ```{toctree}
 :maxdepth: 2
