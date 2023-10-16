@@ -6,7 +6,7 @@ Please refer to the [gRPC Overview](../reference/dapi-endpoints-grpc-overview.md
 
 Since Dash Platform 0.20.0, Platform gRPC endpoints can provide [proofs](https://github.com/dashpay/platform/blob/master/packages/dapi-grpc/protos/platform/v0/platform.proto#L17-L22) so the data returned for a request can be verified as being valid. Full support is not yet available in the JavaScript client, but can be used via the low level [dapi-grpc library](https://github.com/dashevo/platform/tree/master/packages/dapi-grpc).
 
-Some [additional metadata](https://github.com/dashevo/platform/blob/master/packages/dapi-grpc/protos/platform/v0/platform.proto#L30-L33) is also provided with responses:
+Some [additional metadata](https://github.com/dashevo/platform/blob/master/packages/dapi-grpc/protos/platform/v0/platform.proto#L38-L44) is also provided with responses:
 
 | Metadata field          | Description                                           |
 | :---------------------- | :---------------------------------------------------- |
@@ -14,6 +14,7 @@ Some [additional metadata](https://github.com/dashevo/platform/blob/master/packa
 | `coreChainLockedHeight` | Height of the most recent ChainLock on the core chain |
 | `timeMs`                | Unix timestamp in milliseconds for the response       |
 | `protocolVersion`       | Platform protocol version                             |
+| `chainId`               | Name of the network                                   |
 
 ## Endpoint Details
 
