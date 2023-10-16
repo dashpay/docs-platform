@@ -584,6 +584,95 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ::::
 
+### getDataContractHistory
+
+**Returns**: [Data Contract](../explanations/platform-protocol-data-contract.md) information for the requested data contract  
+**Parameters**:
+
+| Name    | Type     | Required | Description                              |
+| ------- | -------- | -------- | ---------------------------------------- |
+| `id`    | Bytes    | Yes      | A data contract `id`                     |
+| `start_at_ms` | Integer | Yes | Request revisions starting at this timestamp |
+| `limit` | Integer  | Yes      | The maximum number of revisions to return |
+| `offset` | Integer | Yes      | The offset of the first revision to return |
+| `prove` | Boolean  | No       | Set to `true` to receive a proof that contains the requested data contract |
+
+> 📘
+>
+> **Note**: When requesting proofs, the data requested will be encoded as part of the proof in the response.
+
+**Example Request and Response**
+
+::::{tab-set-code}
+
+```javascript JavaScript (dapi-client)
+// JavaScript (dapi-client)
+const DAPIClient = require('@dashevo/dapi-client');
+const {
+  default: loadDpp,
+  DashPlatformProtocol,
+  Identifier,
+} = require('@dashevo/wasm-dpp');
+
+loadDpp();
+const dpp = new DashPlatformProtocol(null);
+const client = new DAPIClient();
+
+const contractId = Identifier.from('Fq6p2uvoS1JRCnvLCV3DwjLDCzAjHJqsKP53c8k3ipoH');
+client.platform.getDataContractHistory(contractId, 0, 1, 0).then((response) => {
+  for (const key in response.getDataContractHistory()) {
+    const revision = response.getDataContractHistory()[key];
+    dpp.dataContract.createFromBuffer(revision).then((dataContract) => {
+      console.dir(dataContract.toJSON(), { depth: 10 });
+    });
+  }
+});
+```
+
+```shell gRPCurl
+# gRPCurl
+# `id` must be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "id":"5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
+    "limit": 1,
+    "offset": 0,
+    "start_at_ms": 0,
+    "prove": false    
+    }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getDataContractHistory
+```
+
+::::
+
+::::{tab-set-code}
+
+```json Response (JavaScript)
+// Response (JavaScript)
+[
+
+]
+```
+
+```json Response (gRPCurl)
+// Response (gRPCurl)
+{
+  "dataContractHistory": {
+    
+  },
+  "metadata": {
+    "height": "1056",
+    "coreChainLockedHeight": 922820,
+    "timeMs": "1697125325434",
+    "protocolVersion": 1,
+    "chainId": "devnet"
+  }
+}
+```
+
+::::
+
 ### getDocuments
 
 > 🚧 Breaking changes
