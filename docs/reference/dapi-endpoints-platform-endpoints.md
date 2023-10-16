@@ -368,7 +368,7 @@ const {
   Identifier,
 } = require('@dashevo/wasm-dpp');
 
-  loadDpp();
+loadDpp();
 const dpp = new DashPlatformProtocol(null);
 const client = new DAPIClient();
 

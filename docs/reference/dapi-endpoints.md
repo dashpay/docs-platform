@@ -8,24 +8,24 @@
 
 ## JSON-RPC Endpoints
 
-| Layer | Endpoint                                                                           | Description                                                |
-| :---: | ---------------------------------------------------------------------------------- | ---------------------------------------------------------- |
-|   1   | [`getBestBlockHash`](../reference/dapi-endpoints-json-rpc-endpoints.md#getbestblockhash) | Returns block hash of the chaintip                         |
-|   1   | [`getBlockHash`](../reference/dapi-endpoints-json-rpc-endpoints.md#getblockhash)         | Returns block hash of the requested block                  |
+| Layer | Endpoint | Description |
+| :---: | -------- | ----------- |
+|   1   | [`getBestBlockHash`](../reference/dapi-endpoints-json-rpc-endpoints.md#getbestblockhash) | Returns block hash of the chaintip |
+|   1   | [`getBlockHash`](../reference/dapi-endpoints-json-rpc-endpoints.md#getblockhash)         | Returns block hash of the requested block |
 |   1   | [`getMnListDiff`](../reference/dapi-endpoints-json-rpc-endpoints.md#getmnlistdiff)       | Returns masternode list diff for the provided block hashes |
 
 ## gRPC Endpoints
 
 ### Core gRPC Service
 
-| Layer | Endpoint                                                                                                                         |                                                                                                                                                                                                                                                                                           |
-| :---: | -------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-|   1   | [`broadcastTransaction`](../reference/dapi-endpoints-core-grpc-endpoints.md#broadcasttransaction)                                      | Broadcasts the provided transaction                                                                                                                                                                                                                                                       |
-|   1   | [`getBlock`](../reference/dapi-endpoints-core-grpc-endpoints.md#getblock)                                                              | Returns information for the requested block                                                                                                                                                                                                                                               |
-|   1   | [`getStatus`](../reference/dapi-endpoints-core-grpc-endpoints.md#getstatus)                                                            | Returns blockchain status information                                                                                                                                                                                                                                                     |
-|   1   | [`getTransaction`](../reference/dapi-endpoints-core-grpc-endpoints.md#gettransaction)                                                  | Returns details for the requested transaction                                                                                                                                                                                                                                             |
-|   1   | [`subscribeTo` `BlockHeadersWithChainLocks`](../reference/dapi-endpoints-core-grpc-endpoints.md#subscribetoblockheaderswithchainlocks) | Returns the requested block headers along with the associated ChainLocks.<br>_Added in Dash Platform v0.22_                                                                                                                                                                               |
-|   1   | [`subscribeTo` `TransactionsWithProofs`](../reference/dapi-endpoints-core-grpc-endpoints.md#subscribetotransactionswithproofs)         | Returns transactions matching the provided bloom filter along with the associated [`islock` message](https://docs.dash.org/projects/core/en/stable/docs/reference/p2p-network-instantsend-messages.html#islock) and [merkle block](https://docs.dash.org/projects/core/en/stable/docs/reference/p2p-network-data-messages.html#merkleblock) |
+| Layer | Endpoint |   |
+| :---: | -------- | - |
+|   1   | [`broadcastTransaction`](../reference/dapi-endpoints-core-grpc-endpoints.md#broadcasttransaction) | Broadcasts the provided transaction |
+|   1   | [`getBlock`](../reference/dapi-endpoints-core-grpc-endpoints.md#getblock) | Returns information for the requested block |
+|   1   | [`getStatus`](../reference/dapi-endpoints-core-grpc-endpoints.md#getstatus) | Returns blockchain status information |
+|   1   | [`getTransaction`](../reference/dapi-endpoints-core-grpc-endpoints.md#gettransaction) | Returns details for the requested transaction |
+|   1   | [`subscribeTo` `BlockHeadersWithChainLocks`](../reference/dapi-endpoints-core-grpc-endpoints.md#subscribetoblockheaderswithchainlocks) | Returns the requested block headers along with the associated ChainLocks.<br>_Added in Dash Platform v0.22_ |
+|   1   | [`subscribeTo` `TransactionsWithProofs`](../reference/dapi-endpoints-core-grpc-endpoints.md#subscribetotransactionswithproofs) | Returns transactions matching the provided bloom filter along with the associated [`islock` message](https://docs.dash.org/projects/core/en/stable/docs/reference/p2p-network-instantsend-messages.html#islock) and [merkle block](https://docs.dash.org/projects/core/en/stable/docs/reference/p2p-network-data-messages.html#merkleblock) |
 
 ### Platform gRPC Service
 
@@ -51,8 +51,8 @@ In addition to providing the request data, the following endpoints can also prov
   [/block]
 ```
 
-> 📘 
-> 
+> 📘
+>
 > The previous version of documentation can be [viewed here](https://docs.dash.org/projects/platform/en/0.24.0/docs/reference/dapi-endpoints.html).
 
 ```{toctree}
