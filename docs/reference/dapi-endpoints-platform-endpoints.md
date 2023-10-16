@@ -649,18 +649,10 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ::::{tab-set-code}
 
-```json Response (JavaScript)
-// Response (JavaScript)
-[
-
-]
-```
-
 ```json Response (gRPCurl)
 // Response (gRPCurl)
 {
   "dataContractHistory": {
-    
   },
   "metadata": {
     "height": "1056",
@@ -670,6 +662,10 @@ grpcurl -proto protos/platform/v0/platform.proto \
     "chainId": "devnet"
   }
 }
+```
+
+```json Response (JavaScript)
+// Response (JavaScript)
 ```
 
 ::::
