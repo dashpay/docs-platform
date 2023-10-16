@@ -619,8 +619,8 @@ loadDpp();
 const dpp = new DashPlatformProtocol(null);
 const client = new DAPIClient();
 
-const contractId = Identifier.from('Fq6p2uvoS1JRCnvLCV3DwjLDCzAjHJqsKP53c8k3ipoH');
-client.platform.getDataContractHistory(contractId, 0, 1, 0).then((response) => {
+const contractId = Identifier.from('BWgzcW4XRhmYKzup1xY8fMi3ZHGG1Hf8fD9Rm3e3bopm');
+client.platform.getDataContractHistory(contractId, 0, 2, 0).then((response) => {
   for (const key in response.getDataContractHistory()) {
     const revision = response.getDataContractHistory()[key];
     dpp.dataContract.createFromBuffer(revision).then((dataContract) => {
@@ -636,7 +636,7 @@ client.platform.getDataContractHistory(contractId, 0, 1, 0).then((response) => {
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "id":"5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
-    "limit": 1,
+    "limit": 2,
     "offset": 0,
     "start_at_ms": 0,
     "prove": false    
@@ -648,6 +648,69 @@ grpcurl -proto protos/platform/v0/platform.proto \
 ::::
 
 ::::{tab-set-code}
+
+```json Response (JavaScript)
+// Response (JavaScript)
+{
+  "$format_version": "0",
+  "id": "BWgzcW4XRhmYKzup1xY8fMi3ZHGG1Hf8fD9Rm3e3bopm",
+  "config": {
+    "$format_version": "0",
+    "canBeDeleted": false,
+    "readonly": false,
+    "keepsHistory": true,
+    "documentsKeepHistoryContractDefault": false,
+    "documentsMutableContractDefault": true,
+    "requiresIdentityEncryptionBoundedKey": null,
+    "requiresIdentityDecryptionBoundedKey": null
+  },
+  "version": 1,
+  "ownerId": "DKFKmJ58ZTDddvviDJwDyCznDMxd9Y6bsJcBN5Xp8m5w",
+  "schemaDefs": null,
+  "documentSchemas": {
+    "note": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+},
+{
+  "$format_version": "0",
+  "id": "BWgzcW4XRhmYKzup1xY8fMi3ZHGG1Hf8fD9Rm3e3bopm",
+  "config": {
+    "$format_version": "0",
+    "canBeDeleted": false,
+    "readonly": false,
+    "keepsHistory": true,
+    "documentsKeepHistoryContractDefault": false,
+    "documentsMutableContractDefault": true,
+    "requiresIdentityEncryptionBoundedKey": null,
+    "requiresIdentityDecryptionBoundedKey": null
+  },
+  "version": 2,
+  "ownerId": "DKFKmJ58ZTDddvviDJwDyCznDMxd9Y6bsJcBN5Xp8m5w",
+  "schemaDefs": null,
+  "documentSchemas": {
+    "note": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        },
+        "author": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
+```
 
 ```json Response (gRPCurl)
 // Response (gRPCurl)
@@ -662,10 +725,6 @@ grpcurl -proto protos/platform/v0/platform.proto \
     "chainId": "devnet"
   }
 }
-```
-
-```json Response (JavaScript)
-// Response (JavaScript)
 ```
 
 ::::
