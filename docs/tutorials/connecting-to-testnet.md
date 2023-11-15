@@ -8,7 +8,7 @@ Platform services are provided via a combination of HTTP and gRPC connections to
 
 ## Prerequisites
 
-- An installation of [NodeJS v18 or higher](https://nodejs.org/en/download/)
+- An installation of [NodeJS v20 or higher](https://nodejs.org/en/download/)
 
 ## Connect via Dash SDK
 

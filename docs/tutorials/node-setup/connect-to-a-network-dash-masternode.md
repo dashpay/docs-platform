@@ -4,7 +4,7 @@ The purpose of this tutorial is to walk through the steps necessary to set up a 
 
 ## Prerequisites
 - [Docker](https://docs.docker.com/engine/install/) (v20.10.0+) and [docker-compose](https://docs.docker.com/compose/install/) (v1.25.0+) installed
-- An installation of [NodeJS](https://nodejs.org/en/download/) (v18, NPM v8.0+)
+- An installation of [NodeJS](https://nodejs.org/en/download/) (v20, NPM v8.0+)
 
 The following is not necessary for setting up a local network for development, but is helpful if setting up a testnet masternode:
 - Access to a Linux system configured with a non-root user ([guide](https://docs.dash.org/en/stable/masternodes/setup.html#set-up-your-vps))
