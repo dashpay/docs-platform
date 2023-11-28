@@ -26,6 +26,8 @@ The fifth tab shows a data contract using a byte array. This allows a contract t
 
 > 🚧
 >
+> Since Platform v0.25.16, each document property must assign `position` value to support [backwards compatibility](https://github.com/dashpay/platform/pull/1594) for contract updates.
+>
 > Since Platform v0.23, an index can [only use the ascending order](https://github.com/dashevo/platform/pull/435) (`asc`). Future updates will remove this restriction.
 
 ::::{tab-set-code}
