@@ -245,7 +245,8 @@ The following example shows a minimal `documents` object defining a single docum
     "type": "object",
     "properties": {
       "message": {
-        "type": "string"
+        "type": "string",
+        "position": 0
       }
     },
     "additionalProperties": false
@@ -268,13 +269,15 @@ const contractDocuments = {
         type: "object",
         properties: {
           objectProperty: {
-            type: "string"
+            type: "string",
+            position: 0
           },
         },
         additionalProperties: false,
       },
       header: {
-        type: "string"
+        type: "string",
+        position: 1
       }
     },
     additionalProperties: false
@@ -402,10 +405,12 @@ This example syntax shows the structure of a documents object that defines two d
     "type": "object",
     "properties": {
       "<field name b>": {
-        "type": "<field data type>"
+        "type": "<field data type>",
+        "position": "<number>"
       },
       "<field name c>": {
-        "type": "<field data type>"
+        "type": "<field data type>",
+        "position": "<number>"
       },
     },
     "indices": [
@@ -428,10 +433,12 @@ This example syntax shows the structure of a documents object that defines two d
     "type": "object",
     "properties": {
       "<property name y>": {
-        "type": "<property data type>"
+        "type": "<property data type>",
+        "position": "<number>"
       },
       "<property name z>": {
-        "type": "<property data type>"
+        "type": "<property data type>",
+        "position": "<number>"
       },
     },
     "additionalProperties": false
