@@ -18,11 +18,15 @@ The most basic example below (tab 1) demonstrates a data contract containing a s
 
 The second tab shows the same data contract with an index defined on the `$ownerId` field. This would allow querying for documents owned by a specific identity using a [where clause](../../reference/query-syntax.md#where-clause).
 
-The third tab shows a data contract using the [JSON-Schema $ref feature](https://json-schema.org/understanding-json-schema/structuring.html#reuse) that enables reuse of defined objects. Note that the $ref keyword has been [temporarily disabled](https://github.com/dashevo/platform/pull/300) since Platform v0.22.
+The third tab shows a data contract requiring the optional `$createdAt` and `$updatedAt` [base
+fields](../../explanations/platform-protocol-document.md#base-fields). Using these fields enables
+retrieving timestamps that indicate when a document was created or modified.
 
-The fourth tab shows a data contract requiring the optional `$createdAt` and `$updatedAt` [base fields](../../explanations/platform-protocol-document.md#base-fields). Using these fields enables retrieving timestamps that indicate when a document was created or modified.
+The fourth tab shows a data contract using a byte array. This allows a contract to store binary
+data.
 
-The fifth tab shows a data contract using a byte array. This allows a contract to store binary data.
+The fifth tab shows a data contract configured to store contract history. This allows all contract
+revisions to be retrieved in the future as needed.
 
 > 🚧
 >
@@ -77,41 +81,7 @@ An identity's documents are accessible via a query including a where clause like
 ```
 
 ```json
-//  3. References ($ref)
-// NOTE: The `$ref` keyword is temporarily disabled since Platform v0.22.
-{
-  "customer": {
-    "type": "object",
-    "properties": {
-      "name": { "type": "string" },
-      "billing_address": { "$ref": "#/$defs/address" },
-      "shipping_address": { "$ref": "#/$defs/address" }
-    },
-    "additionalProperties": false
-  }
-}
-
-/*
-The contract document defined above is dependent on the following object 
-being added to the contract via the contracts `.setDefinitions` method:
-
-{
-  address: {
-    type: "object",
-    properties: {
-      street_address: { type: "string" },
-      city:           { type: "string" },
-      state:          { type: "string" }
-    },
-    required: ["street_address", "city", "state"],
-    additionalProperties: false
-  }
-}
-*/
-```
-
-```json
-//  4. Timestamps
+//  3. Timestamps
 {
   "note": {
     "type": "object",
@@ -136,7 +106,7 @@ This information will be returned when the document is retrieved.
 ```
 
 ```json
-// 5. Binary data
+// 4. Binary data
 {
  "block": {
    "type": "object",
@@ -267,71 +237,8 @@ registerContract()
   .finally(() => client.disconnect());
 ```
 
-```javascript 3. References ($ref)
-// 3. References ($ref)
-// NOTE: The `$ref` keyword is temporarily disabled for Platform v0.22.
-const Dash = require('dash');
-
-const clientOpts = {
-  network: 'testnet',
-  wallet: {
-    mnemonic: 'a Dash wallet mnemonic with funds goes here',
-    unsafeOptions: {
-      skipSynchronizationBeforeHeight: 650000, // only sync from early-2022
-    },
-  },
-};
-const client = new Dash.Client(clientOpts);
-
-const registerContract = async () => {
-  const { platform } = client;
-  const identity = await platform.identities.get('an identity ID goes here');
-
-  // Define a reusable object
-  const definitions = {
-    address: {
-      type: 'object',
-      properties: {
-        street_address: { type: 'string' },
-        city: { type: 'string' },
-        state: { type: 'string' },
-      },
-      required: ['street_address', 'city', 'state'],
-      additionalProperties: false,
-    },
-  };
-
-  // Create a document with properties using a definition via $ref
-  const contractDocuments = {
-    customer: {
-      type: 'object',
-      properties: {
-        name: { type: 'string' },
-        billing_address: { $ref: '#/$defs/address' },
-        shipping_address: { $ref: '#/$defs/address' },
-      },
-      additionalProperties: false,
-    },
-  };
-  
-  const contract = await platform.contracts.create(contractDocuments, identity);
-
-  // Add reusable definitions referred to by "$ref" to contract
-  contract.setDefinitions(definitions);
-  console.dir({ contract: contract.toJSON() });
-
-  await platform.contracts.publish(contract, identity);
-  return contract;
-};
-
-registerContract()
-  .then((d) => console.log('Contract registered:\n', d.toJSON()))
-  .catch((e) => console.error('Something went wrong:\n', e))
-  .finally(() => client.disconnect());
-```
-
-```javascript 4. Timestamps
-// 4. Timestamps
+```javascript 3. Timestamps
+// 3. Timestamps
 const Dash = require('dash');
 
 const clientOpts = {
@@ -376,8 +283,8 @@ registerContract()
   .finally(() => client.disconnect());
 ```
 
-```javascript 5. Binary data
-// 5. Binary data
+```javascript 4. Binary data
+// 4. Binary data
 const Dash = require('dash');
 
 const clientOpts = {
@@ -424,8 +331,8 @@ registerContract()
   .finally(() => client.disconnect());
 ```
 
-```javascript 6. Contract with history
-// 6. Contract with history
+```javascript 5. Contract with history
+// 5. Contract with history
 const Dash = require('dash');
 
 const clientOpts = {
