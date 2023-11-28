@@ -90,29 +90,34 @@ An example contract for [DashPay](https://github.com/dashevo/platform/blob/maste
       "avatarUrl": {
         "type": "string",
         "format": "uri",
-        "maxLength": 2048
+        "maxLength": 2048,
+        "position": 0
       },
       "avatarHash": {
         "type": "array",
         "byteArray": true,
         "minItems": 32,
         "maxItems": 32,
-        "description": "SHA256 hash of the bytes of the image specified by avatarUrl"
+        "description": "SHA256 hash of the bytes of the image specified by avatarUrl",
+        "position": 1
       },
       "avatarFingerprint": {
         "type": "array",
         "byteArray": true,
         "minItems": 8,
         "maxItems": 8,
-        "description": "dHash the image specified by avatarUrl"
+        "description": "dHash the image specified by avatarUrl",
+        "position": 2
       },
       "publicMessage": {
         "type": "string",
-        "maxLength": 140
+        "maxLength": 140,
+        "position": 3
       },
       "displayName": {
         "type": "string",
-        "maxLength": 25
+        "maxLength": 25,
+        "position": 4
       }
     },
     "required": [
@@ -156,21 +161,25 @@ An example contract for [DashPay](https://github.com/dashevo/platform/blob/maste
         "type": "array",
         "byteArray": true,
         "minItems": 32,
-        "maxItems": 32
+        "maxItems": 32,
+        "position": 0
       },
       "rootEncryptionKeyIndex": {
         "type": "integer",
-        "minimum": 0
+        "minimum": 0,
+        "position": 1
       },
       "derivationEncryptionKeyIndex": {
         "type": "integer",
-        "minimum": 0
+        "minimum": 0,
+        "position": 2
       },
       "privateData": {
         "type": "array",
         "byteArray": true,
         "minItems": 48,
         "maxItems": 2048,
+        "position": 3,
         "description": "This is the encrypted values of aliasName + note + displayHidden encoded as an array in cbor"
       }
     },
@@ -244,41 +253,49 @@ An example contract for [DashPay](https://github.com/dashevo/platform/blob/maste
         "byteArray": true,
         "minItems": 32,
         "maxItems": 32,
+        "position": 0,
         "contentMediaType": "application/x.dash.dpp.identifier"
       },
       "encryptedPublicKey": {
         "type": "array",
         "byteArray": true,
         "minItems": 96,
-        "maxItems": 96
+        "maxItems": 96,
+        "position": 1
       },
       "senderKeyIndex": {
         "type": "integer",
-        "minimum": 0
+        "minimum": 0,
+        "position": 2
       },
       "recipientKeyIndex": {
         "type": "integer",
-        "minimum": 0
+        "minimum": 0,
+        "position": 3
       },
       "accountReference": {
         "type": "integer",
-        "minimum": 0
+        "minimum": 0,
+        "position": 4
       },
       "encryptedAccountLabel": {
         "type": "array",
         "byteArray": true,
         "minItems": 48,
-        "maxItems": 80
+        "maxItems": 80,
+        "position": 5
       },
       "autoAcceptProof": {
         "type": "array",
         "byteArray": true,
         "minItems": 38,
-        "maxItems": 102
+        "maxItems": 102,
+        "position": 6
       },
       "coreHeightCreatedAt": {
         "type": "integer",
-        "minimum": 1
+        "minimum": 1,
+        "position": 7
       }
     },
     "required": [
