@@ -14,9 +14,9 @@ Data contracts are owned by the [identity](../explanations/identity.md) that reg
 
 ### Structure
 
-Each data contract must define several fields. When using the [JavaScript implementation](https://github.com/dashevo/platform/tree/master/packages/js-dpp) of the Dash Platform Protocol, some of these fields are automatically set to a default value and do not have to be explicitly provided. These include:
+Each data contract must define several fields. When using the [reference implementation](https://github.com/dashevo/platform/tree/master/packages/rs-dpp) of the Dash Platform Protocol, some of these fields are automatically set to a default value and do not have to be explicitly provided. These include:
 
-* The platform protocol schema it uses (default: defined by [js-dpp](https://github.com/dashevo/platform/blob/master/packages/js-dpp/lib/dataContract/DataContract.js#L352))
+* The platform protocol schema it uses
 * A contract ID (generated from a hash of the data contract's owner identity plus some entropy)
 * One or more [documents](../explanations/platform-protocol-document.md)
 
