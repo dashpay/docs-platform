@@ -8,7 +8,7 @@ To ensure the consistency and integrity of data stored on Layer 2, all data is g
 
 ### Data Contract
 
-A data contract is a database schema that a developer needs to register with the platform in order to start using any decentralized storage functionality. Data contracts are described using the JSON Schema language and must follow some basic rules as described in the platform protocol repository. Contracts are serialized to binary form using [CBOR](https://cbor.io/).
+A data contract is a database schema that a developer needs to register with the platform in order to start using any decentralized storage functionality. Data contracts are described using the JSON Schema language and must follow some basic rules as described in the platform protocol repository.
 
 > 📘 Contract updates
 >
