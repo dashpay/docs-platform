@@ -37,9 +37,9 @@ The following table contains a list of currently defined payload types:
 | [Identity Create](../protocol-ref/identity.md#identity-creation) (`2`) | Information including the public keys required to create a new [Identity](../explanations/identity.md) |
 | [Identity Topup](../protocol-ref/identity.md#identity-topup) (`3`) | Information including proof of a transaction containing an amount to add to the provided identity's balance |
 | [Data Contract Update](../protocol-ref/data-contract.md#data-contract-update) (`4`) | An updated [database schema](../explanations/platform-protocol-data-contract.md) to modify an existing application |
-| [Identity Update](../protocol-ref/identity.md#identity-update) (`5`) | A set of one or more new public keys to add to the identity or a list of existing keys to disable |
-| [Identity Credit Withdrawal](../protocol-ref/identity.md) (`6`) |  |
-| [Identity Credit Transfer](../protocol-ref/identity.md) (`7`) |  |
+| [Identity Update](../protocol-ref/identity.md#identity-update) (`5`) | A set of one or more new public keys to add to the [identity](../explanations/identity.md) or a list of existing keys to disable |
+| [Identity Credit Withdrawal](../protocol-ref/identity.md) (`6`) | Information required to withdraw credits from Dash Platform |
+| [Identity Credit Transfer](../protocol-ref/identity.md) (`7`) | Information required to transfer credits |
 
 ### Application Usage
 
