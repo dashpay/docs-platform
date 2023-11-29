@@ -20,7 +20,7 @@ Each data contract must define several fields. When using the [reference impleme
 * A contract ID (generated from a hash of the data contract's owner identity plus some entropy)
 * One or more [documents](../explanations/platform-protocol-document.md)
 
-In the [example contract](#example-contract) shown below, a `contact` document and a `profile` document are defined. Each of these documents then defines the properties and indices it requires.
+For a practical example, see the [DashPay contract](#example-contract).
 
 ### Registration
 
@@ -58,7 +58,7 @@ Dash Platform v0.22 added the ability to update existing data contracts in certa
 
 ## Example Contract
 
-An example contract for [DashPay](https://github.com/dashevo/platform/blob/master/packages/dashpay-contract/schema/dashpay.schema.json) is included below:
+The [DashPay contract](https://github.com/dashevo/platform/blob/master/packages/dashpay-contract/schema/dashpay.schema.json) is included below for reference. It defines a `contact` document and a `profile` document. Each of these documents then defines the properties and indices they require:
 
 ```json
 {
