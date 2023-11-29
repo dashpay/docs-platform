@@ -10,7 +10,7 @@ The first two data contracts are the [DashPay wallet](https://www.dash.org/dashp
 
 ### Ownership
 
-Data contracts are owned by the [identity](../explanations/identity.md) that registers them. Each identity may be used to create multiple data contracts and data contract updates can only be made using the identity that owns it.
+Data contracts are owned by the [identity](../explanations/identity.md) that registers them. Each identity may be used to create multiple data contracts and data contract updates can only be made by the identity that owns the contract.
 
 ### Structure
 
@@ -18,7 +18,7 @@ Each data contract must define several fields. When using the [JavaScript implem
 
 * The platform protocol schema it uses (default: defined by [js-dpp](https://github.com/dashevo/platform/blob/master/packages/js-dpp/lib/dataContract/DataContract.js#L352))
 * A contract ID (generated from a hash of the data contract's owner identity plus some entropy)
-* One or more documents
+* One or more [documents](../explanations/platform-protocol-document.md)
 
 In the [example contract](#example-contract) shown below, a `contact` document and a `profile` document are defined. Each of these documents then defines the properties and indices it requires.
 
