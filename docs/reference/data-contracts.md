@@ -62,13 +62,13 @@ const contractDocuments = {
 
 There are a variety of constraints currently defined for performance and security reasons.
 
-| Description                  | Value                                                                                                                                                                |
-| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Minimum number of properties | [1](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L22)                                             |
-| Maximum number of properties | [100](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L23)                                           |
+| Description | Value |
+| ----------- | ----- |
+| Minimum number of properties | [1](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L22) |
+| Maximum number of properties | [100](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L23) |
 | Minimum property name length | [1](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L20) (Note: minimum length was 3 prior to v0.23) |
-| Maximum property name length | [64](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L20)                                            |
-| Property name characters     | Alphanumeric (`A-Z`, `a-z`, `0-9`)<br>Hyphen (`-`) <br>Underscore (`_`)                                                                                              |
+| Maximum property name length | [64](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L20) |
+| Property name characters     | Alphanumeric (`A-Z`, `a-z`, `0-9`)<br>Hyphen (`-`) <br>Underscore (`_`) |
 
 Prior to Dash Platform v0.23 there were stricter limitations on minimum property name length and the characters that could be used in property names.
 
@@ -103,13 +103,13 @@ Document indices may be defined if indexing on document fields is required. The 
 
 The `indices` array consists of:
 
-- One or more objects that each contain:
-  - A unique `name` for the index
-  - A `properties` array composed of a `<field name: sort order>` object for each document field that is part of the index (sort order: [`asc` only](https://github.com/dashevo/platform/pull/435) for Dash Platform v0.23)
-  - An (optional) `unique` element that determines if duplicate values are allowed for the document
+* One or more objects that each contain:
+  * A unique `name` for the index
+  * A `properties` array composed of a `<field name: sort order>` object for each document field that is part of the index (sort order: [`asc` only](https://github.com/dashevo/platform/pull/435) for Dash Platform v0.23)
+  * An (optional) `unique` element that determines if duplicate values are allowed for the document
 
 > 🚧 Compound Indices
-> 
+>
 > When defining an index with multiple properties (i.e a compound index), the order in which the properties are listed is important. Refer to the [mongoDB documentation](https://docs.mongodb.com/manual/core/index-compound/#prefixes) for details regarding the significance of the order as it relates to querying capabilities. Dash uses [GroveDB](https://github.com/dashevo/grovedb) which works similarly but does requiring listing all the index's fields in query order by statements.
 
 ```json
@@ -133,16 +133,16 @@ The `indices` array consists of:
 
 For performance and security reasons, indices have the following constraints. These constraints are subject to change over time.
 
-| Description                                                                                                                                                        | Value                                                                                                                                                                                                                                                  |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Minimum/maximum length of index `name`                                                                                                                             | [1](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L413) / [32](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L414) |
-| Maximum number of indices                                                                                                                                          | [10](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L446)                                                                                                                             |
-| Maximum number of unique indices                                                                                                                                   | [3](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/data_contract/validation/data_contract_validator.rs#L40)                                                                                                                      |
-| Maximum number of properties in a single index                                                                                                                     | [10](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L433)                                                                                                                             |
-| Maximum length of indexed string property                                                                                                                          | [63](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/data_contract/validation/data_contract_validator.rs#L39)                                                                                                                     |
-| **Note: Dash Platform v0.22+. [does not allow indices for arrays](https://github.com/dashpay/platform/pull/225)**<br>Maximum length of indexed byte array property | [255](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/data_contract/validation/data_contract_validator.rs#L43)                                                                                                                    |
-| **Note: Dash Platform v0.22+. [does not allow indices for arrays](https://github.com/dashpay/platform/pull/225)**<br>Maximum number of indexed array items         | [1024](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/data_contract/validation/data_contract_validator.rs#L44)                                                                                                                   |
-| Usage of `$id` in an index [disallowed](https://github.com/dashpay/platform/pull/178)                                                                              | N/A                                                                                                                                                                                                                                                    |
+| Description | Value |
+| ----------- | ----- |
+| Minimum/maximum length of index `name` | [1](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L413) / [32](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L414) |
+| Maximum number of indices | [10](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L446) |
+| Maximum number of unique indices | [3](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/data_contract/validation/data_contract_validator.rs#L40) |
+| Maximum number of properties in a single index | [10](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L433) |
+| Maximum length of indexed string property | [63](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/data_contract/validation/data_contract_validator.rs#L39) |
+| **Note: Dash Platform v0.22+. [does not allow indices for arrays](https://github.com/dashpay/platform/pull/225)**<br>Maximum length of indexed byte array property | [255](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/data_contract/validation/data_contract_validator.rs#L43) |
+| **Note: Dash Platform v0.22+. [does not allow indices for arrays](https://github.com/dashpay/platform/pull/225)**<br>Maximum number of indexed array items | [1024](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/data_contract/validation/data_contract_validator.rs#L44) |
+| Usage of `$id` in an index [disallowed](https://github.com/dashpay/platform/pull/178) | N/A |
 
 **Example**  
 The following example (excerpt from the DPNS contract's `preorder` document) creates an index on `saltedDomainHash` that also enforces uniqueness across all documents of that type:
@@ -209,10 +209,10 @@ This example syntax shows the structure of a documents object that defines two d
 
 There are a variety of constraints currently defined for performance and security reasons. The following constraints are applicable to all aspects of data contracts. Unless otherwise noted, these constraints are defined in the platform's JSON Schema rules (e.g. [rs-dpp data contract meta schema](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json)).
 
-#### Keyword
+### Keyword
 
-> 🚧 
-> 
+> 🚧
+>
 > The `$ref` keyword has been [disabled](https://github.com/dashevo/platform/pull/300) since Platform v0.22.
 
 | Keyword | Constraint |
@@ -229,13 +229,13 @@ There are a variety of constraints currently defined for performance and securit
 | `patternProperties`                                    | Restricted - cannot be used for data contracts |
 | `pattern`                                              | Accept only [RE2](https://github.com/google/re2/wiki/Syntax) compatible regular expressions (defined in DPP logic) |
 
-#### Data Size
+### Data Size
 
 **Note:** These constraints are defined in the Dash Platform Protocol logic (not in JSON Schema).
 
 All serialized data (including state transitions) is limited to a maximum size of [16 KB](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/util/serializer.rs#L8).
 
-#### Additional Properties
+### Additional Properties
 
 Although JSON Schema allows additional, undefined properties [by default](https://json-schema.org/understanding-json-schema/reference/object.html?#properties), they are not allowed in Dash Platform data contracts. Data contract validation will fail if they are not explicitly forbidden using the `additionalProperties` keyword anywhere `properties` are defined (including within document properties of type `object`).
 
