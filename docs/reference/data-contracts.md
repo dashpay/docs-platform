@@ -17,7 +17,8 @@ The following example shows a minimal `documents` object defining a single docum
   "note": {
     "properties": {
       "message": {
-        "type": "string"
+        "type": "string",
+        "position": 0
       }
     },
     "additionalProperties": false
@@ -27,9 +28,13 @@ The following example shows a minimal `documents` object defining a single docum
 
 ### Document Properties
 
-The `properties` object defines each field that will be used by a document. Each field consists of an object that, at a minimum, must define its data `type` (`string`, `number`, `integer`, `boolean`, `array`, `object`). 
+The `properties` object defines each field that a document will use. Each field consists of an object that, at a minimum, must define its data `type` (`string`, `number`, `integer`, `boolean`, `array`, `object`) and a [`position`](#assigning-property-position).
 
 Fields may also apply a variety of optional JSON Schema constraints related to the format, range, length, etc. of the data. A full explanation of the capabilities of JSON Schema is beyond the scope of this document. For more information regarding its data types and the constraints that can be applied, please refer to the [JSON Schema reference](https://json-schema.org/understanding-json-schema/reference/index.html) documentation.
+
+#### Assigning property `position`
+
+Each property in a level must be assigned a unique `position` value, with ordering starting at zero and incrementing with each property. When using nested objects, position counting resets to zero for each level. This structure supports backward compatibility in data contracts by [ensuring consistent ordering](https://github.com/dashpay/platform/pull/1594) for serialization and deserialization processes.
 
 #### Special requirements for `object` properties
 
@@ -42,15 +47,18 @@ const contractDocuments = {
     properties: {
       body: {
         type: "object",
-       properties: {
+        position: 0,
+        properties: {
           objectProperty: {
-            type: "string"
+            type: "string",
+            "position": 0
           },
         },
         additionalProperties: false,
       },
       header: {
-        type: "string"
+        type: "string",
+        "position": 1
       }
     },
     additionalProperties: false
@@ -168,10 +176,12 @@ This example syntax shows the structure of a documents object that defines two d
     "type": "object",
     "properties": {
       "<field name b>": {
-        "type": "<field data type>"
+        "type": "<field data type>",
+        "position": "<number>"
       },
       "<field name c>": {
-        "type": "<field data type>"
+        "type": "<field data type>",
+        "position": "<number>"
       },
     },
     "indices": [
@@ -194,10 +204,12 @@ This example syntax shows the structure of a documents object that defines two d
     "type": "object",
     "properties": {
       "<property name y>": {
-        "type": "<property data type>"
+        "type": "<property data type>",
+        "position": "<number>"
       },
       "<property name z>": {
-        "type": "<property data type>"
+        "type": "<property data type>",
+        "position": "<number>"
       },
     },
     "additionalProperties": false
