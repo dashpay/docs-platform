@@ -4,7 +4,7 @@
 
 Data contracts define the schema (structure) of data an application will store on Dash Platform. Contracts are described using [JSON Schema](https://json-schema.org/understanding-json-schema/) which allows the platform to validate the contract-related data submitted to it.
 
-The following sections provide details that developers need to construct valid contracts: [documents](#documents) and [definitions](#definitions). All data contracts must define one or more documents, whereas definitions are optional and may not be used for simple contracts.
+The following sections provide details that developers need to construct valid contracts. All data contracts must define one or more [documents](#documents) that conform to the [general data contract constraints](#general-constraints).
 
 ## Documents
 
@@ -33,7 +33,7 @@ Fields may also apply a variety of optional JSON Schema constraints related to t
 
 #### Special requirements for `object` properties
 
-The `object` type is required to have properties defined either directly or via the data contract's [$defs](#definitions). For example, the `body` property shown below is an object containing a single string property (`objectProperty`):
+The `object` type cannot be an empty object, but must have one or more defined properties. For example, the `body` property shown below is an object containing a single string property (`objectProperty`):
 
 ```javascript
 const contractDocuments = {
@@ -205,38 +205,7 @@ This example syntax shows the structure of a documents object that defines two d
 }
 ```
 
-## Definitions
-
-> ❗️ Definitions are currently unavailable
-
-The optional `$defs` object enables definition of aspects of a schema that are used in multiple places. This is done using the JSON Schema support for [reuse](https://json-schema.org/understanding-json-schema/structuring.html#reuse). 
-
-Items defined in `$defs` may then be referenced when defining `documents` through use of the `$ref` keyword. Properties defined in the `$defs` object must meet the same criteria as those defined in the `documents` object. Data contracts can only use the `$ref` keyword to reference their own `$defs`. Referencing external definitions is not supported by the platform protocol.
-
-**Example**  
-The following example shows a definition for a `message` object consisting of two properties:
-
-```json
-{
-  // Preceeding content truncated ...
-  "$defs": {
-    "message": {
-      "type": "object",
-      "properties": {
-        "timestamp": {
-          "type": "number"
-        },
-        "description": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": false
-    }
-  }
-}
-```
-
-### General Constraints
+## General Constraints
 
 There are a variety of constraints currently defined for performance and security reasons. The following constraints are applicable to all aspects of data contracts. Unless otherwise noted, these constraints are defined in the platform's JSON Schema rules (e.g. [rs-dpp data contract meta schema](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json)).
 
@@ -246,18 +215,18 @@ There are a variety of constraints currently defined for performance and securit
 > 
 > The `$ref` keyword has been [disabled](https://github.com/dashevo/platform/pull/300) since Platform v0.22.
 
-| Keyword                                                | Constraint                                                                                                         |
-| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
-| `default`                                              | Restricted - cannot be used (defined in DPP logic)                                                                 |
-| `propertyNames`                                        | Restricted - cannot be used (defined in DPP logic)                                                                 |
-| `uniqueItems: true`                                    | `maxItems` must be defined (maximum: 100000)                                                                       |
-| `pattern: <something>`                                 | `maxLength` must be defined (maximum: 50000)                                                                       |
-| `format: <something>`                                  | `maxLength` must be defined (maximum: 50000)                                                                       |
-| `$ref: <something>`                                    | **Temporarily disabled**<br>`$ref` can only reference `$defs` - <br> remote references not supported               |
-| `if`, `then`, `else`, `allOf`, `anyOf`, `oneOf`, `not` | Disabled for data contracts                                                                                        |
-| `dependencies`                                         | Not supported. Use `dependentRequired` and `dependentSchema` instead                                               |
-| `additionalItems`                                      | Not supported. Use `items: false` and `prefixItems` instead                                                        |
-| `patternProperties`                                    | Restricted - cannot be used for data contracts                                                                     |
+| Keyword | Constraint |
+| ------- | ---------- |
+| `default`                                              | Restricted - cannot be used (defined in DPP logic) |
+| `propertyNames`                                        | Restricted - cannot be used (defined in DPP logic) |
+| `uniqueItems: true`                                    | `maxItems` must be defined (maximum: 100000) |
+| `pattern: <something>`                                 | `maxLength` must be defined (maximum: 50000) |
+| `format: <something>`                                  | `maxLength` must be defined (maximum: 50000) |
+| `$ref: <something>`                                    | Disabled for data contracts |
+| `if`, `then`, `else`, `allOf`, `anyOf`, `oneOf`, `not` | Disabled for data contracts |
+| `dependencies`                                         | Not supported. Use `dependentRequired` and `dependentSchema` instead |
+| `additionalItems`                                      | Not supported. Use `items: false` and `prefixItems` instead |
+| `patternProperties`                                    | Restricted - cannot be used for data contracts |
 | `pattern`                                              | Accept only [RE2](https://github.com/google/re2/wiki/Syntax) compatible regular expressions (defined in DPP logic) |
 
 #### Data Size
