@@ -10,15 +10,14 @@ Documents are defined in an application's [Data Contract](../explanations/platfo
 
 ### Base Fields
 
-Dash Platform Protocol (DPP) defines a set of base fields that must be present in all documents. For the [`js-dpp` reference implementation](https://github.com/dashevo/platform/tree/master/packages/js-dpp), the base fields shown below are defined in the [document base schema](https://github.com/dashevo/platform/blob/master/packages/js-dpp/schema/document/documentBase.json).
+Dash Platform Protocol (DPP) defines a set of base fields that must be present in all documents. For the [reference implementation](https://github.com/dashevo/platform/tree/master/packages/rs-dpp), the base fields shown below are defined in the [document base schema](https://github.com/dashevo/platform/blob/master/packages/rs-dpp/src/schema/document/v0/documentBase.json).
 
 | Field Name | Description |
 | - | - |
-| protocolVersion | The platform protocol version (currently `1`) |
 | $id | The document ID (32 bytes) |
 | $type | Document type defined in the referenced contract |
 | $revision | Document revision (=>1) |
-| $dataContractId | Data contract ID generated from the data contract's `ownerId` and `entropy` (32 bytes) |
+| $dataContract | Data contract the document is associated with |
 | $ownerId | [Identity](../explanations/identity.md) of the user submitting the document (32 bytes) |
 | $createdAt | Time (in milliseconds) the document was created |
 | $updatedAt | Time (in milliseconds) the document was last updated |
@@ -51,23 +50,27 @@ Each application defines its own fields via document definitions in its data con
 The following example shows the structure of a DPNS `domain` document as output from `JSON.stringify()`. Note the `$` prefix indicating the base fields.
 
 ```json
-{
-  "$protocolVersion": 1,
-  "$id": "5D8U1k6t6ax8TnyL6QGFFbtMhn39zsixrSMQaxZrYKf1",
-  "$type": "domain",
-  "$dataContractId": "GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec",
-  "$ownerId": "9gU2ZnDhkakHgB4eLbqvEAwQPDBwhW12KD5xPZxybNjE",
-  "$revision": 1,
-  "label": "RT-Sylvan-71605",
-  "normalizedLabel": "rt-sylvan-71605",
+ {
+  "$id": "3AhZ5h63ZrFJXfE3YP3iEFVxyndYWPMxR9fSEaMo67QJ",
+  "$ownerId": "6TGHW8WBcNzFrWwAueGtqtAah7w98EELFZ7xdTHegnvH",
+  "label": "DQ-Jasen-82083",
+  "normalizedLabel": "dq-jasen-82083",
   "normalizedParentDomainName": "dash",
-  "preorderSalt": "zKaLWLe+kKHiRoBXdfSd7TSU9HdIseeoOly1eTYZ670=",
+  "parentDomainName": "dash",
+  "preorderSalt": "bcCSdtGqqZdXBQB4DDBIU2RPAwFDFt9tMr0LX6m5qCQ=",
   "records": {
-    "dashUniqueIdentityId": "9gU2ZnDhkakHgB4eLbqvEAwQPDBwhW12KD5xPZxybNjE"
+    "dashUniqueIdentityId": "UQTRY+wqPyL27V7YjJadJdyXVBETj6CfzvqUg5aY5E4="
   },
   "subdomainRules": {
     "allowSubdomains": false
-  }
+  },
+  "$revision": 1,
+  "$createdAt": null,
+  "$updatedAt": null,
+  "$dataContract": {
+    // Truncated ...
+   },
+  "$type": "domain"
 }
 ```
 
