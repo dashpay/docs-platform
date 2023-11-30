@@ -2,7 +2,7 @@
 
 ## Overview
 
-Dash Platform is based on [document-oriented database](https://en.wikipedia.org/wiki/Document-oriented_database) concepts and uses related terminology. In short, JSON documents are stored into document collections which can then be fetched back using a [query language](../reference/query-syntax.md) similar to common document-oriented databases like [MongoDB](https://www.mongodb.com/), [CouchDB](https://couchdb.apache.org/), or [Firebase](https://firebase.google.com/). 
+Dash Platform is based on [document-oriented database](https://en.wikipedia.org/wiki/Document-oriented_database) concepts and uses related terminology. In short, JSON documents are stored into document collections which can then be fetched back using a [query language](../reference/query-syntax.md) similar to common document-oriented databases like [MongoDB](https://www.mongodb.com/), [CouchDB](https://couchdb.apache.org/), or [Firebase](https://firebase.google.com/).
 
 Documents are defined in an application's [Data Contract](../explanations/platform-protocol-data-contract.md) and represent the structure of application-specific data. Each document consists of one or more fields and the indices necessary to support querying.
 
@@ -79,7 +79,7 @@ The following example shows the structure of a DPNS `domain` document as output 
 Once a document has been created, it must be encapsulated in a State Transition to be sent to the platform. The structure of a document state transition is shown below. For additional details, see the [State Transition](../explanations/platform-protocol-state-transition.md) explanation.
 
 | Field Name | Description |
-| - | - | 
+| - | - |
 | protocolVersion | Dash Platform Protocol version (currently `1`) |
 | type | State transition type (`1` for documents) |
 | ownerId | Identity submitting the document(s) |
