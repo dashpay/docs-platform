@@ -2,15 +2,15 @@
 
 ## Overview
 
-Data contracts define the schema (structure) of data an application will store on Dash Platform. Contracts are described using [JSON Schema](https://json-schema.org/understanding-json-schema/) which allows the platform to validate the contract-related data submitted to it.
+Data contracts define the schema (structure) of data an application will store on Dash Platform. Contracts are described using [JSON Schema](https://json-schema.org/understanding-json-schema/) which allows the platform to validate the submitted contract-related data.
 
 The following sections provide details that developers need to construct valid contracts. All data contracts must define one or more [documents](#documents) that conform to the [general data contract constraints](#general-constraints).
 
 ## Documents
 
-The `documents` object defines each type of document required by the data contract. At a minimum, a document must consist of 1 or more properties. Documents may also define [indices](#document-indices) and a list of [required properties](#required-properties-optional). The `additionalProperties` properties keyword must be included as described in the [constraints](#additional-properties) section.
+The `documents` object defines each type of document required by the data contract. At a minimum, a document must consist of 1 or more [properties](#document-properties). Documents may also define [indices](#document-indices) and a list of [required properties](#required-properties-optional). The `additionalProperties` properties keyword must be included as described in the [constraints](#additional-properties) section.
 
-The following example shows a minimal `documents` object defining a single document (`note`) that has one property (`message`).
+The following example shows a minimal `documents` object defining a single document (`note`) with one property (`message`).
 
 ```json
 {
@@ -30,7 +30,7 @@ The following example shows a minimal `documents` object defining a single docum
 
 The `properties` object defines each field that a document will use. Each field consists of an object that, at a minimum, must define its data `type` (`string`, `number`, `integer`, `boolean`, `array`, `object`) and a [`position`](#assigning-property-position).
 
-Fields may also apply a variety of optional JSON Schema constraints related to the format, range, length, etc. of the data. A full explanation of the capabilities of JSON Schema is beyond the scope of this document. For more information regarding its data types and the constraints that can be applied, please refer to the [JSON Schema reference](https://json-schema.org/understanding-json-schema/reference/index.html) documentation.
+Fields may also apply a variety of optional JSON Schema constraints related to the format, range, length, etc. of the data. A full explanation of JSON Schema capabilities is beyond the scope of this document. For more information regarding its data types and the constraints that can be applied, please refer to the [JSON Schema reference](https://json-schema.org/understanding-json-schema/reference/index.html) documentation.
 
 #### Assigning property `position`
 
@@ -38,7 +38,7 @@ Each property in a level must be assigned a unique `position` value, with orderi
 
 #### Special requirements for `object` properties
 
-The `object` type cannot be an empty object, but must have one or more defined properties. For example, the `body` property shown below is an object containing a single string property (`objectProperty`):
+The `object` type cannot be an empty object but must have one or more defined properties. For example, the `body` property shown below is an object containing a single string property (`objectProperty`):
 
 ```javascript
 const contractDocuments = {
@@ -82,7 +82,7 @@ Prior to Dash Platform v0.23 there were stricter limitations on minimum property
 
 #### Required Properties (Optional)
 
-Each document may have some fields that are required for the document to be valid and other fields that are optional. Required fields are defined via the `required` array which consists of a list of the field names from the document that must be present. The `required` object should be excluded for documents without any required properties.
+Each document may have some fields that are required for the document to be valid and other optional fields. Required fields are defined via the `required` array, which contains a list of the field names that must be present in the document. The `required` object should only be included for documents with at least one required property.
 
 ```json
 "required": [
@@ -107,7 +107,7 @@ The following example (excerpt from the DPNS contract's `domain` document) demon
 
 ### Document Indices
 
-Document indices may be defined if indexing on document fields is required. The `indices` object should be excluded for documents that do not require indices.
+Document indices may be defined if indexing on document fields is required. The `indices` object should only be included for documents with at least one index.
 
 The `indices` array consists of:
 
@@ -118,7 +118,7 @@ The `indices` array consists of:
 
 > 🚧 Compound Indices
 >
-> When defining an index with multiple properties (i.e a compound index), the order in which the properties are listed is important. Refer to the [mongoDB documentation](https://docs.mongodb.com/manual/core/index-compound/#prefixes) for details regarding the significance of the order as it relates to querying capabilities. Dash uses [GroveDB](https://github.com/dashevo/grovedb) which works similarly but does requiring listing all the index's fields in query order by statements.
+> When defining an index with multiple properties (i.e a compound index), the order in which the properties are listed is important. Refer to the [mongoDB documentation](https://docs.mongodb.com/manual/core/index-compound/#prefixes) for details regarding the significance of the order as it relates to querying capabilities. Dash uses [GroveDB](https://github.com/dashevo/grovedb), which works similarly but does require listing all the index's fields in query order by statements.
 
 ```json
 "indices": [ 
