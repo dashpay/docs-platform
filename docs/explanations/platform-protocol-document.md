@@ -37,7 +37,8 @@ Each application defines its own fields via document definitions in its data con
 | --- | --- | --- |
 | domain | label | string |
 | domain | normalizedLabel | string |
-| domain | normalizedParentvDomainName | string |
+| domain | parentDomainName | string |
+| domain | normalizedParentDomainName | string |
 | domain | preorderSalt | array (bytes) |
 | domain | records | object |
 | domain | records.dashUniqueIdentityId | array (bytes) |
@@ -68,7 +69,7 @@ The following example shows the structure of a DPNS `domain` document as output 
     "allowSubdomains": false
   }
 }
-``` 
+```
 
 ## Document Submission
 
@@ -76,7 +77,7 @@ Once a document has been created, it must be encapsulated in a State Transition 
 
 | Field Name | Description |
 | - | - | 
-| protocolVersion | Dash Platform Protocol version (currently `0`) |
+| protocolVersion | Dash Platform Protocol version (currently `1`) |
 | type | State transition type (`1` for documents) |
 | ownerId | Identity submitting the document(s) |
 | transitions |  Document `create`, `replace`, or `delete` transitions (up to 10 objects) |
