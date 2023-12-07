@@ -195,6 +195,69 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ::::
 
+### getIdentities
+
+**Returns**: [Identity](../explanations/identity.md) information for the requested identities  
+
+**Parameters**:
+
+| Name    | Type    | Required | Description |
+| ------- | ------- | -------- | ------------ |
+| `ids`   | Array   | Yes      | An array of identity IDs
+| `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested identity
+
+**Example Request and Response**
+
+::::{tab-set-code}
+
+```shell gRPCurl
+# gRPCurl
+# `id` must be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "ids": [
+        "MBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/aw="
+      ]
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getIdentities
+```
+
+::::
+
+::::{tab-set-code}
+
+```json Response (gRPCurl)
+// Response (gRPCurl)
+{
+  "v0": {
+    "identities": {
+      "identityEntries": [
+        {
+          "key": "MBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/aw=",
+          "value": {
+            "value": "ADASwZuY7AAzrds2zWS39RBnDyo1GkMEtfaZQUQobv2sAgAAAAAAAAAAIQLItHR7UoysX933psxjcC7gTtfRMykE4IUQND6gDc5UagABAAEAAgAAACECAe4o+E9UhTkFZ+k5wrWGAQtjpp7JLKtTXclqjHGRNgIA/QAAAAQrpPz8AA=="
+          }
+        }
+      ]
+    },
+    "metadata": {
+      "height": "6851",
+      "coreChainLockedHeight": 927070,
+      "epoch": 850,
+      "timeMs": "1701982306949",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-37"
+    }
+  }
+}
+
+```
+
+::::
+
 ### getIdentitiesByPublicKeyHashes
 
 **Returns**: An array of [identities](../explanations/identity.md) associated with the provided public key hashes  
@@ -659,7 +722,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 | Name    | Type    | Required | Description                               |
 | ------- | ------- | -------- | ----------------------------------------- |
-| `ids`   | Bytes   | Yes      | An array of data contract IDs             |
+| `ids`   | Array   | Yes      | An array of data contract IDs             |
 | `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested data contracts |
 
 **Example Request and Response**
