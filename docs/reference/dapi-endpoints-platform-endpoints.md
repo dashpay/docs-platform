@@ -681,7 +681,7 @@ loadDpp();
 const dpp = new DashPlatformProtocol(null);
 const client = new DAPIClient();
 
-const contractId = Identifier.from('BWgzcW4XRhmYKzup1xY8fMi3ZHGG1Hf8fD9Rm3e3bopm');
+const contractId = Identifier.from('2ciAVGRuzogbR2NNtNfbn6YdW7BkLWntC7jrLNRMZN9n');
 client.platform.getDataContractHistory(contractId, 0, 2, 0).then((response) => {
   for (const key in response.getDataContractHistory()) {
     const revision = response.getDataContractHistory()[key];
@@ -697,12 +697,14 @@ client.platform.getDataContractHistory(contractId, 0, 2, 0).then((response) => {
 # `id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
-    "id":"5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
-    "limit": 2,
-    "offset": 0,
-    "start_at_ms": 0,
-    "prove": false    
-    }' \
+    "v0": {
+      "id":"GAGPHaxHbGDQv62LYIMuYbOaYjqD36X/pIXADxTfJvE=",
+      "limit": 2,
+      "offset": 0,
+      "start_at_ms": 0,
+      "prove": false
+    }
+  }' \
   seed-1.testnet.networks.dash.org:1443 \
   org.dash.platform.dapi.v0.Platform/getDataContractHistory
 ```
@@ -714,61 +716,64 @@ grpcurl -proto protos/platform/v0/platform.proto \
 ```json Response (JavaScript)
 // Response (JavaScript)
 {
-  "$format_version": "0",
-  "id": "BWgzcW4XRhmYKzup1xY8fMi3ZHGG1Hf8fD9Rm3e3bopm",
-  "config": {
-    "$format_version": "0",
-    "canBeDeleted": false,
-    "readonly": false,
-    "keepsHistory": true,
-    "documentsKeepHistoryContractDefault": false,
-    "documentsMutableContractDefault": true,
-    "requiresIdentityEncryptionBoundedKey": null,
-    "requiresIdentityDecryptionBoundedKey": null
+  "$format_version":"0",
+  "id":"2ciAVGRuzogbR2NNtNfbn6YdW7BkLWntC7jrLNRMZN9n",
+  "config":{
+    "$format_version":"0",
+    "canBeDeleted":false,
+    "readonly":false,
+    "keepsHistory":true,
+    "documentsKeepHistoryContractDefault":false,
+    "documentsMutableContractDefault":true,
+    "requiresIdentityEncryptionBoundedKey":null,
+    "requiresIdentityDecryptionBoundedKey":null
   },
-  "version": 1,
-  "ownerId": "DKFKmJ58ZTDddvviDJwDyCznDMxd9Y6bsJcBN5Xp8m5w",
-  "schemaDefs": null,
-  "documentSchemas": {
-    "note": {
-      "type": "object",
-      "properties": {
-        "message": {
-          "type": "string"
+  "version":1,
+  "ownerId":"EB9eBUQxLjA7XGj71x3Msdd1uNmehKYZff3b6idhnTyV",
+  "schemaDefs":null,
+  "documentSchemas":{
+    "note":{
+      "type":"object",
+      "properties":{
+        "message":{
+          "type":"string",
+          "position":0
         }
       },
-      "additionalProperties": false
+      "additionalProperties":false
     }
   }
 },
 {
-  "$format_version": "0",
-  "id": "BWgzcW4XRhmYKzup1xY8fMi3ZHGG1Hf8fD9Rm3e3bopm",
-  "config": {
-    "$format_version": "0",
-    "canBeDeleted": false,
-    "readonly": false,
-    "keepsHistory": true,
-    "documentsKeepHistoryContractDefault": false,
-    "documentsMutableContractDefault": true,
-    "requiresIdentityEncryptionBoundedKey": null,
-    "requiresIdentityDecryptionBoundedKey": null
+  "$format_version":"0",
+  "id":"2ciAVGRuzogbR2NNtNfbn6YdW7BkLWntC7jrLNRMZN9n",
+  "config":{
+    "$format_version":"0",
+    "canBeDeleted":false,
+    "readonly":false,
+    "keepsHistory":true,
+    "documentsKeepHistoryContractDefault":false,
+    "documentsMutableContractDefault":true,
+    "requiresIdentityEncryptionBoundedKey":null,
+    "requiresIdentityDecryptionBoundedKey":null
   },
-  "version": 2,
-  "ownerId": "DKFKmJ58ZTDddvviDJwDyCznDMxd9Y6bsJcBN5Xp8m5w",
-  "schemaDefs": null,
-  "documentSchemas": {
-    "note": {
-      "type": "object",
-      "properties": {
-        "message": {
-          "type": "string"
+  "version":2,
+  "ownerId":"EB9eBUQxLjA7XGj71x3Msdd1uNmehKYZff3b6idhnTyV",
+  "schemaDefs":null,
+  "documentSchemas":{
+    "note":{
+      "type":"object",
+      "properties":{
+        "message":{
+          "type":"string",
+          "position":0
         },
-        "author": {
-          "type": "string"
+        "author":{
+          "type":"string",
+          "position":1
         }
       },
-      "additionalProperties": false
+      "additionalProperties":false
     }
   }
 }
@@ -777,14 +782,27 @@ grpcurl -proto protos/platform/v0/platform.proto \
 ```json Response (gRPCurl)
 // Response (gRPCurl)
 {
-  "dataContractHistory": {
-  },
-  "metadata": {
-    "height": "1056",
-    "coreChainLockedHeight": 922820,
-    "timeMs": "1697125325434",
-    "protocolVersion": 1,
-    "chainId": "devnet"
+  "v0": {
+    "dataContractHistory": {
+      "dataContractEntries": [
+        {
+          "date": "1701271990189",
+          "value": "ABgBjx2sR2xg0L+ti2CDLmGzmmI6g9+l/6SFwA8U3ybxAAAAAQABAAABw8GCMyj2ynyRr4i36i1KKHFYdYuPDVwKmo1jmEgT4zwAAQRub3RlFgMSBHR5cGUSBm9iamVjdBIKcHJvcGVydGllcxYBEgdtZXNzYWdlFgISBHR5cGUSBnN0cmluZxIIcG9zaXRpb24DABIUYWRkaXRpb25hbFByb3BlcnRpZXMTAA=="
+        },
+        {
+          "date": "1701272469813",
+          "value": "ABgBjx2sR2xg0L+ti2CDLmGzmmI6g9+l/6SFwA8U3ybxAAAAAQABAAACw8GCMyj2ynyRr4i36i1KKHFYdYuPDVwKmo1jmEgT4zwAAQRub3RlFgMSBHR5cGUSBm9iamVjdBIKcHJvcGVydGllcxYCEgdtZXNzYWdlFgISBHR5cGUSBnN0cmluZxIIcG9zaXRpb24CABIGYXV0aG9yFgISBHR5cGUSBnN0cmluZxIIcG9zaXRpb24CARIUYWRkaXRpb25hbFByb3BlcnRpZXMTAA=="
+        }
+      ]
+    },
+    "metadata": {
+      "height": "6776",
+      "coreChainLockedHeight": 926975,
+      "epoch": 846,
+      "timeMs": "1701968396855",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-37"
+    }
   }
 }
 ```
