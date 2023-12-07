@@ -195,6 +195,162 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ::::
 
+### getIdentityBalance
+
+**Returns**: Credit balance for the requested [Identity](../explanations/identity.md)
+
+**Parameters**:
+
+| Name    | Type    | Required | Description |
+| ------- | ------- | -------- | ------------ |
+| `id`    | Bytes   | Yes      | An identity ID
+| `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested identity
+
+**Example Request and Response**
+
+::::{tab-set-code}
+
+```shell gRPCurl
+# gRPCurl
+# `id` must be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "id": "MBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/aw="
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getIdentityBalance
+```
+
+::::
+
+::::{tab-set-code}
+
+```json Response (gRPCurl)
+// Response (gRPCurl)
+{
+  "v0": {
+    "balance": "17912102140",
+    "metadata": {
+      "height": "6858",
+      "coreChainLockedHeight": 927080,
+      "epoch": 850,
+      "timeMs": "1701983632299",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-37"
+    }
+  }
+}
+```
+
+::::
+
+### getIdentityBalanceAndRevision
+
+**Returns**: Credit balance and identity revision for the requested [Identity](../explanations/identity.md)
+
+**Parameters**:
+
+| Name    | Type    | Required | Description |
+| ------- | ------- | -------- | ------------ |
+| `id`    | Bytes   | Yes      | An identity ID
+| `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested identity
+
+**Example Request and Response**
+
+::::{tab-set-code}
+
+```shell gRPCurl
+# gRPCurl
+# `id` must be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "id": "MBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/aw="
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getIdentityBalanceAndRevision
+```
+
+::::
+
+::::{tab-set-code}
+
+```json Response (gRPCurl)
+// Response (gRPCurl)
+{
+  "v0": {
+    "balance_and_revision": {
+      "balance": "17912102140",
+      "revision": "0"
+    },
+    "metadata": {
+      "height": "6862",
+      "core_chain_locked_height": 927086,
+      "epoch": 851,
+      "time_ms": "1701984361792",
+      "protocol_version": 1,
+      "chain_id": "dash-testnet-37"
+    }
+  }
+}
+```
+
+::::
+
+### getIdentityByPublicKeyHash
+
+**Returns**: An [identity](../explanations/identity.md) associated with the provided public key hash
+
+**Parameters**:
+
+| Name    | Type    | Required | Description |
+| ------- | ------- | -------- | ------------ |
+| `public_key_hash` | Bytes   | Yes | Public key hash (sha256-ripemd160) of identity public key
+| `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested identity
+
+**Example Request and Response**
+
+::::{tab-set-code}
+
+```shell gRPCurl
+# gRPCurl
+# `id` must be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "public_key_hash": "uNFZGqdNRA4K+cC+FsVbvBQYR/c="
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getIdentityByPublicKeyHash
+```
+
+::::
+
+::::{tab-set-code}
+
+```json Response (gRPCurl)
+// Response (gRPCurl)
+{
+  "v0": {
+    "identity": "ADASwZuY7AAzrds2zWS39RBnDyo1GkMEtfaZQUQobv2sAgAAAAAAAAAAIQLItHR7UoysX933psxjcC7gTtfRMykE4IUQND6gDc5UagABAAEAAgAAACECAe4o+E9UhTkFZ+k5wrWGAQtjpp7JLKtTXclqjHGRNgIA/QAAAAQ8fEg8AA==",
+    "metadata": {
+      "height": "6870",
+      "coreChainLockedHeight": 927094,
+      "epoch": 851,
+      "timeMs": "1701985137472",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-37"
+    }
+  }
+}
+```
+
+::::
+
 ### getIdentities
 
 **Returns**: [Identity](../explanations/identity.md) information for the requested identities  
