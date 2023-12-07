@@ -12,6 +12,7 @@ Some [additional metadata](https://github.com/dashevo/platform/blob/master/packa
 | :---------------------- | :---------------------------------------------------- |
 | `height`                | Last committed platform chain height                  |
 | `coreChainLockedHeight` | Height of the most recent ChainLock on the core chain |
+| `epoch`                 | The current Platform epoch                            |
 | `timeMs`                | Unix timestamp in milliseconds for the response       |
 | `protocolVersion`       | Platform protocol version                             |
 | `chainId`               | Name of the network                                   |
