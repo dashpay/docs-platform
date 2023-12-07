@@ -942,10 +942,12 @@ platformPromiseClient
 # `id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
-    "data_contract_id":"5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
-    "document_type":"domain",
-    "limit":1
-    }' \
+    "v0": {
+      "data_contract_id":"5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
+      "document_type":"domain",
+      "limit":1
+    }
+  }' \
   seed-1.testnet.networks.dash.org:1443 \
   org.dash.platform.dapi.v0.Platform/getDocuments
 ```
@@ -957,53 +959,68 @@ grpcurl -proto protos/platform/v0/platform.proto \
 ```json Response (JavaScript)
 // Response (JavaScript)
 {
-  "$id": "AhWPYyM5eTFGFvGXEBPaqEPs93QyBTZRHYsQSVGn1Jg",
-  "$ownerId": "YhCPn6pSbZ11hCiFmFL6WJkmC3GSwuUSzhS4QAy84EF",
-  "label": "Alice007",
-  "normalizedLabel": "alice007",
-  "normalizedParentDomainName": "dash",
-  "preorderSalt": "WN/tDnACk4yyrYqXfABTpozmgtS05kvGWCz7ypt9310=",
-  "records": {
-    "dashAliasIdentityId": "CB50kDKQpfYnb1WdLv4ir1LOwJOW9cfXkhj9grusk+Q=",
-    "dashUniqueIdentityId": null
+  "$id":"Do3YtBPJG72zG4tCbN5VE8djJ6rLpvx7yvtMWEy89HC",
+  "$ownerId":"4pk6ZhgDtxn9yN2bbB6kfsYLRmUBH7PKUq275cjyzepT",
+  "label":"Chronic",
+  "normalizedLabel":"chr0n1c",
+  "normalizedParentDomainName":"dash",
+  "parentDomainName":"dash",
+  "preorderSalt":"1P9N5qv1Ww2xkv6/XXpsvymyGYychRsLXMhCqvW79Jo=",
+  "records":{
+    "dashUniqueIdentityId":"OM4WaCQNLedQ0rpbl1UMTZhEbnVeMfL4941ZD08iyFw="
   },
-  "subdomainRules": { "allowSubdomains": false },
-  "$revision": 1,
-  "$createdAt": null,
-  "$updatedAt": null,
-  "$dataContract": {
-    "$format_version": "0",
-    "id": "GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec",
-    "config": {
-      "$format_version": "0",
-      "canBeDeleted": false,
-      "readonly": false,
-      "keepsHistory": false,
-      "documentsKeepHistoryContractDefault": false,
-      "documentsMutableContractDefault": true,
-      "requiresIdentityEncryptionBoundedKey": null,
-      "requiresIdentityDecryptionBoundedKey": null
+  "subdomainRules":{
+    "allowSubdomains":false
+  },
+  "$revision":1,
+  "$createdAt":null,
+  "$updatedAt":null,
+  "$dataContract":{
+    "$format_version":"0",
+    "id":"GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec",
+    "config":{
+      "$format_version":"0",
+      "canBeDeleted":false,
+      "readonly":false,
+      "keepsHistory":false,
+      "documentsKeepHistoryContractDefault":false,
+      "documentsMutableContractDefault":true,
+      "requiresIdentityEncryptionBoundedKey":null,
+      "requiresIdentityDecryptionBoundedKey":null
     },
-    "version": 1,
-    "ownerId": "4EfA9Jrvv3nnCFdSf7fad59851iiTRZ6Wcu6YVJ4iSeF",
-    "schemaDefs": null,
-    "documentSchemas": { "domain": ["Object"], "preorder": ["Object"] }
+    "version":1,
+    "ownerId":"4EfA9Jrvv3nnCFdSf7fad59851iiTRZ6Wcu6YVJ4iSeF",
+    "schemaDefs":null,
+    "documentSchemas":{
+      "domain":[
+        "Object"
+      ],
+      "preorder":[
+        "Object"
+      ]
+    }
   },
-  "$type": "domain"
+  "$type":"domain"
 }
 ```
 
 ```json Response (gRPCurl)
 // Response (gRPCurl)
 {
-  "documents": [
-    "AatjJGlkWCACod79ik2tILNnybx5VepoaX2cceXDSogwSgxdWi9zYmUkdHlwZWZkb21haW5lbGFiZWx0Yzg4OWMyM2FiY2ZkYzU3NGNmZWJncmVjb3Jkc6FzZGFzaEFsaWFzSWRlbnRpdHlJZFggMBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/axoJG93bmVySWRYIDASwZuY7AAzrds2zWS39RBnDyo1GkMEtfaZQUQobv2saSRyZXZpc2lvbgFscHJlb3JkZXJTYWx0WCAkJyav6iQVX7hFrUFagKC+xddHsyA5Wo/NdvejXt6aSG5zdWJkb21haW5SdWxlc6FvYWxsb3dTdWJkb21haW5z9W8kZGF0YUNvbnRyYWN0SWRYIOZoxlmvZq7h5ywYbd57W34KHXEqCcQNVyH2Ir9TxTFVb25vcm1hbGl6ZWRMYWJlbHRjODg5YzIzYWJjZmRjNTc0Y2ZlYngabm9ybWFsaXplZFBhcmVudERvbWFpbk5hbWVg"
-  ],
-  "metadata": {
-    "height": "4254",
-    "coreChainLockedHeight": 889435,
-    "timeMs": "1684440970270",
-    "protocolVersion": 1
+  "v0":{
+    "documents":{
+      "documents":[
+        "AANHCCLI23JAM6yPcJwiyAaVouU4btv1kXxaMF0mfXTDOM4WaCQNLedQ0rpbl1UMTZhEbnVeMfL4941ZD08iyFwBAAAHQ2hyb25pYwdjaHIwbjFjAQRkYXNoBGRhc2jU/03mq/VbDbGS/r9demy/KbIZjJyFGwtcyEKq9bv0miIBOM4WaCQNLedQ0rpbl1UMTZhEbnVeMfL4941ZD08iyFwAAQA="
+      ]
+    },
+    "metadata":{
+      "height":"6755",
+      "coreChainLockedHeight":926945,
+      "epoch":845,
+      "timeMs":"1701964691399",
+      "protocolVersion":1,
+      "chainId":"dash-testnet-37"
+    }
   }
 }
 ```
