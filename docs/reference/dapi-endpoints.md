@@ -37,13 +37,16 @@ data returned is valid and complete. The endpoints are versioned so updates can 
 
 | Layer | Endpoint |   |
 | :---: | -------- | - |
-|   2   | [`broadcastStateTransition`](../reference/dapi-endpoints-platform-endpoints.md#broadcaststatetransition)             | Broadcasts the provided State Transition |
-|   2   | [`getIdentity`](../reference/dapi-endpoints-platform-endpoints.md#getidentity)                                       | Returns the requested identity |
+|   2   | [`broadcastStateTransition`](../reference/dapi-endpoints-platform-endpoints.md#broadcaststatetransition) | Broadcasts the provided State Transition |
+|   2   | [`getIdentity`](../reference/dapi-endpoints-platform-endpoints.md#getidentity) | Returns the requested identity |
+|   2   | [`getIdentities`](../reference/dapi-endpoints-platform-endpoints.md#getidentities) | Returns the requested identities |
 |   2   | [`getIdentitiesByPublicKeyHashes`](../reference/dapi-endpoints-platform-endpoints.md#getidentitiesbypublickeyhashes) | Returns the identities associated with the provided public key hashes<br>_Added in Dash Platform v0.16_ |
-|   2   | [`getDataContract`](../reference/dapi-endpoints-platform-endpoints.md#getdatacontract)                               | Returns the requested data contract |
-|   2   | [`getDataContractHistory`](../reference/dapi-endpoints-platform-endpoints.md#getdatacontracthistory)                 | Returns the requested data contract history |
-|   2   | [`getDocuments`](../reference/dapi-endpoints-platform-endpoints.md#getdocuments)                                     | Returns the requested document(s) |
-|   2   | [`waitForStateTransitionResult`](../reference/dapi-endpoints-platform-endpoints.md#waitforstatetransitionresult)     | Responds with the state transition hash and either a proof that the state transition was confirmed in a block or an error |
+|   2   | [`getDataContract`](../reference/dapi-endpoints-platform-endpoints.md#getdatacontract) | Returns the requested data contract |
+|   2   | [`getDataContracts`](../reference/dapi-endpoints-platform-endpoints.md#getdatacontracts) | Returns the requested data contracts |
+|   2   | [`getDataContractHistory`](../reference/dapi-endpoints-platform-endpoints.md#getdatacontracthistory) | Returns the requested data contract history |
+|   2   | [`getEpochsInfo`](../reference/dapi-endpoints-platform-endpoints.md#getepochsinfo) | Returns information about the requested epoch(s) |
+|   2   | [`getDocuments`](../reference/dapi-endpoints-platform-endpoints.md#getdocuments) | Returns the requested document(s) |
+|   2   | [`waitForStateTransitionResult`](../reference/dapi-endpoints-platform-endpoints.md#waitforstatetransitionresult) | Responds with the state transition hash and either a proof that the state transition was confirmed in a block or an error |
 
 ```{eval-rst}
 ..
