@@ -33,7 +33,7 @@ streaming of events related to blocks and transactions/transitions.
 ### Platform gRPC Service
 
 In addition to providing the request data, the following endpoints can also provide proofs that the
-data returned is valid and complete.
+data returned is valid and complete. The endpoints are versioned so updates can be made to them without introducing issues for endpoint consumers.
 
 | Layer | Endpoint |   |
 | :---: | -------- | - |

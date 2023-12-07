@@ -4,9 +4,9 @@ Please refer to the [gRPC Overview](../reference/dapi-endpoints-grpc-overview.md
 
 ## Data Proofs and Metadata
 
-Since Dash Platform 0.20.0, Platform gRPC endpoints can provide [proofs](https://github.com/dashpay/platform/blob/master/packages/dapi-grpc/protos/platform/v0/platform.proto#L17-L22) so the data returned for a request can be verified as being valid. Full support is not yet available in the JavaScript client, but can be used via the low level [dapi-grpc library](https://github.com/dashevo/platform/tree/master/packages/dapi-grpc).
+Platform gRPC endpoints can provide [proofs](https://github.com/dashpay/platform/blob/master/packages/dapi-grpc/protos/platform/v0/platform.proto#L17-L22) so the data returned for a request can be verified as being valid. Full support is not yet available in the JavaScript client, but can be used via the low level [dapi-grpc library](https://github.com/dashevo/platform/tree/master/packages/dapi-grpc).
 
-Some [additional metadata](https://github.com/dashevo/platform/blob/master/packages/dapi-grpc/protos/platform/v0/platform.proto#L38-L44) is also provided with responses:
+Some [additional metadata](https://github.com/dashevo/platform/blob/master/packages/dapi-grpc/protos/platform/v0/platform.proto#L48-L55) is also provided with responses:
 
 | Metadata field          | Description                                           |
 | :---------------------- | :---------------------------------------------------- |
@@ -16,6 +16,10 @@ Some [additional metadata](https://github.com/dashevo/platform/blob/master/packa
 | `timeMs`                | Unix timestamp in milliseconds for the response       |
 | `protocolVersion`       | Platform protocol version                             |
 | `chainId`               | Name of the network                                   |
+
+## Versioning
+
+Dash Platform 0.25.16 included a [breaking change that added versioning](https://github.com/dashpay/platform/pull/1522) to these endpoints so future updates can be done without creating significant issues for API consumers.
 
 ## Endpoint Details
 
@@ -1077,9 +1081,11 @@ client.platform.waitForStateTransitionResult(hash, { prove: true })
 #    Example: wEiwFu9WvAtylrwTph5v0uXQm743N+75C+C9DhmZBkw=
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
-    "state_transition_hash":your_state_transition_hash,
-    "prove": "true"
-    }' \
+    "v0": {
+      "state_transition_hash":your_state_transition_hash,
+      "prove": "true"
+    }
+  }' \
   seed-1.testnet.networks.dash.org:1443 \
   org.dash.platform.dapi.v0.Platform/waitForStateTransitionResult
 ```
