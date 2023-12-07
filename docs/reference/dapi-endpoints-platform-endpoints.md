@@ -4,7 +4,7 @@ Please refer to the [gRPC Overview](../reference/dapi-endpoints-grpc-overview.md
 
 ## Data Proofs and Metadata
 
-Platform gRPC endpoints can provide [proofs](https://github.com/dashpay/platform/blob/master/packages/dapi-grpc/protos/platform/v0/platform.proto#L17-L22) so the data returned for a request can be verified as being valid. Full support is not yet available in the JavaScript client, but can be used via the low level [dapi-grpc library](https://github.com/dashevo/platform/tree/master/packages/dapi-grpc).
+Platform gRPC endpoints can provide [proofs](https://github.com/dashpay/platform/blob/master/packages/dapi-grpc/protos/platform/v0/platform.proto#L17-L22) so the data returned for a request can be verified as being valid. When requesting proofs, the data requested will be encoded as part of the proof in the response. Full support is not yet available in the JavaScript client, but can be used via the low level [dapi-grpc library](https://github.com/dashevo/platform/tree/master/packages/dapi-grpc).
 
 Some [additional metadata](https://github.com/dashevo/platform/blob/master/packages/dapi-grpc/protos/platform/v0/platform.proto#L48-L55) is also provided with responses:
 
@@ -707,6 +707,77 @@ grpcurl -proto protos/platform/v0/platform.proto \
     }
   }
 }
+```
+
+::::
+
+### getEpochsInfo
+
+**Returns**: Information for the requested epoch(s)
+
+**Parameters**:
+
+| Name    | Type    | Required | Description |
+| ------- | ------- | -------- | ----------- |
+| `start_epoch` | Bytes | No | First epoch being requested
+| `count` | Boolean | No | Number of records to request
+| `ascending` | Boolean | No | Set to `true` to query in ascending order. Results are returned in descending order by default.
+| `prove` | Boolean | No | Set to `true` to receive a proof that contains the requested data contracts
+
+**Example Request and Response**
+
+::::{tab-set-code}
+
+```shell gRPCurl
+# gRPCurl
+# `id` must be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "count": 2
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getEpochsInfo
+```
+
+::::
+
+::::{tab-set-code}
+
+```json Response (gRPCurl)
+// Response (gRPCurl)
+{
+  "v0": {
+    "epochs": {
+      "epochInfos": [
+        {
+          "number": 849,
+          "firstBlockHeight": "6822",
+          "firstCoreBlockHeight": 927030,
+          "startTime": "1701976758619",
+          "feeMultiplier": 2
+        },
+        {
+          "number": 850,
+          "firstBlockHeight": "6840",
+          "firstCoreBlockHeight": 927061,
+          "startTime": "1701980303210",
+          "feeMultiplier": 2
+        }
+      ]
+    },
+    "metadata": {
+      "height": "6843",
+      "coreChainLockedHeight": 927065,
+      "epoch": 850,
+      "timeMs": "1701980850126",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-37"
+    }
+  }
+}
+
 ```
 
 ::::
