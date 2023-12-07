@@ -39,6 +39,9 @@ data returned is valid and complete. The endpoints are versioned so updates can 
 | :---: | -------- | - |
 |   2   | [`broadcastStateTransition`](../reference/dapi-endpoints-platform-endpoints.md#broadcaststatetransition) | Broadcasts the provided State Transition |
 |   2   | [`getIdentity`](../reference/dapi-endpoints-platform-endpoints.md#getidentity) | Returns the requested identity |
+|   2   | [`getIdentityBalance`](../reference/dapi-endpoints-platform-endpoints.md#getidentitybalance) | Returns the requested identity's balance |
+|   2   | [`getIdentityBalanceAndRevision`](../reference/dapi-endpoints-platform-endpoints.md#getidentitybalanceandrevision) | Returns the requested identity's balance and revision |
+|   2   | [`getIdentityByPublicKeyHash`](../reference/dapi-endpoints-platform-endpoints.md#getidentitybypublickeyhash) | Returns the identity associated with the provided public key hash |
 |   2   | [`getIdentities`](../reference/dapi-endpoints-platform-endpoints.md#getidentities) | Returns the requested identities |
 |   2   | [`getIdentitiesByPublicKeyHashes`](../reference/dapi-endpoints-platform-endpoints.md#getidentitiesbypublickeyhashes) | Returns the identities associated with the provided public key hashes<br>_Added in Dash Platform v0.16_ |
 |   2   | [`getDataContract`](../reference/dapi-endpoints-platform-endpoints.md#getdatacontract) | Returns the requested data contract |
