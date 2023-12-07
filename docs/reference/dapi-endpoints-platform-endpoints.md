@@ -125,8 +125,10 @@ platformPromiseClient
 # `id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
-    "id":"MBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/aw="
-    }' \
+    "v0": {
+      "id": "MBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/aw="
+    }
+  }' \
   seed-1.testnet.networks.dash.org:1443 \
   org.dash.platform.dapi.v0.Platform/getIdentity
 ```
@@ -138,46 +140,50 @@ grpcurl -proto protos/platform/v0/platform.proto \
 ```json Response (JavaScript)
 // Response (JavaScript)
 {
-  "$version": "0",
-  "id": "4EfA9Jrvv3nnCFdSf7fad59851iiTRZ6Wcu6YVJ4iSeF",
-  "publicKeys": [
+  "$version":"0",
+  "id":"4EfA9Jrvv3nnCFdSf7fad59851iiTRZ6Wcu6YVJ4iSeF",
+  "publicKeys":[
     {
-      "$version": "0",
-      "id": 0,
-      "purpose": 0,
-      "securityLevel": 0,
-      "contractBounds": null,
-      "type": 0,
-      "readOnly": false,
-      "data": "Asi0dHtSjKxf3femzGNwLuBO19EzKQTghRA0PqANzlRq",
-      "disabledAt": null
+      "$version":"0",
+      "id":0,
+      "purpose":0,
+      "securityLevel":0,
+      "contractBounds":null,
+      "type":0,
+      "readOnly":false,
+      "data":"Asi0dHtSjKxf3femzGNwLuBO19EzKQTghRA0PqANzlRq",
+      "disabledAt":null
     },
     {
-      "$version": "0",
-      "id": 1,
-      "purpose": 0,
-      "securityLevel": 2,
-      "contractBounds": null,
-      "type": 0,
-      "readOnly": false,
-      "data": "AgHuKPhPVIU5BWfpOcK1hgELY6aeySyrU13JaoxxkTYC",
-      "disabledAt": null
+      "$version":"0",
+      "id":1,
+      "purpose":0,
+      "securityLevel":2,
+      "contractBounds":null,
+      "type":0,
+      "readOnly":false,
+      "data":"AgHuKPhPVIU5BWfpOcK1hgELY6aeySyrU13JaoxxkTYC",
+      "disabledAt":null
     }
   ],
-  "balance": 7327280900,
-  "revision": 0
+  "balance":17912102140,
+  "revision":0
 }
 ```
 
 ```json Response (gRPCurl)
 // Response (gRPCurl)
 {
-  "identity": "AaRiaWRYIDASwZuY7AAzrds2zWS39RBnDyo1GkMEtfaZQUQobv2sZ2JhbGFuY2UbAAAAATk8g3ZocmV2aXNpb24AanB1YmxpY0tleXOCpmJpZABkZGF0YVghAsi0dHtSjKxf3femzGNwLuBO19EzKQTghRA0PqANzlRqZHR5cGUAZ3B1cnBvc2UAaHJlYWRPbmx59G1zZWN1cml0eUxldmVsAKZiaWQBZGRhdGFYIQIB7ij4T1SFOQVn6TnCtYYBC2Omnsksq1NdyWqMcZE2AmR0eXBlAGdwdXJwb3NlAGhyZWFkT25sefRtc2VjdXJpdHlMZXZlbAI=",
-  "metadata": {
-    "height": "4217",
-    "coreChainLockedHeight": 858833,
-    "timeMs": "1688058824358",
-    "protocolVersion": 1
+  "v0": {
+    "identity": "ADASwZuY7AAzrds2zWS39RBnDyo1GkMEtfaZQUQobv2sAgAAAAAAAAAAIQLItHR7UoysX933psxjcC7gTtfRMykE4IUQND6gDc5UagABAAEAAgAAACECAe4o+E9UhTkFZ+k5wrWGAQtjpp7JLKtTXclqjHGRNgIA/QAAAAQrpPz8AA==",
+    "metadata": {
+      "height": "6730",
+      "coreChainLockedHeight": 926904,
+      "epoch": 844,
+      "timeMs": "1701959872131",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-37"
+    }
   }
 }
 ```
