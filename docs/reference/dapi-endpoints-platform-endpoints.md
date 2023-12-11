@@ -360,12 +360,50 @@ grpcurl -proto protos/platform/v0/platform.proto \
 | Name    | Type    | Required | Description |
 | ------- | ------- | -------- | ------------ |
 | `identityId`  | String | Yes | An identity ID
-| `requestType` | KeyRequestType | Yes | Request all keys (`allKeys`), specific keys (`specificKeys`), search for keys (`searchKey`)
+| `requestType` | [KeyRequestType](#request-types) | Yes | Request all keys (`allKeys`), specific keys (`specificKeys`), search for keys (`searchKey`)
 | `limit` | Integer  | Yes     | The maximum number of revisions to return |
 | `offset` | Integer | Yes     | The offset of the first revision to return |
 | `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested identity
 
-**Example Request and Response**
+#### Request Types
+
+**All keys**
+
+To request all keys for an identity, use the `allKeys` request type:
+
+```json
+"allKeys": {}
+```
+
+**Specific keys**
+
+To request specific keys for an identity, use the `specificKeys` request type where `keyIds` is an array containing the key IDs to request:
+
+```json
+"specificKeys": {
+  "keyIds": [
+    1
+  ]
+}
+```
+
+**Search keys**
+
+To search for identity keys, use the `searchKeys` request type. The options for `securityLevelMap` are "CURRENT_KEY_OF_KIND_REQUEST" and "ALL_KEYS_OF_KIND_REQUEST":
+
+```json
+"searchKey": {
+  "purposeMap": {
+    "0": {
+      "securityLevelMap": {
+        "0": "ALL_KEYS_OF_KIND_REQUEST"
+      }
+    }
+  }
+}
+```
+
+#### Example Request and Response
 
 ::::{tab-set-code}
 
