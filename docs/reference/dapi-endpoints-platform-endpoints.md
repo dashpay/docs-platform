@@ -1529,6 +1529,98 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ::::
 
+### GetProofs
+
+**Returns**: Proof information for the requested identities, contracts, and/or document(s)
+
+**Parameters**:
+
+A combination of one or more of the following are required fields are required:
+
+| Field | Type | Required | Description |
+| - | - | - | - |
+| `identities` | `IdentityRequest` | No | List of identity requests
+| `contracts`  | `ContractRequest` | No | List of contract requests
+| `documents`  | `DocumentRequest` | No | List of document requests
+
+**Request type details**
+
+| Field | Type | Required | Description |
+| - | - | - | - |
+| **IdentityRequest** | | |
+| `identityId`  | Bytes       | Yes | Identity ID
+| `requestType` | Type (enum) | Yes | Type of identity proof data to request (options: FULL_IDENTITY, BALANCE, KEYS)
+| --------------- | | |
+| **ContractRequest** | | |
+| `contractId` | Bytes | Yes | A contract ID
+| --------------- | | |
+| **DocumentRequest** | | |
+| `contractId`                 | Bytes  | Yes | A contract ID
+| `documentType`               | String | Yes | Type of contract document
+| `documentTypeKeepsHistory`   | Boolean | No |Indicates if the document type maintains a history
+| `documentId`                 | Bytes  | Yes | Document ID
+
+**Example Request and Response**
+
+::::{tab-set-code}
+
+```shell gRPCurl
+# gRPCurl
+# Request proofs for an identity and a data contract
+# `identityId` and `contractId` must be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "identities": [
+        {
+          "requestType": "FULL_IDENTITY",
+          "identityId": "MBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/aw="
+        }
+      ],
+      "contracts": [
+        {
+          "contractId": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU="
+        }
+      ],
+      "documents": []
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getProofs
+```
+
+::::
+
+::::{tab-set-code}
+
+```json Response (gRPCurl)
+// Response (gRPCurl)
+// GroveDB proof for the requested identity and contract
+{
+  "v0": {
+    "proof": {
+      "grovedbProof": "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ZxIHcGF0dGVybhIqXlthLXpBLVowLTldW2EtekEtWjAtOS1dezAsNjF9W2EtekEtWjAtOV0kEgltaW5MZW5ndGgCAxIJbWF4TGVuZ3RoAj8SCHBvc2l0aW9uAgASC2Rlc2NyaXB0aW9uEhlEb21haW4gbGFiZWwuIGUuZy4gJ0JvYicuEg9ub3JtYWxpemVkTGFiZWwWBhIEdHlwZRIGc3RyaW5nEgdwYXR0ZXJuEjxeW2EtaGota20tbnAtejAtOV1bYS1oai1rbS1ucC16MC05LV17MCw2MX1bYS1oai1rbS1ucC16MC05XSQSCW1heExlbmd0aAI/Eghwb3NpdGlvbgIBEgtkZXNjcmlwdGlvbhKjRG9tYWluIGxhYmVsIGNvbnZlcnRlZCB0byBsb3dlcmNhc2UgZm9yIGNhc2UtaW5zZW5zaXRpdmUgdW5pcXVlbmVzcyB2YWxpZGF0aW9uLiAibyIsICJpIiBhbmQgImwiIHJlcGxhY2VkIHdpdGggIjAiIGFuZCAiMSIgdG8gbWl0aWdhdGUgaG9tb2dyYXBoIGF0dGFjay4gZS5nLiAnYjBiJxIIJGNvbW1lbnQSXE11c3QgYmUgZXF1YWwgdG8gdGhlIGxhYmVsIGluIGxvd2VyY2FzZS4gIm8iLCAiaSIgYW5kICJsIiBtdXN0IGJlIHJlcGxhY2VkIHdpdGggIjAiIGFuZCAiMSIuEhBwYXJlbnREb21haW5OYW1lFgYSBHR5cGUSBnN0cmluZxIHcGF0dGVybhItXiR8XlthLXpBLVowLTldW2EtekEtWjAtOS1dezAsNjF9W2EtekEtWjAtOV0kEgltaW5MZW5ndGgCABIJbWF4TGVuZ3RoAj8SCHBvc2l0aW9uAgISC2Rlc2NyaXB0aW9uEidBIGZ1bGwgcGFyZW50IGRvbWFpbiBuYW1lLiBlLmcuICdkYXNoJy4SGm5vcm1hbGl6ZWRQYXJlbnREb21haW5OYW1lFgcSBHR5cGUSBnN0cmluZxIHcGF0dGVybhJBXiR8XlthLWhqLWttLW5wLXowLTldW2EtaGota20tbnAtejAtOS1cLl17MCw2MX1bYS1oai1rbS1ucC16MC05XSQSCW1pbkxlbmd0aAIAEgltYXhMZW5ndGgCPxIIcG9zaXRpb24CAxILZGVzY3JpcHRpb24SokEgcGFyZW50IGRvbWFpbiBuYW1lIGluIGxvd2VyY2FzZSBmb3IgY2FzZS1pbnNlbnNpdGl2ZSB1bmlxdWVuZXNzIHZhbGlkYXRpb24uICJvIiwgImkiIGFuZCAibCIgcmVwbGFjZWQgd2l0aCAiMCIgYW5kICIxIiB0byBtaXRpZ2F0ZSBob21vZ3JhcGggYXR0YWNrLiBlLmcuICdkYXNoJxIIJGNvbW1lbnQSwE11c3QgZWl0aGVyIGJlIGVxdWFsIHRvIGFuIGV4aXN0aW5nIGRvbWFpbiBvciBlbXB0eSB0byBjcmVhdGUgYSB0b3AgbGV2ZWwgZG9tYWluLiAibyIsICJpIiBhbmQgImwiIG11c3QgYmUgcmVwbGFjZWQgd2l0aCAiMCIgYW5kICIxIi4gT25seSB0aGUgZGF0YSBjb250cmFjdCBvd25lciBjYW4gY3JlYXRlIHRvcCBsZXZlbCBkb21haW5zLhIMcHJlb3JkZXJTYWx0FgYSBHR5cGUSBWFycmF5EglieXRlQXJyYXkTARIIbWluSXRlbXMCIBIIbWF4SXRlbXMCIBIIcG9zaXRpb24CBBILZGVzY3JpcHRpb24SIlNhbHQgdXNlZCBpbiB0aGUgcHJlb3JkZXIgZG9jdW1lbnQSB3JlY29yZHMWBxIEdHlwZRIGb2JqZWN0Egpwcm9wZXJ0aWVzFgISFGRhc2hVbmlxdWVJZGVudGl0eUlkFggSBHR5cGUSBWFycmF5EglieXRlQXJyYXkTARIIbWluSXRlbXMCIBIIbWF4SXRlbXMCIBIIcG9zaXRpb24CABIQY29udGVudE1lZGlhVHlwZRIhYXBwbGljYXRpb24veC5kYXNoLmRwcC5pZGVudGlmaWVyEgtkZXNjcmlwdGlvbhI+SWRlbnRpdHkgSUQgdG8gYmUgdXNlZCB0byBjcmVhdGUgdGhlIHByaW1hcnkgbmFtZSB0aGUgSWRlbnRpdHkSCCRjb21tZW50EiNNdXN0IGJlIGVxdWFsIHRvIHRoZSBkb2N1bWVudCBvd25lchITZGFzaEFsaWFzSWRlbnRpdHlJZBYIEgR0eXBlEgVhcnJheRIJYnl0ZUFycmF5EwESCG1pbkl0ZW1zAiASCG1heEl0ZW1zAiASCHBvc2l0aW9uAgESEGNvbnRlbnRNZWRpYVR5cGUSIWFwcGxpY2F0aW9uL3guZGFzaC5kcHAuaWRlbnRpZmllchILZGVzY3JpcHRpb24SPUlkZW50aXR5IElEIHRvIGJlIHVzZWQgdG8gY3JlYXRlIGFsaWFzIG5hbWVzIGZvciB0aGUgSWRlbnRpdHkSCCRjb21tZW50EiNNdXN0IGJlIGVxdWFsIHRvIHRoZSBkb2N1bWVudCBvd25lchINbWluUHJvcGVydGllcwIBEg1tYXhQcm9wZXJ0aWVzAgESCHBvc2l0aW9uAgUSFGFkZGl0aW9uYWxQcm9wZXJ0aWVzEwASCCRjb21tZW50EpBDb25zdHJhaW50IHdpdGggbWF4IGFuZCBtaW4gcHJvcGVydGllcyBlbnN1cmUgdGhhdCBvbmx5IG9uZSBpZGVudGl0eSByZWNvcmQgaXMgdXNlZCAtIGVpdGhlciBhIGBkYXNoVW5pcXVlSWRlbnRpdHlJZGAgb3IgYSBgZGFzaEFsaWFzSWRlbnRpdHlJZGASDnN1YmRvbWFpblJ1bGVzFgYSBHR5cGUSBm9iamVjdBIKcHJvcGVydGllcxYBEg9hbGxvd1N1YmRvbWFpbnMWBBIEdHlwZRIHYm9vbGVhbhILZGVzY3JpcHRpb24SW1RoaXMgb3B0aW9uIGRlZmluZXMgd2hvIGNhbiBjcmVhdGUgc3ViZG9tYWluczogdHJ1ZSAtIGFueW9uZTsgZmFsc2UgLSBvbmx5IHRoZSBkb21haW4gb3duZXISCCRjb21tZW50Ek9Pbmx5IHRoZSBkb21haW4gb3duZXIgaXMgYWxsb3dlZCB0byBjcmVhdGUgc3ViZG9tYWlucyBmb3Igbm9uIHRvcC1sZXZlbCBkb21haW5zEghwb3NpdGlvbgIAEghwb3NpdGlvbgIGEgtkZXNjcmlwdGlvbhJCU3ViZG9tYWluIHJ1bGVzIGFsbG93IGRvbWFpbiBvd25lcnMgdG8gZGVmaW5lIHJ1bGVzIGZvciBzdWJkb21haW5zEhRhZGRpdGlvbmFsUHJvcGVydGllcxMAEghyZXF1aXJlZBUBEg9hbGxvd1N1YmRvbWFpbnMSCHJlcXVpcmVkFQYSBWxhYmVsEg9ub3JtYWxpemVkTGFiZWwSGm5vcm1hbGl6ZWRQYXJlbnREb21haW5OYW1lEgxwcmVvcmRlclNhbHQSB3JlY29yZHMSDnN1YmRvbWFpblJ1bGVzEhRhZGRpdGlvbmFsUHJvcGVydGllcxMAEggkY29tbWVudBL7ATdJbiBvcmRlciB0byByZWdpc3RlciBhIGRvbWFpbiB5b3UgbmVlZCB0byBjcmVhdGUgYSBwcmVvcmRlci4gVGhlIHByZW9yZGVyIHN0ZXAgaXMgbmVlZGVkIHRvIHByZXZlbnQgbWFuLWluLXRoZS1taWRkbGUgYXR0YWNrcy4gbm9ybWFsaXplZExhYmVsICsgJy4nICsgbm9ybWFsaXplZFBhcmVudERvbWFpbiBtdXN0IG5vdCBiZSBsb25nZXIgdGhhbiAyNTMgY2hhcnMgbGVuZ3RoIGFzIGRlZmluZWQgYnkgUkZDIDEwMzUuIERvbWFpbiBkb2N1bWVudHMgYXJlIGltbXV0YWJsZTogbW9kaWZpY2F0aW9uIGFuZCBkZWxldGlvbiBhcmUgcmVzdHJpY3RlZAhwcmVvcmRlchYGEgR0eXBlEgZvYmplY3QSB2luZGljZXMVARYDEgRuYW1lEgpzYWx0ZWRIYXNoEgpwcm9wZXJ0aWVzFQEWARIQc2FsdGVkRG9tYWluSGFzaBIDYXNjEgZ1bmlxdWUTARIKcHJvcGVydGllcxYBEhBzYWx0ZWREb21haW5IYXNoFgYSBHR5cGUSBWFycmF5EglieXRlQXJyYXkTARIIbWluSXRlbXMCIBIIbWF4SXRlbXMCIBIIcG9zaXRpb24CABILZGVzY3JpcHRpb24SWURvdWJsZSBzaGEtMjU2IG9mIHRoZSBjb25jYXRlbmF0aW9uIG9mIGEgMzIgYnl0ZSByYW5kb20gc2FsdCBhbmQgYSBub3JtYWxpemVkIGRvbWFpbiBuYW1lEghyZXF1aXJlZBUBEhBzYWx0ZWREb21haW5IYXNoEhRhZGRpdGlvbmFsUHJvcGVydGllcxMAEggkY29tbWVudBJKUHJlb3JkZXIgZG9jdW1lbnRzIGFyZSBpbW11dGFibGU6IG1vZGlmaWNhdGlvbiBhbmQgZGVsZXRpb24gYXJlIHJlc3RyaWN0ZWQAAjfsugQjtjFH1tziawxcHm6Itrtfd4HxFXit+EBuIEGCEAIBYN8CAb/jxzcNWFZEpbAUm+m8bHmGDiDoIp0nmnAVzK1RREtVAtYIgZuRPU70BrwnGYqsfr3rqOmCvT+uOZn5JD+z2Fb7EAHRk0v0/UW0amfTj5Q3RgNXsCy34jIVuLie5yXuiKURfQQgMBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/awACwP9eCCC7wkAAAAApQ40uU7eIE6Lc7gSiikQMybwd7ICds9JRkR7mN9dsKsQAS6QXX9hmpIEs9jEW3eAXNz9stWYGeSq/BnIm9Y+L8XMERECiTcgqXvEL2837Y7t1JcjkYGVIFZ7NkS80ZLVeDUZzS0QAfdYjSzg2BIkhpiPAHQ5W4aN0OlpO7pNjwx46JLVtF5HEQLIaUC5PRYEMoQrfMJnG3PgKokrA37sdKCgo7Hxar/TcRABMapwxTKSfBkDooZq35By87R1c8Y4h4LvZXgOwY+CNfQR",
+      "quorumHash": "AAAAu4I2BiBDnydSZOLs2bV45yWb+vJFEKQi9wTc3hg=",
+      "signature": "t6IYrtqREmhCMGQva67DMYpqoY+4fIPB0245y/vhrs0L4qqv7+jDYFoppC7TzFCnCpXLxwOL15u8AOmGFsuMn7FA7qtz/rzJT0124Va1EL5ioeD0DwPVVCAEfQcN/7+6",
+      "round": 1,
+      "blockIdHash": "R6LgAhbTCMP2bbiktIm1nLnJ4csO0UvaK6vArGJ2ghs=",
+      "quorumType": 6
+    },
+    "metadata": {
+      "height": "9350",
+      "coreChainLockedHeight": 929436,
+      "epoch": 943,
+      "timeMs": "1702317747792",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-37"
+    }
+  }
+}
+
+```
+
+::::
+
 ### waitForStateTransitionResult
 
 **Returns**: The state transition hash and either a proof that the state transition was confirmed in a block or an error.  
