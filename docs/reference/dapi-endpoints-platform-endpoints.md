@@ -351,6 +351,116 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ::::
 
+### getIdentityKeys
+
+**Returns**: Keys for an [Identity](../explanations/identity.md).
+
+**Parameters**:
+
+| Name    | Type    | Required | Description |
+| ------- | ------- | -------- | ------------ |
+| `identityId`  | String | Yes | An identity ID
+| `requestType` | KeyRequestType | Yes | Request all keys (`allKeys`), specific keys (`specificKeys`), search for keys (`searchKey`)
+| `limit` | Integer  | Yes     | The maximum number of revisions to return |
+| `offset` | Integer | Yes     | The offset of the first revision to return |
+| `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested identity
+
+**Example Request and Response**
+
+::::{tab-set-code}
+
+```shell gRPCurl
+# gRPCurl
+# Request all identity keys
+# `identityId` must be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "identityId": "MBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/aw=",
+      "requestType": {
+        "allKeys": {}
+      }
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getIdentityKeys
+```
+
+```shell gRPCurl
+# gRPCurl
+# Request specific keys
+# `identityId` must be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "identityId": "MBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/aw=",
+      "requestType": {
+        "specificKeys": {
+          "keyIds": [
+            1
+          ]
+        }
+      }
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getIdentityKeys
+```
+
+```shell gRPCurl
+# gRPCurl
+# Search keys
+# `identityId` must be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "identityId": "MBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/aw=",
+      "requestType": {
+        "searchKey": {
+          "purposeMap": {
+            "0": {
+              "securityLevelMap": {
+                "0": "ALL_KEYS_OF_KIND_REQUEST"
+              }
+            }
+          }
+        }
+      }
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getIdentityKeys
+```
+
+::::
+
+::::{tab-set-code}
+
+```json Response (gRPCurl)
+// Response (gRPCurl)
+// All keys
+{
+  "v0": {
+    "keys": {
+      "keysBytes": [
+        "AAAAAAAAACECyLR0e1KMrF/d96bMY3Au4E7X0TMpBOCFEDQ+oA3OVGoA",
+        "AAEAAgAAACECAe4o+E9UhTkFZ+k5wrWGAQtjpp7JLKtTXclqjHGRNgIA"
+      ]
+    },
+    "metadata": {
+      "height": "9240",
+      "coreChainLockedHeight": 929379,
+      "epoch": 941,
+      "timeMs": "1702309782764",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-37"
+    }
+  }
+}
+```
+
+::::
+
 ### getIdentities
 
 **Returns**: [Identity](../explanations/identity.md) information for the requested identities  
