@@ -1621,6 +1621,61 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ::::
 
+### GetProtocolVersionUpgradeState
+
+**Returns**: Protocol version upgrade status.
+
+**Parameters**:
+
+| Name    | Type    | Required | Description |
+| ------- | ------- | -------- | ------------ |
+| `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested identity
+
+**Example Request and Response**
+
+::::{tab-set-code}
+
+```shell gRPCurl
+# gRPCurl
+# `id` must be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": { }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getProtocolVersionUpgradeState
+```
+
+::::
+
+::::{tab-set-code}
+
+```json Response (gRPCurl)
+// Response (gRPCurl)
+{
+  "v0": {
+    "versions": {
+      "versions": [
+        {
+          "versionNumber": 1,
+          "voteCount": 28
+        }
+      ]
+    },
+    "metadata": {
+      "height": "10649",
+      "coreChainLockedHeight": 930014,
+      "epoch": 965,
+      "timeMs": "1702397313265",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-37"
+    }
+  }
+}
+```
+
+::::
+
 ### waitForStateTransitionResult
 
 **Returns**: The state transition hash and either a proof that the state transition was confirmed in a block or an error.  
