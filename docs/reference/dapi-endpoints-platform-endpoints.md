@@ -359,8 +359,8 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 | Name    | Type    | Required | Description |
 | ------- | ------- | -------- | ------------ |
-| `identityId`  | String | Yes | An identity ID
-| `requestType` | [KeyRequestType](#request-types) | Yes | Request all keys (`allKeys`), specific keys (`specificKeys`), search for keys (`searchKey`)
+| `identity_td`  | String | Yes | An identity ID
+| `request_type` | [KeyRequestType](#request-types) | Yes | Request all keys (`all_keys`), specific keys (`specific_keys`), search for keys (`search_key`)
 | `limit` | Integer  | Yes     | The maximum number of revisions to return |
 | `offset` | Integer | Yes     | The offset of the first revision to return |
 | `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested identity
@@ -369,19 +369,19 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 **All keys**
 
-To request all keys for an identity, use the `allKeys` request type:
+To request all keys for an identity, use the `all_keys` request type:
 
 ```json
-"allKeys": {}
+"all_keys": {}
 ```
 
 **Specific keys**
 
-To request specific keys for an identity, use the `specificKeys` request type where `keyIds` is an array containing the key IDs to request:
+To request specific keys for an identity, use the `specific_keys` request type where `key_ids` is an array containing the key IDs to request:
 
 ```json
-"specificKeys": {
-  "keyIds": [
+"specific_keys": {
+  "key_ids": [
     1
   ]
 }
@@ -389,13 +389,13 @@ To request specific keys for an identity, use the `specificKeys` request type wh
 
 **Search keys**
 
-To search for identity keys, use the `searchKeys` request type. The options for `securityLevelMap` are "CURRENT_KEY_OF_KIND_REQUEST" and "ALL_KEYS_OF_KIND_REQUEST":
+To search for identity keys, use the `search_keys` request type. The options for `security_Level_map` are "CURRENT_KEY_OF_KIND_REQUEST" and "ALL_KEYS_OF_KIND_REQUEST":
 
 ```json
-"searchKey": {
-  "purposeMap": {
+"search_key": {
+  "purpose_map": {
     "0": {
-      "securityLevelMap": {
+      "security_level_map": {
         "0": "ALL_KEYS_OF_KIND_REQUEST"
       }
     }
@@ -414,8 +414,8 @@ To search for identity keys, use the `searchKeys` request type. The options for 
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "v0": {
-      "identityId": "MBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/aw=",
-      "requestType": {
+      "identity_id": "MBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/aw=",
+      "request_type": {
         "allKeys": {}
       }
     }
@@ -431,8 +431,8 @@ grpcurl -proto protos/platform/v0/platform.proto \
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "v0": {
-      "identityId": "MBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/aw=",
-      "requestType": {
+      "identity_id": "MBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/aw=",
+      "request_type": {
         "specificKeys": {
           "keyIds": [
             1
@@ -452,12 +452,12 @@ grpcurl -proto protos/platform/v0/platform.proto \
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "v0": {
-      "identityId": "MBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/aw=",
-      "requestType": {
-        "searchKey": {
-          "purposeMap": {
+      "identity_id": "MBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/aw=",
+      "request_type": {
+        "search_key": {
+          "purpose_map": {
             "0": {
-              "securityLevelMap": {
+              "security_level_map": {
                 "0": "ALL_KEYS_OF_KIND_REQUEST"
               }
             }
@@ -1548,17 +1548,17 @@ A combination of one or more of the following are required fields are required:
 | Field | Type | Required | Description |
 | - | - | - | - |
 | **IdentityRequest** | | |
-| `identityId`  | Bytes       | Yes | Identity ID
-| `requestType` | Type (enum) | Yes | Type of identity proof data to request (options: FULL_IDENTITY, BALANCE, KEYS)
+| `identity_id`  | Bytes       | Yes | Identity ID
+| `request_type` | Type (enum) | Yes | Type of identity proof data to request (options: FULL_IDENTITY, BALANCE, KEYS)
 | --------------- | | |
 | **ContractRequest** | | |
-| `contractId` | Bytes | Yes | A contract ID
+| `contract_id` | Bytes | Yes | A contract ID
 | --------------- | | |
 | **DocumentRequest** | | |
-| `contractId`                 | Bytes  | Yes | A contract ID
-| `documentType`               | String | Yes | Type of contract document
-| `documentTypeKeepsHistory`   | Boolean | No |Indicates if the document type maintains a history
-| `documentId`                 | Bytes  | Yes | Document ID
+| `contract_id`                 | Bytes  | Yes | A contract ID
+| `document_type`               | String | Yes | Type of contract document
+| `document_type_keeps_history`   | Boolean | No |Indicates if the document type maintains a history
+| `document_id`                 | Bytes  | Yes | Document ID
 
 **Example Request and Response**
 
@@ -1573,13 +1573,13 @@ grpcurl -proto protos/platform/v0/platform.proto \
     "v0": {
       "identities": [
         {
-          "requestType": "FULL_IDENTITY",
-          "identityId": "MBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/aw="
+          "request_type": "FULL_IDENTITY",
+          "identity_id": "MBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/aw="
         }
       ],
       "contracts": [
         {
-          "contractId": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU="
+          "contract_id": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU="
         }
       ],
       "documents": []
@@ -1683,7 +1683,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 | Name    | Type    | Required | Description |
 | ------- | ------- | -------- | ------------ |
-| `startProTxHash` | String | No | Protx hash of an evonode
+| `start_pro_tx_hash` | String | No | Protx hash of an evonode
 | `count` | Integer | No       | Number of records to request
 | `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested identity
 
@@ -1693,7 +1693,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ```shell gRPCurl
 # gRPCurl
-# `startProTxHash` must be represented in base64 if present
+# `start_pro_tx_hash` must be represented in base64 if present
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "v0": {
