@@ -1675,6 +1675,69 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ::::
 
+### getProtocolVersionUpgradeVoteStatus
+
+**Returns**: Protocol version upgrade status.
+
+**Parameters**:
+
+| Name    | Type    | Required | Description |
+| ------- | ------- | -------- | ------------ |
+| `startProTxHash` | String | No | Protx hash of an evonode
+| `count` | Integer | No       | Number of records to request
+| `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested identity
+
+**Example Request and Response**
+
+::::{tab-set-code}
+
+```shell gRPCurl
+# gRPCurl
+# `startProTxHash` must be represented in base64 if present
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "count": 2
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getProtocolVersionUpgradeVoteStatus
+```
+
+::::
+
+::::{tab-set-code}
+
+```json Response (gRPCurl)
+// Response (gRPCurl)
+{
+  "v0": {
+    "versions": {
+      "versionSignals": [
+        {
+          "proTxHash": "WyRggLpkNQaF/jAtPXkPW7I4y2GZINRiMMhE8HmUSiM=",
+          "version": 1
+        },
+        {
+          "proTxHash": "XGVCdmYVOHGDcV2VipJVUkcvkzNfoWEogEI+S72u9DY=",
+          "version": 1
+        }
+      ]
+    },
+    "metadata": {
+      "height": "10662",
+      "coreChainLockedHeight": 930024,
+      "epoch": 966,
+      "timeMs": "1702398582963",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-37"
+    }
+  }
+}
+```
+
+::::
+
 ### waitForStateTransitionResult
 
 **Returns**: The state transition hash and either a proof that the state transition was confirmed in a block or an error.  
