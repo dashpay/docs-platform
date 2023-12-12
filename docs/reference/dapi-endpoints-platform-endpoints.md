@@ -1087,7 +1087,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 | Name    | Type    | Required | Description |
 | ------- | ------- | -------- | ----------- |
 | `start_epoch` | Bytes | No | First epoch being requested
-| `count` | Boolean | No | Number of records to request
+| `count` | Integer | No | Number of records to request
 | `ascending` | Boolean | No | Set to `true` to query in ascending order. Results are returned in descending order by default.
 | `prove` | Boolean | No | Set to `true` to receive a proof that contains the requested data contracts
 
