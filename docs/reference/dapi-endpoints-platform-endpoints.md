@@ -1529,7 +1529,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ::::
 
-### GetProofs
+### getProofs
 
 **Returns**: Proof information for the requested identities, contracts, and/or document(s)
 
@@ -1621,9 +1621,9 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ::::
 
-### GetProtocolVersionUpgradeState
+### getProtocolVersionUpgradeState
 
-**Returns**: Protocol version upgrade status.
+**Returns**: The number of votes cast for each protocol version.
 
 **Parameters**:
 
@@ -1637,7 +1637,6 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ```shell gRPCurl
 # gRPCurl
-# `id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "v0": { }
