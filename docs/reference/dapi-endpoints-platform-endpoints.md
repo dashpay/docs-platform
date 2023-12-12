@@ -1078,77 +1078,6 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ::::
 
-### getEpochsInfo
-
-**Returns**: Information for the requested epoch(s)
-
-**Parameters**:
-
-| Name    | Type    | Required | Description |
-| ------- | ------- | -------- | ----------- |
-| `start_epoch` | Bytes | No | First epoch being requested
-| `count` | Integer | No | Number of records to request
-| `ascending` | Boolean | No | Set to `true` to query in ascending order. Results are returned in descending order by default.
-| `prove` | Boolean | No | Set to `true` to receive a proof that contains the requested data contracts
-
-**Example Request and Response**
-
-::::{tab-set-code}
-
-```shell gRPCurl
-# gRPCurl
-# `id` must be represented in base64
-grpcurl -proto protos/platform/v0/platform.proto \
-  -d '{
-    "v0": {
-      "count": 2
-    }
-  }' \
-  seed-1.testnet.networks.dash.org:1443 \
-  org.dash.platform.dapi.v0.Platform/getEpochsInfo
-```
-
-::::
-
-::::{tab-set-code}
-
-```json Response (gRPCurl)
-// Response (gRPCurl)
-{
-  "v0": {
-    "epochs": {
-      "epochInfos": [
-        {
-          "number": 849,
-          "firstBlockHeight": "6822",
-          "firstCoreBlockHeight": 927030,
-          "startTime": "1701976758619",
-          "feeMultiplier": 2
-        },
-        {
-          "number": 850,
-          "firstBlockHeight": "6840",
-          "firstCoreBlockHeight": 927061,
-          "startTime": "1701980303210",
-          "feeMultiplier": 2
-        }
-      ]
-    },
-    "metadata": {
-      "height": "6843",
-      "coreChainLockedHeight": 927065,
-      "epoch": 850,
-      "timeMs": "1701980850126",
-      "protocolVersion": 1,
-      "chainId": "dash-testnet-37"
-    }
-  }
-}
-
-```
-
-::::
-
 ### getDataContractHistory
 
 **Returns**: [Data Contract](../explanations/platform-protocol-data-contract.md) information for the requested data contract  
@@ -1525,6 +1454,77 @@ grpcurl -proto protos/platform/v0/platform.proto \
     }
   }
 }
+```
+
+::::
+
+### getEpochsInfo
+
+**Returns**: Information for the requested epoch(s)
+
+**Parameters**:
+
+| Name    | Type    | Required | Description |
+| ------- | ------- | -------- | ----------- |
+| `start_epoch` | Bytes | No | First epoch being requested
+| `count` | Integer | No | Number of records to request
+| `ascending` | Boolean | No | Set to `true` to query in ascending order. Results are returned in descending order by default.
+| `prove` | Boolean | No | Set to `true` to receive a proof that contains the requested data contracts
+
+**Example Request and Response**
+
+::::{tab-set-code}
+
+```shell gRPCurl
+# gRPCurl
+# `id` must be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "count": 2
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getEpochsInfo
+```
+
+::::
+
+::::{tab-set-code}
+
+```json Response (gRPCurl)
+// Response (gRPCurl)
+{
+  "v0": {
+    "epochs": {
+      "epochInfos": [
+        {
+          "number": 849,
+          "firstBlockHeight": "6822",
+          "firstCoreBlockHeight": 927030,
+          "startTime": "1701976758619",
+          "feeMultiplier": 2
+        },
+        {
+          "number": 850,
+          "firstBlockHeight": "6840",
+          "firstCoreBlockHeight": 927061,
+          "startTime": "1701980303210",
+          "feeMultiplier": 2
+        }
+      ]
+    },
+    "metadata": {
+      "height": "6843",
+      "coreChainLockedHeight": 927065,
+      "epoch": 850,
+      "timeMs": "1701980850126",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-37"
+    }
+  }
+}
+
 ```
 
 ::::
