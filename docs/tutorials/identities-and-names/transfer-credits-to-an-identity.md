@@ -9,7 +9,7 @@ identity. Additional details regarding credits can be found in the [credits desc
   installed)
 - A wallet mnemonic with some funds in it: [Tutorial: Create and Fund a
   Wallet](../../tutorials/create-and-fund-a-wallet.md)
-- A Dash Platform Identity: [Tutorial: Register an
+- Two Dash Platform Identities: [Tutorial: Register an
   Identity](../../tutorials/identities-and-names/register-an-identity.md)
 
 ## Code
@@ -52,8 +52,7 @@ transferCreditsToIdentity()
 
 ## What's Happening
 
-After connecting to the Client, we call `platform.identities.creditTransfer` with our identity, the recipient's identity ID, and the amount to transfer. This will generate a keypair
-and submit an _Identity Create State Transaction_. After the credits are transferred to the recipient, we retrieve the recipient's identity and output their updated balance to the console.
+After connecting to the Client, we call `platform.identities.creditTransfer` with our identity, the recipient's identity ID, and the amount to transfer. After the credits are transferred to the recipient, we retrieve the recipient's identity and output their updated balance to the console.
 
 > 📘 Wallet Operations
 >
