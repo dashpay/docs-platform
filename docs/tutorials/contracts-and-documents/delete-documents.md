@@ -1,6 +1,6 @@
 # Delete documents
 
-In this tutorial we will update delete data from Dash Platform. Data is stored in the form of [documents](../../explanations/platform-protocol-document.md) which are encapsulated in a [state transition](../../explanations/platform-protocol-state-transition.md) before being submitted to DAPI. 
+In this tutorial we will update delete data from Dash Platform. Data is stored in the form of [documents](../../explanations/platform-protocol-document.md) which are encapsulated in a [state transition](../../explanations/platform-protocol-state-transition.md) before being submitted to DAPI.
 
 ## Prerequisites
 
@@ -51,22 +51,20 @@ deleteNoteDocument()
   .finally(() => client.disconnect());
 ```
 
-
-
 > 👍 Initializing the Client with a contract identity
-> 
+>
 > The example above shows how access to contract documents via `<contract name>.<contract document>` syntax (e.g. `tutorialContract.note`) can be enabled by passing a contract identity to the constructor. Please refer to the [Dash SDK documentation](https://github.com/dashevo/platform/blob/master/packages/js-dash-sdk/docs/getting-started/multiple-apps.md) for details.
 
 ## What's happening
 
-After we initialize the Client, we retrieve the document to be deleted via `platform.documents.get` using its `id`. 
+After we initialize the Client, we retrieve the document to be deleted via `platform.documents.get` using its `id`.
 
 Once the document has been retrieved, we must submit it to [DAPI](../../explanations/dapi.md). Documents are submitted in batches that may contain multiple documents to be created, replaced, or deleted. In this example, a single document is being deleted.
 
 The `platform.documents.broadcast` method takes the document batch (e.g. `{delete: [documents[0]]}`) and an identity parameter. Internally, it creates a [State Transition](../../explanations/platform-protocol-state-transition.md) containing the previously created document, signs the state transition, and submits the signed state transition to DAPI.
 
 > 📘 Wallet Operations
-> 
-> The JavaScript SDK does not cache wallet information. It re-syncs the entire Core chain for some wallet operations (e.g. `client.getWalletAccount()`) which can result in wait times of  5+ minutes. 
-> 
+>
+> The JavaScript SDK does not cache wallet information. It re-syncs the entire Core chain for some wallet operations (e.g. `client.getWalletAccount()`) which can result in wait times of  5+ minutes.
+>
 > A future release will add caching so that access is much faster after the initial sync. For now, the `skipSynchronizationBeforeHeight` option can be used to sync the wallet starting at a certain block height.

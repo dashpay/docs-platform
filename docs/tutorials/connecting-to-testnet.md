@@ -95,7 +95,7 @@ connect()
 ## Connect Directly to DAPI (Optional)
 
 > 🚧 Advanced Topic
-> 
+>
 > Normally, the Dash SDK, dapi-client, or another library should be used to interact with DAPI. This may be helpful for debugging in some cases, but generally is not required.
 
 The example below demonstrates retrieving the hash of the best block hash directly from a DAPI node via command line and several languages:
@@ -108,6 +108,7 @@ curl --request POST \
   --header 'content-type: application/json' \
   --data '{"method":"getBlockHash","id":1,"jsonrpc":"2.0","params":{"height": 100 }}'
 ```
+
 ```python
 import requests
 
@@ -120,6 +121,7 @@ response = requests.request("POST", url, data=payload, headers=headers)
 
 print(response.text)
 ```
+
 ```ruby
 require 'uri'
 require 'net/http'

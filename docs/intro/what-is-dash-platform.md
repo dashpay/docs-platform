@@ -4,7 +4,7 @@
 
 # What is Dash Platform
 
-Dash Platform is a [Web3](https://en.wikipedia.org/wiki/Web3) technology stack for building decentralized applications on the Dash network. The two main architectural components, [Drive](../explanations/drive.md) and [DAPI](../explanations/dapi.md), turn the Dash P2P network into a cloud that developers can integrate with their applications. 
+Dash Platform is a [Web3](https://en.wikipedia.org/wiki/Web3) technology stack for building decentralized applications on the Dash network. The two main architectural components, [Drive](../explanations/drive.md) and [DAPI](../explanations/dapi.md), turn the Dash P2P network into a cloud that developers can integrate with their applications.
 
 ## Key Advantages
 
@@ -53,6 +53,6 @@ Drive is Dash Platform's storage component, allowing for consensus-based verific
 
 Data created by users of the application is validated and verified against this contract. Upon successful validation/verification, application data is submitted to Drive (via DAPI), where it is stored on the masternode network. Drive uses Dash's purpose-built database, [GroveDB](https://github.com/dashevo/grovedb/), to provide efficient proofs with query responses, so you don't have to trust the API provider to be certain your data is authentic.
 
-The source is available on GitHub: 
+The source is available on GitHub:
 
 - Drive: <https://github.com/dashpay/platform/tree/master/packages/js-drive>

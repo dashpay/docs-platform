@@ -5,8 +5,9 @@
 Since Dash Platform is a decentralized system with inherent costs to its functionality, an adequate fee system is necessary in order to incentive the hosts (masternodes) to maintain it.
 
 Fees on Dash Platform are divided into two main categories:
- * Storage fees
- * Processing fees
+
+* Storage fees
+* Processing fees
 
 Storage fees cover the costs to store the various types of data throughout the network, while processing fees cover the computational costs incurred by the masternodes to process state transitions. For everyday use, processing fees are minuscule compared to storage fees. However, they are important in the prevention of attacks on the network, in which case they become prohibitively expensive.
 

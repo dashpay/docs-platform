@@ -27,7 +27,7 @@ dapiClientMethods()
   .then((d) => console.log('Core status:\n', d))
   .catch((e) => console.error('Something went wrong:\n', e))
   .finally(() => client.disconnect());
-``` 
+```
 
 > 📘
 >

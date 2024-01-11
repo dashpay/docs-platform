@@ -5,7 +5,7 @@
 # Repository Overview
 
 > 📘 Change to monorepo
-> 
+>
 > Dash Platform v0.21 migrated to a [monorepo](https://en.wikipedia.org/wiki/Monorepo) structure to streamline continuous integration builds and testing. A number of the libraries below were previously independent repositories but now are aggregated into the [`packages` directory](https://github.com/dashevo/platform/tree/master/packages) of the monorepo (<https://github.com/dashpay/platform/>).
 
 ## js-dash-sdk

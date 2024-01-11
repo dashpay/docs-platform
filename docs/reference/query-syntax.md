@@ -2,7 +2,7 @@
 
 ## Overview
 
-Generally queries will consist of a `where` clause plus optional [modifiers](#query-modifiers) controlling the specific subset of results returned. 
+Generally queries will consist of a `where` clause plus optional [modifiers](#query-modifiers) controlling the specific subset of results returned.
 
 > 🚧 Query limitations
 >
@@ -25,14 +25,14 @@ The Where clause must be a non-empty array containing not more than 10 condition
     [<fieldName>, <array operator>, [<value1>, <value2>]] 
   ] 
 }
-``` 
+```
 
 ### Fields
 
 Valid fields consist of the indices defined for the document being queried. For example, the [DPNS data contract](https://github.com/dashevo/platform/blob/master/packages/dpns-contract/schema/dpns-contract-documents.json) defines three indices:
 
 | Index Field(s) | Index Type | Unique |
-| - | - | :-: | 
+| - | - | :-: |
 | [normalizedParentDomainName, normalizedLabel](https://github.com/dashevo/platform/blob/master/packages/dpns-contract/schema/dpns-contract-documents.json#L5-L16) | Compound | Yes |
 | [records.dashUniqueIdentityId](https://github.com/dashevo/platform/blob/master/packages/dpns-contract/schema/dpns-contract-documents.json#L17-L25) | Single Field | Yes |
 | [records.dashAliasIdentityId](https://github.com/dashevo/platform/blob/master/packages/dpns-contract/schema/dpns-contract-documents.json#L26-L33) | Single Field | No |
@@ -96,6 +96,7 @@ Valid fields consist of the indices defined for the document being queried. For 
   ],
 }
 ```
+
 ```json in
 {
   where: [
@@ -105,6 +106,7 @@ Valid fields consist of the indices defined for the document being queried. For 
     ]
 }
 ```
+
 ```json startsWith
 {
   where: [
@@ -114,6 +116,7 @@ Valid fields consist of the indices defined for the document being queried. For 
     ]
 }
 ```
+
 ```json length
 // Not available in Dash Platform v0.22
 // See https://github.com/dashevo/platform/pull/77
@@ -124,6 +127,7 @@ Valid fields consist of the indices defined for the document being queried. For 
     ]
 }
 ```
+
 ```json contains
 // Not available in Dash Platform v0.22
 // See https://github.com/dashevo/platform/pull/77
@@ -135,6 +139,7 @@ Valid fields consist of the indices defined for the document being queried. For 
     ]
 }
 ```
+
 ```json elementMatch
 // Not available in Dash Platform v0.22
 // See https://github.com/dashevo/platform/pull/77
@@ -153,6 +158,7 @@ Valid fields consist of the indices defined for the document being queried. For 
 ```
 
 ## Query Modifiers
+
 The query modifiers described here determine how query results will be sorted and what subset of data matching the query will be returned.
 
 >❗️ Breaking changes
@@ -173,6 +179,7 @@ The query modifiers described here determine how query results will be sorted an
 > Please refer to [pull request 230](https://github.com/dashevo/platform/pull/230) for additional information related to compound index constraints in Platform v0.22.
 
 ## Example query
+
 The following query combines both a where clause and query modifiers.
 
 ```javascript

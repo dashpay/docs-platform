@@ -10,7 +10,7 @@ As users interact with Dash Platform applications, the credit balance associated
 
 - [General prerequisites](../../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
 - A wallet mnemonic with some funds in it: [Tutorial: Create and Fund a Wallet](../../tutorials/create-and-fund-a-wallet.md)
-- A Dash Platform Identity: [Tutorial: Register an Identity](../../tutorials/identities-and-names/register-an-identity.md) 
+- A Dash Platform Identity: [Tutorial: Register an Identity](../../tutorials/identities-and-names/register-an-identity.md)
 
 ## Code
 
@@ -47,7 +47,7 @@ topupIdentity()
 After connecting to the Client, we call `platform.identities.topUp` with an identity ID and a topup amount in duffs (1 duff = 1000 credits). This creates a lock transaction and increases the identity's credit balance by the relevant amount (minus fee). The updated balance is output to the console.
 
 > 📘 Wallet Operations
-> 
-> The JavaScript SDK does not cache wallet information. It re-syncs the entire Core chain for some wallet operations (e.g. `client.getWalletAccount()`) which can result in wait times of  5+ minutes. 
-> 
+>
+> The JavaScript SDK does not cache wallet information. It re-syncs the entire Core chain for some wallet operations (e.g. `client.getWalletAccount()`) which can result in wait times of  5+ minutes.
+>
 > A future release will add caching so that access is much faster after the initial sync. For now, the `skipSynchronizationBeforeHeight` option can be used to sync the wallet starting at a certain block height.

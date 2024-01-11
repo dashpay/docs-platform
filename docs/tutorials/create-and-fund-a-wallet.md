@@ -42,14 +42,14 @@ client.on('error', (error, context) => {
   console.error(`Client error: ${error.name}`);
   console.error(context);
 });
-``` 
+```
 
 ```text
 Mnemonic: thrive wolf habit timber birth service crystal patient tiny depart tower focus
 Unused address: yXF7LsyajRvJGX96vPHBmo9Dwy9zEvzkbh
-``` 
+```
 
-> 🚧 
+> 🚧
 >
 > **Please save your mnemonic for the next step and for re-use in subsequent tutorials throughout the documentation.**
 

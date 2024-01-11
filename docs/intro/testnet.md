@@ -23,7 +23,7 @@ The Dash Platform features available on testnet include:
 - [Names](../explanations/dpns.md): creation of DPNS names that link to an identity
 - [Data Contracts](../explanations/platform-protocol-data-contract.md): creation of data contracts
 - [Documents](../explanations/platform-protocol-document.md): used to store/update/delete data associated with data contracts
-- [DashPay](../explanations/dashpay.md): a data contract enableing a decentralized application that creates bidirectional direct settlement payment channels between identities and supports contact (name) based payments
+- [DashPay](../explanations/dashpay.md): a data contract enabling a decentralized application that creates bidirectional direct settlement payment channels between identities and supports contact (name) based payments
 
 ## Getting involved
 

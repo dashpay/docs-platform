@@ -33,7 +33,7 @@ Each proof consists of four parts:
     "coreChainLockedHeight": 57585
   }
 }
-``` 
+```
 
 ### Root tree proof
 
@@ -46,25 +46,26 @@ Each proof consists of four parts:
 Store tree proofs are based on a modified version of [Merk](https://github.com/nomic-io/merk/). Some details from the Merk documentation are included below. Additional details are available in the [Algorithms document](https://github.com/nomic-io/merk/blob/develop/docs/algorithms.md) on the Merk repository.
 
 Dash Platform 0.21.0 introduced updates to support returning multiple store tree proofs. Each response that requests proofs will receive one or more of the following:
- - `identitiesProof`
- - `publicKeyHashesToIdentityIdsProof`
- - `dataContractsProof`
- - `documentsProof`
- - `stateTransitionProof`
 
-> 🚧 
+- `identitiesProof`
+- `publicKeyHashesToIdentityIdsProof`
+- `dataContractsProof`
+- `documentsProof`
+- `stateTransitionProof`
+
+> 🚧
 >
 > Dash Platform 0.21.0 introduced a 4 byte [protocol version](https://github.com/dashevo/js-dpp/pull/325) that is prepended to the binary format and is not part of the CBOR-encoded data. When parsing proofs it is necessary to exclude these bytes before decoding the returned data with CBOR.
 
-#### Structure 
+#### Structure
 
 Merk proofs are a list of stack-based operators and node data, with 3 possible operators: `Push(node)`, `Parent`, and `Child`. A stream of these operators can be processed by a verifier in order to reconstruct a sparse representation of part of the tree, in a way where the data can be verified against a known root hash.
 
 The value of `node` in a `Push` operation can be one of three types:
 
-* `Hash(hash)` - The hash of a node
-* `KVHash(hash)` - The key/value hash of a node
-* `KV(key, value)` - The key and value of a node
+- `Hash(hash)` - The hash of a node
+- `KVHash(hash)` - The key/value hash of a node
+- `KV(key, value)` - The key and value of a node
 
 #### Binary Format
 

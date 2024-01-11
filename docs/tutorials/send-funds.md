@@ -6,7 +6,7 @@ Once you have a wallet and some funds ([tutorial](../tutorials/create-and-fund-a
 
 > 📘 Wallet Operations
 >
-> The JavaScript SDK does not cache wallet information. It re-syncs the entire Core chain for some wallet operations (e.g. `client.getWalletAccount()`) which can result in wait times of  5+ minutes. 
+> The JavaScript SDK does not cache wallet information. It re-syncs the entire Core chain for some wallet operations (e.g. `client.getWalletAccount()`) which can result in wait times of  5+ minutes.
 >
 > A future release will add caching so that access is much faster after the initial sync. For now, the `skipSynchronizationBeforeHeight` option can be used to sync the wallet starting at a certain block height.
 
@@ -44,7 +44,7 @@ client.on('error', (error, context) => {
   console.error(`Client error: ${error.name}`);
   console.error(context);
 });
-``` 
+```
 
 # What's Happening
 

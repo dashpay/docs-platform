@@ -3,8 +3,9 @@
 In this tutorial we will retrieve some of the current data from a data contract. Data is stored in the form of documents as described in the Dash Platform Protocol [Document explanation](../../explanations/platform-protocol-document.md).
 
 ## Prerequisites
+
 - [General prerequisites](../../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
-- A Dash Platform Contract ID: [Tutorial: Register a Data Contract](../../tutorials/contracts-and-documents/register-a-data-contract.md) 
+- A Dash Platform Contract ID: [Tutorial: Register a Data Contract](../../tutorials/contracts-and-documents/register-a-data-contract.md)
 
 ## Code
 
@@ -35,7 +36,7 @@ getDocuments()
   })
   .catch((e) => console.error('Something went wrong:\n', e))
   .finally(() => client.disconnect());
-``` 
+```
 
 > 👍 Initializing the Client with a contract identity
 >
@@ -47,7 +48,7 @@ The example code uses a very basic query to return only one result. More extensi
 
 ## Example Document
 
-The following examples show the structure of a `note` document (from the data contract registered in the tutorial) returned from the SDK when retrieved with various methods. 
+The following examples show the structure of a `note` document (from the data contract registered in the tutorial) returned from the SDK when retrieved with various methods.
 
 The values returned by `.toJSON()` include the base document properties (prefixed with `$`) present in all documents along with the data contract defined properties.
 
@@ -71,16 +72,19 @@ The values returned by `.getData()` (and also shown in the console.dir() `data` 
   "message": "Tutorial CI Test @ Fri, 23 Jul 2021 13:12:13 GMT"
 }
 ```
+
 ```json .getData()
 // .getData()
 {
   "Tutorial CI Test @ Fri, 23 Jul 2021 13:12:13 GMT"
 }
 ```
+
 ```text .data.message
 # .data.message
 Tutorial CI Test @ Fri, 23 Jul 2021 13:12:13 GMT
 ```
+
 ```json console.dir(document)
 // console.dir(document)
 Document {

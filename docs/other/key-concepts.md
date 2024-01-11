@@ -4,7 +4,7 @@ In order to successfully develop a Dash Platform Application, developers will ne
 
 In any decentralized network, nodes are compensated for the activities they undertake to maintain the network. Consequently, any action taken by an application to store, retrieve, or manipulate data involves a cost that will be paid to the masternodes. Sometimes this cost will be the same as a traditional currency exchange on the Dash network ( < $0.01 USD), and sometimes this cost will be slightly higher as a result of the quantity of data being stored or retrieved.
 
-In order to pay for these various operations, Dash must be spent by either the application administrator or user. Obviously, this represents a paradigm shift for how most consumers interact with an application. Therefore, managing the payment of various data operations is a matter of choice for the developer, by choosing to sponsor costs on behalf of a user or by passing the cost of the data operation onto the user. 
+In order to pay for these various operations, Dash must be spent by either the application administrator or user. Obviously, this represents a paradigm shift for how most consumers interact with an application. Therefore, managing the payment of various data operations is a matter of choice for the developer, by choosing to sponsor costs on behalf of a user or by passing the cost of the data operation onto the user.
 
 # Data Contracts
 
@@ -89,14 +89,14 @@ A data contract is an agreement between your application and the Dash network as
     }
 }
 ```
+
 As your application evolves, changes to your data contract might be required. Consequently, data contracts can be versioned in order to prevent breaking changes in your application.
 
 # State Transitions
 
-At any given point in time, your application has a specific state regarding the type and content of its data. Whenever you create, update, or delete data, your application undergoes a state transition. Data is stored on Dash Platform when an application submits a state transition to the Dash network. This state transition is a JSON-formatted object that corresponds to the structure defined in the application’s data contract. 
+At any given point in time, your application has a specific state regarding the type and content of its data. Whenever you create, update, or delete data, your application undergoes a state transition. Data is stored on Dash Platform when an application submits a state transition to the Dash network. This state transition is a JSON-formatted object that corresponds to the structure defined in the application’s data contract.
 
-Based on the validation rules described in the data contract, Dash Platform will validate and either accept or reject a state transition based on the previously defined criteria. 
-
+Based on the validation rules described in the data contract, Dash Platform will validate and either accept or reject a state transition based on the previously defined criteria.
 
 # Identities and Names
 

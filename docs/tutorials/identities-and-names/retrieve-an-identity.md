@@ -3,8 +3,9 @@
 In this tutorial we will retrieve the identity created in the [Register an Identity tutorial](../../tutorials/identities-and-names/register-an-identity.md).
 
 ## Prerequisites
+
 - [General prerequisites](../../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
-- A Dash Platform Identity: [Tutorial: Register an Identity](../../tutorials/identities-and-names/register-an-identity.md) 
+- A Dash Platform Identity: [Tutorial: Register an Identity](../../tutorials/identities-and-names/register-an-identity.md)
 
 ## Code
 
@@ -21,7 +22,7 @@ retrieveIdentity()
   .then((d) => console.log('Identity retrieved:\n', d.toJSON()))
   .catch((e) => console.error('Something went wrong:\n', e))
   .finally(() => client.disconnect());
-``` 
+```
 
 ## Example Identity
 
@@ -41,7 +42,7 @@ The following example response shows a retrieved identity:
    "balance":10997588,
    "revision":0
 }
-``` 
+```
 
 ## What's Happening
 

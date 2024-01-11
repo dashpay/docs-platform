@@ -1,15 +1,17 @@
 # Frequently Asked Questions
 
 ## What is Evolution?
-"Evolution" is a codename used to reference various products. It includes "Dash Platform," a FireBase-like platform for developing backends for websites and applications, hosted on the masternode network. 
+
+"Evolution" is a codename used to reference various products. It includes "Dash Platform," a FireBase-like platform for developing backends for websites and applications, hosted on the masternode network.
 
 Also, the term " Evolution" refers to several other products that we are going to develop on top of the platform. An example of such an app is DashPay - an easy to use payment solution with usernames and contact lists.
 
-## How does a DAPI client discover the IP address of masternodes hosting DAPI endpoints? 
+## How does a DAPI client discover the IP address of masternodes hosting DAPI endpoints?
+
 The DNS seed will provide a deterministic masternode list (DML) to the client. More on the deterministic MN list can be found here:
 
- - DML spec: https://github.com/dashpay/dips/blob/master/dip-0003.md
- - DML verification: https://github.com/dashpay/dips/blob/master/dip-0004.md
+- DML spec: https://github.com/dashpay/dips/blob/master/dip-0003.md
+- DML verification: https://github.com/dashpay/dips/blob/master/dip-0004.md
 
 ## Why can't I connect to DAPI from a page served over HTTPS?
 

@@ -12,8 +12,8 @@ There are a variety of constraints currently defined for performance and securit
 
 #### Keyword
 
-> 🚧 
-> 
+> 🚧
+>
 > The `$ref` keyword has been [disabled](https://github.com/dashevo/platform/pull/300) since Platform v0.22.
 
 | Keyword                                                | Constraint                                                                                                         |

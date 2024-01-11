@@ -3,12 +3,13 @@
 The purpose of this tutorial is to walk through the steps necessary to set up a masternode with Dash Platform services.
 
 ## Prerequisites
+
 - [Docker](https://docs.docker.com/engine/install/) (v20.10.0+) and [docker-compose](https://docs.docker.com/compose/install/) (v1.25.0+) installed
 - An installation of [NodeJS](https://nodejs.org/en/download/) (v20, NPM v8.0+)
 
 The following is not necessary for setting up a local network for development, but is helpful if setting up a testnet masternode:
-- Access to a Linux system configured with a non-root user ([guide](https://docs.dash.org/en/stable/masternodes/setup.html#set-up-your-vps))
 
+- Access to a Linux system configured with a non-root user ([guide](https://docs.dash.org/en/stable/masternodes/setup.html#set-up-your-vps))
 
 > 📘
 >
@@ -18,15 +19,15 @@ Use NPM to install dashmate globally in your system:
 
 ```shell
 npm install -g dashmate
-``` 
+```
 
 ## Local Network
 
 Dashmate can be used to create a local network on a single computer. This network contains multiple nodes to mimic conditions and features found in testnet/mainnet settings.
 
-> 📘 
+> 📘
 >
-> Dashmate local networks use the [regtest network type](../../reference/glossary.md#regtest) so layer 1 blocks can be easily mined as needed. 
+> Dashmate local networks use the [regtest network type](../../reference/glossary.md#regtest) so layer 1 blocks can be easily mined as needed.
 
 ### Setup
 
@@ -34,10 +35,11 @@ Run the following command to start the setup wizard, then accept the default val
 
 ```shell
 dashmate setup local
-``` 
+```
 
 Example (partial) output of the setup wizard showing important information:
-```
+
+``` text
   ✔ Initialize SDK
     › HD private key: tprv8ZgxMBicQKsPfLTCjh8vdHkDHYM369tUeQ4aqpV9GzUfQyBKutfstB1sDfQyLERACTEYy5Qjph42gBiqqnqYmXJZZqRc4PQssGzbvwJXHnN
   ✔ Register DPNS identity
@@ -74,13 +76,13 @@ Once the setup completes, start/stop/restart the network via the following comma
 dashmate group start
 dashmate group stop
 dashmate group restart
-``` 
+```
 
 The status of the network's nodes can be check via the group status command:
 
 ```shell
 dashmate group status
-``` 
+```
 
 ### Mining Dash
 
@@ -100,6 +102,7 @@ dashmate wallet mint 10 --address=<your address> --config=local_seed
 # Restart the devnet
 dashmate group start
 ```
+
 ```shell Mine to new address
 # Mine to new address
 
@@ -126,7 +129,7 @@ Example output of `dashmate wallet mint 10 --address=yYqfdpePzn2kWtMxr9nz22HBFM7
     › Generated 172.59038279 dash
   ✔ Wait for balance to confirm
   ✔ Stop Core
-``` 
+```
 
 ### Using the network
 
@@ -141,7 +144,7 @@ const clientOpts = {
 };
 
 const client = new Dash.Client(clientOpts);
-``` 
+```
 
 ## Testnet Masternode Setup
 
@@ -162,7 +165,8 @@ To setup a testnet masternode, please refer to the comprehensive documentation o
 > 📘 Full Platform Node
 >
 > A full node that with all Platform services can be started by simply running the setup command with the [node type setup parameter](https://github.com/dashevo/platform/tree/master/packages/dashmate#setup-node) set to  `fullnode` and then starting the node.
-> ```
+>
+> ``` text
 > dashmate setup testnet fullnode
 > dashmate start
 > ```

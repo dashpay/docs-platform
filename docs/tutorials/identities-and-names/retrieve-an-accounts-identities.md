@@ -3,9 +3,10 @@
 In this tutorial we will retrieve the list of identities associated with a specified mnemonic-based account. Since multiple identities may be created using the same mnemonic, it is helpful to have a way to quickly retrieve all these identities (e.g. if importing the mnemonic into a new device).
 
 ## Prerequisites
+
 - [General prerequisites](../../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
 - A wallet mnemonic
-- A Dash Platform Identity: [Tutorial: Register an Identity](../../tutorials/identities-and-names/register-an-identity.md) 
+- A Dash Platform Identity: [Tutorial: Register an Identity](../../tutorials/identities-and-names/register-an-identity.md)
 
 ## Code
 
@@ -31,7 +32,7 @@ retrieveIdentityIds()
   .then((d) => console.log('Mnemonic identities:\n', d))
   .catch((e) => console.error('Something went wrong:\n', e))
   .finally(() => client.disconnect());
-``` 
+```
 
 Example Response
 
@@ -42,7 +43,7 @@ Example Response
   "CEPMcuBgAWeaCXiP2gJJaStANRHW6b158UPvL1C8zw2W",
   "GTGZrkPC72tWeBaqopSCKgiBkVVQR3s3yBsVeMyUrmiY"
 ]
-``` 
+```
 
 ## What's Happening
 
@@ -50,6 +51,6 @@ After we initialize the Client and getting the account, we call `account.identit
 
 > 📘 Wallet Operations
 >
-> The JavaScript SDK does not cache wallet information. It re-syncs the entire Core chain for some wallet operations (e.g. `client.getWalletAccount()`) which can result in wait times of  5+ minutes. 
+> The JavaScript SDK does not cache wallet information. It re-syncs the entire Core chain for some wallet operations (e.g. `client.getWalletAccount()`) which can result in wait times of  5+ minutes.
 >
 > A future release will add caching so that access is much faster after the initial sync. For now, the `skipSynchronizationBeforeHeight` option can be used to sync the wallet starting at a certain block height.

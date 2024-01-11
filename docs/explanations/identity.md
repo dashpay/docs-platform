@@ -14,7 +14,7 @@ Identities are separate from names and can be thought of as a lower-level primit
 
 In order to [create an identity](#identity-create-process), a user pays the network to store their public key(s) on the platform chain. Since new users may not have existing Dash funds, an invitation process will allow users to create an identity despite lacking their own funds. The invitation process will effectively separate the funding and registration steps that are required for any new identity to be created.
 
-Once an identity is created, its credit balance is used to pay for activity (e.g. use of applications). The [topup process ](#identity-balance-topup-process) provides a way to add additional funds to the balance when necessary.
+Once an identity is created, its credit balance is used to pay for activity (e.g. use of applications). The [topup process](#identity-balance-topup-process) provides a way to add additional funds to the balance when necessary.
 
 ### Identity Create Process
 
@@ -38,11 +38,11 @@ The identity balance topup process works in a similar way to the initial identit
 
 ### Identity Update Process
 
-> 👍 
+> 👍
 >
 > Added in Dash Platform Protocol v0.23
 
-Identity owners may find it necessary to update their identity keys periodically for security purposes. The [identity update state transition](https://github.com/dashpay/dips/blob/master/dip-0011.md#identity-update-transition) enables users to add new keys and disable existing ones. 
+Identity owners may find it necessary to update their identity keys periodically for security purposes. The [identity update state transition](https://github.com/dashpay/dips/blob/master/dip-0011.md#identity-update-transition) enables users to add new keys and disable existing ones.
 
 Identity updates only require the creation of a state transition that includes a list of keys being added and/or disabled. Platform retains disabled keys so that any existing data they signed can still be verified while preventing them from signing new data.
 

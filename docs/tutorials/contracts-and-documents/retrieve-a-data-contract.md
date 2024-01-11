@@ -3,8 +3,9 @@
 In this tutorial we will retrieve the data contract created in the [Register a Data Contract tutorial](../../tutorials/contracts-and-documents/register-a-data-contract.md).
 
 ## Prerequisites
+
 - [General prerequisites](../../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
-- A Dash Platform Contract ID: [Tutorial: Register a Data Contract](../../tutorials/contracts-and-documents/register-a-data-contract.md) 
+- A Dash Platform Contract ID: [Tutorial: Register a Data Contract](../../tutorials/contracts-and-documents/register-a-data-contract.md)
 
 ## Code
 
@@ -28,8 +29,8 @@ retrieveContract()
 
 ### Updating the client app list
 
-> 📘 
-> 
+> 📘
+>
 > In many cases it may be desirable to work with a newly retrieved data contract using the `<contract name>.<contract document>` syntax (e.g. `dpns.domain`). Data contracts that were created after the client was initialized or not included in the initial client options can be added via `client.getApps().set(...)`.
 
 ```javascript
@@ -79,8 +80,8 @@ The following example response shows a retrieved contract:
 }
 ```
 
-> 📘 
-> 
+> 📘
+>
 > Please refer to the [data contract reference page](../../reference/data-contracts.md) for more comprehensive details related to contracts and documents.
 
 ## What's Happening

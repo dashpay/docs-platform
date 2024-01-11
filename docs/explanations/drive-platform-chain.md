@@ -2,7 +2,7 @@
 
 ## Overview
 
-The platform chain is the [Drive](../explanations/drive.md) component responsible for replicating the platform state across all masternodes participating in the network. Masternodes operate this Proof of Service (PoSe) chain to provide layer 2 consensus and support Dash Platform-specific requirements without impacting layer 1 functionality. Although the platform chain can read from the Dash layer 1 core blockchain, the core blockchain is not dependent on it or aware of it. 
+The platform chain is the [Drive](../explanations/drive.md) component responsible for replicating the platform state across all masternodes participating in the network. Masternodes operate this Proof of Service (PoSe) chain to provide layer 2 consensus and support Dash Platform-specific requirements without impacting layer 1 functionality. Although the platform chain can read from the Dash layer 1 core blockchain, the core blockchain is not dependent on it or aware of it.
 
 ## Details
 
@@ -13,11 +13,12 @@ Early designs of Drive were based on using on the layer 1 core blockchain and [I
 ### Characteristics
 
 In order to support Dash Platform's performance requirements, the platform chain has the following design characteristics:
+
 - Relies on masternode Proof of Service, not miner Proof of Work (PoW)
 - Hosted exclusively on masternodes
 - Uses a [practical Byzantine Fault Tolerance (pBFT)](../reference/glossary.md#practical-byzantine-fault-tolerance-pbft) consensus algorithm
 - Has a deterministic fee structure
-- Provides fast (< 10 seconds) and absolute block finality (no reorgs) 
+- Provides fast (< 10 seconds) and absolute block finality (no reorgs)
 
 ### Blocks and Transitions
 

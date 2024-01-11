@@ -50,4 +50,4 @@ Release notes for past versions are located on the [dashpay/platform GitHub rele
       - [Document Delete Transition](../protocol-ref/document.md#document-delete-transition)
 - [Signing](../protocol-ref/state-transition.md#state-transition-signing)
 
-[Data Triggers](../protocol-ref/data-trigger.md)
+[Data Triggers](../protocol-ref/data-trigger.md

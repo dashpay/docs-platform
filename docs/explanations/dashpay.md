@@ -2,34 +2,67 @@
 
 ## Overview
 
-DashPay is one of the first applications of Dash Platform's [data contracts](../explanations/platform-protocol-data-contract.md) . At its core DashPay is a data contract that enables a decentralized application that creates bidirectional [direct settlement payment channels](../reference/glossary.md#direct-settlement-payment-channel-dspc) between [identities](../explanations/identity.md).
+DashPay is one of the first applications of Dash Platform's [data
+contracts](../explanations/platform-protocol-data-contract.md) . At its core DashPay is a data
+contract that enables a decentralized application that creates bidirectional [direct settlement
+payment channels](../reference/glossary.md#direct-settlement-payment-channel-dspc) between
+[identities](../explanations/identity.md).
 
 > 📘
 >
-> For previews of an updated Dash mobile wallet UI based on the DashPay contract or to join the alpha test program, please visit the <a href="https://www.dash.org/dashpay/" target="_blank">DashPay landing page at dash.org</a>.
+> For previews of an updated Dash mobile wallet UI based on the DashPay contract or to join the
+> alpha test program, please visit the <a href="https://www.dash.org/dashpay/"
+> target="_blank">DashPay landing page at dash.org</a>.
 
 The DashPay contract enables an improved Dash wallet experience with features including:
 
-* **User Centric Interaction**: DashPay brings users front and center in a cryptocurrency wallet. Instead of sending to an address, a user sends directly to another user. Users will have a username, a display name, an avatar and a quick bio/information message.
+* **User Centric Interaction**: DashPay brings users front and center in a cryptocurrency wallet.
+  Instead of sending to an address, a user sends directly to another user. Users will have a
+  username, a display name, an avatar and a quick bio/information message.
 
-* **Easy Payments**: Once two users have exchanged contact requests, each can make payments to the other without manually sharing addresses via emails, texts or BIP21 QR codes. This is because every contact request contains the information (an encrypted extended public key) required to send payments to the originator of the request. When decrypted, this extended public key can be used by the recipient of the contact request to generate payment addresses for the originator of the contact request.
+* **Easy Payments**: Once two users have exchanged contact requests, each can make payments to the
+  other without manually sharing addresses via emails, texts or BIP21 QR codes. This is because
+  every contact request contains the information (an encrypted extended public key) required to send
+  payments to the originator of the request. When decrypted, this extended public key can be used by
+  the recipient of the contact request to generate payment addresses for the originator of the
+  contact request.
 
-* **Payment History**: When a contact is established, a user can easily track the payments they have sent to another user and the payments that they have received from that other user. A user will have an extended private key to track payments that are received from the other user and an extended public key to track payments that are sent to that other user.
+* **Payment History**: When a contact is established, a user can easily track the payments they have
+  sent to another user and the payments that they have received from that other user. A user will
+  have an extended private key to track payments that are received from the other user and an
+  extended public key to track payments that are sent to that other user.
 
-* **Payment Participant Protection**: The extended public keys in contact requests are encrypted in such a way that only the two users involved in a contact's two way relationship can decrypt those keys. This ensures that when any two users make payments in DashPay, only they know the sender and receiver while 3rd parties do not.
+* **Payment Participant Protection**: The extended public keys in contact requests are encrypted in
+  such a way that only the two users involved in a contact's two way relationship can decrypt those
+  keys. This ensures that when any two users make payments in DashPay, only they know the sender and
+  receiver while 3rd parties do not.
 
 ## Details
 
-The contract defines three document types: `contactRequest`, `profile` and `contactInfo`. ContactRequest documents are the most important. They are used to establish relationships and payment channels between Dash identities. Profile documents are used to store public facing information about Dash identities including avatars and display names. ContactInfo documents can be used to store private information about other Dash identities.
+The contract defines three document types: `contactRequest`, `profile` and `contactInfo`.
+ContactRequest documents are the most important. They are used to establish relationships and
+payment channels between Dash identities. Profile documents are used to store public facing
+information about Dash identities including avatars and display names. ContactInfo documents can be
+used to store private information about other Dash identities.
 
 ### Establishing a Contact
 
 1. Bob installs wallet software that supports DashPay.
-2. Bob [registers an identity](../tutorials/identities-and-names/register-an-identity.md) and then [creates a username](../tutorials/identities-and-names/register-a-name-for-an-identity.md) through [DPNS](../explanations/dpns.md).
-3. Bob searches for Carol by her username. Behind the scenes this search returns the unique identifier for Carol's identity. An example of doing this can be seen in the [Retrieve a Name tutorial](../tutorials/identities-and-names/retrieve-a-name.md).
-4. Bob sends a contact request containing an encrypted extended public key to Carol. This establishes a one way relationship from Bob to Carol.
-5. Carol accepts the request by sending a contact request containing an encrypted extended public key back to Bob. This establishes a one way relationship from Carol to Bob.
-6. Bob and Carol are now contacts of one another and can make payments to each other by decrypting the extended public key received from the other party and deriving payment addresses from it. Since both have established one way relationships with each other, they now have a two way relationship. If Bob gets a new device, he can use his recovery phrase from step one and restore his wallet, contacts (including Carol) and payments to and from his contacts.
+2. Bob [registers an identity](../tutorials/identities-and-names/register-an-identity.md) and then
+   [creates a username](../tutorials/identities-and-names/register-a-name-for-an-identity.md)
+   through [DPNS](../explanations/dpns.md).
+3. Bob searches for Carol by her username. Behind the scenes this search returns the unique
+   identifier for Carol's identity. An example of doing this can be seen in the [Retrieve a Name
+   tutorial](../tutorials/identities-and-names/retrieve-a-name.md).
+4. Bob sends a contact request containing an encrypted extended public key to Carol. This
+   establishes a one way relationship from Bob to Carol.
+5. Carol accepts the request by sending a contact request containing an encrypted extended public
+   key back to Bob. This establishes a one way relationship from Carol to Bob.
+6. Bob and Carol are now contacts of one another and can make payments to each other by decrypting
+   the extended public key received from the other party and deriving payment addresses from it.
+   Since both have established one way relationships with each other, they now have a two way
+   relationship. If Bob gets a new device, he can use his recovery phrase from step one and restore
+   his wallet, contacts (including Carol) and payments to and from his contacts.
 
 ```{eval-rst}
 .. figure:: ./img/dashpay.png
@@ -43,15 +76,24 @@ The contract defines three document types: `contactRequest`, `profile` and `cont
 
 ### Implementation
 
-DashPay has many constraints as defined in the [DashPay data contract](https://github.com/dashevo/platform/blob/master/packages/dashpay-contract/schema/dashpay.schema.json). Additionally, the DashPay data triggers defined in [rs-drive-abci](https://github.com/dashpay/platform/tree/master/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/documents_batch/data_triggers/triggers/dashpay) enforce additional validation rules related to the `contactRequest` document.
+DashPay has many constraints as defined in the [DashPay data
+contract](https://github.com/dashevo/platform/blob/master/packages/dashpay-contract/schema/dashpay.schema.json).
+Additionally, the DashPay data triggers defined in
+[rs-drive-abci](https://github.com/dashpay/platform/tree/master/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/documents_batch/data_triggers/triggers/dashpay)
+enforce additional validation rules related to the `contactRequest` document.
 
 > 👍 DashPay DIP
 >
-> Please refer to the [DashPay Dash Improvement Proposal (DIP)](https://github.com/dashpay/dips/blob/master/dip-0015.md) for more extensive background information and complete details about the data contract.
+> Please refer to the [DashPay Dash Improvement Proposal
+> (DIP)](https://github.com/dashpay/dips/blob/master/dip-0015.md) for more extensive background
+> information and complete details about the data contract.
 
-* <a href="https://github.com/dashpay/dips/blob/master/dip-0015.md#the-contact-request" target="_blank">Contact request details</a>
-* <a href="https://github.com/dashpay/dips/blob/master/dip-0015.md#the-profile" target="_blank">Profile details</a>
-* <a href="https://github.com/dashpay/dips/blob/master/dip-0015.md#contact-info" target="_blank">Contact Info details</a>
+* <a href="https://github.com/dashpay/dips/blob/master/dip-0015.md#the-contact-request"
+  target="_blank">Contact request details</a>
+* <a href="https://github.com/dashpay/dips/blob/master/dip-0015.md#the-profile"
+  target="_blank">Profile details</a>
+* <a href="https://github.com/dashpay/dips/blob/master/dip-0015.md#contact-info"
+  target="_blank">Contact Info details</a>
 
 ```json
 {

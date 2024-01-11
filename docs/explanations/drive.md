@@ -10,10 +10,10 @@ Using the traditional, layer 1 blockchain for data storage is widely known to be
 
 There are a number of components working together to facilitate Drive's overall functionality. These components are listed below along with a brief description of service they provide:
 
- - [Platform chain](../explanations/drive-platform-chain.md) (orders state transitions; creates and propagates blocks of state transitions)
- - Platform state machine (validates data against the [Dash platform protocol](../explanations/platform-protocol.md); applies data to state and storage)
- - [Platform state](../explanations/drive-platform-state.md) (represents current data)
- - Storage (record of state transitions)
+- [Platform chain](../explanations/drive-platform-chain.md) (orders state transitions; creates and propagates blocks of state transitions)
+- Platform state machine (validates data against the [Dash platform protocol](../explanations/platform-protocol.md); applies data to state and storage)
+- [Platform state](../explanations/drive-platform-state.md) (represents current data)
+- Storage (record of state transitions)
 
 ### Data Update Process
 
