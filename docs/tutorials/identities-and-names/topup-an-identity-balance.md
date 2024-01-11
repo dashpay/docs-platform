@@ -22,7 +22,7 @@ const clientOpts = {
   wallet: {
     mnemonic: 'a Dash wallet mnemonic with testnet funds goes here',
     unsafeOptions: {
-      skipSynchronizationBeforeHeight: 650000, // only sync from early-2022
+      skipSynchronizationBeforeHeight: 875000, // only sync from mid-2023
     },
   },
 };
