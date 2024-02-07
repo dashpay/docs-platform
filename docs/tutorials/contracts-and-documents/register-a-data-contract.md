@@ -135,6 +135,27 @@ array of bytes (e.g. a NodeJS Buffer).
 */
 ```
 :::
+
+:::{tab-item} 5. Contract with history
+:sync: history
+```json
+// Identical to the minimal contract
+// Contract history configuration is done in code and
+// is not part of the contract itself.
+{
+  "note": {
+    "type": "object",
+    "properties": {
+      "message": {
+        "type": "string",
+        "position": 0
+      }
+    },
+    "additionalProperties": false
+  }
+}
+```
+:::
 ::::
 
 > 📘
@@ -345,6 +366,7 @@ registerContract()
 :::
 
 :::{tab-item} 5. Contract with history
+:sync: history
 ```javascript
 const Dash = require('dash');
 
