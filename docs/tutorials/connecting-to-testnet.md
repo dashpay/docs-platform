@@ -100,15 +100,17 @@ connect()
 
 The example below demonstrates retrieving the hash of the best block hash directly from a DAPI node via command line and several languages:
 
-::::{tab-set-code}
-
+::::{tab-set}
+:::{tab-item} Curl
 ```shell
 curl --request POST \
   --url https://seed-1.testnet.networks.dash.org:1443/ \
   --header 'content-type: application/json' \
   --data '{"method":"getBlockHash","id":1,"jsonrpc":"2.0","params":{"height": 100 }}'
 ```
+:::
 
+:::{tab-item} Python
 ```python
 import requests
 
@@ -121,7 +123,9 @@ response = requests.request("POST", url, data=payload, headers=headers)
 
 print(response.text)
 ```
+:::
 
+:::{tab-item} Ruby
 ```ruby
 require 'uri'
 require 'net/http'
@@ -137,5 +141,5 @@ request.body = "{\"method\":\"getBlockHash\",\"id\":1,\"jsonrpc\":\"2.0\",\"para
 response = http.request(request)
 puts response.read_body
 ```
-
+:::
 ::::

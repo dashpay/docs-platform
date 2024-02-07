@@ -19,10 +19,9 @@ In this tutorial we will update an existing data contract.
 
 The following examples demonstrate updating an existing contract to add a new property to an existing document. The second example shows how to update a contract that has contract history enabled:
 
-::::{tab-set-code}
-
-```javascript 1. Minimal contract
-// Minimal contract
+::::{tab-set}
+:::{tab-item} Minimal contract
+```javascript
 const Dash = require('dash');
 
 const clientOpts = {
@@ -60,9 +59,10 @@ updateContract()
   .catch((e) => console.error('Something went wrong:\n', e))
   .finally(() => client.disconnect());
 ```
+:::
 
-```javascript 2. Contract with history
-// Contract with history
+:::{tab-item} Contract with history
+```javascript
 const Dash = require('dash');
 
 const clientOpts = {
@@ -103,7 +103,7 @@ updateContract()
   .catch((e) => console.error('Something went wrong:\n', e))
   .finally(() => client.disconnect());
 ```
-
+:::
 ::::
 
 > 📘

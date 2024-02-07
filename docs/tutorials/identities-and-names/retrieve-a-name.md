@@ -8,10 +8,9 @@ In this tutorial we will retrieve the name created in the [Register a Name for a
 
 ## Code
 
-::::{tab-set-code}
-
-```javascript JavaScript - Resolve by Name
-//  Resolve by Name
+::::{tab-set}
+:::{tab-item} JavaScript - Resolve by Name
+```javascript
 const Dash = require('dash');
 
 const client = new Dash.Client({ network: 'testnet' });
@@ -26,9 +25,10 @@ retrieveName()
   .catch((e) => console.error('Something went wrong:\n', e))
   .finally(() => client.disconnect());
 ```
+:::
 
-```javascript JavaScript - Revolve by Record
-// Revolve by Record
+:::{tab-item} JavaScript - Revolve by Record
+```javascript
 const Dash = require('dash');
 
 const client = new Dash.Client({ network: 'testnet' });
@@ -46,9 +46,10 @@ retrieveNameByRecord()
   .catch((e) => console.error('Something went wrong:\n', e))
   .finally(() => client.disconnect());
 ```
+:::
 
-```javascript JavaScript - Search for Name
-// Search for Name
+:::{tab-item} JavaScript - Search for Name
+```javascript
 const Dash = require('dash');
 
 const client = new Dash.Client({ network: 'testnet' });
@@ -67,7 +68,7 @@ retrieveNameBySearch()
   .catch((e) => console.error('Something went wrong:\n', e))
   .finally(() => client.disconnect());
 ```
-
+:::
 ::::
 
 ## Example Name
