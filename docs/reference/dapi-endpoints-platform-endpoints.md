@@ -73,6 +73,7 @@ Broadcasts a [state transition](../explanations/platform-protocol-state-transiti
 
 ::::{tab-set}
 :::{tab-item} JavaScript (dapi-client)
+:sync: js-dapi-client
 ```javascript
 const DAPIClient = require('@dashevo/dapi-client');
 const {
@@ -94,6 +95,7 @@ client.platform.getIdentity(identityId).then((response) => {
 :::
 
 :::{tab-item} JavaScript (dapi-grpc)
+:sync: js-dapi-grpc
 ```javascript
 const {
   v0: { PlatformPromiseClient, GetIdentityRequest },
@@ -127,6 +129,7 @@ platformPromiseClient
 :::
 
 :::{tab-item} gRPCurl
+:sync: grpcurl
 ```shell
 # `id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
@@ -143,6 +146,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ::::{tab-set}
 :::{tab-item} Response (JavaScript)
+:sync: js-dapi-client
 ```json
 {
   "$version":"0",
@@ -178,6 +182,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 :::
 
 :::{tab-item} Response (gRPCurl)
+:sync: grpcurl
 ```json
 {
   "v0": {
@@ -211,6 +216,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ::::{tab-set}
 :::{tab-item} gRPCurl
+:sync: grpcurl
 ```shell
 # `id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
@@ -227,6 +233,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ::::{tab-set}
 :::{tab-item} Response (gRPCurl)
+:sync: grpcurl
 ```json
 {
   "v0": {
@@ -260,6 +267,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ::::{tab-set}
 :::{tab-item} gRPCurl
+:sync: grpcurl
 ```shell
 # `id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
@@ -276,6 +284,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ::::{tab-set}
 :::{tab-item} Response (gRPCurl)
+:sync: grpcurl
 ```json
 {
   "v0": {
@@ -312,6 +321,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ::::{tab-set}
 :::{tab-item} gRPCurl
+:sync: grpcurl
 ```shell
 # `id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
@@ -328,6 +338,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ::::{tab-set}
 :::{tab-item} Response (gRPCurl)
+:sync: grpcurl
 ```json
 {
   "v0": {
@@ -469,6 +480,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ::::{tab-set}
 :::{tab-item} Response (gRPCurl)
+:sync: grpcurl
 ```json
 // All keys
 {
@@ -508,6 +520,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ::::{tab-set}
 :::{tab-item} gRPCurl
+:sync: grpcurl
 ```shell
 # `id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
@@ -526,6 +539,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ::::{tab-set}
 :::{tab-item} Response (gRPCurl)
+:sync: grpcurl
 ```json
 {
   "v0": {
@@ -592,6 +606,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ::::{tab-set}
 :::{tab-item} JavaScript (dapi-client)
+:sync: js-dapi-client
 ```javascript
 const DAPIClient = require('@dashevo/dapi-client');
 const {
@@ -614,6 +629,7 @@ client.platform.getIdentitiesByPublicKeyHashes(publicKeysBuffer)
 :::
 
 :::{tab-item} JavaScript (dapi-grpc)
+:sync: js-dapi-grpc
 ```javascript
 const {
   v0: { PlatformPromiseClient, GetIdentitiesByPublicKeyHashesRequest },
@@ -644,6 +660,7 @@ platformPromiseClient
 :::
 
 :::{tab-item} gRPCurl
+:sync: grpcurl
 ```shell
 # `public_key_hashes` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
@@ -660,6 +677,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ::::{tab-set}
 :::{tab-item} Response (JavaScript)
+:sync: js-dapi-client
 ```json
 {
   "$version":"0",
@@ -695,6 +713,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 :::
 
 :::{tab-item} Response (gRPCurl)
+:sync: grpcurl
 ```json
 {
   "v0": {
@@ -742,6 +761,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ::::{tab-set}
 :::{tab-item} JavaScript (dapi-client)
+:sync: js-dapi-client
 ```javascript
 const DAPIClient = require('@dashevo/dapi-client');
 const {
@@ -764,6 +784,7 @@ client.platform.getDataContract(contractId).then((response) => {
 :::
 
 :::{tab-item} JavaScript (dapi-grpc)
+:sync: js-dapi-grpc
 ```javascript
 const {
   v0: { PlatformPromiseClient, GetDataContractRequest },
@@ -791,6 +812,7 @@ platformPromiseClient
 :::
 
 :::{tab-item} gRPCurl
+:sync: grpcurl
 ```shell
 # `id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
@@ -807,6 +829,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ::::{tab-set}
 :::{tab-item} Response (JavaScript)
+:sync: js-dapi-client
 ```json
 {
   "$format_version":"0",
@@ -994,6 +1017,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 :::
 
 :::{tab-item} Response (gRPCurl)
+:sync: grpcurl
 ```json
 {
   "v0": {
@@ -1027,6 +1051,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ::::{tab-set}
 :::{tab-item} gRPCurl
+:sync: grpcurl
 ```shell
 # `id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
@@ -1045,6 +1070,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ::::{tab-set}
 :::{tab-item} Response (gRPCurl)
+:sync: grpcurl
 ```json
 {
   "v0": {
@@ -1091,6 +1117,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ::::{tab-set}
 :::{tab-item} JavaScript (dapi-client)
+:sync: js-dapi-client
 ```javascript
 const DAPIClient = require('@dashevo/dapi-client');
 const {
@@ -1116,6 +1143,7 @@ client.platform.getDataContractHistory(contractId, 0, 2, 0).then((response) => {
 :::
 
 :::{tab-item} gRPCurl
+:sync: grpcurl
 ```shell
 # `id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
@@ -1136,6 +1164,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ::::{tab-set}
 :::{tab-item} Response (JavaScript)
+:sync: js-dapi-client
 ```json 
 {
   "$format_version":"0",
@@ -1203,6 +1232,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 :::
 
 :::{tab-item} Response (gRPCurl)
+:sync: grpcurl
 ```json
 {
   "v0": {
@@ -1269,6 +1299,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ::::{tab-set}
 :::{tab-item} JavaScript (dapi-client)
+:sync: js-dapi-client
 ```javascript
 const DAPIClient = require('@dashevo/dapi-client');
 const {
@@ -1309,6 +1340,7 @@ client.platform.getDataContract(contractId).then((contractResponse) => {
 :::
 
 :::{tab-item} JavaScript (dapi-grpc)
+:sync: js-dapi-grpc
 ```javascript
 const {
   v0: { PlatformPromiseClient, GetDataContractRequest, GetDocumentsRequest },
@@ -1361,6 +1393,7 @@ platformPromiseClient
 :::
 
 :::{tab-item} Request (gRPCurl)
+:sync: grpcurl
 ```shell
 # Request documents
 # `id` must be represented in base64
@@ -1380,6 +1413,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ::::{tab-set}
 :::{tab-item} Response (JavaScript)
+:sync: js-dapi-client
 ```json
 {
   "$id":"Do3YtBPJG72zG4tCbN5VE8djJ6rLpvx7yvtMWEy89HC",
@@ -1429,6 +1463,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 :::
 
 :::{tab-item} Response (gRPCurl)
+:sync: grpcurl
 ```json
 {
   "v0":{
@@ -1468,6 +1503,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ::::{tab-set}
 :::{tab-item} gRPCurl
+:sync: grpcurl
 ```shell
 # `id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
@@ -1484,6 +1520,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ::::{tab-set}
 :::{tab-item} Response (gRPCurl)
+:sync: grpcurl
 ```json
 {
   "v0": {
@@ -1555,6 +1592,7 @@ A combination of one or more of the following are required fields are required:
 
 ::::{tab-set}
 :::{tab-item} gRPCurl
+:sync: grpcurl
 ```shell
 # Request proofs for an identity and a data contract
 # `identityId` and `contractId` must be represented in base64
@@ -1583,6 +1621,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ::::{tab-set}
 :::{tab-item} Response (gRPCurl)
+:sync: grpcurl
 ```json
 // GroveDB proof for the requested identity and contract
 {
@@ -1624,6 +1663,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ::::{tab-set}
 :::{tab-item} gRPCurl
+:sync: grpcurl
 ```shell
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
@@ -1637,6 +1677,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ::::{tab-set}
 :::{tab-item} Response (gRPCurl)
+:sync: grpcurl
 ```json
 {
   "v0": {
@@ -1678,6 +1719,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ::::{tab-set}
 :::{tab-item} gRPCurl
+:sync: grpcurl
 ```shell
 # `start_pro_tx_hash` must be represented in base64 if present
 grpcurl -proto protos/platform/v0/platform.proto \
@@ -1694,6 +1736,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ::::{tab-set}
 :::{tab-item} Response (gRPCurl)
+:sync: grpcurl
 ```json
 {
   "v0": {
@@ -1751,6 +1794,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ::::{tab-set}
 :::{tab-item} JavaScript (dapi-client)
+:sync: js-dapi-client
 ```javascript
 const DAPIClient = require('@dashevo/dapi-client');
 
@@ -1767,6 +1811,7 @@ client.platform.waitForStateTransitionResult(hash, { prove: true })
 :::
 
 :::{tab-item} Request (gRPCurl)
+:sync: grpcurl
 ```shell
 # Replace `your_state_transition_hash` with your own before running
 # `your_state_transition_hash` must be represented in base64
