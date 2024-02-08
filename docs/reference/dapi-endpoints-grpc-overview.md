@@ -33,10 +33,9 @@ Libraries such as [`cbor` (JavaScript)](https://www.npmjs.com/package/cbor) and 
 
 The examples below use the response from a [`getIdentity` gPRC request](../reference/dapi-endpoints-platform-endpoints.md#getidentity) to demonstrate how to both encode data for sending and decode received data:
 
-::::{tab-set-code}
-
-```javascript NodeJS - Decode Identity
-// NodeJS - Decode Identity
+::::{tab-set}
+:::{tab-item} NodeJS - Decode Identity
+```javascript
 const cbor = require('cbor');
 
 const grpc_identity_response = 'o2JpZHgsQ2JZVnlvS25HeGtIYUJydWNDQWhQRUJjcHV6OGoxNWNuWVlpdjFDRUhCTnhkdHlwZQFqcHVibGljS2V5c4GkYmlkAWRkYXRheCxBbXpSMkZNNGZZd0NtWnhHWjFOMnRhMkZmdUo5NU93K0xMQXJaREx1WUJqdGR0eXBlAWlpc0VuYWJsZWT1'
@@ -47,7 +46,10 @@ const identity = cbor.decode(Buffer.from(identity_cbor));
 console.log('Identity details');
 console.dir(identity);
 ```
-```python Python - Decode Identity
+:::
+
+:::{tab-item} Python - Decode Identity
+```python
 # Python - Decode Identity
 from base64 import b64decode, b64encode
 import json
@@ -60,7 +62,10 @@ identity = cbor2.loads(identity_cbor)
 
 print('Identity details:\n{}\n'.format(json.dumps(identity, indent=2)))
 ```
-```python Python - Encode Identity
+:::
+
+:::{tab-item} Python - Encode Identity
+```python
 # Python - Encode Identity
 from base64 import b64decode, b64encode
 import json
@@ -84,5 +89,5 @@ identity_cbor = cbor2.dumps(identity)
 identity_grpc = b64encode(identity_cbor)
 print('Identity gRPC data: {}'.format(identity_grpc))
 ```
-
+:::
 ::::

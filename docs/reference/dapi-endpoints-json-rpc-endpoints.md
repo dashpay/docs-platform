@@ -25,9 +25,9 @@ Additional information may be found in the [JSON-RPC 2.0 specification](https://
 
 #### Example Request and Response
 
-::::{tab-set-code}
-
-```shell Curl
+::::{tab-set}
+:::{tab-item} Curl
+```shell
 curl -k --request POST \
   --url https://seed-1.testnet.networks.dash.org:1443/ \
   --header 'content-type: application/json' \
@@ -38,7 +38,9 @@ curl -k --request POST \
       "params":{}
     }'
 ```
-```javascript JavaScript
+:::
+:::{tab-item} JavaScript
+```javascript
 var request = require("request");
 
 var options = {
@@ -54,8 +56,9 @@ request(options, function (error, response, body) {
   console.log(body);
 });
 ```
-```javascript Node
-// Node.js
+:::
+:::{tab-item} NodeJS
+```javascript
 var XMLHttpRequest = require('xhr2');
 var data = '{"method":"getBestBlockHash","id":1,"jsonrpc":"2.0"}';
 
@@ -72,7 +75,9 @@ xhr.setRequestHeader("content-type", "application/json");
 
 xhr.send(data);
 ```
-```python Python
+:::
+:::{tab-item} Python
+```python
 import requests
 import json
 
@@ -90,7 +95,9 @@ response = requests.request("POST", url, data=json.dumps(payload_json), headers=
 
 print(response.text)
 ```
-```ruby Ruby
+:::
+:::{tab-item} Ruby
+```ruby
 require 'uri'
 require 'net/http'
 
@@ -110,7 +117,7 @@ request.body = '{
 response = http.request(request)
 puts response.read_body
 ```
-
+:::
 ::::
 
 ```json
@@ -132,9 +139,9 @@ puts response.read_body
 
 #### Example Request and Response
 
-::::{tab-set-code}
-
-```shell Curl
+::::{tab-set}
+:::{tab-item} Curl
+```shell
 curl -k --request POST \
   --url https://seed-1.testnet.networks.dash.org:1443/ \
   --header 'content-type: application/json' \
@@ -147,7 +154,9 @@ curl -k --request POST \
        }
     }'
 ```
-```python Python
+:::
+:::{tab-item} Python
+```python
 import requests
 import json
 
@@ -167,7 +176,9 @@ response = requests.request("POST", url, data=json.dumps(payload_json), headers=
 
 print(response.text)
 ```
-```ruby Ruby
+:::
+:::{tab-item} Ruby
+```ruby
 require 'uri'
 require 'net/http'
 
@@ -189,7 +200,7 @@ request.body = '{
 response = http.request(request)
 puts response.read_body
 ```
-
+:::
 ::::
 
 ```json
@@ -212,9 +223,9 @@ puts response.read_body
 
 #### Example Request and Response
 
-::::{tab-set-code}
-
-```shell Curl
+::::{tab-set}
+:::{tab-item} Curl
+```shell
 curl -k --request POST \
   --url https://seed-1.testnet.networks.dash.org:1443/ \
   --header 'content-type: application/json' \
@@ -228,7 +239,9 @@ curl -k --request POST \
       }
     }'
 ```
-```python Python
+:::
+:::{tab-item} Python
+```python
 import requests
 import json
 
@@ -249,7 +262,9 @@ response = requests.request("POST", url, data=json.dumps(payload_json), headers=
 
 print(response.text)
 ```
-```ruby Ruby
+:::
+:::{tab-item} Ruby
+```ruby
 require 'uri'
 require 'net/http'
 
@@ -272,7 +287,7 @@ request.body = '{
 response = http.request(request)
 puts response.read_body
 ```
-
+:::
 ::::
 
 ```json
