@@ -17,10 +17,9 @@ Please refer to the [gRPC Overview](../reference/dapi-endpoints-grpc-overview.md
 
 #### Example Request and Response
 
-::::{tab-set-code}
-
-```javascript JavaScript (dapi-client)
-// JavaScript (dapi-client)
+::::{tab-set}
+:::{tab-item} JavaScript (dapi-client)
+```javascript
 const DAPIClient = require('@dashevo/dapi-client');
 const { Transaction } = require('@dashevo/dashcore-lib');
 
@@ -37,8 +36,10 @@ const tx = Transaction('02000000022fd1c4583099109524b8216d712373bd837d24a502414f
 client.core.broadcastTransaction(tx.toBuffer())
   .then((response) => console.log(response));
 ```
-```javascript JavaScript (dapi-grpc)
-// JavaScript (dapi-grpc)
+:::
+
+:::{tab-item} JavaScript (dapi-grpc)
+```javascript
 const {
   v0: {
     CorePromiseClient,
@@ -54,17 +55,17 @@ const tx = Transaction('02000000022fd1c4583099109524b8216d712373bd837d24a502414f
 corePromiseClient.client.broadcastTransaction({ transaction: tx.toBuffer() })
   .then((response) => console.log(response));
 ```
-
+:::
 ::::
 
-::::{tab-set-code}
-
+::::{tab-set}
+:::{tab-item} Response (JavaScript)
 ```json
 {
   "transactionId": "552eaf24a60014edcbbb253dbc4dd68766532cab3854b44face051cedcfd578f"
 }
 ```
-
+:::
 ::::
 
 ### getStatus
@@ -74,10 +75,9 @@ corePromiseClient.client.broadcastTransaction({ transaction: tx.toBuffer() })
 
 #### Example Request and Response
 
-::::{tab-set-code}
-
-```javascript JavaScript (dapi-client)
-// JavaScript (dapi-client)
+::::{tab-set}
+:::{tab-item}  JavaScript (dapi-client)
+```javascript
 const DAPIClient = require('@dashevo/dapi-client');
 
 const client = new DAPIClient({
@@ -90,8 +90,10 @@ const client = new DAPIClient({
 client.core.getStatus()
   .then((response) => console.log(response));
 ```
-```javascript JavaScript (dapi-grpc)
-// JavaScript (dapi-grpc)
+:::
+
+:::{tab-item} JavaScript (dapi-grpc)
+```javascript
 const {
   v0: {
     GetStatusRequest,
@@ -104,24 +106,26 @@ const corePromiseClient = new CorePromiseClient('https://seed-1.testnet.networks
 corePromiseClient.client.getStatus(new GetStatusRequest())
   .then((response) => console.log(response));
 ```
-```shell Request (gRPCurl)
-# gRPCurl
+:::
+
+:::{tab-item} Shell (gRPCurl)
+```shell
 # Run in the platform repository's `packages/dapi-grpc/` directory
 grpcurl -proto protos/core/v0/core.proto \
   seed-1.testnet.networks.dash.org:1443 \
   org.dash.platform.dapi.v0.Core/getStatus
 ```
-
+:::
 ::::
 
 > 📘 
 > 
 > **Note:** The gRPCurl response `bestBlockHash`, `chainWork`, and `proTxHash` data is Base64 encoded.
 
-::::{tab-set-code}
-
-```json JSON
-// Response (JavaScript)
+::::{tab-set}
+:::{tab-item} Response (JavaScript)
+```json
+// 
 {
   "version":{
     "protocol":70227,
@@ -161,8 +165,10 @@ grpcurl -proto protos/core/v0/core.proto \
   }
 }
 ```
-```json Response (gRPCurl)
-// Response (gRPCurl)
+:::
+
+:::{tab-item} Response (gRPCurl)
+```json
 {
   "version": {
     "protocol": 70227,
@@ -200,7 +206,7 @@ grpcurl -proto protos/core/v0/core.proto \
   }
 }
 ```
-
+:::
 ::::
 
 ### getBlock
@@ -216,10 +222,9 @@ grpcurl -proto protos/core/v0/core.proto \
 
 #### Example Request and Response
 
-::::{tab-set-code}
-
-```javascript JavaScript (dapi-client)
-// JavaScript (dapi-client)
+::::{tab-set}
+:::{tab-item} JavaScript (dapi-client)
+```javascript
 const DAPIClient = require('@dashevo/dapi-client');
 
 const client = new DAPIClient({
@@ -232,8 +237,10 @@ const client = new DAPIClient({
 client.core.getBlockByHeight(1)
   .then((response) => console.log(response.toString('hex')));
 ```
-```javascript JavaScript (dapi-grpc)
-// JavaScript (dapi-grpc)
+:::
+
+:::{tab-item} JavaScript (dapi-grpc)
+```javascript
 const {
   v0: {
     CorePromiseClient,
@@ -245,8 +252,10 @@ const corePromiseClient = new CorePromiseClient('https://seed-1.testnet.networks
 corePromiseClient.client.getBlock({ height: 1 })
   .then((response) => console.log(response.block.toString('hex')));
 ```
-```javascript JavaScript (dapi-grpc)
-// JavaScript (dapi-grpc)
+:::
+
+:::{tab-item} JavaScript (dapi-grpc)
+```javascript
 const {
   v0: {
     CorePromiseClient,
@@ -261,8 +270,10 @@ corePromiseClient.client.getBlock({
   console.log(response.block.toString('hex'));
 });
 ```
-```shell Request (gRPCurl)
-# gRPCurl
+:::
+
+:::{tab-item} Shell (gRPCurl)
+```shell
 grpcurl -proto protos/core/v0/core.proto \
   -d '{
     "height":1
@@ -270,26 +281,27 @@ grpcurl -proto protos/core/v0/core.proto \
   seed-1.testnet.networks.dash.org:1443 \
   org.dash.platform.dapi.v0.Core/getBlock
 ```
-
+:::
 ::::
 
 > 📘 Block Encoding
 > 
 > **Note:** The gRPCurl response block data is Base64 encoded
 
-::::{tab-set-code}
-
-```shell Response (JavaScript)
-# Response (JavaScript)
+::::{tab-set}
+:::{tab-item} Response (JavaScript)
+```shell
 020000002cbcf83b62913d56f605c0e581a48872839428c92e5eb76cd7ad94bcaf0b00007f11dcce14075520e8f74cc4ddf092b4e26ebd23b8d8665a1ae5bfc41b58fdb4c3a95e53ffff0f1ef37a00000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0a510101062f503253482fffffffff0100743ba40b0000002321020131f38ae3eb0714531dbfc3f45491b4131d1211e3777177636388bb5a74c3e4ac00000000
 ```
-```json Response (gRPCurl)
-// Response (gRPCurl)
+:::
+
+:::{tab-item} Response (gRPCurl)
+```json
 {
   "block": "AgAAACy8+DtikT1W9gXA5YGkiHKDlCjJLl63bNetlLyvCwAAfxHczhQHVSDo90zE3fCStOJuvSO42GZaGuW/xBtY/bTDqV5T//8PHvN6AAABAQAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP////8KUQEBBi9QMlNIL/////8BAHQ7pAsAAAAjIQIBMfOK4+sHFFMdv8P0VJG0Ex0SEeN3cXdjY4i7WnTD5KwAAAAA"
 }
 ```
-
+:::
 ::::
 
 ### getTransaction
@@ -303,10 +315,9 @@ grpcurl -proto protos/core/v0/core.proto \
 
 #### Example Request and Response
 
-::::{tab-set-code}
-
-```javascript JavaScript (dapi-client)
-// JavaScript (dapi-client)
+::::{tab-set}
+:::{tab-item} JavaScript (dapi-client)
+```javascript
 const DAPIClient = require('@dashevo/dapi-client');
 
 const client = new DAPIClient({
@@ -320,8 +331,10 @@ const txid = '4004d3f9f1b688f2babb1f98ea48e1472be51e29712f942fc379c6e996cdd308';
 client.core.getTransaction(txid)
   .then((response) => console.dir(response, { length: 0 }));
 ```
-```javascript JavaScript (dapi-grpc)
-// JavaScript (dapi-grpc)
+:::
+
+:::{tab-item} JavaScript (dapi-grpc)
+```javascript
 const {
   v0: {
     CorePromiseClient,
@@ -335,8 +348,10 @@ const txid = '4004d3f9f1b688f2babb1f98ea48e1472be51e29712f942fc379c6e996cdd308';
 corePromiseClient.client.getTransaction({ id: txid })
   .then((response) => console.dir(response, { length: 0 }));
 ```
-```shell Request (gRPCurl)
-# gRPCurl
+:::
+
+:::{tab-item} Shell (gRPCurl)
+```shell
 grpcurl -proto protos/core/v0/core.proto \
   -d '{
     "id":"4004d3f9f1b688f2babb1f98ea48e1472be51e29712f942fc379c6e996cdd308"
@@ -344,17 +359,16 @@ grpcurl -proto protos/core/v0/core.proto \
   seed-1.testnet.networks.dash.org:1443 \
   org.dash.platform.dapi.v0.Core/getTransaction
 ```
-
+:::
 ::::
 
 > 📘 Transaction Encoding
 > 
 > **Note:** The gRPCurl response `transaction` and `blockHash` data are Base64 encoded
 
-::::{tab-set-code}
-
-```text Response (JavaScript)
-# Response (JavaScript)
+::::{tab-set}
+:::{tab-item} Response (JavaScript)
+```text
 GetTransactionResponse {
   transaction: Buffer(196) [Uint8Array] [
       3,   0,   5,   0,   1,   0,   0,   0,   0,   0,   0,  0,
@@ -380,8 +394,10 @@ GetTransactionResponse {
   chainLocked: true
 }
 ```
-```json Response (gRPCurl)
-// Response (gRPCurl)
+:::
+
+:::{tab-item} Response (gRPCurl)
+```json
 {
   "transaction": "AwAFAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP////8GA8JaBgEJ/////wLu/M8xAAAAABl2qRR+sl3Fr0cta/Gah3qW8KcHwsYbdoisZfu3SgAAAAAZdqkUHsXGbpeJxlWuBo01CItAczRf4LCIrAAAAABGAgDCWgYA3zSmucmdu7+CaY+6n4aGHySJHhbAxeiB3gNMGSIgYA1c6q3De0wxbi7HpAf4g4BgSUqhmkAxVflcQyddo+2zGA==",
   "blockHash": "AAACCYXH9VO/eL/LbaYJc8GY+QsH9X4fN0EKls2Wg9U=",
@@ -390,7 +406,7 @@ GetTransactionResponse {
   "isChainLocked": true
 }
 ```
-
+:::
 ::::
 
 ### subscribeToBlockHeadersWithChainLocks
@@ -409,12 +425,11 @@ This endpoint helps support simplified payment verification ([SPV](https://docs.
 | ----------                |         |          |                                                                                                   |
 | `count`                   | Integer | No       | Number of blocks to sync. If set to 0 syncing is continuously sends new data as well (default: 0) |
 
-** Example Request and Response **
+**Example Request and Response**
 
-::::{tab-set-code}
-
+::::{tab-set}
+:::{tab-item} Shell (gRPCurl)
 ```shell
-# gRPCurl
 grpcurl -proto protos/core/v0/core.proto \
   -d '{
   "from_block_height": 1,
@@ -423,17 +438,16 @@ grpcurl -proto protos/core/v0/core.proto \
   seed-1.testnet.networks.dash.org:1443 \
   org.dash.platform.dapi.v0.Core/subscribeToBlockHeadersWithChainLocks
 ```
-
+:::
 ::::
 
 > 📘 
 > 
 > **Note:** The gRPCurl response `chainlock` and `headers` data is Base64 encoded
 
-::::{tab-set-code}
-
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
 ```json
-// Response (gRPCurl)
 {
   "chainLock": "FZANAAJkZxaMU6888G2zlRNCD6EemlC7+OXEiGtLZJ21AAAAo7qvfeETyNxWVog47Yiyx9j9FSUCVkUWBrn0ZAfIbeU75kiccv4ilNmj1Peavv1oD+Ti9dqJYy9K8/MuDt7rYnVfmPWIUj03QYWKzQKr/PaMkavTaa+PCOrqQYxcLX/s"
 }
@@ -445,7 +459,7 @@ grpcurl -proto protos/core/v0/core.proto \
   }
 }
 ```
-
+:::
 ::::
 
 ### subscribeToTransactionsWithProofs
@@ -467,12 +481,11 @@ grpcurl -proto protos/core/v0/core.proto \
 | `count`                      | Integer | No       | Number of blocks to sync. If set to 0 syncing is continuously sends new data as well (default: 0)        |
 | `send_transaction_hashes` \* | Boolean | No       |                                                                                                          |
 
-** Example Request and Response **
+**Example Request and Response**
 
-::::{tab-set-code}
-
-```shell Request (gRPCurl)
-# gRPCurl
+::::{tab-set}
+:::{tab-item} Request (gRPCurl)
+```shell
 grpcurl -proto protos/core/v0/core.proto \
   -d '{
   "from_block_height": 1,
@@ -487,17 +500,16 @@ grpcurl -proto protos/core/v0/core.proto \
   seed-1.testnet.networks.dash.org:1443 \
   org.dash.platform.dapi.v0.Core/subscribeToTransactionsWithProofs
 ```
-
+:::
 ::::
 
 > 📘 
 > 
 > **Note:** The gRPCurl response `transactions` and `rawMerkleBlock` data is Base64 encoded
 
-::::{tab-set-code}
-
-```json Response
-// Response (gRPCurl)
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
 {
   "rawTransactions": {
     "transactions": [
@@ -509,7 +521,7 @@ grpcurl -proto protos/core/v0/core.proto \
   "rawMerkleBlock": "AgAAACy8+DtikT1W9gXA5YGkiHKDlCjJLl63bNetlLyvCwAAfxHczhQHVSDo90zE3fCStOJuvSO42GZaGuW/xBtY/bTDqV5T//8PHvN6AAABAAAAAX8R3M4UB1Ug6PdMxN3wkrTibr0juNhmWhrlv8QbWP20AQE="
 }
 ```
-
+:::
 ::::
 
 ```{eval-rst}
