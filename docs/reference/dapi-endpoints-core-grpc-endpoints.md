@@ -19,6 +19,7 @@ Please refer to the [gRPC Overview](../reference/dapi-endpoints-grpc-overview.md
 
 ::::{tab-set}
 :::{tab-item} JavaScript (dapi-client)
+:sync: js-dapi-client
 ```javascript
 const DAPIClient = require('@dashevo/dapi-client');
 const { Transaction } = require('@dashevo/dashcore-lib');
@@ -39,6 +40,7 @@ client.core.broadcastTransaction(tx.toBuffer())
 :::
 
 :::{tab-item} JavaScript (dapi-grpc)
+:sync: js-dapi-gprc
 ```javascript
 const {
   v0: {
@@ -60,6 +62,7 @@ corePromiseClient.client.broadcastTransaction({ transaction: tx.toBuffer() })
 
 ::::{tab-set}
 :::{tab-item} Response (JavaScript)
+:sync: js-dapi-client
 ```json
 {
   "transactionId": "552eaf24a60014edcbbb253dbc4dd68766532cab3854b44face051cedcfd578f"
@@ -93,6 +96,7 @@ client.core.getStatus()
 :::
 
 :::{tab-item} JavaScript (dapi-grpc)
+:sync: js-dapi-gprc
 ```javascript
 const {
   v0: {
@@ -109,6 +113,7 @@ corePromiseClient.client.getStatus(new GetStatusRequest())
 :::
 
 :::{tab-item} Shell (gRPCurl)
+:sync: grpcurl
 ```shell
 # Run in the platform repository's `packages/dapi-grpc/` directory
 grpcurl -proto protos/core/v0/core.proto \
@@ -124,6 +129,7 @@ grpcurl -proto protos/core/v0/core.proto \
 
 ::::{tab-set}
 :::{tab-item} Response (JavaScript)
+:sync: js-dapi-client
 ```json
 // 
 {
@@ -168,6 +174,7 @@ grpcurl -proto protos/core/v0/core.proto \
 :::
 
 :::{tab-item} Response (gRPCurl)
+:sync: grpcurl
 ```json
 {
   "version": {
@@ -224,6 +231,7 @@ grpcurl -proto protos/core/v0/core.proto \
 
 ::::{tab-set}
 :::{tab-item} JavaScript (dapi-client)
+:sync: js-dapi-client
 ```javascript
 const DAPIClient = require('@dashevo/dapi-client');
 
@@ -240,6 +248,7 @@ client.core.getBlockByHeight(1)
 :::
 
 :::{tab-item} JavaScript (dapi-grpc)
+:sync: js-dapi-gprc
 ```javascript
 const {
   v0: {
@@ -273,6 +282,7 @@ corePromiseClient.client.getBlock({
 :::
 
 :::{tab-item} Shell (gRPCurl)
+:sync: grpcurl
 ```shell
 grpcurl -proto protos/core/v0/core.proto \
   -d '{
@@ -290,12 +300,14 @@ grpcurl -proto protos/core/v0/core.proto \
 
 ::::{tab-set}
 :::{tab-item} Response (JavaScript)
+:sync: js-dapi-client
 ```shell
 020000002cbcf83b62913d56f605c0e581a48872839428c92e5eb76cd7ad94bcaf0b00007f11dcce14075520e8f74cc4ddf092b4e26ebd23b8d8665a1ae5bfc41b58fdb4c3a95e53ffff0f1ef37a00000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0a510101062f503253482fffffffff0100743ba40b0000002321020131f38ae3eb0714531dbfc3f45491b4131d1211e3777177636388bb5a74c3e4ac00000000
 ```
 :::
 
 :::{tab-item} Response (gRPCurl)
+:sync: grpcurl
 ```json
 {
   "block": "AgAAACy8+DtikT1W9gXA5YGkiHKDlCjJLl63bNetlLyvCwAAfxHczhQHVSDo90zE3fCStOJuvSO42GZaGuW/xBtY/bTDqV5T//8PHvN6AAABAQAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP////8KUQEBBi9QMlNIL/////8BAHQ7pAsAAAAjIQIBMfOK4+sHFFMdv8P0VJG0Ex0SEeN3cXdjY4i7WnTD5KwAAAAA"
@@ -317,6 +329,7 @@ grpcurl -proto protos/core/v0/core.proto \
 
 ::::{tab-set}
 :::{tab-item} JavaScript (dapi-client)
+:sync: js-dapi-client
 ```javascript
 const DAPIClient = require('@dashevo/dapi-client');
 
@@ -334,6 +347,7 @@ client.core.getTransaction(txid)
 :::
 
 :::{tab-item} JavaScript (dapi-grpc)
+:sync: js-dapi-gprc
 ```javascript
 const {
   v0: {
@@ -351,6 +365,7 @@ corePromiseClient.client.getTransaction({ id: txid })
 :::
 
 :::{tab-item} Shell (gRPCurl)
+:sync: grpcurl
 ```shell
 grpcurl -proto protos/core/v0/core.proto \
   -d '{
@@ -368,6 +383,7 @@ grpcurl -proto protos/core/v0/core.proto \
 
 ::::{tab-set}
 :::{tab-item} Response (JavaScript)
+:sync: js-dapi-client
 ```text
 GetTransactionResponse {
   transaction: Buffer(196) [Uint8Array] [
@@ -397,6 +413,7 @@ GetTransactionResponse {
 :::
 
 :::{tab-item} Response (gRPCurl)
+:sync: grpcurl
 ```json
 {
   "transaction": "AwAFAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP////8GA8JaBgEJ/////wLu/M8xAAAAABl2qRR+sl3Fr0cta/Gah3qW8KcHwsYbdoisZfu3SgAAAAAZdqkUHsXGbpeJxlWuBo01CItAczRf4LCIrAAAAABGAgDCWgYA3zSmucmdu7+CaY+6n4aGHySJHhbAxeiB3gNMGSIgYA1c6q3De0wxbi7HpAf4g4BgSUqhmkAxVflcQyddo+2zGA==",
@@ -429,6 +446,7 @@ This endpoint helps support simplified payment verification ([SPV](https://docs.
 
 ::::{tab-set}
 :::{tab-item} Shell (gRPCurl)
+:sync: grpcurl
 ```shell
 grpcurl -proto protos/core/v0/core.proto \
   -d '{
@@ -447,6 +465,7 @@ grpcurl -proto protos/core/v0/core.proto \
 
 ::::{tab-set}
 :::{tab-item} Response (gRPCurl)
+:sync: grpcurl
 ```json
 {
   "chainLock": "FZANAAJkZxaMU6888G2zlRNCD6EemlC7+OXEiGtLZJ21AAAAo7qvfeETyNxWVog47Yiyx9j9FSUCVkUWBrn0ZAfIbeU75kiccv4ilNmj1Peavv1oD+Ti9dqJYy9K8/MuDt7rYnVfmPWIUj03QYWKzQKr/PaMkavTaa+PCOrqQYxcLX/s"
@@ -509,6 +528,7 @@ grpcurl -proto protos/core/v0/core.proto \
 
 ::::{tab-set}
 :::{tab-item} Response (gRPCurl)
+:sync: grpcurl
 ```json
 {
   "rawTransactions": {

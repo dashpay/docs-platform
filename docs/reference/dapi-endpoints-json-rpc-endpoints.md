@@ -27,6 +27,7 @@ Additional information may be found in the [JSON-RPC 2.0 specification](https://
 
 ::::{tab-set}
 :::{tab-item} Curl
+:sync: curl
 ```shell
 curl -k --request POST \
   --url https://seed-1.testnet.networks.dash.org:1443/ \
@@ -40,6 +41,7 @@ curl -k --request POST \
 ```
 :::
 :::{tab-item} JavaScript
+:sync: javascript
 ```javascript
 var request = require("request");
 
@@ -77,6 +79,7 @@ xhr.send(data);
 ```
 :::
 :::{tab-item} Python
+:sync: python
 ```python
 import requests
 import json
@@ -97,6 +100,7 @@ print(response.text)
 ```
 :::
 :::{tab-item} Ruby
+:sync: ruby
 ```ruby
 require 'uri'
 require 'net/http'
@@ -141,6 +145,7 @@ puts response.read_body
 
 ::::{tab-set}
 :::{tab-item} Curl
+:sync: curl
 ```shell
 curl -k --request POST \
   --url https://seed-1.testnet.networks.dash.org:1443/ \
@@ -156,6 +161,7 @@ curl -k --request POST \
 ```
 :::
 :::{tab-item} Python
+:sync: python
 ```python
 import requests
 import json
@@ -178,6 +184,7 @@ print(response.text)
 ```
 :::
 :::{tab-item} Ruby
+:sync: ruby
 ```ruby
 require 'uri'
 require 'net/http'
@@ -225,6 +232,7 @@ puts response.read_body
 
 ::::{tab-set}
 :::{tab-item} Curl
+:sync: curl
 ```shell
 curl -k --request POST \
   --url https://seed-1.testnet.networks.dash.org:1443/ \
@@ -241,6 +249,7 @@ curl -k --request POST \
 ```
 :::
 :::{tab-item} Python
+:sync: python
 ```python
 import requests
 import json
@@ -264,6 +273,7 @@ print(response.text)
 ```
 :::
 :::{tab-item} Ruby
+:sync: ruby
 ```ruby
 require 'uri'
 require 'net/http'
