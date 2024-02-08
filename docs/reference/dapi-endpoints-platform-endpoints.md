@@ -71,10 +71,9 @@ Broadcasts a [state transition](../explanations/platform-protocol-state-transiti
 
 **Example Request and Response**
 
-::::{tab-set-code}
-
-```javascript JavaScript (dapi-client)
-// JavaScript (dapi-client)
+::::{tab-set}
+:::{tab-item} JavaScript (dapi-client)
+```javascript
 const DAPIClient = require('@dashevo/dapi-client');
 const {
   default: loadDpp,
@@ -92,9 +91,10 @@ client.platform.getIdentity(identityId).then((response) => {
   console.log(identity.toJSON());
 });
 ```
+:::
 
-```javascript JavaScript (dapi-grpc)
-// JavaScript (dapi-grpc)
+:::{tab-item} JavaScript (dapi-grpc)
+```javascript
 const {
   v0: { PlatformPromiseClient, GetIdentityRequest },
 } = require('@dashevo/dapi-grpc');
@@ -124,9 +124,10 @@ platformPromiseClient
   })
   .catch((e) => console.error(e));
 ```
+:::
 
-```shell gRPCurl
-# gRPCurl
+:::{tab-item} gRPCurl
+```shell
 # `id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
@@ -137,13 +138,12 @@ grpcurl -proto protos/platform/v0/platform.proto \
   seed-1.testnet.networks.dash.org:1443 \
   org.dash.platform.dapi.v0.Platform/getIdentity
 ```
-
+:::
 ::::
 
-::::{tab-set-code}
-
-```json Response (JavaScript)
-// Response (JavaScript)
+::::{tab-set}
+:::{tab-item} Response (JavaScript)
+```json
 {
   "$version":"0",
   "id":"4EfA9Jrvv3nnCFdSf7fad59851iiTRZ6Wcu6YVJ4iSeF",
@@ -175,9 +175,10 @@ grpcurl -proto protos/platform/v0/platform.proto \
   "revision":0
 }
 ```
+:::
 
-```json Response (gRPCurl)
-// Response (gRPCurl)
+:::{tab-item} Response (gRPCurl)
+```json
 {
   "v0": {
     "identity": "ADASwZuY7AAzrds2zWS39RBnDyo1GkMEtfaZQUQobv2sAgAAAAAAAAAAIQLItHR7UoysX933psxjcC7gTtfRMykE4IUQND6gDc5UagABAAEAAgAAACECAe4o+E9UhTkFZ+k5wrWGAQtjpp7JLKtTXclqjHGRNgIA/QAAAAQrpPz8AA==",
@@ -208,10 +209,9 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 **Example Request and Response**
 
-::::{tab-set-code}
-
-```shell gRPCurl
-# gRPCurl
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
 # `id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
@@ -222,13 +222,12 @@ grpcurl -proto protos/platform/v0/platform.proto \
   seed-1.testnet.networks.dash.org:1443 \
   org.dash.platform.dapi.v0.Platform/getIdentityBalance
 ```
-
+:::
 ::::
 
-::::{tab-set-code}
-
-```json Response (gRPCurl)
-// Response (gRPCurl)
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
 {
   "v0": {
     "balance": "17912102140",
@@ -243,7 +242,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
   }
 }
 ```
-
+:::
 ::::
 
 ### getIdentityBalanceAndRevision
@@ -259,10 +258,9 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 **Example Request and Response**
 
-::::{tab-set-code}
-
-```shell gRPCurl
-# gRPCurl
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
 # `id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
@@ -273,13 +271,12 @@ grpcurl -proto protos/platform/v0/platform.proto \
   seed-1.testnet.networks.dash.org:1443 \
   org.dash.platform.dapi.v0.Platform/getIdentityBalanceAndRevision
 ```
-
+:::
 ::::
 
-::::{tab-set-code}
-
-```json Response (gRPCurl)
-// Response (gRPCurl)
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
 {
   "v0": {
     "balance_and_revision": {
@@ -297,7 +294,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
   }
 }
 ```
-
+:::
 ::::
 
 ### getIdentityByPublicKeyHash
@@ -313,10 +310,9 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 **Example Request and Response**
 
-::::{tab-set-code}
-
-```shell gRPCurl
-# gRPCurl
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
 # `id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
@@ -327,13 +323,12 @@ grpcurl -proto protos/platform/v0/platform.proto \
   seed-1.testnet.networks.dash.org:1443 \
   org.dash.platform.dapi.v0.Platform/getIdentityByPublicKeyHash
 ```
-
+:::
 ::::
 
-::::{tab-set-code}
-
-```json Response (gRPCurl)
-// Response (gRPCurl)
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
 {
   "v0": {
     "identity": "ADASwZuY7AAzrds2zWS39RBnDyo1GkMEtfaZQUQobv2sAgAAAAAAAAAAIQLItHR7UoysX933psxjcC7gTtfRMykE4IUQND6gDc5UagABAAEAAgAAACECAe4o+E9UhTkFZ+k5wrWGAQtjpp7JLKtTXclqjHGRNgIA/QAAAAQ8fEg8AA==",
@@ -348,7 +343,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
   }
 }
 ```
-
+:::
 ::::
 
 ### getIdentityKeys
@@ -405,10 +400,9 @@ To search for identity keys, use the `search_keys` request type. The options for
 
 #### Example Request and Response
 
-::::{tab-set-code}
-
-```shell gRPCurl
-# gRPCurl
+::::{tab-set}
+:::{tab-item} gRPCurl (All keys)
+```shell
 # Request all identity keys
 # `identityId` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
@@ -423,9 +417,9 @@ grpcurl -proto protos/platform/v0/platform.proto \
   seed-1.testnet.networks.dash.org:1443 \
   org.dash.platform.dapi.v0.Platform/getIdentityKeys
 ```
-
-```shell gRPCurl
-# gRPCurl
+:::
+:::{tab-item} gRPCurl (Specific keys)
+```shell
 # Request specific keys
 # `identityId` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
@@ -444,9 +438,10 @@ grpcurl -proto protos/platform/v0/platform.proto \
   seed-1.testnet.networks.dash.org:1443 \
   org.dash.platform.dapi.v0.Platform/getIdentityKeys
 ```
+:::
 
-```shell gRPCurl
-# gRPCurl
+:::{tab-item} gRPCurl (Search keys)
+```shell
 # Search keys
 # `identityId` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
@@ -469,13 +464,12 @@ grpcurl -proto protos/platform/v0/platform.proto \
   seed-1.testnet.networks.dash.org:1443 \
   org.dash.platform.dapi.v0.Platform/getIdentityKeys
 ```
-
+:::
 ::::
 
-::::{tab-set-code}
-
-```json Response (gRPCurl)
-// Response (gRPCurl)
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
 // All keys
 {
   "v0": {
@@ -496,7 +490,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
   }
 }
 ```
-
+:::
 ::::
 
 ### getIdentities
@@ -512,10 +506,9 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 **Example Request and Response**
 
-::::{tab-set-code}
-
-```shell gRPCurl
-# gRPCurl
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
 # `id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
@@ -528,13 +521,12 @@ grpcurl -proto protos/platform/v0/platform.proto \
   seed-1.testnet.networks.dash.org:1443 \
   org.dash.platform.dapi.v0.Platform/getIdentities
 ```
-
+:::
 ::::
 
-::::{tab-set-code}
-
-```json Response (gRPCurl)
-// Response (gRPCurl)
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
 {
   "v0": {
     "identities": {
@@ -559,7 +551,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 }
 
 ```
-
+:::
 ::::
 
 ### getIdentitiesByPublicKeyHashes
@@ -598,10 +590,9 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 **Example Request and Response**
 
-::::{tab-set-code}
-
-```javascript JavaScript (dapi-client)
-// JavaScript (dapi-client)
+::::{tab-set}
+:::{tab-item} JavaScript (dapi-client)
+```javascript
 const DAPIClient = require('@dashevo/dapi-client');
 const {
   default: loadDpp, DashPlatformProtocol,
@@ -620,9 +611,10 @@ client.platform.getIdentitiesByPublicKeyHashes(publicKeysBuffer)
     console.log(retrievedIdentity.toJSON());
   });
 ```
+:::
 
-```javascript JavaScript (dapi-grpc)
-// JavaScript (dapi-grpc)
+:::{tab-item} JavaScript (dapi-grpc)
+```javascript
 const {
   v0: { PlatformPromiseClient, GetIdentitiesByPublicKeyHashesRequest },
 } = require('@dashevo/dapi-grpc');
@@ -649,9 +641,10 @@ platformPromiseClient
   })
   .catch((e) => console.error(e));
 ```
+:::
 
-```shell gRPCurl
-# gRPCurl
+:::{tab-item} gRPCurl
+```shell
 # `public_key_hashes` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
@@ -662,13 +655,12 @@ grpcurl -proto protos/platform/v0/platform.proto \
   seed-1.testnet.networks.dash.org:1443 \
   org.dash.platform.dapi.v0.Platform/getIdentitiesByPublicKeyHashes
 ```
-
+:::
 ::::
 
-::::{tab-set-code}
-
-```json Response (JavaScript)
-// Response (JavaScript)
+::::{tab-set}
+:::{tab-item} Response (JavaScript)
+```json
 {
   "$version":"0",
   "id":"4EfA9Jrvv3nnCFdSf7fad59851iiTRZ6Wcu6YVJ4iSeF",
@@ -700,9 +692,10 @@ grpcurl -proto protos/platform/v0/platform.proto \
   "revision":0
 }
 ```
+:::
 
-```json Response (gRPCurl)
-// Response (gRPCurl)
+:::{tab-item} Response (gRPCurl)
+```json
 {
   "v0": {
     "identities": {
@@ -724,7 +717,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
   }
 }
 ```
-
+:::
 ::::
 
 ### getDataContract
@@ -747,10 +740,9 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 **Example Request and Response**
 
-::::{tab-set-code}
-
-```javascript JavaScript (dapi-client)
-// JavaScript (dapi-client)
+::::{tab-set}
+:::{tab-item} JavaScript (dapi-client)
+```javascript
 const DAPIClient = require('@dashevo/dapi-client');
 const {
   default: loadDpp,
@@ -769,9 +761,10 @@ client.platform.getDataContract(contractId).then((response) => {
   });
 });
 ```
+:::
 
-```javascript JavaScript (dapi-grpc)
-// JavaScript (dapi-grpc)
+:::{tab-item} JavaScript (dapi-grpc)
+```javascript
 const {
   v0: { PlatformPromiseClient, GetDataContractRequest },
 } = require('@dashevo/dapi-grpc');
@@ -795,9 +788,10 @@ platformPromiseClient
   })
   .catch((e) => console.error(e));
 ```
+:::
 
-```shell gRPCurl
-# gRPCurl
+:::{tab-item} gRPCurl
+```shell
 # `id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
@@ -808,13 +802,12 @@ grpcurl -proto protos/platform/v0/platform.proto \
   seed-1.testnet.networks.dash.org:1443 \
   org.dash.platform.dapi.v0.Platform/getDataContract
 ```
-
+:::
 ::::
 
-::::{tab-set-code}
-
-```json Response (JavaScript)
-// Response (JavaScript)
+::::{tab-set}
+:::{tab-item} Response (JavaScript)
+```json
 {
   "$format_version":"0",
   "id":"GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec",
@@ -998,9 +991,10 @@ grpcurl -proto protos/platform/v0/platform.proto \
   }
 }
 ```
+:::
 
-```json Response (gRPCurl)
-// Response (gRPCurl)
+:::{tab-item} Response (gRPCurl)
+```json
 {
   "v0": {
     "dataContract": "AOZoxlmvZq7h5ywYbd57W34KHXEqCcQNVyH2Ir9TxTFVAAAAAAABAAABMBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/awAAgZkb21haW4WBhIEdHlwZRIGb2JqZWN0EgdpbmRpY2VzFQMWAxIEbmFtZRIScGFyZW50TmFtZUFuZExhYmVsEgpwcm9wZXJ0aWVzFQIWARIabm9ybWFsaXplZFBhcmVudERvbWFpbk5hbWUSA2FzYxYBEg9ub3JtYWxpemVkTGFiZWwSA2FzYxIGdW5pcXVlEwEWAxIEbmFtZRIOZGFzaElkZW50aXR5SWQSCnByb3BlcnRpZXMVARYBEhxyZWNvcmRzLmRhc2hVbmlxdWVJZGVudGl0eUlkEgNhc2MSBnVuaXF1ZRMBFgISBG5hbWUSCWRhc2hBbGlhcxIKcHJvcGVydGllcxUBFgESG3JlY29yZHMuZGFzaEFsaWFzSWRlbnRpdHlJZBIDYXNjEgpwcm9wZXJ0aWVzFgcSBWxhYmVsFgYSBHR5cGUSBnN0cmluZxIHcGF0dGVybhIqXlthLXpBLVowLTldW2EtekEtWjAtOS1dezAsNjF9W2EtekEtWjAtOV0kEgltaW5MZW5ndGgCAxIJbWF4TGVuZ3RoAj8SCHBvc2l0aW9uAgASC2Rlc2NyaXB0aW9uEhlEb21haW4gbGFiZWwuIGUuZy4gJ0JvYicuEg9ub3JtYWxpemVkTGFiZWwWBhIEdHlwZRIGc3RyaW5nEgdwYXR0ZXJuEjxeW2EtaGota20tbnAtejAtOV1bYS1oai1rbS1ucC16MC05LV17MCw2MX1bYS1oai1rbS1ucC16MC05XSQSCW1heExlbmd0aAI/Eghwb3NpdGlvbgIBEgtkZXNjcmlwdGlvbhKjRG9tYWluIGxhYmVsIGNvbnZlcnRlZCB0byBsb3dlcmNhc2UgZm9yIGNhc2UtaW5zZW5zaXRpdmUgdW5pcXVlbmVzcyB2YWxpZGF0aW9uLiAibyIsICJpIiBhbmQgImwiIHJlcGxhY2VkIHdpdGggIjAiIGFuZCAiMSIgdG8gbWl0aWdhdGUgaG9tb2dyYXBoIGF0dGFjay4gZS5nLiAnYjBiJxIIJGNvbW1lbnQSXE11c3QgYmUgZXF1YWwgdG8gdGhlIGxhYmVsIGluIGxvd2VyY2FzZS4gIm8iLCAiaSIgYW5kICJsIiBtdXN0IGJlIHJlcGxhY2VkIHdpdGggIjAiIGFuZCAiMSIuEhBwYXJlbnREb21haW5OYW1lFgYSBHR5cGUSBnN0cmluZxIHcGF0dGVybhItXiR8XlthLXpBLVowLTldW2EtekEtWjAtOS1dezAsNjF9W2EtekEtWjAtOV0kEgltaW5MZW5ndGgCABIJbWF4TGVuZ3RoAj8SCHBvc2l0aW9uAgISC2Rlc2NyaXB0aW9uEidBIGZ1bGwgcGFyZW50IGRvbWFpbiBuYW1lLiBlLmcuICdkYXNoJy4SGm5vcm1hbGl6ZWRQYXJlbnREb21haW5OYW1lFgcSBHR5cGUSBnN0cmluZxIHcGF0dGVybhJBXiR8XlthLWhqLWttLW5wLXowLTldW2EtaGota20tbnAtejAtOS1cLl17MCw2MX1bYS1oai1rbS1ucC16MC05XSQSCW1pbkxlbmd0aAIAEgltYXhMZW5ndGgCPxIIcG9zaXRpb24CAxILZGVzY3JpcHRpb24SokEgcGFyZW50IGRvbWFpbiBuYW1lIGluIGxvd2VyY2FzZSBmb3IgY2FzZS1pbnNlbnNpdGl2ZSB1bmlxdWVuZXNzIHZhbGlkYXRpb24uICJvIiwgImkiIGFuZCAibCIgcmVwbGFjZWQgd2l0aCAiMCIgYW5kICIxIiB0byBtaXRpZ2F0ZSBob21vZ3JhcGggYXR0YWNrLiBlLmcuICdkYXNoJxIIJGNvbW1lbnQSwE11c3QgZWl0aGVyIGJlIGVxdWFsIHRvIGFuIGV4aXN0aW5nIGRvbWFpbiBvciBlbXB0eSB0byBjcmVhdGUgYSB0b3AgbGV2ZWwgZG9tYWluLiAibyIsICJpIiBhbmQgImwiIG11c3QgYmUgcmVwbGFjZWQgd2l0aCAiMCIgYW5kICIxIi4gT25seSB0aGUgZGF0YSBjb250cmFjdCBvd25lciBjYW4gY3JlYXRlIHRvcCBsZXZlbCBkb21haW5zLhIMcHJlb3JkZXJTYWx0FgYSBHR5cGUSBWFycmF5EglieXRlQXJyYXkTARIIbWluSXRlbXMCIBIIbWF4SXRlbXMCIBIIcG9zaXRpb24CBBILZGVzY3JpcHRpb24SIlNhbHQgdXNlZCBpbiB0aGUgcHJlb3JkZXIgZG9jdW1lbnQSB3JlY29yZHMWBxIEdHlwZRIGb2JqZWN0Egpwcm9wZXJ0aWVzFgISFGRhc2hVbmlxdWVJZGVudGl0eUlkFggSBHR5cGUSBWFycmF5EglieXRlQXJyYXkTARIIbWluSXRlbXMCIBIIbWF4SXRlbXMCIBIIcG9zaXRpb24CABIQY29udGVudE1lZGlhVHlwZRIhYXBwbGljYXRpb24veC5kYXNoLmRwcC5pZGVudGlmaWVyEgtkZXNjcmlwdGlvbhI+SWRlbnRpdHkgSUQgdG8gYmUgdXNlZCB0byBjcmVhdGUgdGhlIHByaW1hcnkgbmFtZSB0aGUgSWRlbnRpdHkSCCRjb21tZW50EiNNdXN0IGJlIGVxdWFsIHRvIHRoZSBkb2N1bWVudCBvd25lchITZGFzaEFsaWFzSWRlbnRpdHlJZBYIEgR0eXBlEgVhcnJheRIJYnl0ZUFycmF5EwESCG1pbkl0ZW1zAiASCG1heEl0ZW1zAiASCHBvc2l0aW9uAgESEGNvbnRlbnRNZWRpYVR5cGUSIWFwcGxpY2F0aW9uL3guZGFzaC5kcHAuaWRlbnRpZmllchILZGVzY3JpcHRpb24SPUlkZW50aXR5IElEIHRvIGJlIHVzZWQgdG8gY3JlYXRlIGFsaWFzIG5hbWVzIGZvciB0aGUgSWRlbnRpdHkSCCRjb21tZW50EiNNdXN0IGJlIGVxdWFsIHRvIHRoZSBkb2N1bWVudCBvd25lchINbWluUHJvcGVydGllcwIBEg1tYXhQcm9wZXJ0aWVzAgESCHBvc2l0aW9uAgUSFGFkZGl0aW9uYWxQcm9wZXJ0aWVzEwASCCRjb21tZW50EpBDb25zdHJhaW50IHdpdGggbWF4IGFuZCBtaW4gcHJvcGVydGllcyBlbnN1cmUgdGhhdCBvbmx5IG9uZSBpZGVudGl0eSByZWNvcmQgaXMgdXNlZCAtIGVpdGhlciBhIGBkYXNoVW5pcXVlSWRlbnRpdHlJZGAgb3IgYSBgZGFzaEFsaWFzSWRlbnRpdHlJZGASDnN1YmRvbWFpblJ1bGVzFgYSBHR5cGUSBm9iamVjdBIKcHJvcGVydGllcxYBEg9hbGxvd1N1YmRvbWFpbnMWBBIEdHlwZRIHYm9vbGVhbhILZGVzY3JpcHRpb24SW1RoaXMgb3B0aW9uIGRlZmluZXMgd2hvIGNhbiBjcmVhdGUgc3ViZG9tYWluczogdHJ1ZSAtIGFueW9uZTsgZmFsc2UgLSBvbmx5IHRoZSBkb21haW4gb3duZXISCCRjb21tZW50Ek9Pbmx5IHRoZSBkb21haW4gb3duZXIgaXMgYWxsb3dlZCB0byBjcmVhdGUgc3ViZG9tYWlucyBmb3Igbm9uIHRvcC1sZXZlbCBkb21haW5zEghwb3NpdGlvbgIAEghwb3NpdGlvbgIGEgtkZXNjcmlwdGlvbhJCU3ViZG9tYWluIHJ1bGVzIGFsbG93IGRvbWFpbiBvd25lcnMgdG8gZGVmaW5lIHJ1bGVzIGZvciBzdWJkb21haW5zEhRhZGRpdGlvbmFsUHJvcGVydGllcxMAEghyZXF1aXJlZBUBEg9hbGxvd1N1YmRvbWFpbnMSCHJlcXVpcmVkFQYSBWxhYmVsEg9ub3JtYWxpemVkTGFiZWwSGm5vcm1hbGl6ZWRQYXJlbnREb21haW5OYW1lEgxwcmVvcmRlclNhbHQSB3JlY29yZHMSDnN1YmRvbWFpblJ1bGVzEhRhZGRpdGlvbmFsUHJvcGVydGllcxMAEggkY29tbWVudBL7ATdJbiBvcmRlciB0byByZWdpc3RlciBhIGRvbWFpbiB5b3UgbmVlZCB0byBjcmVhdGUgYSBwcmVvcmRlci4gVGhlIHByZW9yZGVyIHN0ZXAgaXMgbmVlZGVkIHRvIHByZXZlbnQgbWFuLWluLXRoZS1taWRkbGUgYXR0YWNrcy4gbm9ybWFsaXplZExhYmVsICsgJy4nICsgbm9ybWFsaXplZFBhcmVudERvbWFpbiBtdXN0IG5vdCBiZSBsb25nZXIgdGhhbiAyNTMgY2hhcnMgbGVuZ3RoIGFzIGRlZmluZWQgYnkgUkZDIDEwMzUuIERvbWFpbiBkb2N1bWVudHMgYXJlIGltbXV0YWJsZTogbW9kaWZpY2F0aW9uIGFuZCBkZWxldGlvbiBhcmUgcmVzdHJpY3RlZAhwcmVvcmRlchYGEgR0eXBlEgZvYmplY3QSB2luZGljZXMVARYDEgRuYW1lEgpzYWx0ZWRIYXNoEgpwcm9wZXJ0aWVzFQEWARIQc2FsdGVkRG9tYWluSGFzaBIDYXNjEgZ1bmlxdWUTARIKcHJvcGVydGllcxYBEhBzYWx0ZWREb21haW5IYXNoFgYSBHR5cGUSBWFycmF5EglieXRlQXJyYXkTARIIbWluSXRlbXMCIBIIbWF4SXRlbXMCIBIIcG9zaXRpb24CABILZGVzY3JpcHRpb24SWURvdWJsZSBzaGEtMjU2IG9mIHRoZSBjb25jYXRlbmF0aW9uIG9mIGEgMzIgYnl0ZSByYW5kb20gc2FsdCBhbmQgYSBub3JtYWxpemVkIGRvbWFpbiBuYW1lEghyZXF1aXJlZBUBEhBzYWx0ZWREb21haW5IYXNoEhRhZGRpdGlvbmFsUHJvcGVydGllcxMAEggkY29tbWVudBJKUHJlb3JkZXIgZG9jdW1lbnRzIGFyZSBpbW11dGFibGU6IG1vZGlmaWNhdGlvbiBhbmQgZGVsZXRpb24gYXJlIHJlc3RyaWN0ZWQ=",
@@ -1015,7 +1009,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
   }
 }
 ```
-
+:::
 ::::
 
 ### getDataContracts
@@ -1031,10 +1025,9 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 **Example Request and Response**
 
-::::{tab-set-code}
-
-```shell gRPCurl
-# gRPCurl
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
 # `id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
@@ -1047,13 +1040,12 @@ grpcurl -proto protos/platform/v0/platform.proto \
   seed-1.testnet.networks.dash.org:1443 \
   org.dash.platform.dapi.v0.Platform/getDataContracts
 ```
-
+:::
 ::::
 
-::::{tab-set-code}
-
-```json Response (gRPCurl)
-// Response (gRPCurl)
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
 {
   "v0": {
     "dataContracts": {
@@ -1075,7 +1067,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
   }
 }
 ```
-
+:::
 ::::
 
 ### getDataContractHistory
@@ -1097,10 +1089,9 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 **Example Request and Response**
 
-::::{tab-set-code}
-
-```javascript JavaScript (dapi-client)
-// JavaScript (dapi-client)
+::::{tab-set}
+:::{tab-item} JavaScript (dapi-client)
+```javascript
 const DAPIClient = require('@dashevo/dapi-client');
 const {
   default: loadDpp,
@@ -1122,9 +1113,10 @@ client.platform.getDataContractHistory(contractId, 0, 2, 0).then((response) => {
   }
 });
 ```
+:::
 
-```shell gRPCurl
-# gRPCurl
+:::{tab-item} gRPCurl
+```shell
 # `id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
@@ -1139,13 +1131,12 @@ grpcurl -proto protos/platform/v0/platform.proto \
   seed-1.testnet.networks.dash.org:1443 \
   org.dash.platform.dapi.v0.Platform/getDataContractHistory
 ```
-
+:::
 ::::
 
-::::{tab-set-code}
-
-```json Response (JavaScript)
-// Response (JavaScript)
+::::{tab-set}
+:::{tab-item} Response (JavaScript)
+```json 
 {
   "$format_version":"0",
   "id":"2ciAVGRuzogbR2NNtNfbn6YdW7BkLWntC7jrLNRMZN9n",
@@ -1209,9 +1200,10 @@ grpcurl -proto protos/platform/v0/platform.proto \
   }
 }
 ```
+:::
 
-```json Response (gRPCurl)
-// Response (gRPCurl)
+:::{tab-item} Response (gRPCurl)
+```json
 {
   "v0": {
     "dataContractHistory": {
@@ -1237,7 +1229,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
   }
 }
 ```
-
+:::
 ::::
 
 ### getDocuments
@@ -1275,10 +1267,9 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 **Example Request and Response**
 
-::::{tab-set-code}
-
-```javascript JavaScript (dapi-client)
-// JavaScript (dapi-client)
+::::{tab-set}
+:::{tab-item} JavaScript (dapi-client)
+```javascript
 const DAPIClient = require('@dashevo/dapi-client');
 const {
   default: loadDpp,
@@ -1315,9 +1306,10 @@ client.platform.getDataContract(contractId).then((contractResponse) => {
     });
 });
 ```
+:::
 
-```javascript JavaScript (dapi-grpc)
-// JavaScript (dapi-grpc)
+:::{tab-item} JavaScript (dapi-grpc)
+```javascript
 const {
   v0: { PlatformPromiseClient, GetDataContractRequest, GetDocumentsRequest },
 } = require('@dashevo/dapi-grpc');
@@ -1366,9 +1358,10 @@ platformPromiseClient
   })
   .catch((e) => console.error(e));
 ```
+:::
 
-```shell Request (gRPCurl)
-# gRPCurl
+:::{tab-item} Request (gRPCurl)
+```shell
 # Request documents
 # `id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
@@ -1382,13 +1375,12 @@ grpcurl -proto protos/platform/v0/platform.proto \
   seed-1.testnet.networks.dash.org:1443 \
   org.dash.platform.dapi.v0.Platform/getDocuments
 ```
-
+:::
 ::::
 
-::::{tab-set-code}
-
-```json Response (JavaScript)
-// Response (JavaScript)
+::::{tab-set}
+:::{tab-item} Response (JavaScript)
+```json
 {
   "$id":"Do3YtBPJG72zG4tCbN5VE8djJ6rLpvx7yvtMWEy89HC",
   "$ownerId":"4pk6ZhgDtxn9yN2bbB6kfsYLRmUBH7PKUq275cjyzepT",
@@ -1434,9 +1426,10 @@ grpcurl -proto protos/platform/v0/platform.proto \
   "$type":"domain"
 }
 ```
+:::
 
-```json Response (gRPCurl)
-// Response (gRPCurl)
+:::{tab-item} Response (gRPCurl)
+```json
 {
   "v0":{
     "documents":{
@@ -1455,7 +1448,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
   }
 }
 ```
-
+:::
 ::::
 
 ### getEpochsInfo
@@ -1473,10 +1466,9 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 **Example Request and Response**
 
-::::{tab-set-code}
-
-```shell gRPCurl
-# gRPCurl
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
 # `id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
@@ -1487,13 +1479,12 @@ grpcurl -proto protos/platform/v0/platform.proto \
   seed-1.testnet.networks.dash.org:1443 \
   org.dash.platform.dapi.v0.Platform/getEpochsInfo
 ```
-
+:::
 ::::
 
-::::{tab-set-code}
-
-```json Response (gRPCurl)
-// Response (gRPCurl)
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
 {
   "v0": {
     "epochs": {
@@ -1526,7 +1517,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 }
 
 ```
-
+:::
 ::::
 
 ### getProofs
@@ -1562,10 +1553,9 @@ A combination of one or more of the following are required fields are required:
 
 **Example Request and Response**
 
-::::{tab-set-code}
-
-```shell gRPCurl
-# gRPCurl
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
 # Request proofs for an identity and a data contract
 # `identityId` and `contractId` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
@@ -1588,13 +1578,12 @@ grpcurl -proto protos/platform/v0/platform.proto \
   seed-1.testnet.networks.dash.org:1443 \
   org.dash.platform.dapi.v0.Platform/getProofs
 ```
-
+:::
 ::::
 
-::::{tab-set-code}
-
-```json Response (gRPCurl)
-// Response (gRPCurl)
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
 // GroveDB proof for the requested identity and contract
 {
   "v0": {
@@ -1618,7 +1607,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 }
 
 ```
-
+:::
 ::::
 
 ### getProtocolVersionUpgradeState
@@ -1633,10 +1622,9 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 **Example Request and Response**
 
-::::{tab-set-code}
-
-```shell gRPCurl
-# gRPCurl
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "v0": { }
@@ -1644,13 +1632,12 @@ grpcurl -proto protos/platform/v0/platform.proto \
   seed-1.testnet.networks.dash.org:1443 \
   org.dash.platform.dapi.v0.Platform/getProtocolVersionUpgradeState
 ```
-
+:::
 ::::
 
-::::{tab-set-code}
-
-```json Response (gRPCurl)
-// Response (gRPCurl)
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
 {
   "v0": {
     "versions": {
@@ -1672,7 +1659,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
   }
 }
 ```
-
+:::
 ::::
 
 ### getProtocolVersionUpgradeVoteStatus
@@ -1689,10 +1676,9 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 **Example Request and Response**
 
-::::{tab-set-code}
-
-```shell gRPCurl
-# gRPCurl
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
 # `start_pro_tx_hash` must be represented in base64 if present
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
@@ -1703,13 +1689,12 @@ grpcurl -proto protos/platform/v0/platform.proto \
   seed-1.testnet.networks.dash.org:1443 \
   org.dash.platform.dapi.v0.Platform/getProtocolVersionUpgradeVoteStatus
 ```
-
+:::
 ::::
 
-::::{tab-set-code}
-
-```json Response (gRPCurl)
-// Response (gRPCurl)
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
 {
   "v0": {
     "versions": {
@@ -1735,7 +1720,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
   }
 }
 ```
-
+:::
 ::::
 
 ### waitForStateTransitionResult
@@ -1764,10 +1749,9 @@ grpcurl -proto protos/platform/v0/platform.proto \
   [/block]
 ```
 
-::::{tab-set-code}
-
-```javascript JavaScript (dapi-client)
-// JavaScript (dapi-client)
+::::{tab-set}
+:::{tab-item} JavaScript (dapi-client)
+```javascript
 const DAPIClient = require('@dashevo/dapi-client');
 
 const client = new DAPIClient();
@@ -1780,9 +1764,10 @@ client.platform.waitForStateTransitionResult(hash, { prove: true })
   });
 
 ```
+:::
 
-```shell Request (gRPCurl)
-# gRPCurl
+:::{tab-item} Request (gRPCurl)
+```shell
 # Replace `your_state_transition_hash` with your own before running
 # `your_state_transition_hash` must be represented in base64
 #    Example: wEiwFu9WvAtylrwTph5v0uXQm743N+75C+C9DhmZBkw=
@@ -1796,7 +1781,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
   seed-1.testnet.networks.dash.org:1443 \
   org.dash.platform.dapi.v0.Platform/waitForStateTransitionResult
 ```
-
+:::
 ::::
 
 ```{eval-rst}
