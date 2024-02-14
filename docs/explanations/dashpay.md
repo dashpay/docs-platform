@@ -1,3 +1,7 @@
+```{eval-rst}
+.. _explanations-dashpay:
+```
+
 # DashPay
 
 ## Overview

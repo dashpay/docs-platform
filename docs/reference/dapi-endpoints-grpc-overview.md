@@ -1,3 +1,7 @@
+```{eval-rst}
+.. _reference-dapi-endpoints-grpc-overview:
+```
+
 # gRPC Overview
 
 The gRPC endpoints provide access to information from Dash Platform (layer 2) as well as streaming of events related to blocks and transactions/transitions.

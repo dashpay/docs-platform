@@ -1,3 +1,7 @@
+```{eval-rst}
+.. _explanations-platform-protocol:
+```
+
 # Platform Protocol (DPP)
 
 ## Overview

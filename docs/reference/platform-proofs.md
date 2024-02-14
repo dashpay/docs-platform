@@ -1,3 +1,7 @@
+```{eval-rst}
+.. _reference-platform-proofs:
+```
+
 # Platform Proofs
 
 >❗️ Platform v0.22.0

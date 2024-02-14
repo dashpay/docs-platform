@@ -1,3 +1,7 @@
+```{eval-rst}
+.. _reference-glossary:
+```
+
 # Glossary
 
 ## Application

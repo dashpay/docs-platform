@@ -1,3 +1,7 @@
+```{eval-rst}
+.. _reference-dapi-endpoints-core-jsonrpc:
+```
+
 # JSON-RPC Endpoints
 
 ## Overview

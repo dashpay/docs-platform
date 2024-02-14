@@ -1,3 +1,7 @@
+```{eval-rst}
+.. _reference-data-contracts:
+```
+
 # Data Contracts
 
 ## Overview

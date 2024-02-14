@@ -1,3 +1,7 @@
+```{eval-rst}
+.. _reference-query-syntax:
+```
+
 # Query Syntax
 
 ## Overview

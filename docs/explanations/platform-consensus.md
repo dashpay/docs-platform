@@ -1,3 +1,7 @@
+```{eval-rst}
+.. _explanations-platform-consensus:
+```
+
 # Platform Consensus
 
 Dash Platform is a decentralized network that requires its own consensus algorithm for decision-making and verifying state transitions. This consensus algorithm must fulfill the following three requirements:

@@ -1,3 +1,7 @@
+```{eval-rst}
+.. _explanations-platform-chain:
+```
+
 # Platform Chain
 
 ## Overview

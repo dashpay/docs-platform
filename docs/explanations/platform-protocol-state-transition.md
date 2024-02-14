@@ -1,3 +1,7 @@
+```{eval-rst}
+.. _explanations-state-transition:
+```
+
 # State Transition
 
 ## Overview

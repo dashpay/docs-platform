@@ -1,3 +1,7 @@
+```{eval-rst}
+.. _explanations-dpns:
+```
+
 # Name Service (DPNS)
 
 ## Overview
