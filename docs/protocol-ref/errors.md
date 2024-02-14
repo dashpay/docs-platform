@@ -1,3 +1,7 @@
+```{eval-rst}
+.. _protocol-ref-errors:
+```
+
 # Consensus Errors
 
 ## Platform Error Codes

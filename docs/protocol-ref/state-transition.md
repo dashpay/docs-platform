@@ -1,3 +1,7 @@
+```{eval-rst}
+.. _protocol-ref-state-transition:
+```
+
 # State Transition
 
 ## State Transition Overview

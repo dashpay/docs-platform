@@ -1,3 +1,7 @@
+```{eval-rst}
+.. _protocol-ref-identity:
+```
+
 # Identity
 
 ## Identity Overview

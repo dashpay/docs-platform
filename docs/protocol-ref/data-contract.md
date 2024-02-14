@@ -1,3 +1,7 @@
+```{eval-rst}
+.. _protocol-ref-data-contract:
+```
+
 # Data Contract
 
 ## Data Contract Overview

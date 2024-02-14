@@ -1,3 +1,7 @@
+```{eval-rst}
+.. _protocol-ref-data-trigger:
+```
+
 # Data Trigger
 
 ## Data Trigger Overview

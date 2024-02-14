@@ -1,3 +1,7 @@
+```{eval-rst}
+.. _protocol-ref-document:
+```
+
 # Document
 
 ## Document Submission
