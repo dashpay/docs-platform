@@ -1,3 +1,8 @@
+```{eval-rst}
+.. tutorials-create-wallet:
+```
+
+
 # Create and fund a wallet
 
 In order to make changes on Dash Platform, you need a wallet with a balance. This tutorial explains how to generate a new wallet, retrieve an address from it, and transfer test funds to the address from a faucet.

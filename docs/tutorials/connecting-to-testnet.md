@@ -1,3 +1,7 @@
+```{eval-rst}
+.. tutorials-connect-to-network:
+```
+
 # Connect to a network
 
 The purpose of this tutorial is to walk through the steps necessary to access the network.

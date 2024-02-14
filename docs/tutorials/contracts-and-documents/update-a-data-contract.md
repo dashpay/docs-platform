@@ -1,3 +1,7 @@
+```{eval-rst}
+.. tutorials-update-data-contract:
+```
+
 # Update a data contract
 
 Since Dash Platform v0.22, it is possible to update existing data contracts in certain backwards-compatible ways. This includes:

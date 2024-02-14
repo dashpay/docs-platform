@@ -1,3 +1,7 @@
+```{eval-rst}
+.. tutorials-topup-identity-balance:
+```
+
 # Topup an identity's balance
 
 The purpose of this tutorial is to walk through the steps necessary to add credits to an identity's balance.

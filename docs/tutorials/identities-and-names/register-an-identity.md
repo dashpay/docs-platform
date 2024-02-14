@@ -1,3 +1,7 @@
+```{eval-rst}
+.. tutorials-register-identity:
+```
+
 # Register an Identity
 
 The purpose of this tutorial is to walk through the steps necessary to register an identity.

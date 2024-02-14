@@ -1,3 +1,7 @@
+```{eval-rst}
+.. tutorials-setup-masternode:
+```
+
 # Dash masternode
 
 The purpose of this tutorial is to walk through the steps necessary to set up a masternode with Dash Platform services.

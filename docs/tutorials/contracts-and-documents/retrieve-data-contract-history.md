@@ -1,3 +1,7 @@
+```{eval-rst}
+.. tutorials-retrieve-data-contract-history:
+```
+
 # Retrieve data contract history
 
 In this tutorial we will retrieve the history of a data contract created in the [Register a Data

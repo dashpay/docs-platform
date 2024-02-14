@@ -1,3 +1,7 @@
+```{eval-rst}
+.. tutorials-delete-documents:
+```
+
 # Delete documents
 
 In this tutorial we will update delete data from Dash Platform. Data is stored in the form of [documents](../../explanations/platform-protocol-document.md) which are encapsulated in a [state transition](../../explanations/platform-protocol-state-transition.md) before being submitted to DAPI.

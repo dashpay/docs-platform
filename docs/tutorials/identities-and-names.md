@@ -1,3 +1,7 @@
+```{eval-rst}
+.. tutorials-identities-and-names:
+```
+
 # Identities and names
 
 The following tutorials cover creating and managing identities as well as creating and retrieving names.

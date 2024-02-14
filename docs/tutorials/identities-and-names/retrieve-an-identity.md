@@ -1,3 +1,7 @@
+```{eval-rst}
+.. tutorials-retrieve-identity:
+```
+
 # Retrieve an identity
 
 In this tutorial we will retrieve the identity created in the [Register an Identity tutorial](../../tutorials/identities-and-names/register-an-identity.md).

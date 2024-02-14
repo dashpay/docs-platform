@@ -1,3 +1,7 @@
+```{eval-rst}
+.. tutorials-dapi-client-methods:
+```
+
 # Use DAPI client methods
 
 In addition to the SDK methods for interacting with identities, names, contracts, and documents, the SDK also provides direct access to DAPI client methods.

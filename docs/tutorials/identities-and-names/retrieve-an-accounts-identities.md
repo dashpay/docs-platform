@@ -1,3 +1,7 @@
+```{eval-rst}
+.. tutorials-retrieve-accounts-identities:
+```
+
 # Retrieve an account's identities
 
 In this tutorial we will retrieve the list of identities associated with a specified mnemonic-based account. Since multiple identities may be created using the same mnemonic, it is helpful to have a way to quickly retrieve all these identities (e.g. if importing the mnemonic into a new device).

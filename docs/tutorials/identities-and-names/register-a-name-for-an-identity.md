@@ -1,3 +1,7 @@
+```{eval-rst}
+.. tutorials-register-name-for-identity:
+```
+
 # Register a name for an identity
 
 The purpose of this tutorial is to walk through the steps necessary to register a [Dash Platform Name Service (DPNS)](../../reference/glossary.md#dash-platform-naming-service-dpns) name.

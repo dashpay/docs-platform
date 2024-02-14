@@ -1,3 +1,7 @@
+```{eval-rst}
+.. tutorials-register-data-contract:
+```
+
 # Register a data contract
 
 In this tutorial we will register a data contract.

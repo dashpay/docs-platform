@@ -1,3 +1,7 @@
+```{eval-rst}
+.. tutorials-transfer-credits-to-identity:
+```
+
 # Transfer to an Identity
 
 The purpose of this tutorial is to walk through the steps necessary to transfer credits to an

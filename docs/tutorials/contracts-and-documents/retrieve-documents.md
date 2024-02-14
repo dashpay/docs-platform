@@ -1,3 +1,7 @@
+```{eval-rst}
+.. tutorials-retrieve-documents:
+```
+
 # Retrieve documents
 
 In this tutorial we will retrieve some of the current data from a data contract. Data is stored in the form of documents as described in the Dash Platform Protocol [Document explanation](../../explanations/platform-protocol-document.md).

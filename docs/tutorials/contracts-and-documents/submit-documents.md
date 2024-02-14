@@ -1,3 +1,7 @@
+```{eval-rst}
+.. tutorials-submit-documents:
+```
+
 # Submit documents
 
 In this tutorial we will submit some data to an application on Dash Platform. Data is stored in the form of [documents](../../explanations/platform-protocol-document.md) which are encapsulated in a [state transition](../../explanations/platform-protocol-state-transition.md) before being submitted to DAPI.

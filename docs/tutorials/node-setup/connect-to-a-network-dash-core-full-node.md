@@ -1,3 +1,7 @@
+```{eval-rst}
+.. tutorials-setup-full-node:
+```
+
 # Dash Core full node
 
 Since Dash Platform is fully accessible via DAPI, running a full node is unnecessary and generally provides no particular benefit. Regardless, the steps below provide the necessary information for advanced users to connect.

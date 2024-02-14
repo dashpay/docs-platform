@@ -1,3 +1,7 @@
+```{eval-rst}
+.. tutorials-retrieve-data-contract:
+```
+
 # Retrieve a data contract
 
 In this tutorial we will retrieve the data contract created in the [Register a Data Contract tutorial](../../tutorials/contracts-and-documents/register-a-data-contract.md).

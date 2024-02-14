@@ -1,3 +1,7 @@
+```{eval-rst}
+.. tutorials-send-funds:
+```
+
 # Send funds
 
 Once you have a wallet and some funds ([tutorial](../tutorials/create-and-fund-a-wallet.md)), another common task is sending Dash to an address. (Sending Dash to a contact or a DPNS identity requires the Dashpay app, which has not been registered yet.)

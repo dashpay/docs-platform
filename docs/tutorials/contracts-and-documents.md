@@ -1,3 +1,7 @@
+```{eval-rst}
+.. tutorials-contracts-and-documents:
+```
+
 # Contracts and documents
 
 The following tutorials cover working with data contracts as well as storing and updating related data using the documents they define.
