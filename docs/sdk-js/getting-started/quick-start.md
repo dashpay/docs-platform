@@ -28,7 +28,6 @@ client.wallet.getAccount().then(async (account) => {
 Quick note:
 If no `mnemonic` is provided or `mnemonic: null` is passed inside the `wallet` option, a new mnemonic will be generated.
 
-
 ## Make a payment
 
 ```js

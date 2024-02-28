@@ -1,9 +1,9 @@
 # Get
 
 **Usage**: `client.platform.documents.get(typeLocator, opts)`  
-**Description**: This method will allow you to fetch back documents matching the provided parameters. 
+**Description**: This method will allow you to fetch back documents matching the provided parameters.
 
-Parameters: 
+Parameters:
 
 | parameters      | type   | required         | Description                                                         |
 | --------------- | ------ | ---------------- | ------------------------------------------------------------------- |
@@ -22,7 +22,7 @@ Parameters:
 
 [Learn more about query syntax](../../../reference/query-syntax.md).
 
-**Example**: 
+**Example**:
 
 ```js
    const queryOpts = {

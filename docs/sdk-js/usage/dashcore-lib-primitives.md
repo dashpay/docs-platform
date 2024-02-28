@@ -50,7 +50,7 @@ Access the [Block documentation on dashpay/dashcore-lib](https://github.com/dash
 ## UnspentOutput
 
 Representation of an UnspentOutput (also called UTXO as in Unspent Transaction Output).  
-Mostly useful in association with a Transaction and for Scripts. 
+Mostly useful in association with a Transaction and for Scripts.
 
 `const { UnspentOutput } = Dash.Core.Transaction;`
 

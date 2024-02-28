@@ -1,9 +1,9 @@
 # Register
 
 **Usage**: `client.platform.identities.register()`  
-**Description**: This method will register a new identity for you. 
+**Description**: This method will register a new identity for you.
 
-Parameters: 
+Parameters:
 
 | parameters    | type   | required | Description                                                         |
 | ------------- | ------ | -------- | ------------------------------------------------------------------- |

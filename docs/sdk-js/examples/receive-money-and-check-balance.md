@@ -27,7 +27,7 @@ You can read more on [how to use a different account](../examples/use-different-
 
 ## Generate a receiving address
 
-Dash wallet supports two different types of addresses: 
+Dash wallet supports two different types of addresses:
 
 - `external` addresses used for receiving funds from other addresses
 - `internal` addresses used for change outputs of outgoing transactions  
@@ -41,7 +41,7 @@ async function generateUnusedAddress() {
 }
 ```
 
-This above code will generate a new unique (never used) address. 
+This above code will generate a new unique (never used) address.
 
 ## Displaying your balance
 
@@ -66,7 +66,7 @@ async function showBalance() {
 
 ## Listen for event on received transaction
 
-When a new unconfirmed transaction is received, you can receive an event, and then validate the address or perform an action if needed.   
+When a new unconfirmed transaction is received, you can receive an event, and then validate the address or perform an action if needed.
 
 ```js
 // FETCHED/UNCONFIRMED_TRANSACTION event is currently disabled
@@ -81,7 +81,7 @@ async function listenUnconfirmedTransaction() {
 
 ## Get address at specific index
 
-In case you want to retrieve an address at specific index: 
+In case you want to retrieve an address at specific index:
 
 ```js
 async function getAddressAtIndex() {

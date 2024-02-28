@@ -1,9 +1,9 @@
 # Create
 
 **Usage**: `client.platform.contracts.create(contractDefinitions, identity)`  
-**Description**: This method will return a Contract object initialized with the parameters defined and apply to the used identity. 
+**Description**: This method will return a Contract object initialized with the parameters defined and apply to the used identity.
 
-Parameters: 
+Parameters:
 
 | parameters              | type             | required | Description                                                                                                            |
 | ----------------------- | ---------------- | -------- | ---------------------------------------------------------------------------------------------------------------------- |

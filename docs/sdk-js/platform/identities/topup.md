@@ -1,18 +1,18 @@
 # Topup
 
 **Usage**: `client.platform.identities.topUp(identity, amount)`  
-**Description**: This method will topup the provided identity's balance. 
+**Description**: This method will topup the provided identity's balance.
 
 _The identity balance might slightly vary from the topped up amount because of the transaction fee estimation._
 
-Parameters: 
+Parameters:
 
 | parameters   | type     | required | Description                                                                                     |
 | ------------ | -------- | -------- | ----------------------------------------------------------------------------------------------- |
 | **identity** | Identity | yes      | A valid [registered identity](../identities/register.md) |
 | **amount**   | number   | yes      | A duffs (satoshis) value corresponding to the amount you want to top up to the identity.        |
 
-**Example**: 
+**Example**:
 
 ```js
 const identityId = '';// Your identity identifier

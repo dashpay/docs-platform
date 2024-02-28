@@ -1,16 +1,16 @@
 # ResolveByRecord
 
 **Usage**: `client.platform.names.resolveByRecord(record, value)`  
-**Description**: This method will allow you to resolve a DPNS record by identity ID. 
+**Description**: This method will allow you to resolve a DPNS record by identity ID.
 
-Parameters: 
+Parameters:
 
 | parameters | type   | required | Description                                                          |
 | ---------- | ------ | -------- | -------------------------------------------------------------------- |
 | **record** | String | yes      | Type of the record (`dashUniqueIdentityId` or `dashAliasIdentityId`) |
 | **value**  | String | yes      | Identifier value for the record                                      |
 
-**Example**: 
+**Example**:
 
 This example will describe how to resolve names by the dash unique identity id.  
 

@@ -3,7 +3,7 @@
 **Usage**: `client.platform.names.register(name, records, identity)`  
 **Description**: This method will create a DPNS record matching your identity to the user or appname defined.
 
-Parameters: 
+Parameters:
 
 | parameters                       | type     | required | Description                                                                                                                                                                                 |
 | -------------------------------- | -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

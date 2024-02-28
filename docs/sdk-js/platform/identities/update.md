@@ -23,7 +23,7 @@ await client.platform.identities.update(identity, { disable: publicKeysToDisable
 
 **Note**:
 
-- Adding a public key requires the corresponding private key to sign the new key addition. 
+- Adding a public key requires the corresponding private key to sign the new key addition.
 - Disabling a key does not require its private key since the identity's key is used for the update transaction.
 - Make sure the identity and keys are valid and the identity has sufficient balance for the transaction fees.
 

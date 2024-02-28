@@ -20,7 +20,7 @@ const account = await client.wallet.getAccount()
 
 As optional parameter, an integer representing the account `index` can be passed as parameter. By default, index account on call is 0.
 
-```
+```js
 client.wallet.getAccount({ index: 1 })
 ```
 
