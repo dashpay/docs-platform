@@ -5,7 +5,7 @@
 
 Parameters:
 
-| parameters       | type   | required | Description                                       |
+| Parameters       | Type   | Required | Description                                       |
 | ---------------- | ------ | -------- | ------------------------------------------------- |
 | **labelPrefix**  | String | yes      | label prefix to search for                        |
 | **parentDomain** | String | yes      | parent domain name on which to perform the search |

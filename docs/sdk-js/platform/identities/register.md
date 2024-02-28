@@ -5,7 +5,7 @@
 
 Parameters:
 
-| parameters    | type   | required | Description                                                         |
+| Parameters    | Type   | Required | Description                                                         |
 | ------------- | ------ | -------- | ------------------------------------------------------------------- |
 | fundingAmount | number | no       | Defaults: 10000. Allow to set a funding amount in duffs (satoshis). |
 

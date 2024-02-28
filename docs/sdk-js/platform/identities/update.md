@@ -6,7 +6,7 @@
 
 Parameters:
 
-| parameters     | type                                  | required | Description                                                                                         |
+| Parameters     | Type                                  | Required | Description                                                                                         |
 | -------------- | ------------------------------------- | -------- | --------------------------------------------------------------------------------------------------- |
 | **identity**   | Identity                              | yes      | The identity object to update.                                                                     |
 | **publicKeys** | { add?: IdentityPublicKey[]; disable?: IdentityPublicKey[] } | no       | An object containing arrays of `IdentityPublicKey` objects to add or disable.                      |

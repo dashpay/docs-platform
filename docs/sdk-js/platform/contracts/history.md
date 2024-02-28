@@ -5,7 +5,7 @@
 
 Parameters:
 
-| parameters     | type            | required | Description                                                                                          |
+| Parameters     | Type            | Required | Description                                                                                          |
 | -------------- | --------------- | -------- | ---------------------------------------------------------------------------------------------------- |
 | **identifier** | string \| Identifier | yes      | The identifier of the contract to fetch. Can be a string or an `Identifier` object.                  |
 | **startAtMs**  | number          | yes      | Timestamp in milliseconds from which to start fetching the contract history.                         |

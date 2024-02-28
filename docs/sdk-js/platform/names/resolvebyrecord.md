@@ -5,7 +5,7 @@
 
 Parameters:
 
-| parameters | type   | required | Description                                                          |
+| Parameters | Type   | Required | Description                                                          |
 | ---------- | ------ | -------- | -------------------------------------------------------------------- |
 | **record** | String | yes      | Type of the record (`dashUniqueIdentityId` or `dashAliasIdentityId`) |
 | **value**  | String | yes      | Identifier value for the record                                      |

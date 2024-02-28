@@ -5,7 +5,7 @@
 
 Parameters:
 
-| parameters | type   | required | Description                                                                   |
+| Parameters | Type   | Required | Description                                                                   |
 | ---------- | ------ | -------- | ----------------------------------------------------------------------------- |
 | **name**   | String | yes      | An alphanumeric (2-63) value used for human-identification (can contains `-`) |
 

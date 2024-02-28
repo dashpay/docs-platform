@@ -7,7 +7,7 @@ _The identity balance might slightly vary from the topped up amount because of t
 
 Parameters:
 
-| parameters   | type     | required | Description                                                                                     |
+| Parameters   | Type     | Required | Description                                                                                     |
 | ------------ | -------- | -------- | ----------------------------------------------------------------------------------------------- |
 | **identity** | Identity | yes      | A valid [registered identity](../identities/register.md) |
 | **amount**   | number   | yes      | A duffs (satoshis) value corresponding to the amount you want to top up to the identity.        |

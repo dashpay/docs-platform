@@ -5,14 +5,14 @@
 
 Parameters:
 
-| parameters      | type   | required         | Description                                                         |
+| Parameters      | Type   | Required         | Description                                                         |
 | --------------- | ------ | ---------------- | ------------------------------------------------------------------- |
 | **typeLocator** | string | yes              | Field of a specific application, under the form `appName.fieldName` |
 | **opts**        | object | no (default: {}) | Query options of the request                                        |
 
 **Queries options**:
 
-| parameters     | type    | required | Description               |
+| Parameters     | Type    | Required | Description               |
 | -------------- | ------- | -------- | ------------------------- |
 | **where**      | array   | no       | Mongo-like where query    |
 | **orderBy**    | array   | no       | Mongo-like orderBy query  |

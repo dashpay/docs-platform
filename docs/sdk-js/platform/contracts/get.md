@@ -5,7 +5,7 @@
 
 Parameters:
 
-| parameters     | type   | required | Description                                          |
+| Parameters     | Type   | Required | Description                                          |
 | -------------- | ------ | -------- | ---------------------------------------------------- |
 | **identifier** | string | yes      | Will fetch back the contract matching the identifier |
 

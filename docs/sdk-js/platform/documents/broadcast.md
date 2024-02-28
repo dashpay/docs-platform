@@ -5,7 +5,7 @@
 
 Parameters:
 
-| parameters            | type                | required | Description                                                                                                 |
+| Parameters            | Type                | Required | Description                                                                                                 |
 | --------------------- | ------------------- | -------- | ----------------------------------------------------------------------------------------------------------- |
 | **documents**         | Object              | yes      |                                                                                                             |
 | **documents.create**  | ExtendedDocument\[] | no       | array of valid [created document](../documents/create.md) to create  |

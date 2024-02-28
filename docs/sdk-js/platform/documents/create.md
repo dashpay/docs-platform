@@ -5,7 +5,7 @@
 
 Parameters:
 
-| parameters     | type     | required | Description                                                                                     |
+| Parameters     | Type     | Required | Description                                                                                     |
 | -------------- | -------- | -------- | ----------------------------------------------------------------------------------------------- |
 | **dotLocator** | string   | yes      | Field of a specific application, under the form `appName.fieldName`                             |
 | **identity**   | Identity | yes      | A valid [registered identity](../identities/register.md) |
