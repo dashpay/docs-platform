@@ -18,4 +18,5 @@ Each identity contains a credit balance. The ratio is 1 duff = 1000 credits.
 get
 register
 topup
+update
 ```
