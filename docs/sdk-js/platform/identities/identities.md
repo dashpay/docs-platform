@@ -15,6 +15,7 @@ Each identity contains a credit balance. The ratio is 1 duff = 1000 credits.
 ```{toctree}
 :maxdepth: 2
 
+credit-transfer
 get
 register
 topup
