@@ -11,6 +11,7 @@ See the Dash Platform documentation for more information about [Data Contracts](
 
 create
 get
+history
 publish
 update
 ```
