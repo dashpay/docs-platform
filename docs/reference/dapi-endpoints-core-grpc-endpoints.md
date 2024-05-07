@@ -630,6 +630,8 @@ grpcurl -proto protos/core/v0/core.proto \
 
 ## Deprecated Endpoints
 
+The following endpoints were recently deprecated. See the [previous version of documentation](https://docs.dash.org/projects/platform/en/0.25.0/docs/reference/dapi-endpoints-core-grpc-endpoints.html) for additional information on these endpoints.
+
 ### getStatus
 
 *Deprecated in Dash Platform v1.0.0-dev.12*
@@ -777,11 +779,6 @@ grpcurl -proto protos/core/v0/core.proto \
 ```
 :::
 ::::
-
-> 📘
->
-> The previous version of documentation can be [viewed
-> here](https://docs.dash.org/projects/platform/en/0.25.0/docs/reference/dapi-endpoints-core-grpc-endpoints.html).
 
 ## Code Reference
 
