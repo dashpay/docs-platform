@@ -45,8 +45,8 @@ data returned is valid and complete. The endpoints are versioned so updates can 
 |   2   | [`getIdentityBalanceAndRevision`](../reference/dapi-endpoints-platform-endpoints.md#getidentitybalanceandrevision) | Returns the requested identity's balance and revision |
 |   2   | [`getIdentityByPublicKeyHash`](../reference/dapi-endpoints-platform-endpoints.md#getidentitybypublickeyhash) | Returns the identity associated with the provided public key hash |
 |   2   | [`getIdentityKeys`](../reference/dapi-endpoints-platform-endpoints.md#getidentitykeys) | Returns the requested identity keys
-|   2   | [`getIdentities`](../reference/dapi-endpoints-platform-endpoints.md#getidentities) | Returns the requested identities |
-|   2   | [`getIdentitiesByPublicKeyHashes`](../reference/dapi-endpoints-platform-endpoints.md#getidentitiesbypublickeyhashes) | Returns the identities associated with the provided public key hashes<br>_Added in Dash Platform v0.16_ |
+|   2   | `getIdentities` | **Removed in Dash Platform v1.0.0-dev.12**<br>Returns the requested identities |
+|   2   | `getIdentitiesByPublicKeyHashes` | **Removed in Dash Platform v1.0.0-dev.12**<br>Returns the identities associated with the provided public key hashes |
 |   2   | [`getDataContract`](../reference/dapi-endpoints-platform-endpoints.md#getdatacontract) | Returns the requested data contract |
 |   2   | [`getDataContracts`](../reference/dapi-endpoints-platform-endpoints.md#getdatacontracts) | Returns the requested data contracts |
 |   2   | [`getDataContractHistory`](../reference/dapi-endpoints-platform-endpoints.md#getdatacontracthistory) | Returns the requested data contract history |
