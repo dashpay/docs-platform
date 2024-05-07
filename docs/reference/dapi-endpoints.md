@@ -45,6 +45,7 @@ data returned is valid and complete. The endpoints are versioned so updates can 
 |   2   | [`getIdentityBalanceAndRevision`](../reference/dapi-endpoints-platform-endpoints.md#getidentitybalanceandrevision) | Returns the requested identity's balance and revision |
 |   2   | [`getIdentityByPublicKeyHash`](../reference/dapi-endpoints-platform-endpoints.md#getidentitybypublickeyhash) | Returns the identity associated with the provided public key hash |
 |   2   | [`getIdentityKeys`](../reference/dapi-endpoints-platform-endpoints.md#getidentitykeys) | Returns the requested identity keys
+|   2   | [`getIdentityNonce`](../reference/dapi-endpoints-platform-endpoints.md#getidentitynonce) | Returns the current identity nonce |
 |   2   | `getIdentities` | **Removed in Dash Platform v1.0.0-dev.12**<br>Returns the requested identities |
 |   2   | [`getIdentitiesContractKeys`](../reference/dapi-endpoints-platform-endpoints.md#getidentitiescontractkeys) | **Added in Dash Platform v1.0.0-dev.12**<br>Returns keys associated to a specific contract for multiple Identities |
 |   2   | `getIdentitiesByPublicKeyHashes` | **Removed in Dash Platform v1.0.0-dev.12**<br>Returns the identities associated with the provided public key hashes |

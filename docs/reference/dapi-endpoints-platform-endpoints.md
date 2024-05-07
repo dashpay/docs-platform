@@ -509,6 +509,57 @@ grpcurl -proto protos/platform/v0/platform.proto \
 :::
 ::::
 
+### getIdentityNonce
+
+**Returns**: Current nonce for the requested [Identity](../explanations/identity.md)
+
+**Parameters**:
+
+| Name    | Type    | Required | Description |
+| ------- | ------- | -------- | ------------ |
+| `identity_id`    | Bytes   | Yes      | An identity ID
+| `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested identity
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+:sync: grpcurl
+```shell
+# `id` must be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "identity_id": "MBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/aw="
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getIdentityNonce
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+:sync: grpcurl
+```json
+{
+  "v0": {
+    "identityNonce": "0",
+    "metadata": {
+      "height": "4035",
+      "coreChainLockedHeight": 1021681,
+      "epoch": 200,
+      "timeMs": "1715110406689",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-45"
+    }
+  }
+}
+```
+:::
+::::
+
 ### getIdentitiesContractKeys
 
 **Returns**: Keys associated to a specific contract for multiple [Identities](../explanations/identity.md).
