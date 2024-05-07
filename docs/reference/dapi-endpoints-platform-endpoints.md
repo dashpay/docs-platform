@@ -371,7 +371,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 | ------- | ------- | -------- | ------------ |
 | `identity_id`    | Bytes   | Yes      | An identity ID
 | `contract_id`    | Bytes   | Yes      | A contract ID
-| `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested identity
+| `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested identity contract nonce
 
 **Example Request and Response**
 
@@ -571,7 +571,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 | Name    | Type    | Required | Description |
 | ------- | ------- | -------- | ------------ |
 | `identity_id`    | Bytes   | Yes      | An identity ID
-| `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested identity
+| `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested identity nonce
 
 **Example Request and Response**
 
