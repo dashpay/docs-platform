@@ -509,6 +509,75 @@ grpcurl -proto protos/platform/v0/platform.proto \
 :::
 ::::
 
+### getIdentitiesContractKeys
+
+**Returns**: Keys associated to a specific contract for multiple [Identities](../explanations/identity.md).
+
+**Parameters**:
+
+| Name                 | Type                    | Required | Description |
+|----------------------|-------------------------|----------|-------------|
+| `identities_ids`     | Array of Strings        | Yes      | An array of identity IDs |
+| `contract_id`        | String                  | Yes      | The ID of the contract |
+| `document_type_name` | String                  | No       | Name of the document type |
+| `purposes`           | Array of [KeyPurpose](#key-purposes) | No | Array of purposes for which keys are requested |
+| `prove`              | Boolean                 | No       | Set to `true` to receive a proof that contains the requested identity keys |
+
+#### Key Purposes
+
+**Key Purposes** define the intent of usage for each key. Here are the available purposes:
+
+- `AUTHENTICATION` - Keys used for authentication purposes.
+- `ENCRYPTION` - Keys used for encrypting data.
+- `DECRYPTION` - Keys used for decrypting data.
+- `TRANSFER` - Keys used for transferring assets.
+- `VOTING` - Keys used for voting mechanisms.
+
+#### Example Request and Response
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+# Request identity keys associated with the specified contract
+# `identities_ids` and `contract_id` must be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "identities_ids": [
+        "MBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/aw=",
+        "NBgQk65dTNttDYDGLZNLrb1QEAWB91jqkqXtK1KU4Dc="
+      ],
+      "purposes": [],
+      "contract_id": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU="
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getIdentitiesContractKeys
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+:sync: grpcurl
+```json
+{
+  "v0": {
+    "identitiesKeys": {},
+    "metadata": {
+      "height": "3994",
+      "coreChainLockedHeight": 1021628,
+      "epoch": 198,
+      "timeMs": "1715102626945",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-45"
+    }
+  }
+}
+```
+:::
+::::
+
 ### getDataContract
 
 > 🚧 Breaking changes
