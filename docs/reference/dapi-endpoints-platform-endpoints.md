@@ -376,6 +376,28 @@ grpcurl -proto protos/platform/v0/platform.proto \
 **Example Request and Response**
 
 ::::{tab-set}
+:::{tab-item} JavaScript (dapi-client)
+:sync: js-dapi-client
+```javascript
+const DAPIClient = require('@dashevo/dapi-client');
+const {
+  default: loadDpp,
+  DashPlatformProtocol,
+  Identifier,
+} = require('@dashevo/wasm-dpp');
+
+loadDpp();
+const dpp = new DashPlatformProtocol(null);
+const client = new DAPIClient();
+
+const identityId = Identifier.from('4EfA9Jrvv3nnCFdSf7fad59851iiTRZ6Wcu6YVJ4iSeF');
+const contractId = Identifier.from('GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec');
+client.platform.getIdentityContractNonce(identityId, contractId).then((response) => {
+  console.log(`Current identity contract nonce: ${response.getIdentityContractNonce()}`);
+});
+```
+:::
+
 :::{tab-item} gRPCurl
 :sync: grpcurl
 ```shell
@@ -394,6 +416,13 @@ grpcurl -proto protos/platform/v0/platform.proto \
 ::::
 
 ::::{tab-set}
+:::{tab-item} Response (dapi-client)
+:sync: js-dapi-client
+```text
+Current identity contract nonce: 0
+```
+:::
+
 :::{tab-item} Response (gRPCurl)
 :sync: grpcurl
 ```json
@@ -576,6 +605,27 @@ grpcurl -proto protos/platform/v0/platform.proto \
 **Example Request and Response**
 
 ::::{tab-set}
+:::{tab-item} JavaScript (dapi-client)
+:sync: js-dapi-client
+```javascript
+const DAPIClient = require('@dashevo/dapi-client');
+const {
+  default: loadDpp,
+  DashPlatformProtocol,
+  Identifier,
+} = require('@dashevo/wasm-dpp');
+
+loadDpp();
+const dpp = new DashPlatformProtocol(null);
+const client = new DAPIClient();
+
+const identityId = Identifier.from('4EfA9Jrvv3nnCFdSf7fad59851iiTRZ6Wcu6YVJ4iSeF');
+client.platform.getIdentityNonce(identityId).then((response) => {
+  console.log(`Current identity nonce: ${response.getIdentityNonce()}`);
+});
+```
+:::
+
 :::{tab-item} gRPCurl
 :sync: grpcurl
 ```shell
@@ -593,6 +643,13 @@ grpcurl -proto protos/platform/v0/platform.proto \
 ::::
 
 ::::{tab-set}
+:::{tab-item} Response (dapi-client)
+:sync: js-dapi-client
+```text
+Current identity nonce: 0
+```
+:::
+
 :::{tab-item} Response (gRPCurl)
 :sync: grpcurl
 ```json
