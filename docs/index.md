@@ -133,6 +133,7 @@ explanations/drive
 explanations/platform-consensus
 explanations/dashpay
 explanations/fees
+explanations/nft
 ```
 
 ```{toctree}
