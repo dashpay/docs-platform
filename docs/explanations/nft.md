@@ -39,29 +39,21 @@ NFTs can be immutable or mutable, depending on their intended use. Immutable NFT
 
 Since some NFTs may represent transient or consumable things, Dash Platform allows NFTs to be deleted. This is more efficient than the "burn" mechanism many projects use to make an NFT unusable and  provides flexibility in managing assets that may no longer be needed or valid.
 
+## NFT Creation
 
-### Key Properties of NFTs
+Creating an NFT on Dash Platform consists of creating a data contract, registering it on the network, and then creating NFT documents based on the schema defined in the data contract.
 
-1. **Unique Identifier**: Each NFT has a unique identifier, ensuring that no two NFTs are identical. This identifier is crucial for tracking, trading, and verifying ownership.
+### Contract Setup
 
-2. **Transferability**: NFTs can be transferred between parties without the need for a centralized marketplace. This transferability is implemented through specific state transitions that update the ownership status within the blockchain ledger.
+Structurally, there is no difference between an NFT contract and a non-NFT contract. While an NFT contract may set options that other contracts are unlikely to use, there is no other difference.
 
-3. **Mutability and Deletability**: NFTs can be configured to be mutable or immutable depending on the requirements of the asset they represent. For instance, a mutable NFT may allow updates to some of its data fields, while an immutable NFT does not permit any changes once created. Additionally, NFTs can be deletable, providing flexibility in managing assets that may no longer be needed or valid.
+NFT contracts will often set document creation restrictions and enable document transfers. Default options for modifying, deleting, and transferring documents can be specified at the contract level and overridden as-needed for specific document types.
 
-## Creation and Management of NFTs
+Once the data contract design is completed, the contract can be registered on the network in preparation for NFT document creation.
 
-The creation and ongoing management of NFTs are governed by specific rules and restrictions to maintain the integrity and value of the assets they represent.
+### Minting NFTs
 
-### Creation Restrictions
-
-To prevent unauthorized or fraudulent creation of high-value NFTs (such as those representing property or exclusive digital art), Dash implements creation restrictions. These restrictions can be set to allow only certain entities, such as verified administrators or smart contracts, to create NFTs. This ensures that the NFT marketplace remains trusted and verifiable.
-
-### Administrative Control
-
-NFTs on Dash can be administered at various levels:
-
-- **Contract Level**: At the contract level, defaults can be set for properties like transferability, mutability, and deletability.
-- **Document Type Level**: These settings can be overridden at the document type level for finer control, accommodating the specific needs of different NFT categories.
+Tokens are minted by creating new documents under the data contract. Each token is an instance of one of the document types defined in the contract.
 
 ## Operational Mechanisms
 
