@@ -18,15 +18,14 @@ The following sections describe the features and options available for NFT creat
 
 ### Transfer and Trade
 
-NFTs can be transferred between parties without the need for a centralized marketplace. Currently, Dash Platform provides two ways to change ownership:
+NFTs can be directly transferred or traded without the need for a marketplace:
 
-1. Transfer: NFT owners can directly assign a new owner without making the NFT available for purchase
-2. Trade: NFT owners can make the NFT available for direct purchase or use a marketplace. Initially, only direct purchases will be supported.
-   * Direct purchase: The owner sets the desired price. Anyone can purchase it for the requested price and receive ownership immediately through a non-interactive process.
+* Transferring allows the owner to simply assign a new owner without making the NFT available for purchase.
+* Trading involves a two-step process where the seller sets the NFT's price, and the first buyer that matches this price receives the NFT automatically. Once the transaction is complete, the price is reset to prevent further immediate purchases, ensuring a non-interactive and seamless trading experience.
 
 ### Creation Restrictions
 
-To preserve the authenticity of NFTs, Dash Platform includes creation restriction options. This ensures that only authorized entities can create certain types of NFTs. For example, in the case of land ownership NFTs, only a designated authority can issue these tokens. Restriction options are:
+To preserve the authenticity of NFTs, Dash Platform includes creation restriction options. This ensures that only authorized entities can create certain types of NFTs. For example, in the case of land ownership NFTs, a designated authority may be the only one that can issue tokens. Restriction options are:
 
 * **Owner Only**: Only the contract owner can create NFTs (**_Note: this is the only option implemented for the initial release_**)
 * **System Only**: Only the system can create NFTs (used for specific system contracts)
@@ -38,12 +37,8 @@ NFTs can be immutable or mutable, depending on their intended use. Immutable NFT
 
 ### Delete
 
-Since some NFTs may represent transient or consumable things, Dash Platform allows NFTs to be deleted. This is more efficient than the "burn" mechanism many projects use to make an NFT unusable. Deleting the NFT reduces storage overhead and lowers overall cost.
+Since some NFTs may represent transient or consumable things, Dash Platform allows NFTs to be deleted. This is more efficient than the "burn" mechanism many projects use to make an NFT unusable and  provides flexibility in managing assets that may no longer be needed or valid.
 
-
-## NFT Definition and Structure
-
-In the Dash system, NFTs are treated as specialized instances of platform documents. These documents are data structures that can represent any digital or real-world asset uniquely within the blockchain. Each NFT (document) is identifiable by a unique identifier, ensuring its distinctiveness across the platform.
 
 ### Key Properties of NFTs
 
