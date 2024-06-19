@@ -20,7 +20,7 @@ The following sections describe the features and options available for NFT creat
 
 NFTs can be directly transferred or traded without the need for a marketplace:
 
-* Transferring allows the owner to simply assign a new owner without making the NFT available for purchase.
+* Transferring allows the owner to assign a new owner without making the NFT available for purchase.
 * Trading involves a two-step process where the seller sets the NFT's price, and the first buyer that matches this price receives the NFT automatically. Once the transaction is complete, the price is reset to prevent further immediate purchases, ensuring a non-interactive and seamless trading experience.
 
 ### Creation Restrictions
@@ -37,7 +37,7 @@ NFTs can be immutable or mutable, depending on their intended use. Immutable NFT
 
 ### Delete
 
-Since some NFTs may represent transient or consumable things, Dash Platform allows NFTs to be deleted. This is more efficient than the "burn" mechanism many projects use to make an NFT unusable and  provides flexibility in managing assets that may no longer be needed or valid.
+Since some NFTs may represent transient or consumable things, Dash Platform allows NFTs to be deleted. This is more efficient than the "burn" mechanism many projects use to make an NFT unusable and provides flexibility in managing assets that may no longer be needed or valid.
 
 ## NFT Creation
 
@@ -47,7 +47,7 @@ Creating an NFT on Dash Platform consists of creating a data contract, registeri
 
 Structurally, there is no difference between an NFT contract and a non-NFT contract. While an NFT contract may set options that other contracts are unlikely to use, there is no other difference.
 
-NFT contracts will often set document creation restrictions and enable document transfers. Default options for modifying, deleting, and transferring documents can be specified at the contract level and overridden as-needed for specific document types.
+NFT contracts will often set document creation restrictions and enable document transfers. Default options for modifying, deleting, and transferring documents can be specified at the contract level and overridden as needed for specific document types.
 
 Once the data contract design is completed, the contract can be registered on the network in preparation for NFT document creation.
 
