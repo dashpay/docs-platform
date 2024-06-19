@@ -55,20 +55,10 @@ Once the data contract design is completed, the contract can be registered on th
 
 Tokens are minted by creating new documents under the data contract. Each token is an instance of one of the document types defined in the contract.
 
-## Operational Mechanisms
+## NFT Trading
 
-### State Transitions
+The trading process for Dash Platform NFTs is designed to be user-friendly and efficient by enabling direct transactions between users without requiring trusted third parties.
 
-NFTs change states through predefined transactions:
+Once an NFT is created, the owner can set a sale price to indicate the NFT is available for purchase. Interested buyers can then initiate a purchase by matching this set price. Upon completion of the transaction, the ownership of the NFT is automatically transferred to the buyer, and the sale price is reset to indicate the NFT is no longer available for purchase.
 
-- **Creation**: A new NFT is minted when a document is created under a specific contract with its unique properties.
-- **Update Price**: Sellers can set or update the price of an NFT, preparing it for sale.
-- **Purchase**: Transfer of ownership occurs through a purchase transaction where the buyer matches the set price, and ownership details are updated atomically.
-
-## Practical Use Cases
-
-Dash's flexible NFT framework supports various use cases from digital art and collectibles to more complex applications like real estate and identity verification. Each use case can utilize the core features of the NFT system, customized through the platform document properties to meet specific needs.
-
-## Conclusion
-
-Dash's NFT system leverages the blockchain's inherent security and transparency features while providing a flexible and robust framework for managing non-fungible assets. This system not only facilitates the easy creation and trade of digital assets but also ensures that they can be managed with high levels of trust and efficiency.
+Since the functionality needed to set a price, buy, and transfer ownership of NFTs is part of the protocol, the system handles all necessary trading operations directly. This provides an efficient trading experience that is integrated with the indexing and proof capabilities of Dash Platform.
