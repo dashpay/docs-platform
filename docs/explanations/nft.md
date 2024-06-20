@@ -49,7 +49,7 @@ Structurally, there is no difference between an NFT contract and a non-NFT contr
 
 NFT contracts will often set document creation restrictions and enable document transfers. Default options for modifying, deleting, and transferring documents can be specified at the contract level and overridden as needed for specific document types.
 
-Once the data contract design is completed, the contract can be registered on the network in preparation for NFT document creation.
+Once the data contract design is completed, the contract can be registered on the network in preparation for NFT document creation. See the [contract registration tutorial](../tutorials/contracts-and-documents/register-a-data-contract.md) for example code.
 
 ### Minting NFTs
 

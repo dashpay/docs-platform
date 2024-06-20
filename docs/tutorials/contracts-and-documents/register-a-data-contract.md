@@ -33,6 +33,8 @@ data.
 The fifth tab shows a data contract configured to store contract history. This allows all contract
 revisions to be retrieved in the future as needed.
 
+The sixth tab shows a data contract configured for creating NFTs. It allows documents to be deleted, transferred, or traded. It also limits document creation to the contract owner. See the [NFT explanation section](../../explanations/nft.md) for more details about NFTs on Dash Platform. **_Note: the JavaScript SDK supports NFT contract registration, but does not currently support trades or transfers._**
+
 > 🚧
 >
 > Since Platform v0.25.16, each document property must assign `position` value to support [backwards compatibility](https://github.com/dashpay/platform/pull/1594) for contract updates.
@@ -156,6 +158,82 @@ array of bytes (e.g. a NodeJS Buffer).
         "position": 0
       }
     },
+    "additionalProperties": false
+  }
+}
+```
+:::
+
+:::{tab-item} 6. NFT Contract
+:sync: nft
+```json
+// To use contract documents as NFTs, configure settings for modifying
+// deleting, transferring, trading, or restricting creation as needed
+{
+  "card": {
+    "type": "object",
+    "documentsMutable": false,    // true = documents can be modified (replaced)
+    "canBeDeleted": true,         // true = documents can be deleted
+    "transferable": 1,            // 0 = transfers disabled; 1 = transfers enabled
+    "tradeMode": 1,               // 0 = no trading; 1 = direct purchases
+    "creationRestrictionMode": 1, // 0 = anyone can mint; 1 = only contract owner can mint
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "Name of the card",
+        "minLength": 0,
+        "maxLength": 63,
+        "position": 0
+      },
+      "description": {
+        "type": "string",
+        "description": "Description of the card",
+        "minLength": 0,
+        "maxLength": 256,
+        "position": 1
+      },
+      "attack": {
+        "type": "integer",
+        "description": "Attack power of the card",
+        "position": 2
+      },
+      "defense": {
+        "type": "integer",
+        "description": "Defense level of the card",
+        "position": 3
+      }
+    },
+    "indices": [
+      {
+        "name": "owner",
+        "properties": [
+          {
+            "$ownerId": "asc"
+          }
+        ]
+      },
+      {
+        "name": "attack",
+        "properties": [
+          {
+            "attack": "asc"
+          }
+        ]
+      },
+      {
+        "name": "defense",
+        "properties": [
+          {
+            "defense": "asc"
+          }
+        ]
+      }
+    ],
+    "required": [
+      "name",
+      "attack",
+      "defense"
+    ],
     "additionalProperties": false
   }
 }
@@ -366,6 +444,101 @@ const registerContract = async () => {
     documentsKeepHistoryContractDefault: false,
     documentsMutableContractDefault: true,
   })
+  console.dir({ contract: contract.toJSON() });
+
+  // Sign and submit the data contract
+  await platform.contracts.publish(contract, identity);
+  return contract;
+};
+
+registerContract()
+  .then((d) => console.log('Contract registered:\n', d.toJSON()))
+  .catch((e) => console.error('Something went wrong:\n', e))
+  .finally(() => client.disconnect());
+```
+:::
+
+:::{tab-item} 6. NFT Contract
+:sync: nft
+```javascript
+const setupDashClient = require('../setupDashClient');
+
+const client = setupDashClient();
+
+const registerContract = async () => {
+  const { platform } = client;
+  const identity = await platform.identities.get('an identity ID goes here');
+
+  const contractDocuments = {
+    card: {
+      type: "object",
+      documentsMutable: false,    // Documents cannot be modified/replaced
+      canBeDeleted: true,         // Documents can be deleted
+      transferable: 1,            // Transfers enabled
+      tradeMode: 1,               // Direct purchase trades enabled
+      creationRestrictionMode: 1, // Only the contract owner can mint      
+      properties: {
+        name: {
+          type: "string",
+          description: "Name of the card",
+          minLength: 0,
+          maxLength: 63,
+          position: 0
+        },
+        description: {
+          type: "string",
+          description: "Description of the card",
+          minLength: 0,
+          maxLength: 256,
+          position: 1
+        },
+        attack: {
+          type: "integer",
+          description: "Attack power of the card",
+          position: 2
+        },
+        defense: {
+          type: "integer",
+          description: "Defense level of the card",
+          position: 3
+        }
+      },
+      indices: [
+        {
+          name: "owner",
+          properties: [
+            {
+              $ownerId: "asc"
+            }
+          ]
+        },
+        {
+          name: "attack",
+          properties: [
+            {
+              attack: "asc"
+            }
+          ]
+        },
+        {
+          name: "defense",
+          properties: [
+            {
+              defense: "asc"
+            }
+          ]
+        }
+      ],
+      required: [
+        "name",
+        "attack",
+        "defense"
+      ],
+      additionalProperties: false
+    }
+  }
+
+  const contract = await platform.contracts.create(contractDocuments, identity);
   console.dir({ contract: contract.toJSON() });
 
   // Sign and submit the data contract
