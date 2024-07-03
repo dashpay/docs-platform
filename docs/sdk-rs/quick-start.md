@@ -145,3 +145,9 @@ Identity bytes: [0, 27, 120, 234, 64, 77, 128, 39, 95, 97, 84, 3, 190, 94, 195, 
 Protocol version: 1
 Identity fetched successfully.
 ```
+
+## SDK documentation
+
+> 🚧 Work in progress
+>
+> SDK documentation will be available on docs.rs once the Dash SDK crate is published. Meanwhile, the [pre-release documentation](https://dashpay.github.io/docs-platform/dash_sdk/) is available for reference. Please keep in mind that it is incomplete and may be outdated.
