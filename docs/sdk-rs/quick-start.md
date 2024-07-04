@@ -1,6 +1,8 @@
 # Quick Start
 
-## Install dependencies
+## Prerequisites
+
+### Install dependencies
 
 Several packages are required to use the Dash SDK. Install them by running:
 
@@ -12,7 +14,7 @@ wget https://github.com/protocolbuffers/protobuf/releases/download/v26.1/protoc-
 sudo unzip protoc-*-linux-x86_64.zip -d /usr/local
 ```
 
-## Install Rustup
+### Install Rustup
 
 Rustup is the [recommended tool](https://www.rust-lang.org/tools/install) to install Rust and keep it updated. To download Rustup and install
 Rust, run the following in your terminal, then follow the on-screen instructions:
@@ -35,6 +37,39 @@ rustc --version
 ```
 
 You should see the installed version of Rust.
+
+### Install Dash Core
+
+Currently, the SDK is dependent on a Dash Core full node to support proof verification and provide
+wallet access. Follow the instructions below to install Dash Core and run it on Testnet. **Note:**
+it is possible, although not recommended, to retrieve data from Dash Platform without proof
+
+- [Dash Core installation instructions](inv:user:std#dashcore-installation)
+- [Running Dash Core on Testnet](inv:user:std#dashcore-testnet)
+
+Located the `dash.conf` file by right-clicking the Dash Core icon and selecting `Open Wallet Configuration File`. Configure it as shown below (replace `***` with a username and password of your choice):
+
+```ini
+testnet=1
+
+[test]
+server=1
+listen=1
+rpcallowip=127.0.0.1
+rpcuser=***
+rpcpassword=***
+```
+
+Restart Dash Core to apply the changes.
+
+> 🚧 **Using Dash Platform without Dash Core**
+>
+> The Rust SDK requests proofs for all data retrieved from Platform. This makes it the recommended
+> (most secure) option, but also is why a Dash Core full node is currently required.
+>
+> The [JavaScript SDK](../tutorials/introduction.md) provides access to Dash Platform without
+> requiring a full node; however, it **_does not support Dash Platform's proofs_**. The Rust DAPI
+> client can also perform read operations without a full node if proofs are not requested. See the [DAPI client example](#dapi-client-example) below for details.
 
 ## Create a new project
 
@@ -63,7 +98,85 @@ rs-dapi-client = { git = "https://github.com/dashpay/platform" }
 dpp = { git = "https://github.com/dashpay/platform", features = ["client",] }
 ```
 
-Open `src/main.rs` and replace its contents with this code:
+Open `src/main.rs` and replace the contents with this code:
+
+```rust
+use dash_sdk::{
+    platform::{Fetch, Identifier},
+    Sdk, SdkBuilder,
+};
+use dpp::{
+    identity::accessors::IdentityGettersV0, platform_value::string_encoding::Encoding,
+    prelude::Identity,
+};
+use rs_dapi_client::{AddressList, Uri};
+use std::error::Error;
+
+pub fn setup_sdk() -> Result<Sdk, Box<dyn Error>> {
+    let dapi_addresses = "https://52.42.202.128:1443";
+    let sdk = SdkBuilder::new(AddressList::from_iter([dapi_addresses.parse::<Uri>()?]))
+        .with_core("127.0.0.1", 19998, "user", "pass")
+        .build()
+        .expect("Failed to build SDK");
+
+    Ok(sdk)
+}
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn Error>> {
+    let sdk = setup_sdk()?;
+
+    let identity_id = Identifier::from_string(
+        "2rEwrPmMBqdYzFwtofrPd8RtMCotcKFxRoATkqqQeW7P",
+        Encoding::Base58,
+    )?;
+
+    match Identity::fetch(&sdk, identity_id).await {
+        Ok(Some(identity)) => {
+            println!("Identity id: {}", identity.id());
+            println!("Identity balance: {}", identity.balance());
+        }
+        Ok(None) => {
+            eprintln!("Identity not found: {}", identity_id);
+        }
+        Err(e) => {
+            eprintln!("Error fetching data from Platform: {}", e);
+        }
+    }
+
+    Ok(())
+}
+```
+
+Build and run the project:
+
+```shell
+cargo run
+```
+
+You should see output similar to:
+
+```text
+Identity id: 2rEwrPmMBqdYzFwtofrPd8RtMCotcKFxRoATkqqQeW7P
+Identity balance: 932523994
+```
+
+## DAPI client example
+
+This example demonstrates how to retrieve an identity from Dash Platform using the Rust DAPI client. It does not request or check proofs for the retrieved data, but it does not require a connection to a Dash Core full node.
+
+Add the following dependencies to `Cargo.toml`:
+
+``` toml
+[dependencies]
+dash-sdk = { git = "https://github.com/dashpay/platform" }
+tokio = { version = "1", features = ["full"] }
+dapi-grpc = { git = "https://github.com/dashpay/platform", features = ["client",] }
+rs-dapi-client = { git = "https://github.com/dashpay/platform" }
+dpp = { git = "https://github.com/dashpay/platform", features = ["client",] }
+```
+
+Open `src/main.rs` and replace the contents with this code:
 
 ```rust
 use dapi_grpc::platform::v0::{
@@ -104,7 +217,7 @@ async fn fetch_identity(identity_id: Identifier, sdk: &Sdk) -> Result<(), Box<dy
         version: Some(dapi_grpc::platform::v0::get_identity_request::Version::V0(
             GetIdentityRequestV0 {
                 id: identity_id.to_vec(),
-                prove: false,
+                prove: false, // Request data without proof
             },
         )),
     };
