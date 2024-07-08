@@ -161,6 +161,12 @@ Identity id: 2rEwrPmMBqdYzFwtofrPd8RtMCotcKFxRoATkqqQeW7P
 Identity balance: 932523994
 ```
 
+## SDK documentation
+
+> 🚧 Work in progress
+>
+> SDK documentation will be available on docs.rs once the Dash SDK crate is published. Meanwhile, the [pre-release documentation](https://dashpay.github.io/docs-platform/dash_sdk/) is available for reference. Please keep in mind that it is incomplete and may be outdated.
+
 ## DAPI client example
 
 This example demonstrates how to retrieve an identity from Dash Platform using the Rust DAPI client. It does not request or check proofs for the retrieved data, but it does not require a connection to a Dash Core full node.
@@ -258,9 +264,3 @@ Identity bytes: [0, 27, 120, 234, 64, 77, 128, 39, 95, 97, 84, 3, 190, 94, 195, 
 Protocol version: 1
 Identity fetched successfully.
 ```
-
-## SDK documentation
-
-> 🚧 Work in progress
->
-> SDK documentation will be available on docs.rs once the Dash SDK crate is published. Meanwhile, the [pre-release documentation](https://dashpay.github.io/docs-platform/dash_sdk/) is available for reference. Please keep in mind that it is incomplete and may be outdated.

@@ -181,7 +181,7 @@ Previous Version of Docs <https://docs.dash.org/projects/platform/en/0.24.0/docs
 ```{toctree}
 :maxdepth: 2
 :titlesonly:
-:caption: Dash SDK
+:caption: JavaScript SDK
 :hidden:
 
 sdk-js/overview
@@ -195,19 +195,20 @@ sdk-js/wallet/wallet
 ```{toctree}
 :maxdepth: 2
 :titlesonly:
+:caption: Rust SDK
+:hidden:
+
+sdk-rs/overview
+sdk-rs/quick-start
+```
+
+```{toctree}
+:maxdepth: 2
+:titlesonly:
 :caption: DAPI Client
 :hidden:
 
 dapi-client-js/overview
 dapi-client-js/quick-start
 dapi-client-js/usage/usage
-```
-
-```{toctree}
-:maxdepth: 2
-:titlesonly:
-:caption: Rust SDK
-:hidden:
-
-sdk-rs/quick-start
 ```
