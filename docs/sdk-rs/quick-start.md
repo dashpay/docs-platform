@@ -47,7 +47,7 @@ it is possible, although not recommended, to retrieve data from Dash Platform wi
 - [Dash Core installation instructions](inv:user:std#dashcore-installation)
 - [Running Dash Core on Testnet](inv:user:std#dashcore-testnet)
 
-Located the `dash.conf` file by right-clicking the Dash Core icon and selecting `Open Wallet Configuration File`. Configure it as shown below (replace `***` with a username and password of your choice):
+Locate the `dash.conf` file by right-clicking the Dash Core icon and selecting `Open Wallet Configuration File`. Configure it as shown below (replace `<username>` and `<password>` with values of your choice):
 
 ```ini
 testnet=1
@@ -56,8 +56,8 @@ testnet=1
 server=1
 listen=1
 rpcallowip=127.0.0.1
-rpcuser=***
-rpcpassword=***
+rpcuser=<user>
+rpcpassword=<password>
 ```
 
 Restart Dash Core to apply the changes.
