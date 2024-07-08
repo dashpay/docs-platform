@@ -16,8 +16,9 @@ sudo unzip protoc-*-linux-x86_64.zip -d /usr/local
 
 ### Install Rustup
 
-Rustup is the [recommended tool](https://www.rust-lang.org/tools/install) to install Rust and keep it updated. To download Rustup and install
-Rust, run the following in your terminal, then follow the on-screen instructions:
+Rustup is the [recommended tool](https://www.rust-lang.org/tools/install) to install Rust and keep
+it updated. To download Rustup and install Rust, run the following in your terminal, then follow the
+on-screen instructions:
   
 ```shell
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
@@ -47,7 +48,9 @@ it is possible, although not recommended, to retrieve data from Dash Platform wi
 - [Dash Core installation instructions](inv:user:std#dashcore-installation)
 - [Running Dash Core on Testnet](inv:user:std#dashcore-testnet)
 
-Locate the `dash.conf` file by right-clicking the Dash Core icon and selecting `Open Wallet Configuration File`. Configure it as shown below (replace `<username>` and `<password>` with values of your choice):
+Locate the `dash.conf` file by right-clicking the Dash Core icon and selecting `Open Wallet
+Configuration File`. Configure it as shown below (replace `<username>` and `<password>` with values
+of your choice):
 
 ```ini
 testnet=1
@@ -69,7 +72,8 @@ Restart Dash Core to apply the changes.
 >
 > The [JavaScript SDK](../tutorials/introduction.md) provides access to Dash Platform without
 > requiring a full node; however, it **_does not support Dash Platform's proofs_**. The Rust DAPI
-> client can also perform read operations without a full node if proofs are not requested. See the [DAPI client example](#dapi-client-example) below for details.
+> client can also perform read operations without a full node if proofs are not requested. See the
+> [DAPI client example](#dapi-client-example) below for details.
 
 ## Create a new project
 
@@ -165,11 +169,15 @@ Identity balance: 932523994
 
 > 🚧 Work in progress
 >
-> SDK documentation will be available on docs.rs once the Dash SDK crate is published. Meanwhile, the [pre-release documentation](https://dashpay.github.io/docs-platform/dash_sdk/) is available for reference. Please keep in mind that it is incomplete and may be outdated.
+> SDK documentation will be available on docs.rs once the Dash SDK crate is published. Meanwhile,
+> the [pre-release documentation](https://dashpay.github.io/docs-platform/dash_sdk/) is available
+> for reference. Please keep in mind that it is incomplete and may be outdated.
 
 ## DAPI client example
 
-This example demonstrates how to retrieve an identity from Dash Platform using the Rust DAPI client. It does not request or check proofs for the retrieved data, but it does not require a connection to a Dash Core full node.
+This example demonstrates how to retrieve an identity from Dash Platform using the Rust DAPI client.
+It does not request or check proofs for the retrieved data, but it does not require a connection to
+a Dash Core full node.
 
 Add the following dependencies to `Cargo.toml`:
 
