@@ -52,9 +52,19 @@ Identity updates only require the creation of a state transition that includes a
 
 ### Masternode Identities
 
-Dash Platform v0.22 introduced identities for masternode owners and operators, and a future release will introduce identities for masternode voters. The system automatically creates and updates these identities based on information in the layer 1 masternode registration transactions. For example, owner/operator withdraw keys on Platform are aligned with the keys assigned on the Core blockchain.
+Several features, including voting and reward distribution, are dependent on masternodes reliably having identities. Thus, Dash Platform automatically creates identities for all masternodes using information from Core chain masternode registration transactions.
 
-In a future release, the credits paid as fees for state transitions will be distributed to masternode-related identities similar to how rewards are currently distributed to masternodes on the core blockchain. Credits will be split between owner and operator in the same ratio as on layer 1, and masternode owners will also have the flexibility to further split their portion between multiple identities to support reward-sharing use cases.
+Unique identities are created for the owner, operator, and voting roles, with each one assigned the respective keys found in the masternode list. For example, owner and operator withdraw keys on Platform are set to the keys assigned on the Core blockchain. Since these identities are created automatically, their keys can only be modified using [Core masternode update transactions](inv:user:std#update-dip3-config).
+
+#### Voting
+
+All masternodes can use their identities to vote on Platform polls for contested resources (e.g. multiple parties attempting to register the same name).
+
+#### Reward distribution
+
+Evonodes receive their Platform-specific block rewards and Platform fees with their masternode identity. The credits paid as state transition fees are distributed to masternode-related identities similar to how rewards are currently distributed to masternodes on the core blockchain. Credits are split between owner and operator in the same ratio as on layer 1, and masternode owners have the flexibility to further split their portion between multiple identities to support reward-sharing use cases.
+
+Note: the payout key is associated with the masternode owner identity, so both the owner and payout keys should be controlled by the same party.
 
 ## Credits
 
