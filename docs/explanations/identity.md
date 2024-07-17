@@ -42,10 +42,6 @@ The identity balance topup process works in a similar way to the initial identit
 
 ### Identity Update Process
 
-> 👍
->
-> Added in Dash Platform Protocol v0.23
-
 Identity owners may find it necessary to update their identity keys periodically for security purposes. The [identity update state transition](https://github.com/dashpay/dips/blob/master/dip-0011.md#identity-update-transition) enables users to add new keys and disable existing ones.
 
 Identity updates only require the creation of a state transition that includes a list of keys being added and/or disabled. Platform retains disabled keys so that any existing data they signed can still be verified while preventing them from signing new data.
@@ -68,12 +64,8 @@ Note: the payout key is associated with the masternode owner identity, so both t
 
 ## Credits
 
-> 👍  Added in Dash Platform Protocol v0.13
->
-> DPP v0.13 introduced the initial implementation of credits. Future releases will expand the functionality available.
-
-As mentioned above, credits provide the mechanism for paying fees that cover the cost of platform usage. Once a user locks Dash on the core blockchain and proves ownership of the locked value in an identity create or topup transaction, their credit balance increases by that amount. As they perform platform actions, these credits are deducted to pay the associated fees.
+DPP v0.13 introduced the initial implementation of credits. As mentioned above, credits provide the mechanism for paying fees that cover the cost of platform usage. Once a user locks Dash on the core blockchain and proves ownership of the locked value in an identity create or topup transaction, their credit balance increases by that amount. As they perform platform actions, these credits are deducted to pay the associated fees.
 
 > 📘
 >
-> As of Dash Platform Protocol v0.13, credits deducted to pay state transition fees cannot be converted by masternodes back into Dash. This aspect of the credit system will come in a future release.
+> As of Dash Platform Protocol v1.0, credits deducted to pay state transition fees cannot be converted by masternodes back into Dash. This aspect of the credit system will come in a future release.
