@@ -54,7 +54,7 @@ Unique identities are created for the owner, operator, and voting roles, with ea
 
 #### Voting
 
-All masternodes can use their identities to vote on Platform polls for contested resources (e.g. multiple parties attempting to register the same name).
+All masternodes can use their identities to vote on Platform polls for contested resources. In Platform v1.0, masternode voting is used to resolve cases where multiple identities attempt to register the same [DPNS name](./dpns.md).
 
 #### Reward distribution
 
