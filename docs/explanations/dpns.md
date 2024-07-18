@@ -33,6 +33,17 @@ In the pre-order phase, the domain name is salted to obscure the actual domain n
 
 In the registration phase, the domain name (e.g. `alice.dash`) is once again submitted along with the salt used in the pre-order. The salt serves as proof that the registration is from the user that submitted the pre-order. This registration also references the identity being associated with the domain name to complete the identity-domain link.
 
+### Conflict resolution
+
+Since some names may be popular, the registration process includes a voting mechanism to resolve conflicts when multiple identities request the same name. This is only done for names that meet both of the following conditions:
+
+* The name is less than 20 characters long
+* The name contains no numbers greater than two
+
+If only one identity requests the name, they will receive it after a one week waiting period. If multiple identities request the name, a weeklong voting period will begin one week after the first request was received. Masternodes and evonodes can vote for one of the identities or vote to lock the request. After voting concludes, the name is either awarded to one of the identities or locked. In Dash Platform v1.0, locked names can no longer be requested or awarded.
+
+Identities requesting contested names must pay a fee (200 credits) to request ownership. This fee is used to cover the masternode voting costs.
+
 ### Implementation
 
 DPNS names have several constraints as defined in the [DPNS data contract](https://github.com/dashevo/platform/blob/master/packages/dpns-contract/schema/dpns-contract-documents.json). The constraints provide compatibility with DNS and protection from homograph attacks:
