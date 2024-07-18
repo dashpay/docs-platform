@@ -29,7 +29,11 @@ To prevent [front-running](https://en.wikipedia.org/wiki/Domain_name_front_runni
 1. Pre-ordering the domain name
 2. Registering the domain name
 
+#### Domain pre-order
+
 In the pre-order phase, the domain name is salted to obscure the actual domain name being registered (e.g. `hash('alice.dash' + salt)`) and submitted to platform. This is done to prevent masternodes from seeing the names being registered and "stealing" them for later resale. Once the pre-order receives a sufficient number of confirmations, the registration can proceed.
+
+#### Domain registration
 
 In the registration phase, the domain name (e.g. `alice.dash`) is once again submitted along with the salt used in the pre-order. The salt serves as proof that the registration is from the user that submitted the pre-order. This registration also references the identity being associated with the domain name to complete the identity-domain link.
 
@@ -46,7 +50,7 @@ Identities requesting contested names must pay a fee (200 credits) to request ow
 
 ### Implementation
 
-DPNS names have several constraints as defined in the [DPNS data contract](https://github.com/dashevo/platform/blob/master/packages/dpns-contract/schema/dpns-contract-documents.json). The constraints provide compatibility with DNS and protection from homograph attacks:
+DPNS names have several constraints as defined in the [DPNS data contract](https://github.com/dashpay/platform/blob/v1.0.0-beta.3/packages/dpns-contract/schema/v1/dpns-contract-documents.json). The constraints provide compatibility with DNS and protection from homograph attacks:
 
 * Maximum length - 63 characters
 * Character set - `0-9`, `-` (hyphen), and `A-Z` (case insensitive)
