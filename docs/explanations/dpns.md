@@ -59,18 +59,28 @@ DPNS names have several constraints as defined in the [DPNS data contract](https
 
 Additional validation rules related to the `domain` document are enforced by the DPNS [data triggers](../explanations/platform-protocol-data-trigger.md) defined in [rs-drive-abci](https://github.com/dashpay/platform/tree/master/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/documents_batch/data_triggers/triggers).
 
-### Contract Diagram
-
-This is a visualization of the JSON data contract as UML class diagram for better understanding of the structure. The left side shows the `domain` document and the right side shows the `preorder` document:
-
 ```{eval-rst}
-.. figure:: ./img/dpns-uml.png
-   :class: no-scaled-link
-   :align: center
-   :width: 90%
-   :alt: DPNS Contract Diagram
+..
+  Commented out info
+  ### Contract Diagram
 
-   DPNS Contract Diagram
+  This is a visualization of the JSON data contract as UML class diagram for better understanding of the structure. The left side shows the `domain` document and the right side shows the `preorder` document:
 ```
 
-View [a full-size copy of this diagram](./img/dpns-uml.png).
+```{eval-rst}
+..
+  Commented out info - obsolete
+  .. figure:: ./img/dpns-uml.png
+    :class: no-scaled-link
+    :align: center
+    :width: 90%
+    :alt: DPNS Contract Diagram
+
+    DPNS Contract Diagram
+```
+
+```{eval-rst}
+..
+  Commented out info - obsolete
+  View [a full-size copy of this diagram](./img/dpns-uml.png).
+```
