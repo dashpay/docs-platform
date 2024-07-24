@@ -28,23 +28,31 @@ This screen is where you can add, select, import and export [strategies](https:/
 
 ![](./img/TUI-11-2.png)
 
+### Strategy management
+
 If you select or create a strategy, you are taken to the following screen. Here you can manage the selected strategy.
 
 - "Start contract" is the number of contracts at the start of your strategy
 - "start identities" is the number of identity present at the start" - it is recommended to have a sufficient number of identities. See the end of the [strategy guide](https://www.dash.org/blog/strategy-tests-usage-guide/) 
-- "identities insert" is the number of identity inserted per block during the runtime of the strategy. 
+- "identitiy inserts" is the number of identity inserted per block during the runtime of the strategy. 
 - "operations" let you define the actions triggered during the runtime of the strategy.
 
 ![](./img/TUI-13.png)
 
+### adding operations to a strategy
 If you select "operations", you will be presented with the following screen.
-Remember that the operations added to the strategy are the total number of operation per block. If the strategy runs for 12 blocks, and 5 operations are defined in the strategy, it will total to 5 operations each block for 12 blocks = 60 operations.   
 
-- "add" lets you add specific documents, identity topups, key adds,... a specified number of time per block 
-- "register x documents to all contracts" will register x document each block to every contract that has been created in the strategy so far. This includes both "start contracts" and contracts added by the "add" option thereabove.   
-- 
+Remember that when adding a number of operations to the strategy, it is the number of operation *per block*. If the strategy runs for 12 blocks, and 5 operations are defined in the strategy, it will total to 5 operations each block for 12 blocks = 60 operations.   
+
+- "add" lets you add specific documents, identity topups, key adds,... a specified number of time per block as shown in the second screenshot below
+- "register x documents to all contracts" will register x document each block to every contract that has been created in the strategy so far. Adding 3 documents to 4 contracts will result to 12 documents being added per block. This includes both "start contracts" and contracts added by the "add" option thereabove.   
 
 ![](./img/TUI-28.png)
+
+the "add" screen:
+
+![](./img/TUI-29.png)
+
 
 ## Wallet
 
