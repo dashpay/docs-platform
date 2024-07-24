@@ -2,6 +2,8 @@
 
 - [Main screen](#main-screen)
 
+- [Identity management](#identity-management)
+
 - [Contracts](#contracts)
 
 - [Strategies](#strategies)
