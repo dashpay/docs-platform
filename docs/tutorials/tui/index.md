@@ -1,5 +1,16 @@
 # Platform TUI
 
+- [Main screen](#main-screen)
+
+- [Contracts](#contracts)
+
+- [Strategies](#strategies)
+
+- [Wallet](#wallet)
+
+- [Platform information](#platform-information)
+
+
 ## Main screen
 
 This screen is the application's main menu. The interface provides quick navigation options and a summary of essential information.
