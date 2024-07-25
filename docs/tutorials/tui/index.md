@@ -4,7 +4,7 @@
 
 This screen is the application's main menu. The interface provides quick navigation options and a summary of essential information.
 
-![](./img/TUI-1.png)
+![Main screen](./img/TUI-1.png)
 
 Click an option below to jump to the section describing it in more detail:
 
@@ -18,19 +18,19 @@ Click an option below to jump to the section describing it in more detail:
 
 This screen is where identity operations are done, including requesting IDs, transfering credits, and registering a [DPNS name](https://docs.dash.org/projects/platform/en/stable/docs/explanations/dpns.html). Press `p` to enable proofs.
 
-![](./img/TUI-2.png)
+![Identities screen](./img/TUI-2.png)
 
 ## Contracts
 
 This screen is where you will add, manage and remove [contracts](https://docs.dash.org/projects/platform/en/stable/docs/tutorials/contracts-and-documents.html). System contracts encompass [Dashpay](https://docs.dash.org/projects/platform/en/stable/docs/explanations/dashpay.html) and [DPNS](https://docs.dash.org/projects/platform/en/stable/docs/explanations/dpns.html) contracts as of today, other contracts must be fetched by ID.
 
-![](./img/TUI-8.png)
+![Contracts screen](./img/TUI-8.png)
 
 ## Strategies
 
 This screen is where you can add, select, import and export [strategies](https://www.dash.org/blog/strategy-tests-usage-guide/).
 
-![](./img/TUI-11-2.png)
+![Strategies screen](./img/TUI-11-2.png)
 
 ### Strategy management
 
@@ -41,7 +41,7 @@ If you select or create a strategy, you are taken to the following screen. Here 
 - "Identitiy inserts" is the number of identities inserted per block during the runtime of the strategy
 - "Operations" let you define the actions triggered during the runtime of the strategy
 
-![](./img/TUI-13.png)
+![Strategy management screen](./img/TUI-13.png)
 
 ### Adding operations to a strategy
 
@@ -52,11 +52,11 @@ Remember that when adding a number of operations to the strategy, it is the numb
 - "Add" lets you add specific documents, identity topups, key adds,... a specified number of time per block as shown in the second screenshot below
 - "Register x documents to all contracts" will register x document each block to every contract that has been created in the strategy so far. Adding 3 documents to 4 contracts will result to 12 documents being added per block. This includes both "start contracts" and contracts added by the "add" option.
 
-![](./img/TUI-28.png)
+![Operations screen](./img/TUI-28.png)
 
 "Add" screen:
 
-![](./img/TUI-29.png)
+![Add strategy screen](./img/TUI-29.png)
 
 ## Wallet
 
@@ -67,10 +67,10 @@ This screen lets you see a loaded wallet's information. You can:
 - Split the UTXOs currently in your wallet into a desired number of UTXOs with "Get more utxos". This is helpful for strategies that require many asset lock proofs.
 - Load evonode identities (identities capable of masternode voting)
 
-![](./img/TUI-43.png)
+![Wallet screen](./img/TUI-43.png)
 
 ## Platform information
 
 This screen lets you see information on the epochs and the current version voting
 
-![](./img/TUI-49.png)
+![Platform information screen](./img/TUI-49.png)
