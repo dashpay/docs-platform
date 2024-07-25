@@ -69,7 +69,15 @@ the "add" screen:
 
 ## Wallet
 
-This screen lets you see a loaded wallet's information. You can register and load identities here as well as getting more utxos and loading an evonode identity
+This screen lets you see a loaded wallet's information. You can: 
+
+- register identities here as well as  and getting more utxos and loading an evonode identity
+
+- loading previously registered identities
+
+- load evonode identities (identities capable of masternode voting)
+
+- split down the current utxos in your wallet into a desired amount of utxos with "get more utxos". (This comes in handy for strategies which require a lot of asset lock proofs)
 
 ![](./img/TUI-43.png)
 
