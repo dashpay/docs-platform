@@ -20,6 +20,12 @@ This screen is the application's main menu. The interface provides quick navigat
 
 ![](./img/TUI-1.png)
 
+Click an option below to jump to the section describing it in more detail:
+- [Identity management](#identity-management)
+- [Contracts](#contracts)
+- [Strategies](#strategies)
+- [Wallet](#wallet)
+- [Platform information](#platform-information)
 
 ## Identity management
 
