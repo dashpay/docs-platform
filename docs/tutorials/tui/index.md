@@ -1,18 +1,5 @@
 # Platform TUI
 
-- [Main screen](#main-screen)
-
-- [Identity management](#identity-management)
-
-- [Contracts](#contracts)
-
-- [Strategies](#strategies)
-
-- [Wallet](#wallet)
-
-- [Platform information](#platform-information)
-
-
 ## Main screen
 
 This screen is the application's main menu. The interface provides quick navigation options and a summary of essential information.
@@ -51,24 +38,25 @@ This screen is where you can add, select, import and export [strategies](https:/
 
 If you select or create a strategy, you are taken to the following screen. Here you can manage the selected strategy.
 
+- "Start identities" is the number of identities present at the start of your strategy - it is recommended to have a sufficient number of identities. See the end of the [strategy guide](https://www.dash.org/blog/strategy-tests-usage-guide/) for suggestions
 - "Start contract" is the number of contracts at the start of your strategy
-- "start identities" is the number of identity present at the start" - it is recommended to have a sufficient number of identities. See the end of the [strategy guide](https://www.dash.org/blog/strategy-tests-usage-guide/) 
-- "identitiy inserts" is the number of identity inserted per block during the runtime of the strategy. 
-- "operations" let you define the actions triggered during the runtime of the strategy.
+- "Identitiy inserts" is the number of identities inserted per block during the runtime of the strategy
+- "Operations" let you define the actions triggered during the runtime of the strategy
 
 ![](./img/TUI-13.png)
 
-### adding operations to a strategy
-If you select "operations", you will be presented with the following screen.
+### Adding operations to a strategy
+
+If you select "Operations", you will be presented with the following screen.
 
 Remember that when adding a number of operations to the strategy, it is the number of operation *per block*. If the strategy runs for 12 blocks, and 5 operations are defined in the strategy, it will total to 5 operations each block for 12 blocks = 60 operations.   
 
-- "add" lets you add specific documents, identity topups, key adds,... a specified number of time per block as shown in the second screenshot below
-- "register x documents to all contracts" will register x document each block to every contract that has been created in the strategy so far. Adding 3 documents to 4 contracts will result to 12 documents being added per block. This includes both "start contracts" and contracts added by the "add" option thereabove.   
+- "Add" lets you add specific documents, identity topups, key adds,... a specified number of time per block as shown in the second screenshot below
+- "Register x documents to all contracts" will register x document each block to every contract that has been created in the strategy so far. Adding 3 documents to 4 contracts will result to 12 documents being added per block. This includes both "start contracts" and contracts added by the "add" option.   
 
 ![](./img/TUI-28.png)
 
-the "add" screen:
+"Add" screen:
 
 ![](./img/TUI-29.png)
 
@@ -77,13 +65,10 @@ the "add" screen:
 
 This screen lets you see a loaded wallet's information. You can: 
 
-- register identities here as well as  and getting more utxos and loading an evonode identity
-
-- loading previously registered identities
-
-- load evonode identities (identities capable of masternode voting)
-
-- split down the current utxos in your wallet into a desired amount of utxos with "get more utxos". (This comes in handy for strategies which require a lot of asset lock proofs)
+- Register identities
+- Load previously registered identities
+- Split the UTXOs currently in your wallet into a desired number of UTXOs with "Get more utxos". This is helpful for strategies that require many asset lock proofs.
+- Load evonode identities (identities capable of masternode voting)
 
 ![](./img/TUI-43.png)
 
