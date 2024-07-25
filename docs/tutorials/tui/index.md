@@ -1,9 +1,11 @@
-# Platform TUI
+# Terminal user interface (TUI)
 
-The Dash Platform Terminal User Interface (TUI) is a Rust-based user interface for interacting with
-Dash Platform in the terminal. Its purpose is to enable users to perform all actions permitted by
-Dash Platform, which, broadly speaking, means broadcasting state transitions and querying the
-network.
+The Dash Platform [Terminal User Interface (TUI)](https://github.com/dashpay/platform-tui) is a
+Rust-based application for interacting with Dash Platform in the terminal. Its purpose is to enable
+users to perform all actions permitted by Dash Platform, which, broadly speaking, means broadcasting
+state transitions and querying the network. The repository can be [cloned from
+GitHub](https://github.com/dashpay/platform-tui) and built according to the instructions found
+there.
 
 ## Main screen
 
