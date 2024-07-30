@@ -4,26 +4,11 @@
 
 # Dash masternode
 
-The purpose of this tutorial is to walk through the steps necessary to set up a masternode with Dash Platform services.
+The purpose of this tutorial is to walk through the steps necessary to set up a development node with Dash Platform services.
 
-## Prerequisites
+## Installation
 
-- [Docker](https://docs.docker.com/engine/install/) (v20.10.0+) and [docker-compose](https://docs.docker.com/compose/install/) (v1.25.0+) installed
-- An installation of [NodeJS](https://nodejs.org/en/download/) (v20, NPM v8.0+)
-
-The following is not necessary for setting up a local network for development, but is helpful if setting up a testnet masternode:
-
-- Access to a Linux system configured with a non-root user ([guide](https://docs.dash.org/en/stable/masternodes/setup.html#set-up-your-vps))
-
-> 📘
->
-> More comprehensive details of using the dashmate tool can be found in the [dashmate README](https://github.com/dashevo/platform/tree/master/packages/dashmate).
-
-Use NPM to install dashmate globally in your system:
-
-```shell
-npm install -g dashmate
-```
+Please follow the steps in [the installation section](https://docs.dash.org/en/stable/docs/user/network/dashmate/index.html#installation) of dashmate documentation.
 
 ## Local Network
 
