@@ -55,4 +55,4 @@ Data created by users of the application is validated and verified against this 
 
 The source is available on GitHub:
 
-- Drive: <https://github.com/dashpay/platform/tree/master/packages/js-drive>
+- Drive: <https://github.com/dashpay/platform/tree/master/packages/rs-drive>
