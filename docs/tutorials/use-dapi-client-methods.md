@@ -12,7 +12,7 @@ In addition to the SDK methods for interacting with identities, names, contracts
 
 # Code
 
-The following example demonstrates several of the Core DAPI client methods. DAPI client also has several Platform methods accessible via `getDAPIClient().platform.*`. The methods can be found here in the [js-dapi-client repository](https://github.com/dashevo/platform/tree/master/packages/js-dapi-client/lib/methods).
+The following example demonstrates several of the Core DAPI client methods. DAPI client also has several Platform methods accessible via `getDAPIClient().platform.*`. The methods can be found here in the [js-dapi-client repository](https://github.com/dashpay/platform/tree/master/packages/js-dapi-client/lib/methods).
 
 ```javascript
 const Dash = require('dash');

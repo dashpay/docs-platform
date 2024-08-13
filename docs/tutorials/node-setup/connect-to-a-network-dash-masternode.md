@@ -149,7 +149,7 @@ To setup a testnet masternode, please refer to the comprehensive documentation o
     </div>
 ```
 
-A full node that with all Platform services can be started by simply running the setup command with the [node type setup parameter](https://github.com/dashevo/platform/tree/master/packages/dashmate#setup-node) set to  `fullnode` and then starting the node.
+A full node that with all Platform services can be started by simply running the setup command with the [node type setup parameter](https://github.com/dashpay/platform/tree/master/packages/dashmate#node-setup) set to  `fullnode` and then starting the node.
 
 ``` text
 dashmate setup testnet fullnode
@@ -162,4 +162,4 @@ dashmate start
 In order to connect to a remote [devnet](../../reference/glossary.md#devnet) (e.g. one run by Dash Core Group), please use one of the methods described in the [Connect to a Devnet](../../tutorials/connecting-to-testnet.md#connect-to-a-devnet) section.
 :::
 
-For development we recommend using either a local network created via dashmate as [described above](#local-network) or using Testnet. While configuring a remote development network is possible using the Dash network deployment tool, it is beyond the scope of this documentation. For details regarding this tool, please refer to the [GitHub repository](https://github.com/dashevo/dash-network-deploy).
+For development we recommend using either a local network created via dashmate as [described above](#local-network) or using Testnet. While configuring a remote development network is possible using the Dash network deployment tool, it is beyond the scope of this documentation. For details regarding this tool, please refer to the [GitHub repository](https://github.com/dashpay/dash-network-deploy).
