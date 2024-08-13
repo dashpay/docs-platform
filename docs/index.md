@@ -172,11 +172,11 @@ protocol-ref/errors
 :hidden:
 
 resources/repository-overview
-Testnet Block Explorer <https://testnet-insight.dashevo.org/insight/>
+Testnet Block Explorer <https://insight.testnet.networks.dash.org:3002/insight/>
 Testnet Faucet <http://faucet.testnet.networks.dash.org/>
 JavaScript SDK <https://github.com/dashpay/platform/tree/master/packages/js-dash-sdk#readme>
 resources/source-code
-Previous Version of Docs <https://docs.dash.org/projects/platform/en/0.24.0/docs/>
+Previous Version of Docs <https://docs.dash.org/projects/platform/en/0.25.0/docs/>
 ```
 
 ```{toctree}

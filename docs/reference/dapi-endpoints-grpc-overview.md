@@ -16,7 +16,7 @@ Clients for a number of languages are built automatically from the protocol defi
 
 Some examples shown in the endpoint details pages use a command-line tool named [gRPCurl](https://github.com/fullstorydev/grpcurl) that allows interacting with gRPC servers in a similar way as `curl` does for the [JSON-RPCs](../reference/dapi-endpoints-json-rpc-endpoints.md). Additional information may be found in the [gRPC documentation](https://grpc.io/docs/guides/).
 
-To use gRPCurl as shown in the detailed examples, clone the [platform](https://github.com/dashevo/platform/) repository and execute the example requests from the `packages/dapi-grpc` directory of that repository as shown in this example:
+To use gRPCurl as shown in the detailed examples, clone the [platform](https://github.com/dashpay/platform/) repository and execute the example requests from the `packages/dapi-grpc` directory of that repository as shown in this example:
 
 ```shell
 ## Clone the dapi-grpc repository

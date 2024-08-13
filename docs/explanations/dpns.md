@@ -56,7 +56,7 @@ DPNS names have several constraints as defined in the [DPNS data contract](https
 
 * Maximum length - 63 characters
 * Character set - `0-9`, `-` (hyphen), and `A-Z` (case insensitive)
-  * Note: Use of `-` as a prefix/suffix to a name is _not_ allowed (e.g. `-name` or `name-`). This constraint is defined by this JSON-Schema [pattern](https://github.com/dashevo/platform/blob/master/packages/dpns-contract/schema/dpns-contract-documents.json#L38) in the DPNS data contract: `^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]$`
+  * Note: Use of `-` as a prefix/suffix to a name is _not_ allowed (e.g. `-name` or `name-`). This constraint is defined by this JSON-Schema [pattern](https://github.com/dashpay/platform/blob/master/packages/dpns-contract/schema/dpns-contract-documents.json#L38) in the DPNS data contract: `^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]$`
 * Domain labels are converted to lowercase for case-insensitive uniqueness validation. Then, "o", "i" and "l" replaced with "0" and "1" to mitigate [homograph attacks](https://en.wikipedia.org/wiki/IDN_homograph_attack). For example, "Alice" is normalized "a11ce".
 
 Additional validation rules related to the `domain` document are enforced by the DPNS [data triggers](../explanations/platform-protocol-data-trigger.md) defined in [rs-drive-abci](https://github.com/dashpay/platform/tree/master/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/documents_batch/data_triggers/triggers).

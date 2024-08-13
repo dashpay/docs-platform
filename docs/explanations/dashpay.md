@@ -81,7 +81,7 @@ used to store private information about other Dash identities.
 ### Implementation
 
 DashPay has many constraints as defined in the [DashPay data
-contract](https://github.com/dashevo/platform/blob/master/packages/dashpay-contract/schema/dashpay.schema.json).
+contract](https://github.com/dashpay/platform/blob/master/packages/dashpay-contract/schema/dashpay.schema.json).
 Additionally, the DashPay data triggers defined in
 [rs-drive-abci](https://github.com/dashpay/platform/tree/master/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/documents_batch/data_triggers/triggers/dashpay)
 enforce additional validation rules related to the `contactRequest` document.

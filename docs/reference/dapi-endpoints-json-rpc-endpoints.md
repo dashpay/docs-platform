@@ -363,4 +363,4 @@ There are no recently deprecated endpoint, but the previous version of documenta
 
 Implementation details related to the information on this page can be found in:
 
-- The [DAPI repository](https://github.com/dashevo/platform/tree/master/packages/dapi) `lib/rpcServer/commands` folder
+- The [DAPI repository](https://github.com/dashpay/platform/tree/master/packages/dapi) `lib/rpcServer/commands` folder

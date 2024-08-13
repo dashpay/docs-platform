@@ -18,7 +18,7 @@ Data contracts are owned by the [identity](../explanations/identity.md) that reg
 
 ### Structure
 
-Each data contract must define several fields. When using the [reference implementation](https://github.com/dashevo/platform/tree/master/packages/rs-dpp) of the Dash Platform Protocol, some of these fields are automatically set to a default value and do not have to be explicitly provided. These include:
+Each data contract must define several fields. When using the [reference implementation](https://github.com/dashpay/platform/tree/master/packages/rs-dpp) of the Dash Platform Protocol, some of these fields are automatically set to a default value and do not have to be explicitly provided. These include:
 
 * The platform protocol schema it uses
 * A contract ID (generated from a hash of the data contract's owner identity plus some entropy)
@@ -62,7 +62,7 @@ Dash Platform v0.22 added the ability to update existing data contracts in certa
 
 ## Example Contract
 
-The [DashPay contract](https://github.com/dashevo/platform/blob/master/packages/dashpay-contract/schema/dashpay.schema.json) is included below for reference. It defines a `contact` document and a `profile` document. Each of these documents then defines the properties and indices they require:
+The [DashPay contract](https://github.com/dashpay/platform/blob/master/packages/dashpay-contract/schema/dashpay.schema.json) is included below for reference. It defines a `contact` document and a `profile` document. Each of these documents then defines the properties and indices they require:
 
 ```json
 {

@@ -10,9 +10,9 @@ Generally queries will consist of a `where` clause plus optional [modifiers](#qu
 
 > 🚧 Query limitations
 >
-> Dash Platform v0.22 introduced a number of limitations due to the switch to using [GroveDB](https://github.com/dashevo/grovedb). See details in pull requests [77](https://github.com/dashevo/platform/pull/77) and [230](https://github.com/dashevo/platform/pull/230) that implemented these changes.
+> Dash Platform v0.22 introduced a number of limitations due to the switch to using [GroveDB](https://github.com/dashpay/grovedb). See details in pull requests [77](https://github.com/dashpay/platform/pull/77) and [230](https://github.com/dashpay/platform/pull/230) that implemented these changes.
 >
-> Query validation details may be found [here](https://github.com/dashevo/platform/blob/master/packages/js-drive/lib/document/query/validateQueryFactory.js) along with the associated validation [tests](https://github.com/dashevo/platform/blob/master/packages/js-drive/test/unit/document/query/validateQueryFactory.spec.js).
+> Query validation details may be found [here](https://github.com/dashpay/platform/blob/master/packages/js-drive/lib/document/query/validateQueryFactory.js) along with the associated validation [tests](https://github.com/dashpay/platform/blob/master/packages/js-drive/test/unit/document/query/validateQueryFactory.spec.js).
 
 ## Where Clause
 
@@ -33,13 +33,13 @@ The Where clause must be a non-empty array containing not more than 10 condition
 
 ### Fields
 
-Valid fields consist of the indices defined for the document being queried. For example, the [DPNS data contract](https://github.com/dashevo/platform/blob/master/packages/dpns-contract/schema/dpns-contract-documents.json) defines three indices:
+Valid fields consist of the indices defined for the document being queried. For example, the [DPNS data contract](https://github.com/dashpay/platform/blob/master/packages/dpns-contract/schema/dpns-contract-documents.json) defines three indices:
 
 | Index Field(s) | Index Type | Unique |
 | - | - | :-: |
-| [normalizedParentDomainName, normalizedLabel](https://github.com/dashevo/platform/blob/master/packages/dpns-contract/schema/dpns-contract-documents.json#L5-L16) | Compound | Yes |
-| [records.dashUniqueIdentityId](https://github.com/dashevo/platform/blob/master/packages/dpns-contract/schema/dpns-contract-documents.json#L17-L25) | Single Field | Yes |
-| [records.dashAliasIdentityId](https://github.com/dashevo/platform/blob/master/packages/dpns-contract/schema/dpns-contract-documents.json#L26-L33) | Single Field | No |
+| [normalizedParentDomainName, normalizedLabel](https://github.com/dashpay/platform/blob/master/packages/dpns-contract/schema/dpns-contract-documents.json#L5-L16) | Compound | Yes |
+| [records.dashUniqueIdentityId](https://github.com/dashpay/platform/blob/master/packages/dpns-contract/schema/dpns-contract-documents.json#L17-L25) | Single Field | Yes |
+| [records.dashAliasIdentityId](https://github.com/dashpay/platform/blob/master/packages/dpns-contract/schema/dpns-contract-documents.json#L26-L33) | Single Field | No |
 
 ```{eval-rst}
 ..
@@ -123,7 +123,7 @@ Valid fields consist of the indices defined for the document being queried. For 
 
 ```json length
 // Not available in Dash Platform v0.22
-// See https://github.com/dashevo/platform/pull/77
+// See https://github.com/dashpay/platform/pull/77
 {
   where: [
       // Return documents that have 5 values in their `items` array
@@ -134,7 +134,7 @@ Valid fields consist of the indices defined for the document being queried. For 
 
 ```json contains
 // Not available in Dash Platform v0.22
-// See https://github.com/dashevo/platform/pull/77
+// See https://github.com/dashpay/platform/pull/77
 {
   where: [
       // Return documents that have both "red" and "blue" 
@@ -146,7 +146,7 @@ Valid fields consist of the indices defined for the document being queried. For 
 
 ```json elementMatch
 // Not available in Dash Platform v0.22
-// See https://github.com/dashevo/platform/pull/77
+// See https://github.com/dashpay/platform/pull/77
 {
   where: [
     // Return `scores` documents where the results contain 
@@ -178,9 +178,9 @@ The query modifiers described here determine how query results will be sorted an
 
 > 🚧 Compound Index Constraints
 >
-> For indices composed of multiple fields ([example from the DPNS data contract](https://github.com/dashevo/platform/blob/master/packages/dpns-contract/schema/dpns-contract-documents.json)), the sort order in an `orderBy` must either match the order defined in the data contract OR be the inverse order.
+> For indices composed of multiple fields ([example from the DPNS data contract](https://github.com/dashpay/platform/blob/master/packages/dpns-contract/schema/dpns-contract-documents.json)), the sort order in an `orderBy` must either match the order defined in the data contract OR be the inverse order.
 >
-> Please refer to [pull request 230](https://github.com/dashevo/platform/pull/230) for additional information related to compound index constraints in Platform v0.22.
+> Please refer to [pull request 230](https://github.com/dashpay/platform/pull/230) for additional information related to compound index constraints in Platform v0.22.
 
 ## Example query
 

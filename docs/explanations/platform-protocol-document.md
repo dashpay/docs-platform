@@ -14,7 +14,7 @@ Documents are defined in an application's [Data Contract](../explanations/platfo
 
 ### Base Fields
 
-Dash Platform Protocol (DPP) defines a set of base fields that must be present in all documents. For the [reference implementation](https://github.com/dashevo/platform/tree/master/packages/rs-dpp), the base fields shown below are defined in the [document base schema](https://github.com/dashevo/platform/blob/master/packages/rs-dpp/src/schema/document/v0/documentBase.json).
+Dash Platform Protocol (DPP) defines a set of base fields that must be present in all documents. For the [reference implementation](https://github.com/dashpay/platform/tree/master/packages/rs-dpp), the base fields shown below are defined in the [document base schema](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/src/schema/document/v0/documentBase.json).
 
 | Field Name | Description |
 | - | - |
@@ -32,7 +32,7 @@ Dash Platform Protocol (DPP) defines a set of base fields that must be present i
 
 ### Data Contract Fields
 
-Each application defines its own fields via document definitions in its data contract. Details of the [DPNS data contract documents](https://github.com/dashevo/platform/blob/master/packages/dpns-contract/schema/dpns-contract-documents.json) are described below as an example. This contract defines two document types (`preorder` and `domain`) and provides the functionality described in the [Name Service explanation](../explanations/dpns.md).
+Each application defines its own fields via document definitions in its data contract. Details of the [DPNS data contract documents](https://github.com/dashpay/platform/blob/master/packages/dpns-contract/schema/dpns-contract-documents.json) are described below as an example. This contract defines two document types (`preorder` and `domain`) and provides the functionality described in the [Name Service explanation](../explanations/dpns.md).
 
 | Document Type | Field Name | Data Type |
 | - | - | - |

@@ -714,14 +714,14 @@ fn sign_by_private_key(
     match key_type {
         KeyType::BLS12_381 => self.set_signature(bls.sign(&data, private_key)?.into()),
 
-        // https://github.com/dashevo/platform/blob/9c8e6a3b6afbc330a6ab551a689de8ccd63f9120/packages/js-dpp/lib/stateTransition/AbstractStateTransition.js#L169
+        // https://github.com/dashpay/platform/blob/9c8e6a3b6afbc330a6ab551a689de8ccd63f9120/packages/js-dpp/lib/stateTransition/AbstractStateTransition.js#L169
         KeyType::ECDSA_SECP256K1 | KeyType::ECDSA_HASH160 => {
             let signature = signer::sign(&data, private_key)?;
             self.set_signature(signature.to_vec().into());
         }
 
         // the default behavior from
-        // https://github.com/dashevo/platform/blob/6b02b26e5cd3a7c877c5fdfe40c4a4385a8dda15/packages/js-dpp/lib/stateTransition/AbstractStateTransition.js#L187
+        // https://github.com/dashpay/platform/blob/6b02b26e5cd3a7c877c5fdfe40c4a4385a8dda15/packages/js-dpp/lib/stateTransition/AbstractStateTransition.js#L187
         // is to return the error for the BIP13_SCRIPT_HASH
         KeyType::BIP13_SCRIPT_HASH => {
             return Err(ProtocolError::InvalidIdentityPublicKeyTypeError(
