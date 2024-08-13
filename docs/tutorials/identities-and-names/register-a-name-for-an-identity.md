@@ -8,9 +8,7 @@ The purpose of this tutorial is to walk through the steps necessary to register 
 
 ## Overview
 
-Dash Platform names make cryptographic identities easy to remember and communicate. An identity may have multiple alias names (`dashAliasIdentityId`) in addition to its default name (`dashUniqueIdentityId`). Additional details regarding identities can be found in the [Identity description](../../explanations/identity.md).
-
-**Note**: An identity must have a default name before any aliases can be created for the identity.
+Dash Platform names make cryptographic identities easy to remember and communicate by enabling them to link to one or more names. Additional details regarding identities can be found in the [Identity description](../../explanations/identity.md).
 
 ## Prerequisites
 
@@ -22,12 +20,10 @@ Dash Platform names make cryptographic identities easy to remember and communica
 
 ## Code
 
- The examples below demonstrate creating both the default name and alias names.
+:::{tip}
+The name must be the full domain name including the parent domain (i.e. `myname.dash` rather than `myname`). Currently, only the `dash` top-level domain may be used.
+:::
 
-**Note**: the name must be the full domain name including the parent domain (i.e. `myname.dash` instead of just `myname`). Currently `dash` is the only top-level domain that may be used.
-
-::::{tab-set}
-:::{tab-item} Register Name for Identity
 ```javascript
 const setupDashClient = require('../setupDashClient');
 
@@ -39,7 +35,7 @@ const registerName = async () => {
   const identity = await platform.identities.get('an identity ID goes here');
   const nameRegistration = await platform.names.register(
     '<identity name goes here>.dash',
-    { dashUniqueIdentityId: identity.getId() },
+    { identity: identity.getId() },
     identity,
   );
 
@@ -51,33 +47,6 @@ registerName()
   .catch((e) => console.error('Something went wrong:\n', e))
   .finally(() => client.disconnect());
 ```
-:::
-
-:::{tab-item} Register Alias for Identity
-```javascript
-const setupDashClient = require('../setupDashClient');
-
-const client = setupDashClient();
-
-const registerAlias = async () => {
-  const platform = client.platform;
-  const identity = await platform.identities.get('an identity ID goes here');
-  const aliasRegistration = await platform.names.register(
-    '<identity alias goes here>.dash',
-    { dashAliasIdentityId: identity.getId() },
-    identity,
-  );
-
-  return aliasRegistration;
-};
-
-registerAlias()
-  .then((d) => console.log('Alias registered:\n', d.toJSON()))
-  .catch((e) => console.error('Something went wrong:\n', e))
-  .finally(() => client.disconnect());
-```
-:::
-::::
 
 ## What's Happening
 

@@ -41,7 +41,7 @@ const client = setupDashClient();
 const retrieveNameByRecord = async () => {
   // Retrieve by a name's identity ID
   return client.platform.names.resolveByRecord(
-    'dashUniqueIdentityId',
+    'identity',
     '<identity id>',
   );
 };
@@ -78,18 +78,17 @@ retrieveNameBySearch()
 
 ## Example Name
 
-The following example response shows a retrieved name (`user-9999.dash`):
+The following example response shows a retrieved name:
 
 ```json
 {
-  "label": "Alice",
-  "normalizedLabel": "alice",
+  "label": "Tutorial-Test-Jettie-94475",
+  "normalizedLabel": "tut0r1a1-test-jett1e-94475",
   "normalizedParentDomainName": "dash",
-  "preorderSalt": "lQEiixHMO5TJmbKwKtavg6eAkxuXzvSlrs/OX9glcYI=",
+  "parentDomainName": "dash",
   "records": {
-    "dashAliasIdentityId": null,
-    "dashUniqueIdentityId": "YhCPn6pSbZ11hCiFmFL6WJkmC3GSwuUSzhS4QAy84EF"
-  },  
+    "identity": "woTQprzGS4bLqqbAhY2heG8QfD58Doo2UhDbiVVrLKG"
+  },
   "subdomainRules": {
     "allowSubdomains": false
   }
@@ -101,7 +100,7 @@ The following example response shows a retrieved name (`user-9999.dash`):
 After we initialize the Client, we request a name. The [code examples](#code) demonstrate the three ways to request a name:
 
 1. Resolve by name. The `platform.names.resolve` method takes a single argument: a fully-qualified name (e.g., `user-9999.dash`).
-2. Resolve by record. The `platform.names.resolveByRecord` method takes two arguments: the record type (e.g., `dashUniqueIdentityId`) and the record value to resolve.
+2. Resolve by record. The `platform.names.resolveByRecord` method takes two arguments: the record type (e.g., `identity`) and the record value to resolve.
 3. Search. The `platform.names.search` method takes two arguments: the leading characters of the name to search for and the domain to search (e.g., `dash` for names in the `*.dash` domain). The search will return names that begin the with string provided in the first parameter.
 
 After the name is retrieved, it is displayed on the console.
