@@ -35,11 +35,11 @@ revisions to be retrieved in the future as needed.
 
 The sixth tab shows a data contract configured for creating NFTs. It allows documents to be deleted, transferred, or traded. It also limits document creation to the contract owner. See the [NFT explanation section](../../explanations/nft.md) for more details about NFTs on Dash Platform. **_Note: the JavaScript SDK supports NFT contract registration, but does not currently support trades or transfers._**
 
-> 🚧
->
-> Since Platform v0.25.16, each document property must assign `position` value to support [backwards compatibility](https://github.com/dashpay/platform/pull/1594) for contract updates.
->
-> Since Platform v0.23, an index can [only use the ascending order](https://github.com/dashevo/platform/pull/435) (`asc`). Future updates will remove this restriction.
+:::{attention}
+Since Platform v0.25.16, each document property must assign `position` value to support [backwards compatibility](https://github.com/dashpay/platform/pull/1594) for contract updates.
+
+Since Platform v0.23, an index can [only use the ascending order](https://github.com/dashevo/platform/pull/435) (`asc`). Future updates will remove this restriction.
+:::
 
 ::::{tab-set}
 :::{tab-item} 1. Minimal contract
@@ -241,9 +241,9 @@ array of bytes (e.g. a NodeJS Buffer).
 :::
 ::::
 
-> 📘
->
-> Please refer to the [data contract reference page](../../reference/data-contracts.md) for more comprehensive details related to contracts and documents.
+:::{note
+Please refer to the [data contract reference page](../../reference/data-contracts.md) for more comprehensive details related to contracts and documents.
+:::
 
 ### Registering the data contract
 
@@ -554,9 +554,9 @@ registerContract()
 :::
 ::::
 
-> 👍
->
-> **Make a note of the returned data contract `id` as it will be used used in subsequent tutorials throughout the documentation.**
+:::{attention}
+Make a note of the returned data contract `id` as it will be used used in subsequent tutorials throughout the documentation.
+:::
 
 ## What's Happening
 
@@ -564,6 +564,7 @@ After we initialize the Client, we create an object defining the documents this 
 
 Once the data contract has been created, we still need to submit it to DAPI. The `platform.contracts.publish` method takes a data contract and an identity parameter. Internally, it creates a State Transition containing the previously created contract, signs the state transition, and submits the signed state transition to DAPI. A response will only be returned if an error is encountered.
 
-> 📘 Wallet Sync
->
-> Since the SDK does not cache wallet information, lengthy re-syncs (5+ minutes) may be required for some Core chain wallet operations. See [Wallet Operations](../setup-sdk-client.md#wallet-operations) for options.
+:::{note}
+:class: note
+Since the SDK does not cache wallet information, lengthy re-syncs (5+ minutes) may be required for some Core chain wallet operations. See [Wallet Operations](../setup-sdk-client.md#wallet-operations) for options.
+:::

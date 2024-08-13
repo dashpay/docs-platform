@@ -109,10 +109,9 @@ The following example response shows a retrieved contract history:
 ]
 ```
 
-> 📘
->
-> Please refer to the [data contract reference page](../../reference/data-contracts.md) for more
-> comprehensive details related to contracts and documents.
+:::{note}
+Please refer to the [data contract reference page](../../reference/data-contracts.md) for more comprehensive details related to contracts and documents.
+:::
 
 ## What's Happening
 

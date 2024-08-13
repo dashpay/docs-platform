@@ -17,9 +17,9 @@ Since Dash Platform v0.23, it is possible to update identities to add new keys o
 
 The two examples below demonstrate updating an existing identity to add a new key and disabling an existing key:
 
-> 🚧
->
-> The current SDK version signs all state transitions with public key id `1`. If it is disabled, the SDK will be unable to use the identity. Future SDK versions will provide a way to also sign using keys added in an identity update.
+:::{attention}
+The current SDK version signs all state transitions with public key id `1`. If it is disabled, the SDK will be unable to use the identity. Future SDK versions will provide a way to also sign using keys added in an identity update.
+:::
 
 ::::{tab-set}
 :::{tab-item} Disable identity key
@@ -116,8 +116,8 @@ After we initialize the Client, we retrieve our existing identity and set an `id
 2. An object containing the key(s) to be added
 3. An object containing the id and private key for each public key being added
 
-> 📘
->
-> When adding new public keys, they must be signed using the associated private key to prove ownership of the keys.
+:::{note}
+When adding new public keys, they must be signed using the associated private key to prove ownership of the keys.
+:::
 
 Internally, the method creates a State Transition containing the updated identity, signs the state transition, and submits the signed state transition to DAPI. After the identity is updated, we output it to the console.

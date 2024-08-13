@@ -18,9 +18,10 @@ Identities serve as the basis for interactions with Dash Platform. They consist 
 
 ## Code
 
-> 📘 Wallet Sync
->
-> Since the SDK does not cache wallet information, lengthy re-syncs (5+ minutes) may be required for some Core chain wallet operations. See [Wallet Operations](../setup-sdk-client.md#wallet-operations) for options.
+:::{note}
+:class: note
+Since the SDK does not cache wallet information, lengthy re-syncs (5+ minutes) may be required for some Core chain wallet operations. See [Wallet Operations](../setup-sdk-client.md#wallet-operations) for options.
+:::
 
 ```javascript
 const setupDashClient = require('../setupDashClient');
@@ -39,9 +40,9 @@ createIdentity()
 
 The Identity will be output to the console. The Identity will need to have one confirmation before it is accessible via `client.platform.identity.get`.
 
-> 👍
->
-> **Make a note of the returned identity `id` as it will be used used in subsequent tutorials throughout the documentation.**
+:::{attention}
+Make a note of the returned identity `id` as it will be used used in subsequent tutorials throughout the documentation.
+:::
 
 ## What's Happening
 

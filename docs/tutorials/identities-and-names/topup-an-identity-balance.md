@@ -42,6 +42,7 @@ topupIdentity()
 
 After connecting to the Client, we call `platform.identities.topUp` with an identity ID and a topup amount in duffs (1 duff = 1000 credits). This creates a lock transaction and increases the identity's credit balance by the relevant amount (minus fee). The updated balance is output to the console.
 
-> 📘 Wallet Sync
->
-> Since the SDK does not cache wallet information, lengthy re-syncs (5+ minutes) may be required for some Core chain wallet operations. See [Wallet Operations](../setup-sdk-client.md#wallet-operations) for options.
+:::{note}
+:class: note
+Since the SDK does not cache wallet information, lengthy re-syncs (5+ minutes) may be required for some Core chain wallet operations. See [Wallet Operations](../setup-sdk-client.md#wallet-operations) for options.
+:::

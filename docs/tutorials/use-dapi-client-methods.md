@@ -34,6 +34,6 @@ dapiClientMethods()
   .finally(() => client.disconnect());
 ```
 
-> 📘
->
-> Examples using DAPI client to access many of the DAPI endpoints can be found in the [DAPI Endpoint Reference section](../reference/dapi-endpoints.md).
+:::{note}
+Examples using DAPI client to access many of the DAPI endpoints can be found in the [DAPI Endpoint Reference section](../reference/dapi-endpoints.md).
+:::

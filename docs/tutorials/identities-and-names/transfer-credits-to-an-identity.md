@@ -50,6 +50,7 @@ transferCreditsToIdentity()
 
 After connecting to the Client, we call `platform.identities.creditTransfer` with our identity, the recipient's identity ID, and the amount to transfer. After the credits are transferred to the recipient, we retrieve the recipient's identity and output their updated balance to the console.
 
-> 📘 Wallet Sync
->
-> Since the SDK does not cache wallet information, lengthy re-syncs (5+ minutes) may be required for some Core chain wallet operations. See [Wallet Operations](../setup-sdk-client.md#wallet-operations) for options.
+:::{note}
+:class: note
+Since the SDK does not cache wallet information, lengthy re-syncs (5+ minutes) may be required for some Core chain wallet operations. See [Wallet Operations](../setup-sdk-client.md#wallet-operations) for options.
+:::

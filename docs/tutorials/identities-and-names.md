@@ -20,6 +20,6 @@ identities-and-names/register-a-name-for-an-identity
 identities-and-names/retrieve-a-name
 ```
 
-> 📘 Tutorial code
->
-> You can clone a repository containing the code for all tutorials from <a href="https://github.com/dashevo/platform-readme-tutorials#readme" target="_blank">GitHub</a> or download it as a [zip file](https://github.com/dashevo/platform-readme-tutorials/archive/refs/heads/main.zip).
+:::{tip}
+You can clone a repository containing the code for all tutorials from <a href="https://github.com/dashevo/platform-readme-tutorials#readme" target="_blank">GitHub</a> or download it as a [zip file](https://github.com/dashevo/platform-readme-tutorials/archive/refs/heads/main.zip).
+:::
