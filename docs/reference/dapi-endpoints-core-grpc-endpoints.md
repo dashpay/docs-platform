@@ -153,10 +153,6 @@ grpcurl -proto protos/core/v0/core.proto \
 :::
 ::::
 
-> 📘 Block Encoding
-> 
-> **Note:** The gRPCurl response block data is Base64 encoded
-
 ::::{tab-set}
 :::{tab-item} Response (JavaScript)
 :sync: js-dapi-client
@@ -167,6 +163,9 @@ grpcurl -proto protos/core/v0/core.proto \
 
 :::{tab-item} Response (gRPCurl)
 :sync: grpcurl
+
+Note: The gRPCurl response `block` data is Base64 encoded
+
 ```json
 {
   "block": "AgAAACy8+DtikT1W9gXA5YGkiHKDlCjJLl63bNetlLyvCwAAfxHczhQHVSDo90zE3fCStOJuvSO42GZaGuW/xBtY/bTDqV5T//8PHvN6AAABAQAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP////8KUQEBBi9QMlNIL/////8BAHQ7pAsAAAAjIQIBMfOK4+sHFFMdv8P0VJG0Ex0SEeN3cXdjY4i7WnTD5KwAAAAA"
@@ -228,10 +227,6 @@ grpcurl -proto protos/core/v0/core.proto \
 :::
 ::::
 
-> 📘 
-> 
-> **Note:** The gRPCurl response `bestBlockHash` and `chainWork` data is Base64 encoded.
-
 ::::{tab-set}
 :::{tab-item} Response (JavaScript)
 :sync: js-dapi-client
@@ -272,6 +267,9 @@ grpcurl -proto protos/core/v0/core.proto \
 
 :::{tab-item} Response (gRPCurl)
 :sync: grpcurl
+
+Note: The gRPCurl response `bestBlockHash` and `chainWork` data is Base64 encoded.
+
 ```json
 {
   "version": {
@@ -359,10 +357,6 @@ grpcurl -proto protos/core/v0/core.proto \
 :::
 ::::
 
-> 📘 
-> 
-> **Note:** The gRPCurl response `bestBlockHash` and `chainWork` data is Base64 encoded.
-
 ::::{tab-set}
 :::{tab-item} Response (JavaScript)
 :sync: js-dapi-client
@@ -379,6 +373,9 @@ grpcurl -proto protos/core/v0/core.proto \
 
 :::{tab-item} Response (gRPCurl)
 :sync: grpcurl
+
+Note: The gRPCurl response `proTxHash` data is Base64 encoded.
+
 ```json
 {
   "status": "READY",
@@ -451,10 +448,6 @@ grpcurl -proto protos/core/v0/core.proto \
 :::
 ::::
 
-> 📘 Transaction Encoding
-> 
-> **Note:** The gRPCurl response `transaction` and `blockHash` data are Base64 encoded
-
 ::::{tab-set}
 :::{tab-item} Response (JavaScript)
 :sync: js-dapi-client
@@ -488,6 +481,9 @@ GetTransactionResponse {
 
 :::{tab-item} Response (gRPCurl)
 :sync: grpcurl
+
+Note: The gRPCurl response `transaction` and `blockHash` data are Base64 encoded
+
 ```json
 {
   "transaction": "AwAFAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP////8GA8JaBgEJ/////wLu/M8xAAAAABl2qRR+sl3Fr0cta/Gah3qW8KcHwsYbdoisZfu3SgAAAAAZdqkUHsXGbpeJxlWuBo01CItAczRf4LCIrAAAAABGAgDCWgYA3zSmucmdu7+CaY+6n4aGHySJHhbAxeiB3gNMGSIgYA1c6q3De0wxbi7HpAf4g4BgSUqhmkAxVflcQyddo+2zGA==",
@@ -533,13 +529,13 @@ grpcurl -proto protos/core/v0/core.proto \
 :::
 ::::
 
-> 📘 
-> 
-> **Note:** The gRPCurl response `chainlock` and `headers` data is Base64 encoded
 
 ::::{tab-set}
 :::{tab-item} Response (gRPCurl)
 :sync: grpcurl
+
+Note: The gRPCurl response `chainlock` and `headers` data is Base64 encoded
+
 ```json
 {
   "chainLock": "FZANAAJkZxaMU6888G2zlRNCD6EemlC7+OXEiGtLZJ21AAAAo7qvfeETyNxWVog47Yiyx9j9FSUCVkUWBrn0ZAfIbeU75kiccv4ilNmj1Peavv1oD+Ti9dqJYy9K8/MuDt7rYnVfmPWIUj03QYWKzQKr/PaMkavTaa+PCOrqQYxcLX/s"
@@ -596,13 +592,12 @@ grpcurl -proto protos/core/v0/core.proto \
 :::
 ::::
 
-> 📘 
-> 
-> **Note:** The gRPCurl response `transactions` and `rawMerkleBlock` data is Base64 encoded
-
 ::::{tab-set}
 :::{tab-item} Response (gRPCurl)
 :sync: grpcurl
+
+Note: The gRPCurl response `transactions` and `rawMerkleBlock` data is Base64 encoded
+
 ```json
 {
   "rawTransactions": {
@@ -687,10 +682,6 @@ grpcurl -proto protos/core/v0/core.proto \
 :::
 ::::
 
-> 📘 
-> 
-> **Note:** The gRPCurl response `bestBlockHash`, `chainWork`, and `proTxHash` data is Base64 encoded.
-
 ::::{tab-set}
 :::{tab-item} Response (JavaScript)
 :sync: js-dapi-client
@@ -739,6 +730,9 @@ grpcurl -proto protos/core/v0/core.proto \
 
 :::{tab-item} Response (gRPCurl)
 :sync: grpcurl
+
+Note: The gRPCurl response `bestBlockHash`, `chainWork`, and `proTxHash` data is Base64 encoded.
+
 ```json
 {
   "version": {
