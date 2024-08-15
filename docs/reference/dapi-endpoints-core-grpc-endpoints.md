@@ -543,6 +543,43 @@ Note: The gRPCurl response `chainlock` and `headers` data is Base64 encoded
 :::
 ::::
 
+### subscribeToMasternodeList
+
+This endpoint returns the full masternode list from the genesis block to the chain tip as the first
+message and then streams masternode list updates with every new block.
+
+**Returns**: Streams the requested masternode list updates
+
+**Parameters**: None
+
+#### Example Request and Response
+
+::::{tab-set}
+:::{tab-item} Shell (gRPCurl)
+:sync: grpcurl
+```shell
+grpcurl -proto protos/core/v0/core.proto \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Core/subscribeToMasternodeList
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+:sync: grpcurl
+
+Note: The gRPCurl response `masternodeListDiff` data is Base64 encoded. This example shows one of
+the update messages following a new block.
+
+```json
+{
+  "masternodeListDiff": "rGhuVmVyc2lvbgFtYmFzZUJsb2NrSGFzaHhAMDAwMDAwYmQ4OGRmYmIxYmVlNmYwNjNlYTUwZTE3MjEzYjU3M2NlMWEwZmQ4ZTU4YjY4ZWYyNDc3YWQ1ODhiOWlibG9ja0hhc2h4QDAwMDAwMTA3YmVkZGJiMjg0MWM1NzAxZmYzOWMwYjBiNWUwOGEzZTlmODFlY2MwZDk3MzVjNDhkNzRlZTE0YmVuY2JUeE1lcmtsZVRyZWV4TjAxMDAwMDAwMDFiOGNiMzBkMGRmZTYyNWJiOGQwN2QzMWMwNWQyNzI5Y2NlNjZjODNjMzJmMmRmZjJhZWRiZDIwOGIyYzMzNWUyMDEwMWRjYlR4eQJuMDMwMDA1MDAwMTAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDBmZmZmZmZmZjA2MDM2YzhiMTAwMTAxZmZmZmZmZmYwMzdhNjgxZDA0MDAwMDAwMDAxOTc2YTkxNGM2OWEwYmRhN2RhYWFlNDgxYmU4ZGVmOTVlNWYzNDdhMWQwMGE0YjQ4OGFjODgxNWExMDQwMDAwMDAwMDAxNmFlNTIzYjcwNzAwMDAwMDAwMTk3NmE5MTQ2NGYyYjJiODRmNjJkNjhhMmNkN2Y3ZjVmYjJiNWFhNzVlZjcxNmQ3ODhhYzAwMDAwMDAwYWYwMzAwNmM4YjEwMDAxYzQxMWMzODk2YzAwNzIwZDkzYmViZDNmYzJkOTRkZjk4NTJjYmE5ZDVmYzVjNTk0MDE1NjZlM2MzYjVkNjIwZjhiYjE0MjIwMWM2MjFlYWRhMjliNTgyNjE4YmZiNzc4MTRiYTdjMzQzOGNjZjdkOWU0MTIyOTg5NWU1MzJkMjAwOGMyZTRhZTA1ZDU1NGNmYmVkNjllMWJjNjZmZmRkZDgwZTIwZDk4NmU0ODUzOGM2NjViM2QyN2IxZjM1NDJiM2VjOGJiNTMyNDlmZjI5NmNlNzYxMzc5Y2Y0MGZiNWQyMDJmYzdlZjIxYmEzNmE5MWQ0MWEwZmZiNDk0Y2Y3OTUwNTY5N2ZkMDllNmZjZWNhNzNiYWRmYjI2OWI2NjkwOGU0ZmZiNjExZDZkZjc3MzlkY2JkNTUwYjdlMzYyYmQ0MDY0ZjBhOWI5ODAxMDAwMGpkZWxldGVkTU5zgGZtbkxpc3SAbmRlbGV0ZWRRdW9ydW1zgGpuZXdRdW9ydW1zgHBtZXJrbGVSb290TU5MaXN0eEAyMGQ2YjVjM2UzNjYxNTQwNTk1Y2ZjZDVhOWNiNTI5OGRmOTQyZGZjZDNlYjNiZDkyMDA3YzA5NjM4MWM0MTFjcW1lcmtsZVJvb3RRdW9ydW1zeEBkMjMyZTU5NTk4MjI0MTllN2RjZjhjNDNjM2E3NGI4MTc3ZmI4YjYxODJiNTI5ZGFlYTIxYzYwMTIyMTRiYmY4bXF1b3J1bXNDTFNpZ3OA"
+}
+```
+:::
+::::
+
 ### subscribeToTransactionsWithProofs
 
 **Returns**: streams the requested transaction information  
