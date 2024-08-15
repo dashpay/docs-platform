@@ -379,93 +379,6 @@ Note: The gRPCurl response `bestBlockHash` and `chainWork` data is Base64 encode
 :::
 ::::
 
-### getMasternodeStatus
-
-:::{attention}
-This endpoint is currently disabled until its security and performance are evaluated.
-:::
-
-**Returns**: Masternode status information from the Core chain  
-**Parameters**: None
-
-#### Example Request and Response
-
-::::{tab-set}
-:::{tab-item}  JavaScript (dapi-client)
-:sync: js-dapi-client
-```javascript
-const DAPIClient = require('@dashevo/dapi-client');
-
-const client = new DAPIClient({
-  seeds: [{
-    host: 'seed-1.testnet.networks.dash.org',
-    port: 1443,
-  }],
-});
-
-client.core.getMasternodeStatus()
-  .then((response) => console.log(response));
-```
-:::
-
-:::{tab-item} JavaScript (dapi-grpc)
-:sync: js-dapi-gprc
-```javascript
-const {
-  v0: {
-    GetMasternodeStatusRequest,
-    CorePromiseClient,
-  },
-} = require('@dashevo/dapi-grpc');
-
-const corePromiseClient = new CorePromiseClient('https://seed-1.testnet.networks.dash.org:1443');
-
-corePromiseClient.client.getMasternodeStatus(new GetMasternodeStatusRequest())
-  .then((response) => console.log(response));
-```
-:::
-
-:::{tab-item} Shell (gRPCurl)
-:sync: grpcurl
-```shell
-# Run in the platform repository's `packages/dapi-grpc/` directory
-grpcurl -proto protos/core/v0/core.proto \
-  seed-1.testnet.networks.dash.org:1443 \
-  org.dash.platform.dapi.v0.Core/getMasternodeStatus
-```
-:::
-::::
-
-::::{tab-set}
-:::{tab-item} Response (JavaScript)
-:sync: js-dapi-client
-```json
-{
-  "status": "READY",
-  "proTxHash": "<Buffer 85 f1 5a 31 d3 83 82 93 a9 c1 d7 2a 1a 0f a2 1e 66 11 0c e2 08 78 bd 4c 10 24 c4 ae 1d 5b e8 24>",
-  "posePenalty": 0,
-  "isSynced": true,
-  "syncProgress": 1
-}
-```
-:::
-
-:::{tab-item} Response (gRPCurl)
-:sync: grpcurl
-
-Note: The gRPCurl response `proTxHash` data is Base64 encoded.
-
-```json
-{
-  "status": "READY",
-  "proTxHash": "LkhlGi6cDLTy+3q4dAYapK8M0otZaVYx5qNa85UO9vs=",
-  "isSynced": true,
-  "syncProgress": 1
-}
-```
-:::
-::::
-
 ### getTransaction
 
 **Returns**: A raw transaction  
@@ -701,6 +614,201 @@ Note: The gRPCurl response `transactions` and `rawMerkleBlock` data is Base64 en
   }
   [/block]
 ```
+
+## Disabled Endpoints
+
+The following endpoints are disabled for the initial Dash Platform release until their performance
+and security are more thoroughly evaluated.
+
+### getBlock
+
+:::{attention}
+This endpoint is currently disabled until its security and performance are evaluated.
+:::
+
+**Returns**: A raw block  
+**Parameters**:
+
+| Name                      | Type    | Required | Description                                         |
+| ------------------------- | ------- | -------- | --------------------------------------------------- |
+| **One of the following:** |         |          |                                                     |
+| `hash`                    | Bytes   | No       | Return the block matching the block hash provided   |
+| `height`                  | Integer | No       | Return the block matching the block height provided |
+
+#### Example Request and Response
+
+::::{tab-set}
+:::{tab-item} JavaScript (dapi-client)
+:sync: js-dapi-client
+```javascript
+const DAPIClient = require('@dashevo/dapi-client');
+
+const client = new DAPIClient({
+  seeds: [{
+    host: 'seed-1.testnet.networks.dash.org',
+    port: 1443,
+  }],
+});
+
+client.core.getBlockByHeight(1)
+  .then((response) => console.log(response.toString('hex')));
+```
+:::
+
+:::{tab-item} JavaScript (dapi-grpc)
+:sync: js-dapi-gprc
+```javascript
+const {
+  v0: {
+    CorePromiseClient,
+  },
+} = require('@dashevo/dapi-grpc');
+
+const corePromiseClient = new CorePromiseClient('https://seed-1.testnet.networks.dash.org:1443');
+
+corePromiseClient.client.getBlock({ height: 1 })
+  .then((response) => console.log(response.block.toString('hex')));
+```
+:::
+
+:::{tab-item} JavaScript (dapi-grpc)
+```javascript
+const {
+  v0: {
+    CorePromiseClient,
+  },
+} = require('@dashevo/dapi-grpc');
+
+const corePromiseClient = new CorePromiseClient('https://seed-1.testnet.networks.dash.org:1443');
+
+corePromiseClient.client.getBlock({
+  hash: '0000047d24635e347be3aaaeb66c26be94901a2f962feccd4f95090191f208c1',
+}).then((response) => {
+  console.log(response.block.toString('hex'));
+});
+```
+:::
+
+:::{tab-item} Shell (gRPCurl)
+:sync: grpcurl
+```shell
+grpcurl -proto protos/core/v0/core.proto \
+  -d '{
+    "height":1
+    }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Core/getBlock
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (JavaScript)
+:sync: js-dapi-client
+```shell
+020000002cbcf83b62913d56f605c0e581a48872839428c92e5eb76cd7ad94bcaf0b00007f11dcce14075520e8f74cc4ddf092b4e26ebd23b8d8665a1ae5bfc41b58fdb4c3a95e53ffff0f1ef37a00000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0a510101062f503253482fffffffff0100743ba40b0000002321020131f38ae3eb0714531dbfc3f45491b4131d1211e3777177636388bb5a74c3e4ac00000000
+```
+:::
+
+:::{tab-item} Response (gRPCurl)
+:sync: grpcurl
+
+Note: The gRPCurl response `block` data is Base64 encoded
+
+```json
+{
+  "block": "AgAAACy8+DtikT1W9gXA5YGkiHKDlCjJLl63bNetlLyvCwAAfxHczhQHVSDo90zE3fCStOJuvSO42GZaGuW/xBtY/bTDqV5T//8PHvN6AAABAQAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP////8KUQEBBi9QMlNIL/////8BAHQ7pAsAAAAjIQIBMfOK4+sHFFMdv8P0VJG0Ex0SEeN3cXdjY4i7WnTD5KwAAAAA"
+}
+```
+:::
+::::
+
+### getMasternodeStatus
+
+:::{attention}
+This endpoint is currently disabled until its security and performance are evaluated.
+:::
+
+**Returns**: Masternode status information from the Core chain  
+**Parameters**: None
+
+#### Example Request and Response
+
+::::{tab-set}
+:::{tab-item}  JavaScript (dapi-client)
+:sync: js-dapi-client
+```javascript
+const DAPIClient = require('@dashevo/dapi-client');
+
+const client = new DAPIClient({
+  seeds: [{
+    host: 'seed-1.testnet.networks.dash.org',
+    port: 1443,
+  }],
+});
+
+client.core.getMasternodeStatus()
+  .then((response) => console.log(response));
+```
+:::
+
+:::{tab-item} JavaScript (dapi-grpc)
+:sync: js-dapi-gprc
+```javascript
+const {
+  v0: {
+    GetMasternodeStatusRequest,
+    CorePromiseClient,
+  },
+} = require('@dashevo/dapi-grpc');
+
+const corePromiseClient = new CorePromiseClient('https://seed-1.testnet.networks.dash.org:1443');
+
+corePromiseClient.client.getMasternodeStatus(new GetMasternodeStatusRequest())
+  .then((response) => console.log(response));
+```
+:::
+
+:::{tab-item} Shell (gRPCurl)
+:sync: grpcurl
+```shell
+# Run in the platform repository's `packages/dapi-grpc/` directory
+grpcurl -proto protos/core/v0/core.proto \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Core/getMasternodeStatus
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (JavaScript)
+:sync: js-dapi-client
+```json
+{
+  "status": "READY",
+  "proTxHash": "<Buffer 85 f1 5a 31 d3 83 82 93 a9 c1 d7 2a 1a 0f a2 1e 66 11 0c e2 08 78 bd 4c 10 24 c4 ae 1d 5b e8 24>",
+  "posePenalty": 0,
+  "isSynced": true,
+  "syncProgress": 1
+}
+```
+:::
+
+:::{tab-item} Response (gRPCurl)
+:sync: grpcurl
+
+Note: The gRPCurl response `proTxHash` data is Base64 encoded.
+
+```json
+{
+  "status": "READY",
+  "proTxHash": "LkhlGi6cDLTy+3q4dAYapK8M0otZaVYx5qNa85UO9vs=",
+  "isSynced": true,
+  "syncProgress": 1
+}
+```
+:::
+::::
 
 ## Deprecated Endpoints
 

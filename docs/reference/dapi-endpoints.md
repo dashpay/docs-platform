@@ -15,7 +15,7 @@ streaming of events related to blocks and transactions/transitions.
 | :---: | -------- | ----------- |
 |   1   | [`getBestBlockHash`](../reference/dapi-endpoints-json-rpc-endpoints.md#getbestblockhash) | Returns block hash of the chaintip |
 |   1   | [`getBlockHash`](../reference/dapi-endpoints-json-rpc-endpoints.md#getblockhash)         | Returns block hash of the requested block |
-|   1   | [`getMnListDiff`](../reference/dapi-endpoints-json-rpc-endpoints.md#getmnlistdiff)       | Returns masternode list diff for the provided block hashes |
+|   1   | `getMnListDiff` | **Replaced by [`subscribeToMasternodeList`](../reference/dapi-endpoints-core-grpc-endpoints.md#subscribetomasternodelist) in Dash Platform v1.0.0** |
 
 ## gRPC Endpoints
 
@@ -25,9 +25,9 @@ streaming of events related to blocks and transactions/transitions.
 | :---: | -------- | - |
 |   1   | [`broadcastTransaction`](../reference/dapi-endpoints-core-grpc-endpoints.md#broadcasttransaction) | Broadcasts the provided transaction |
 |   1   | [`getBestBlockHeight`](../reference/dapi-endpoints-core-grpc-endpoints.md#getbestblockheight) | Return the best block height<br>**Added in Dash Platform v1.0.0**|
-|   1   | [`getBlock`](../reference/dapi-endpoints-core-grpc-endpoints.md#getblock) | **Disabled in Dash Platform v1.0.0**<br>Returns information for the requested block |
+|   1   | [`getBlock`](../reference/dapi-endpoints-core-grpc-endpoints.md#getblock) | **Disabled in Dash Platform v1**<br>Returns information for the requested block |
 |   1   | [`getBlockchainStatus`](../reference/dapi-endpoints-core-grpc-endpoints.md#getblockchainstatus) | Returns blockchain status information<br>**Added in Dash Platform v1.0.0** |
-|   1   | [`getMasternodeStatus`](../reference/dapi-endpoints-core-grpc-endpoints.md#getmasternodestatus) | **Disabled in Dash Platform v1.0.0**<br>Returns masternode status information |
+|   1   | [`getMasternodeStatus`](../reference/dapi-endpoints-core-grpc-endpoints.md#getmasternodestatus) | **Disabled in Dash Platform v1**<br>Returns masternode status information |
 |   1   | `getStatus` | **Deprecated in Dash Platform v1.0.0**<br>Split into [`getBlockchainStatus`](../reference/dapi-endpoints-core-grpc-endpoints.md#getblockchainstatus) and [`getMasternodeStatus`](../reference/dapi-endpoints-core-grpc-endpoints.md#getmasternodestatus).<br>Returns blockchain status information |
 |   1   | [`getTransaction`](../reference/dapi-endpoints-core-grpc-endpoints.md#gettransaction) | Returns details for the requested transaction |
 |   1   | [`subscribeTo` `BlockHeadersWithChainLocks`](../reference/dapi-endpoints-core-grpc-endpoints.md#subscribetoblockheaderswithchainlocks) | Returns the requested block headers along with the associated ChainLocks. |

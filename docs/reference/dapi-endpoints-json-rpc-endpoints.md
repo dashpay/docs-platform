@@ -222,7 +222,17 @@ puts response.read_body
 }
 ```
 
+## Deprecated Endpoints
+
+The following endpoints were recently deprecated. See the [previous version of this
+documentation](https://docs.dash.org/projects/platform/en/0.25.0/docs/reference/dapi-endpoints-json-rpc-endpoints.html)
+for older references.
+
 ### getMnListDiff
+
+:::{deprecated} v1.0.0
+Replaced by [`subscribeToMasternodeList`](../reference/dapi-endpoints-core-grpc-endpoints.md#subscribetomasternodelist)
+:::
 
 **Returns**: a masternode list diff for the provided block hashes  
 **Parameters**:
@@ -352,12 +362,7 @@ puts response.read_body
     "merkleRootMNList": "e9bf66fe8884e046ef1c393813a91ac7dfb77dd0fb9abb077ed2259b430420f0"
   }
 }
-
 ```
-
-## Deprecated Endpoints
-
-There are no recently deprecated endpoint, but the previous version of documentation can be [viewed here](https://docs.dash.org/projects/platform/en/0.24.0/docs/reference/dapi-endpoints-json-rpc-endpoints.html).
 
 ## Code Reference
 
