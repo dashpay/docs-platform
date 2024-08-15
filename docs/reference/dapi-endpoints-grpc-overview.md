@@ -4,7 +4,7 @@
 
 # gRPC Overview
 
-The gRPC endpoints provide access to information from Dash Platform (layer 2) as well as streaming of events related to blocks and transactions/transitions.
+The gRPC endpoints provide access to information from Dash Platform as well as streaming of events related to blocks and transactions/transitions.
 
 ## Connecting to gRPC
 
@@ -25,4 +25,13 @@ cd platform/packages/dapi-grpc
 
 ## Execute gRPCurl command
 grpcurl -plaintext -proto protos/...
+```
+
+### Browser access
+
+The [gRPC UI](https://github.com/fullstorydev/grpcui) tool provides a way to interact with gRPC servers using a browser. The example below shows how to start the tool configured to access Core gRPC endpoints on testnet:
+
+```shell
+# Use Core gRPC
+grpcui -insecure -open-browser  -proto protos/core/v0/core.proto  seed-1.testnet.networks.dash.org:1443
 ```
