@@ -75,7 +75,82 @@ corePromiseClient.client.broadcastTransaction({ transaction: tx.toBuffer() })
 :::
 ::::
 
+### getBestBlockHeight
+
+**Returns**: The height of the best block in the chain
+
+**Parameters**: None
+
+#### Example Request and Response
+
+::::{tab-set}
+:::{tab-item} JavaScript (dapi-client)
+:sync: js-dapi-client
+```javascript
+const DAPIClient = require('@dashevo/dapi-client');
+
+const client = new DAPIClient({
+  seeds: [{
+    host: 'seed-1.testnet.networks.dash.org',
+    port: 1443,
+  }],
+});
+
+client.core.getBestBlockHeight()
+  .then((response) => console.log(response));
+```
+:::
+
+:::{tab-item} JavaScript (dapi-grpc)
+:sync: js-dapi-gprc
+```javascript
+const {
+  v0: {
+    CorePromiseClient,
+    GetBestBlockHeightRequest,
+  },
+} = require('@dashevo/dapi-grpc');
+
+const corePromiseClient = new CorePromiseClient('https://seed-1.testnet.networks.dash.org:1443');
+
+corePromiseClient.client.getBestBlockHeight(new GetBestBlockHeightRequest())
+  .then((response) => console.log(response.height));
+```
+:::
+
+:::{tab-item} Shell (gRPCurl)
+:sync: grpcurl
+```shell
+grpcurl -proto protos/core/v0/core.proto \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Core/getBestBlockHeight
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (JavaScript)
+:sync: js-dapi-client
+```text
+1017420
+```
+:::
+
+:::{tab-item} Response (gRPCurl)
+:sync: grpcurl
+```json
+{
+  "height": 1017420
+}
+```
+:::
+::::
+
 ### getBlock
+
+:::{attention}
+This endpoint is currently disabled until its security and performance are evaluated.
+:::
 
 **Returns**: A raw block  
 **Parameters**:
@@ -305,6 +380,10 @@ Note: The gRPCurl response `bestBlockHash` and `chainWork` data is Base64 encode
 ::::
 
 ### getMasternodeStatus
+
+:::{attention}
+This endpoint is currently disabled until its security and performance are evaluated.
+:::
 
 **Returns**: Masternode status information from the Core chain  
 **Parameters**: None
