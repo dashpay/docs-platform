@@ -42,6 +42,8 @@ data returned is valid and complete. The endpoints are versioned so updates can 
 | Layer | Endpoint |   |
 | :---: | -------- | - |
 |   2   | [`broadcastStateTransition`](../reference/dapi-endpoints-platform-endpoints.md#broadcaststatetransition) | Broadcasts the provided State Transition |
+|   2   | [`getContestedResources`](../reference/dapi-endpoints-platform-endpoints.md#getcontestedresources) | **Added in Dash Platform v1.0.0**<br>Retrieves the contested resources for a specific contract, document type, and index. |
+|   2   | [`getContestedResourceVoteState`](../reference/dapi-endpoints-platform-endpoints.md#getcontestedresourcevotestate) | **Added in Dash Platform v1.0.0**<br>Retrieves the state of a vote for a specific contested resource. |
 |   2   | [`getIdentity`](../reference/dapi-endpoints-platform-endpoints.md#getidentity) | Returns the requested identity |
 |   2   | [`getIdentityBalance`](../reference/dapi-endpoints-platform-endpoints.md#getidentitybalance) | Returns the requested identity's balance |
 |   2   | [`getIdentityBalanceAndRevision`](../reference/dapi-endpoints-platform-endpoints.md#getidentitybalanceandrevision) | Returns the requested identity's balance and revision |

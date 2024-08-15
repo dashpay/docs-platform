@@ -55,11 +55,88 @@ Broadcasts a [state transition](../explanations/platform-protocol-state-transiti
 
 **Response**: No response except on error
 
-### getIdentity
+### getContestedResources
 
-> 🚧 Breaking changes
->
-> Due to serialization changes in Dash Platform 0.25, using wasm-dpp is recommended when working with identities, data contracts, and documents.
+Retrieves the contested resources for a specific contract, document type, and index.
+
+**Returns**: A list of contested resource values or a cryptographic proof.
+
+**Parameters**:
+
+| Name                   | Type     | Required | Description                                                                 |
+| ---------------------- | -------- | -------- | --------------------------------------------------------------------------- |
+| `contract_id`          | Bytes    | Yes      | The ID of the data contract associated with the contested resources         |
+| `document_type_name`   | String   | Yes      | The name of the document type associated with the contested resources       |
+| `index_name`           | String   | Yes      | The name of the index used to query the contested resources                 |
+| `start_index_values`   | Array    | No       | Start values for index, for pagination                                      |
+| `end_index_values`     | Array    | No       | End values for index, for pagination                                        |
+| `start_at_value_info`  | Object   | No       | Start value information for pagination                                      |
+| `count`                | Integer  | No       | Number of contested resources to return                                     |
+| `order_ascending`      | Boolean  | No       | Sort order for results                                                      |
+| `prove`                | Boolean  | No       | Set to `true` to receive a proof that contains the requested contested resources |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+:sync: grpcurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "contract_id": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
+      "document_type_name": "domain",
+      "index_name": "parentNameAndLabel"
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getContestedResources
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+:sync: grpcurl
+```json
+{
+  "v0": {
+    "contestedResourceValues": {},
+    "metadata": {
+      "height": "908",
+      "coreChainLockedHeight": 1084368,
+      "epoch": 665,
+      "timeMs": "1723747358394",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-50"
+    }
+  }
+}
+```
+:::
+::::
+
+### getContestedResourceVoteState
+
+Retrieves the state of a vote for a specific contested resource.
+
+**Returns**: The state of the contested resource vote, including the current contenders and the tally of votes.
+
+**Parameters**:
+
+| Name                                             | Type     | Required | Description                                                                                             |
+| ------------------------------------------------ | -------- | -------- | ------------------------------------------------------------------------------------------------------- |
+| `contract_id`                                    | Bytes    | Yes      | The ID of the data contract associated with the contested resource                                      |
+| `document_type_name`                             | String   | Yes      | The name of the document type associated with the contested resource                                    |
+| `index_name`                                     | String   | Yes      | The name of the index used to query the contested resource                                              |
+| `index_values`                                   | Array    | Yes      | The values used to query the contested resource                                                         |
+| `result_type`                                    | Enum     | Yes      | Specifies the result type to return: `DOCUMENTS`, `VOTE_TALLY`, or `DOCUMENTS_AND_VOTE_TALLY`           |
+| `allow_include_locked_and`<br>`_abstaining_vote_tally` | Boolean  | No       | Include votes that are locked or abstaining in the tally                                                |
+| `start_at_identifier_info`                       | Object   | No       | Start identifier information for pagination                                                             |
+| `count`                                          | Integer  | No       | Number of results to return                                                                             |
+| `prove`                                          | Boolean  | No       | Set to `true` to receive a proof that contains the requested vote state                                 |
+
+### getIdentity
 
 **Returns**: [Identity](../explanations/identity.md) information for the requested identity  
 **Parameters**:
