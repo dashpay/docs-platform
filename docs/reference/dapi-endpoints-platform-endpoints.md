@@ -167,7 +167,7 @@ loadDpp();
 const dpp = new DashPlatformProtocol();
 const client = new DAPIClient();
 
-const identityId = Identifier.from('4EfA9Jrvv3nnCFdSf7fad59851iiTRZ6Wcu6YVJ4iSeF');
+const identityId = Identifier.from('EuzJmuZdBSJs2eTrxHEp6QqJztbp6FKDNGMeb4W2Ds7h');
 client.platform.getIdentity(identityId).then((response) => {
   const identity = dpp.identity.createFromBuffer(response.getIdentity());
   console.log(identity.toJSON());
@@ -193,7 +193,7 @@ const platformPromiseClient = new PlatformPromiseClient(
   'https://seed-1.testnet.networks.dash.org:1443',
 );
 
-const id = Identifier.from('4EfA9Jrvv3nnCFdSf7fad59851iiTRZ6Wcu6YVJ4iSeF');
+const id = Identifier.from('EuzJmuZdBSJs2eTrxHEp6QqJztbp6FKDNGMeb4W2Ds7h');
 const idBuffer = Buffer.from(id);
 const getIdentityRequest = new GetIdentityRequest();
 getIdentityRequest.setId(idBuffer);
@@ -216,7 +216,7 @@ platformPromiseClient
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "v0": {
-      "id": "MBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/aw="
+      "id": "zrrtwQwGj7NujFpg3a5OBjTg9AzrpL2XPEzmr+qN1Vw="
     }
   }' \
   seed-1.testnet.networks.dash.org:1443 \
@@ -231,7 +231,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 ```json
 {
   "$version":"0",
-  "id":"4EfA9Jrvv3nnCFdSf7fad59851iiTRZ6Wcu6YVJ4iSeF",
+  "id":"EuzJmuZdBSJs2eTrxHEp6QqJztbp6FKDNGMeb4W2Ds7h",
   "publicKeys":[
     {
       "$version":"0",
@@ -303,7 +303,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "v0": {
-      "id": "MBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/aw="
+      "id": "zrrtwQwGj7NujFpg3a5OBjTg9AzrpL2XPEzmr+qN1Vw="
     }
   }' \
   seed-1.testnet.networks.dash.org:1443 \
@@ -354,7 +354,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "v0": {
-      "id": "MBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/aw="
+      "id": "zrrtwQwGj7NujFpg3a5OBjTg9AzrpL2XPEzmr+qN1Vw="
     }
   }' \
   seed-1.testnet.networks.dash.org:1443 \
@@ -467,7 +467,7 @@ loadDpp();
 const dpp = new DashPlatformProtocol(null);
 const client = new DAPIClient();
 
-const identityId = Identifier.from('4EfA9Jrvv3nnCFdSf7fad59851iiTRZ6Wcu6YVJ4iSeF');
+const identityId = Identifier.from('EuzJmuZdBSJs2eTrxHEp6QqJztbp6FKDNGMeb4W2Ds7h');
 const contractId = Identifier.from('GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec');
 client.platform.getIdentityContractNonce(identityId, contractId).then((response) => {
   console.log(`Current identity contract nonce: ${response.getIdentityContractNonce()}`);
@@ -482,7 +482,7 @@ client.platform.getIdentityContractNonce(identityId, contractId).then((response)
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "v0": {
-      "identity_id": "MBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/aw=",
+      "identity_id": "zrrtwQwGj7NujFpg3a5OBjTg9AzrpL2XPEzmr+qN1Vw=",
       "contract_id": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU="
     }
   }' \
@@ -582,7 +582,7 @@ To search for identity keys, use the `search_keys` request type. The options for
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "v0": {
-      "identity_id": "MBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/aw=",
+      "identity_id": "zrrtwQwGj7NujFpg3a5OBjTg9AzrpL2XPEzmr+qN1Vw=",
       "request_type": {
         "allKeys": {}
       }
@@ -599,7 +599,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "v0": {
-      "identity_id": "MBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/aw=",
+      "identity_id": "zrrtwQwGj7NujFpg3a5OBjTg9AzrpL2XPEzmr+qN1Vw=",
       "request_type": {
         "specificKeys": {
           "keyIds": [
@@ -621,7 +621,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "v0": {
-      "identity_id": "MBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/aw=",
+      "identity_id": "zrrtwQwGj7NujFpg3a5OBjTg9AzrpL2XPEzmr+qN1Vw=",
       "request_type": {
         "search_key": {
           "purpose_map": {
@@ -696,7 +696,7 @@ loadDpp();
 const dpp = new DashPlatformProtocol(null);
 const client = new DAPIClient();
 
-const identityId = Identifier.from('4EfA9Jrvv3nnCFdSf7fad59851iiTRZ6Wcu6YVJ4iSeF');
+const identityId = Identifier.from('EuzJmuZdBSJs2eTrxHEp6QqJztbp6FKDNGMeb4W2Ds7h');
 client.platform.getIdentityNonce(identityId).then((response) => {
   console.log(`Current identity nonce: ${response.getIdentityNonce()}`);
 });
@@ -710,7 +710,7 @@ client.platform.getIdentityNonce(identityId).then((response) => {
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "v0": {
-      "identity_id": "MBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/aw="
+      "identity_id": "zrrtwQwGj7NujFpg3a5OBjTg9AzrpL2XPEzmr+qN1Vw="
     }
   }' \
   seed-1.testnet.networks.dash.org:1443 \
@@ -782,7 +782,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "v0": {
       "identities_ids": [
-        "MBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/aw=",
+        "zrrtwQwGj7NujFpg3a5OBjTg9AzrpL2XPEzmr+qN1Vw=",
         "NBgQk65dTNttDYDGLZNLrb1QEAWB91jqkqXtK1KU4Dc="
       ],
       "purposes": [],
@@ -922,7 +922,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
     "requiresIdentityDecryptionBoundedKey":null
   },
   "version":1,
-  "ownerId":"4EfA9Jrvv3nnCFdSf7fad59851iiTRZ6Wcu6YVJ4iSeF",
+  "ownerId":"EuzJmuZdBSJs2eTrxHEp6QqJztbp6FKDNGMeb4W2Ds7h",
   "schemaDefs":null,
   "documentSchemas":{
     "domain":{
@@ -1207,7 +1207,7 @@ loadDpp();
 const dpp = new DashPlatformProtocol(null);
 const client = new DAPIClient();
 
-const contractId = Identifier.from('2ciAVGRuzogbR2NNtNfbn6YdW7BkLWntC7jrLNRMZN9n');
+const contractId = Identifier.from('23iZPjG4ADx8CYGorW4yM8FUo1gihQL2fZszWLTMFyQf');
 client.platform.getDataContractHistory(contractId, 0, 2, 0).then((response) => {
   for (const key in response.getDataContractHistory()) {
     const revision = response.getDataContractHistory()[key];
@@ -1226,7 +1226,7 @@ client.platform.getDataContractHistory(contractId, 0, 2, 0).then((response) => {
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "v0": {
-      "id":"GAGPHaxHbGDQv62LYIMuYbOaYjqD36X/pIXADxTfJvE=",
+      "id":"D43WwBJeadt7AR8wRmcagPiCmi/YvDBHYwheFKzMfyw=",
       "limit": 2,
       "offset": 0,
       "start_at_ms": 0,
@@ -1523,7 +1523,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
       "requiresIdentityDecryptionBoundedKey":null
     },
     "version":1,
-    "ownerId":"4EfA9Jrvv3nnCFdSf7fad59851iiTRZ6Wcu6YVJ4iSeF",
+    "ownerId":"EuzJmuZdBSJs2eTrxHEp6QqJztbp6FKDNGMeb4W2Ds7h",
     "schemaDefs":null,
     "documentSchemas":{
       "domain":[
