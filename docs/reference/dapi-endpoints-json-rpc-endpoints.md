@@ -230,8 +230,8 @@ for older references.
 
 ### getMnListDiff
 
-:::{deprecated} v1.0.0
-Replaced by [`subscribeToMasternodeList`](../reference/dapi-endpoints-core-grpc-endpoints.md#subscribetomasternodelist)
+:::{attention}
+Deprecated in Dash Platform v1.0.0. Replaced by [`subscribeToMasternodeList`](../reference/dapi-endpoints-core-grpc-endpoints.md#subscribetomasternodelist).
 :::
 
 **Returns**: a masternode list diff for the provided block hashes  
