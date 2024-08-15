@@ -59,7 +59,7 @@ data returned is valid and complete. The endpoints are versioned so updates can 
 |   2   | [`getDataContractHistory`](../reference/dapi-endpoints-platform-endpoints.md#getdatacontracthistory) | Returns the requested data contract history |
 |   2   | [`getDocuments`](../reference/dapi-endpoints-platform-endpoints.md#getdocuments) | Returns the requested document(s) |
 |   2   | [`getEpochsInfo`](../reference/dapi-endpoints-platform-endpoints.md#getepochsinfo) | Returns information about the requested epoch(s)
-|   2   | [`getProofs`](../reference/dapi-endpoints-platform-endpoints.md#getproofs) | Returns proof information for the requested identities, contracts, and/or document(s)
+|   2   | `getProofs` | **Disabled for external use in Dash Platform v1.0.0**<br>Returns proof information for the requested identities, contracts, and/or document(s) |
 |   2   | [`getProtocolVersionUpgradeState`](../reference/dapi-endpoints-platform-endpoints.md#getprotocolversionupgradestate) | Returns the number of votes cast for each protocol version
 |   2   | [`getProtocolVersionUpgradeVoteStatus`](../reference/dapi-endpoints-platform-endpoints.md#getprotocolversionupgradevotestatus) | Returns protocol version upgrade status
 |   2   | [`waitForStateTransitionResult`](../reference/dapi-endpoints-platform-endpoints.md#waitforstatetransitionresult) | Responds with the state transition hash and either a proof that the state transition was confirmed in a block or an error |
