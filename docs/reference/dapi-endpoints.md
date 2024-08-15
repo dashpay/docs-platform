@@ -72,10 +72,10 @@ data returned is valid and complete. The endpoints are versioned so updates can 
   [/block]
 ```
 
-> 📘
->
-> The previous version of documentation can be [viewed
-> here](https://docs.dash.org/projects/platform/en/0.25.0/docs/reference/dapi-endpoints.html).
+:::{note}
+The previous version of documentation can be [viewed
+here](https://docs.dash.org/projects/platform/en/0.25.0/docs/reference/dapi-endpoints.html).
+:::
 
 ```{toctree}
 :maxdepth: 2
