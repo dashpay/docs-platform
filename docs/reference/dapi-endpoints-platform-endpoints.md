@@ -193,15 +193,68 @@ Retrieves the state of a vote for a specific contested resource.
 
 | Name                                             | Type     | Required | Description                                                                                             |
 | ------------------------------------------------ | -------- | -------- | ------------------------------------------------------------------------------------------------------- |
-| `contract_id`                                    | Bytes    | Yes      | The ID of the data contract associated with the contested resource                                      |
-| `document_type_name`                             | String   | Yes      | The name of the document type associated with the contested resource                                    |
-| `index_name`                                     | String   | Yes      | The name of the index used to query the contested resource                                              |
-| `index_values`                                   | Array    | Yes      | The values used to query the contested resource                                                         |
-| `result_type`                                    | Enum     | Yes      | Specifies the result type to return: `DOCUMENTS`, `VOTE_TALLY`, or `DOCUMENTS_AND_VOTE_TALLY`           |
-| `allow_include_locked_and`<br>`_abstaining_vote_tally` | Boolean  | No       | Include votes that are locked or abstaining in the tally                                                |
-| `start_at_identifier_info`                       | Object   | No       | Start identifier information for pagination                                                             |
-| `count`                                          | Integer  | No       | Number of results to return                                                                             |
-| `prove`                                          | Boolean  | No       | Set to `true` to receive a proof that contains the requested vote state                                 |
+| `contract_id`                                    | Bytes    | Yes      | The ID of the data contract associated with the contested resource |
+| `document_type_name`                             | String   | Yes      | The name of the document type associated with the contested resource |
+| `index_name`                                     | String   | Yes      | The name of the index used to query the contested resource |
+| `index_values`                                   | Array    | Yes      | The values used to query the contested resource. |
+| `result_type`                                    | Enum     | Yes      | Specifies the result type to return: `DOCUMENTS`, `VOTE_TALLY`, or `DOCUMENTS_AND_VOTE_TALLY` |
+| `allow_include_locked_and`<br>`_abstaining_vote_tally` | Boolean  | No       | Include votes that are locked or abstaining in the tally |
+| `start_at_identifier_info`                       | Object   | No       | Start identifier information for pagination |
+| `count`                                          | Integer  | No       | Number of results to return |
+| `prove`                                          | Boolean  | No       | Set to `true` to receive a proof that contains the requested vote state |
+
+```{eval-rst}
+..
+  Commented out info
+  The following example isn't fully functional
+  
+  **Example Request and Response**
+
+  ::::{tab-set}
+  :::{tab-item} gRPCurl
+  ```shell
+  grpcurl -proto protos/platform/v0/platform.proto \
+    -d '{
+      "v0": {
+        "contract_id": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
+        "document_type_name": "domain",
+        "index_name": "parentNameAndLabel",
+        "index_values": ["EgRkYXNo", "value2"],
+        "result_type": 1
+      }
+    }' \
+    seed-1.testnet.networks.dash.org:1443 \
+    org.dash.platform.dapi.v0.Platform/getContestedResourceVoteState
+  ```
+  :::
+  ::::
+
+```{eval-rst}
+..
+  Commented out info
+  The following example isn't fully functional
+  
+  ::::{tab-set}
+  :::{tab-item} Response (gRPCurl)
+  ```json
+  {
+    "v0": {
+      "contested_resource_contenders": {
+        "contenders": [{"identifier": "id1", "vote_count": 10}, {"identifier": "id2", "vote_count": 5}]
+      },
+      "metadata": {
+        "height": "6852",
+        "coreChainLockedHeight": 927072,
+        "epoch": 850,
+        "timeMs": "1701983652299",
+        "protocolVersion": 1,
+        "chainId": "dash-testnet-37"
+      }
+    }
+  }
+  ```
+  :::
+  ::::
 
 ### getIdentity
 
