@@ -4,7 +4,7 @@
 
 # Platform gRPC Endpoints
 
-Please refer to the [gRPC Overview](../reference/dapi-endpoints-grpc-overview.md) for details regarding running the examples shown below, encoding/decoding the request/response data, and clients available for several languages.
+Please refer to the [gRPC Overview](../reference/dapi-endpoints-grpc-overview.md) for details regarding running the examples shown below.
 
 ## Data Proofs and Metadata
 
@@ -29,13 +29,13 @@ Dash Platform 0.25.16 included a [breaking change that added versioning](https:/
 
 ### broadcastStateTransition
 
-> 📘
->
-> **Note:** The [`waitForStateTransitionResult` endpoint](#waitforstatetransitionresult) should be used in conjunction with this one for instances where proof of block confirmation is required.
-
 Broadcasts a [state transition](../explanations/platform-protocol-state-transition.md) to the platform via DAPI to make a change to layer 2 data. The `broadcastStateTransition` call returns once the state transition has been accepted into the mempool.
 
 **Returns**: Nothing or error
+
+:::{note}
+The [`waitForStateTransitionResult` endpoint](#waitforstatetransitionresult) should be used after `broadcastStateTransition` if proof of block confirmation is required.
+:::
 
 **Parameters**:
 
@@ -144,11 +144,7 @@ Retrieves the state of a vote for a specific contested resource.
 | Name    | Type    | Required | Description                                                           |
 | ------- | ------- | -------- | --------------------------------------------------------------------- |
 | `id`    | Bytes   | Yes      | An identity `id`                                                      |
-| `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested identity |
-
-> 📘
->
-> **Note**: When requesting proofs, the data requested will be encoded as part of the proof in the response.
+| `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested identity. The data requested will be encoded as part of the proof in the response.|
 
 **Example Request and Response**
 
@@ -818,21 +814,13 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ### getDataContract
 
-> 🚧 Breaking changes
->
-> Due to serialization changes in Dash Platform 0.25, using wasm-dpp is recommended when working with identities, data contracts, and documents.
-
 **Returns**: [Data Contract](../explanations/platform-protocol-data-contract.md) information for the requested data contract  
 **Parameters**:
 
 | Name    | Type    | Required | Description                                                                |
 | ------- | ------- | -------- | -------------------------------------------------------------------------- |
 | `id`    | Bytes   | Yes      | A data contract `id`                                                       |
-| `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested data contract |
-
-> 📘
->
-> **Note**: When requesting proofs, the data requested will be encoded as part of the proof in the response.
+| `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested data contract. The data requested will be encoded as part of the proof in the response. |
 
 **Example Request and Response**
 
@@ -1184,11 +1172,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 | `start_at_ms` | Integer | Yes | Request revisions starting at this timestamp |
 | `limit` | Integer  | Yes      | The maximum number of revisions to return |
 | `offset` | Integer | Yes      | The offset of the first revision to return |
-| `prove` | Boolean  | No       | Set to `true` to receive a proof that contains the requested data contract |
-
-> 📘
->
-> **Note**: When requesting proofs, the data requested will be encoded as part of the proof in the response.
+| `prove` | Boolean  | No       | Set to `true` to receive a proof that contains the requested data contract. The data requested will be encoded as part of the proof in the response.|
 
 **Example Request and Response**
 
@@ -1341,18 +1325,14 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ### getDocuments
 
-> 🚧 Breaking changes
->
-> Due to serialization changes in Dash Platform 0.25, using wasm-dpp is recommended when working with identities, data contracts, and documents.
-
 **Returns**: [Document](../explanations/platform-protocol-document.md) information for the requested document(s)  
 **Parameters**:
 
-> 📘 Parameter constraints
->
-> **Note**: The `where`, `order_by`, `limit`, `start_at`, and `start_after` parameters must comply with the limits defined on the [Query Syntax](../reference/query-syntax.md) page.
->
-> Additionally, note that `where` and `order_by` must be [CBOR](https://tools.ietf.org/html/rfc7049) encoded.
+:::{note}
+The `where`, `order_by`, `limit`, `start_at`, and `start_after` parameters must comply with the limits defined on the [Query Syntax](../reference/query-syntax.md) page.
+
+Additionally, note that `where` and `order_by` must be [CBOR](https://tools.ietf.org/html/rfc7049) encoded.
+:::
 
 | Name                    | Type    | Required | Description                                                                                      |
 | ----------------------- | ------- | -------- | ------------------------------------------------------------------------------------------------ |
@@ -1366,11 +1346,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 | `start_at`              | Integer | No       | Return records beginning with the index provided                                                 |
 | `start_after`           | Integer | No       | Return records beginning after the index provided                                                |
 | ----------              |         |          |                                                                                                  |
-| `prove`                 | Boolean | No       | Set to `true` to receive a proof that contains the requested document(s)                         |
-
-> 📘
->
-> **Note**: When requesting proofs, the data requested will be encoded as part of the proof in the response.
+| `prove`                 | Boolean | No       | Set to `true` to receive a proof that contains the requested document(s). The data requested will be encoded as part of the proof in the response. |
 
 **Example Request and Response**
 
@@ -1855,11 +1831,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 | Name                    | Type    | Required | Description                      |
 | ----------------------- | ------- | -------- | -------------------------------- |
 | `state_transition_hash` | Bytes   | Yes      | Hash of the state transition     |
-| `prove`                 | Boolean | Yes      | Set to `true` to request a proof |
-
-> 📘
->
-> **Note**: When requesting proofs, the data requested will be encoded as part of the proof in the response.
+| `prove`                 | Boolean | Yes      | Set to `true` to request a proof. The data requested will be encoded as part of the proof in the response. |
 
 **Example Request**
 
