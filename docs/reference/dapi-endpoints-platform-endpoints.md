@@ -120,6 +120,63 @@ grpcurl -proto protos/platform/v0/platform.proto \
 :::
 ::::
 
+### getContestedResourceIdentityVotes
+
+Retrieves the voting record of a specific identity.
+
+**Returns**: A list of contested resource votes or a cryptographic proof.
+
+**Parameters**:
+
+| Name                           | Type     | Required | Description |
+| ------------------------------ | -------- | -------- | ------------|
+| `identity_id`                  | Bytes    | Yes      | The ID of the identity whose votes are being requested |
+| `limit`                        | Integer  | No       | Maximum number of results to return |
+| `offset`                       | Integer  | No       | Offset for pagination |
+| `order_ascending`              | Boolean  | No       | Sort order for results |
+| `start_at_vote_poll_id_info`   | Object   | No       | Start poll ID information for pagination |
+| `prove`                        | Boolean  | No       | Set to `true` to receive a proof that contains the requested identity votes |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "identity_id": "zrrtwQwGj7NujFpg3a5OBjTg9AzrpL2XPEzmr+qN1Vw="
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getContestedResourceIdentityVotes
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "votes": {
+      "contested_resource_identity_votes": [],
+      "finished_results": true
+    },
+    "metadata": {
+      "height": "2874",
+      "core_chain_locked_height": 1086880,
+      "epoch": 761,
+      "time_ms": "1724093690163",
+      "protocol_version": 1,
+      "chain_id": "dash-testnet-50"
+    }
+  }
+}
+```
+:::
+::::
+
 ### getContestedResourceVotersForIdentity
 
 Retrieves the voters for a specific identity associated with a contested resource.
@@ -1936,6 +1993,64 @@ grpcurl -proto protos/platform/v0/platform.proto \
       "timeMs": "1702398582963",
       "protocolVersion": 1,
       "chainId": "dash-testnet-37"
+    }
+  }
+}
+```
+:::
+::::
+
+### getVotePollsByEndDate
+
+Retrieves vote polls that will end within a specified date range.
+
+**Returns**: A list of vote polls or a cryptographic proof.
+
+**Parameters**:
+
+| Name               | Type     | Required | Description |
+| ------------------ | -------- | -------- | ----------- |
+| `start_time_info`  | Object   | No       | Start time information for filtering vote polls |
+| `end_time_info`    | Object   | No       | End time information for filtering vote polls |
+| `limit`            | Integer  | No       | Maximum number of results to return |
+| `offset`           | Integer  | No       | Offset for pagination |
+| `ascending`        | Boolean  | No       | Sort order for results |
+| `prove`            | Boolean  | No       | Set to `true` to receive a proof that contains the requested vote polls |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "start_time_info": {"start_time_ms": "1701980000000", "start_time_included": true},
+      "end_time_info": {"end_time_ms": "1702000000000", "end_time_included": true},
+      "limit": 10
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getVotePollsByEndDate
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "votePollsByTimestamps": {
+      "finishedResults": true
+    },
+    "metadata": {
+      "height": "2876",
+      "coreChainLockedHeight": 1086885,
+      "epoch": 761,
+      "timeMs": "1724094056585",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-50"
     }
   }
 }
