@@ -101,12 +101,79 @@ grpcurl -proto protos/platform/v0/platform.proto \
 ```json
 {
   "v0": {
-    "contestedResourceValues": {},
+    "contestedResourceValues": {
+      "contestedResourceValues": [
+        "EgRkYXNo"
+      ]
+    },
     "metadata": {
-      "height": "908",
-      "coreChainLockedHeight": 1084368,
-      "epoch": 665,
-      "timeMs": "1723747358394",
+      "height": "2729",
+      "coreChainLockedHeight": 1086764,
+      "epoch": 756,
+      "timeMs": "1724076831562",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-50"
+    }
+  }
+}
+```
+:::
+::::
+
+### getContestedResourceVotersForIdentity
+
+Retrieves the voters for a specific identity associated with a contested resource.
+
+**Returns**: A list of voters or a cryptographic proof.
+
+**Parameters**:
+
+| Name                   | Type     | Required | Description                                                                 |
+| ---------------------- | -------- | -------- | --------------------------------------------------------------------------- |
+| `contract_id`          | Bytes    | Yes      | The ID of the data contract associated with the contested resource          |
+| `document_type_name`   | String   | Yes      | The name of the document type associated with the contested resource        |
+| `index_name`           | String   | Yes      | The name of the index used to query the contested resource                  |
+| `index_values`         | Array    | Yes      | The values used to query the contested resource                             |
+| `contestant_id`        | Bytes    | Yes      | The ID of the identity for which to retrieve voters                         |
+| `start_at_identifier_info` | Object | No      | Start identifier information for pagination                                 |
+| `count`                | Integer  | No       | Number of results to return                                                 |
+| `order_ascending`      | Boolean  | No       | Sort order for results                                                      |
+| `prove`                | Boolean  | No       | Set to `true` to receive a proof that contains the requested voters         |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "contract_id": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
+      "document_type_name": "domain",
+      "index_name": "parentNameAndLabel",
+      "index_values": [],
+      "contestant_id": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU="
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getContestedResourceVotersForIdentity
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "contestedResourceVoters": {
+      "finishedResults": true
+    },
+    "metadata": {
+      "height": "2746",
+      "coreChainLockedHeight": 1086784,
+      "epoch": 757,
+      "timeMs": "1724079623407",
       "protocolVersion": 1,
       "chainId": "dash-testnet-50"
     }
