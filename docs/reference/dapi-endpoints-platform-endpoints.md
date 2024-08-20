@@ -2107,6 +2107,53 @@ grpcurl -proto protos/platform/v0/platform.proto \
 :::
 ::::
 
+### getTotalCreditsInPlatform
+
+Retrieves the total credits in the platform.
+
+**Returns**: The total amount of credits or a cryptographic proof.
+
+**Parameters**:
+
+| Name    | Type     | Required | Description |
+| ------- | -------- | -------- | ----------- |
+| `prove` | Boolean  | No       | Set to `true` to receive a proof that contains the requested credit total |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {}
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getTotalCreditsInPlatform
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "credits": "1594457743625920",
+    "metadata": {
+      "height": "3263",
+      "coreChainLockedHeight": 1087403,
+      "epoch": 781,
+      "timeMs": "1724165757972",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-50"
+    }
+  }
+}
+```
+:::
+::::
+
 ### getVotePollsByEndDate
 
 Retrieves vote polls that will end within a specified date range.
