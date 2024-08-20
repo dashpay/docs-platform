@@ -81,6 +81,7 @@ Retrieves the contested resources for a specific contract, document type, and in
 :::{tab-item} gRPCurl
 :sync: grpcurl
 ```shell
+# `contract_id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "v0": {
@@ -142,6 +143,7 @@ Retrieves the voting record of a specific identity.
 ::::{tab-set}
 :::{tab-item} gRPCurl
 ```shell
+# `identity_id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "v0": {
@@ -202,6 +204,7 @@ Retrieves the voters for a specific identity associated with a contested resourc
 ::::{tab-set}
 :::{tab-item} gRPCurl
 ```shell
+# `contract_id` and `contestant_id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "v0": {
@@ -1933,7 +1936,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
   :sync: grpcurl
   ```shell
   # Request proofs for an identity and a data contract
-  # `identityId` and `contractId` must be represented in base64
+  # `identity_id` and `contract_id` must be represented in base64
   grpcurl -proto protos/platform/v0/platform.proto \
     -d '{
       "v0": {
