@@ -26,9 +26,9 @@ Dash Platform Protocol (DPP) defines a set of base fields that must be present i
 | $createdAt | Time (in milliseconds) the document was created |
 | $updatedAt | Time (in milliseconds) the document was last updated |
 
-> 🚧 Timestamp fields
->
-> Note: The `$createdAt` and `$updatedAt` fields will only be present in documents that add them to the list of [required properties](../reference/data-contracts.md#required-properties-optional).
+:::{attention}
+The `$createdAt` and `$updatedAt` fields will only be present in documents that add them to the list of [required properties](../reference/data-contracts.md#required-properties-optional).
+:::
 
 ### Data Contract Fields
 
@@ -114,6 +114,6 @@ The document replace transition is used to update the data in an existing Dash P
 
 The document delete transition is used to delete an existing Dash Platform document. It only requires the fields found in the base document transition.
 
-> 📘
->
-> For more detailed information, see the [Platform Protocol Reference - Document](../protocol-ref/document.md) page.
+:::{note}
+For more detailed information, see the [Platform Protocol Reference - Document](../protocol-ref/document.md) page.
+:::
