@@ -751,7 +751,7 @@ The following endpoints were recently deprecated. See the [previous version of d
 ### getStatus
 
 :::{attention}
-Deprecated in Dash Platform v1.0.0-dev.12
+Deprecated in Dash Platform v1.0.0
 :::
 
 **Returns**: Status information from the Core chain  

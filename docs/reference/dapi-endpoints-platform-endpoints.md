@@ -2287,7 +2287,9 @@ The following endpoints were recently deprecated. See the [previous version of d
 
 ### getIdentities
 
-*Deprecated in Dash Platform v1.0.0-dev.12*
+:::{attention}
+Deprecated in Dash Platform v1.0.0
+:::
 
 **Returns**: [Identity](../explanations/identity.md) information for the requested identities  
 
@@ -2300,7 +2302,9 @@ The following endpoints were recently deprecated. See the [previous version of d
 
 ### getIdentitiesByPublicKeyHashes
 
-*Deprecated in Dash Platform v1.0.0-dev.12*
+:::{attention}
+Deprecated in Dash Platform v1.0.0
+:::
 
 **Returns**: An array of [identities](../explanations/identity.md) associated with the provided public key hashes  
 **Parameters**:
