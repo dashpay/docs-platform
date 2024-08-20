@@ -8,9 +8,9 @@
 
 Dash Platform Name Service (DPNS) is a service used to register names on Dash Platform. It is a general service that is used to provide usernames and application names for [identities](../explanations/identity.md) but can also be extended in the future to resolve other cryptocurrency addresses, websites, and more. DPNS is implemented as an application on top of the platform and leverages platform capabilities.
 
-> 👍 DPNS DIP
->
-> The [DPNS Dash Improvement Proposal (DIP)](https://github.com/dashpay/dips/blob/master/dip-0012.md) provides more extensive background information and details.
+:::{tip}
+The [DPNS Dash Improvement Proposal (DIP)](https://github.com/dashpay/dips/blob/master/dip-0012.md) provides more extensive background information and details.
+:::
 
 ### Relationship to identities
 
@@ -18,11 +18,9 @@ DPNS names and [Identities](../explanations/identity.md) are tightly integrated.
 
 ## Details
 
-### Name Registration Process
+Given the DNS-compatible nature of DPNS, all DPNS names are technically domain names and are registered under a top-level DPNS domain (`.dash`). Some applications may abstract the top-level domain away, but it is important to be aware that it exists.
 
-> 📘
->
-> Given the DNS-compatible nature of DPNS, all DPNS names are technically domain names and are registered under a top-level DPNS domain (`.dash`). Some applications may abstract the top-level domain away, but it is important to be aware that it exists.
+### Name Registration Process
 
 To prevent [front-running](https://en.wikipedia.org/wiki/Domain_name_front_running), name registration is split into a two phase process consisting of:
 
@@ -39,12 +37,18 @@ In the registration phase, the domain name (e.g. `alice.dash`) is once again sub
 
 ### Conflict resolution
 
-Since some names may be popular, the registration process includes a voting mechanism to resolve conflicts when multiple identities request the same name. This is only done for names that meet both of the following conditions:
+Since some names may be popular, the registration process includes a voting mechanism to resolve conflicts when multiple identities request the same name. Identities requesting premium names must pay a fee (200 credits) to cover the masternode voting costs.
 
-* Less than 20 characters long (i.e. "alice", "quantumexplorer")
-* Contains no numbers or only contains the number(s) 0 and/or 1 (i.e. "bob", "carol01")
+:::{note}
+This process only applies to names that meet the following conditions:
 
-Identities requesting contested names must pay a fee (200 credits) to cover the masternode voting costs. The voting window begins when a name matching the criteria above is requested and ends after two weeks. Additional identities can request the same name during the first week. Masternodes and evonodes can vote for one of the identities, abstain, or vote to lock the request.
+* Less than 20 characters long (i.e. "alice", "quantumexplorer") AND
+* Contain no numbers or only contain the number(s) 0 and/or 1 (i.e. "bob", "carol01")
+
+All other available names can be registered immediately.
+:::
+
+The voting window begins when a name matching the criteria above is requested and ends after two weeks. Additional identities can request the same name during the first week. Masternodes and evonodes can vote for one of the identities, abstain, or vote to lock the request.
 
 After voting concludes, the name is either awarded to one of the identities or locked. If the vote locks the name, no identity receives it. Locked names can no longer be requested or awarded in Dash Platform v1.0, but future updates may add unlock capabilities.
 
@@ -52,12 +56,13 @@ Assuming masternodes do not vote to lock, the identity receiving the most votes 
 
 ### Implementation
 
-DPNS names have several constraints as defined in the [DPNS data contract](https://github.com/dashpay/platform/blob/v1.0.0-beta.3/packages/dpns-contract/schema/v1/dpns-contract-documents.json). The constraints provide compatibility with DNS and protection from homograph attacks:
+DPNS names have several constraints as defined in the [DPNS data contract](https://github.com/dashpay/platform/blob/master/packages/dpns-contract/schema/dpns-contract-documents.json). The constraints provide compatibility with DNS and protection from homograph attacks:
 
-* Maximum length - 63 characters
-* Character set - `0-9`, `-` (hyphen), and `A-Z` (case insensitive)
-  * Note: Use of `-` as a prefix/suffix to a name is _not_ allowed (e.g. `-name` or `name-`). This constraint is defined by this JSON-Schema [pattern](https://github.com/dashpay/platform/blob/master/packages/dpns-contract/schema/dpns-contract-documents.json#L38) in the DPNS data contract: `^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]$`
-* Domain labels are converted to lowercase for case-insensitive uniqueness validation. Then, "o", "i" and "l" replaced with "0" and "1" to mitigate [homograph attacks](https://en.wikipedia.org/wiki/IDN_homograph_attack). For example, "Alice" is normalized "a11ce".
+1. Maximum length - 63 characters
+1. Character set - `0-9`, `-` (hyphen), and `A-Z` (case insensitive)
+    * Note: Use of `-` as a prefix/suffix to a name is _not_ allowed (e.g. `-name` or `name-`). This constraint is defined by this JSON-Schema [pattern](https://github.com/dashpay/platform/blob/master/packages/dpns-contract/schema/v1/dpns-contract-documents.json#L44) in the DPNS data contract: `"^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]$`
+1. Domain labels are converted to lowercase for case-insensitive uniqueness validation.
+1. To mitigate [homograph attacks](https://en.wikipedia.org/wiki/IDN_homograph_attack), `o` is replaced with `0` and `i`/`l` are replaced with `1`. For example, "Alice" is normalized to "a11ce".
 
 Additional validation rules related to the `domain` document are enforced by the DPNS [data triggers](../explanations/platform-protocol-data-trigger.md) defined in [rs-drive-abci](https://github.com/dashpay/platform/tree/master/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/documents_batch/data_triggers/triggers).
 

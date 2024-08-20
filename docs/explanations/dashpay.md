@@ -12,12 +12,6 @@ contract that enables a decentralized application that creates bidirectional [di
 payment channels](../reference/glossary.md#direct-settlement-payment-channel-dspc) between
 [identities](../explanations/identity.md).
 
-> 📘
->
-> For previews of an updated Dash mobile wallet UI based on the DashPay contract or to join the
-> alpha test program, please visit the <a href="https://www.dash.org/dashpay/"
-> target="_blank">DashPay landing page at dash.org</a>.
-
 The DashPay contract enables an improved Dash wallet experience with features including:
 
 * **User Centric Interaction**: DashPay brings users front and center in a cryptocurrency wallet.
@@ -86,11 +80,11 @@ Additionally, the DashPay data triggers defined in
 [rs-drive-abci](https://github.com/dashpay/platform/tree/master/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/documents_batch/data_triggers/triggers/dashpay)
 enforce additional validation rules related to the `contactRequest` document.
 
-> 👍 DashPay DIP
->
-> Please refer to the [DashPay Dash Improvement Proposal
-> (DIP)](https://github.com/dashpay/dips/blob/master/dip-0015.md) for more extensive background
-> information and complete details about the data contract.
+:::{tip}
+See the [DashPay Dash Improvement Proposal
+(DIP)](https://github.com/dashpay/dips/blob/master/dip-0015.md) for more extensive background
+information and complete details about the data contract.
+:::
 
 * <a href="https://github.com/dashpay/dips/blob/master/dip-0015.md#the-contact-request"
   target="_blank">Contact request details</a>
@@ -99,6 +93,7 @@ enforce additional validation rules related to the `contactRequest` document.
 * <a href="https://github.com/dashpay/dips/blob/master/dip-0015.md#contact-info"
   target="_blank">Contact Info details</a>
 
+:::{dropdown} DashPay data contract
 ```json
 {
   "profile": {
@@ -129,30 +124,44 @@ enforce additional validation rules related to the `contactRequest` document.
       "avatarUrl": {
         "type": "string",
         "format": "uri",
-        "maxLength": 2048
+        "minLength": 1,
+        "maxLength": 2048,
+        "position": 0
       },
       "avatarHash": {
         "type": "array",
         "byteArray": true,
         "minItems": 32,
         "maxItems": 32,
-        "description": "SHA256 hash of the bytes of the image specified by avatarUrl"
+        "description": "SHA256 hash of the bytes of the image specified by avatarUrl",
+        "position": 1
       },
       "avatarFingerprint": {
         "type": "array",
         "byteArray": true,
         "minItems": 8,
         "maxItems": 8,
-        "description": "dHash the image specified by avatarUrl"
+        "description": "dHash the image specified by avatarUrl",
+        "position": 2
       },
       "publicMessage": {
         "type": "string",
-        "maxLength": 140
+        "minLength": 1,
+        "maxLength": 140,
+        "position": 3
       },
       "displayName": {
         "type": "string",
-        "maxLength": 25
+        "minLength": 1,
+        "maxLength": 25,
+        "position": 4
       }
+    },
+    "minProperties": 1,
+    "dependentRequired": {
+      "avatarUrl": ["avatarHash", "avatarFingerprint"],
+      "avatarHash": ["avatarUrl", "avatarFingerprint"],
+      "avatarFingerprint": ["avatarUrl", "avatarHash"]
     },
     "required": [
       "$createdAt",
@@ -195,21 +204,25 @@ enforce additional validation rules related to the `contactRequest` document.
         "type": "array",
         "byteArray": true,
         "minItems": 32,
-        "maxItems": 32
+        "maxItems": 32,
+        "position": 0
       },
       "rootEncryptionKeyIndex": {
         "type": "integer",
-        "minimum": 0
+        "minimum": 0,
+        "position": 1
       },
       "derivationEncryptionKeyIndex": {
         "type": "integer",
-        "minimum": 0
+        "minimum": 0,
+        "position": 2
       },
       "privateData": {
         "type": "array",
         "byteArray": true,
         "minItems": 48,
         "maxItems": 2048,
+        "position": 3,
         "description": "This is the encrypted values of aliasName + note + displayHidden encoded as an array in cbor"
       }
     },
@@ -224,6 +237,8 @@ enforce additional validation rules related to the `contactRequest` document.
     "additionalProperties": false
   },
   "contactRequest": {
+    "documentsMutable": false,
+    "canBeDeleted": false,
     "requiresIdentityEncryptionBoundedKey": 2,
     "requiresIdentityDecryptionBoundedKey": 2,
     "type": "object",
@@ -283,45 +298,49 @@ enforce additional validation rules related to the `contactRequest` document.
         "byteArray": true,
         "minItems": 32,
         "maxItems": 32,
+        "position": 0,
         "contentMediaType": "application/x.dash.dpp.identifier"
       },
       "encryptedPublicKey": {
         "type": "array",
         "byteArray": true,
         "minItems": 96,
-        "maxItems": 96
+        "maxItems": 96,
+        "position": 1
       },
       "senderKeyIndex": {
         "type": "integer",
-        "minimum": 0
+        "minimum": 0,
+        "position": 2
       },
       "recipientKeyIndex": {
         "type": "integer",
-        "minimum": 0
+        "minimum": 0,
+        "position": 3
       },
       "accountReference": {
         "type": "integer",
-        "minimum": 0
+        "minimum": 0,
+        "position": 4
       },
       "encryptedAccountLabel": {
         "type": "array",
         "byteArray": true,
         "minItems": 48,
-        "maxItems": 80
+        "maxItems": 80,
+        "position": 5
       },
       "autoAcceptProof": {
         "type": "array",
         "byteArray": true,
         "minItems": 38,
-        "maxItems": 102
-      },
-      "coreHeightCreatedAt": {
-        "type": "integer",
-        "minimum": 1
+        "maxItems": 102,
+        "position": 6
       }
     },
     "required": [
       "$createdAt",
+      "$createdAtCoreBlockHeight",
       "toUserId",
       "encryptedPublicKey",
       "senderKeyIndex",

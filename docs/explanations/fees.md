@@ -34,9 +34,9 @@ The current cost schedule is outlined in the table below:
 | Load from memory | 20 / byte |
 | Blake3 hash function | 400 + 64 / 64-byte block |
 
-> 📘 Credits
->
-> Refer to the [Identity explanation](../explanations/identity.md) section for information regarding how credits are created.
+:::{note}
+Refer to the [Identity explanation](../explanations/identity.md) section for information regarding how credits are created.
+:::
 
 ## Fee Multiplier
 
