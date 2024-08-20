@@ -125,7 +125,7 @@ The query modifiers described here determine how query results will be sorted an
 | `startAfter` | Returns records beginning after the document ID provided | `startAfter: Buffer.from(Identifier.from(<document ID>))` |
 
 :::{attention}
-For indices composed of multiple fields ([example from the DPNS data contract](https://github.com/dashpay/platform/blob/master/packages/dpns-contract/schema/dpns-contract-documents.json)), the sort order in an `orderBy` must either match the order defined in the data contract OR be the inverse order.
+For indices composed of multiple fields ([example from the DPNS data contract](https://github.com/dashpay/platform/blob/master/packages/dpns-contract/schema/v1/dpns-contract-documents.json)), the sort order in an `orderBy` must either match the order defined in the data contract OR be the inverse order.
 :::
 
 ## Example query

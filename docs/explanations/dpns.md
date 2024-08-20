@@ -56,7 +56,7 @@ Assuming masternodes do not vote to lock, the identity receiving the most votes 
 
 ### Implementation
 
-DPNS names have several constraints as defined in the [DPNS data contract](https://github.com/dashpay/platform/blob/master/packages/dpns-contract/schema/dpns-contract-documents.json). The constraints provide compatibility with DNS and protection from homograph attacks:
+DPNS names have several constraints as defined in the [DPNS data contract](https://github.com/dashpay/platform/blob/master/packages/dpns-contract/schema/v1/dpns-contract-documents.json). The constraints provide compatibility with DNS and protection from homograph attacks:
 
 1. Maximum length - 63 characters
 1. Character set - `0-9`, `-` (hyphen), and `A-Z` (case insensitive)

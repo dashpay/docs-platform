@@ -32,7 +32,7 @@ The `$createdAt` and `$updatedAt` fields will only be present in documents that 
 
 ### Data Contract Fields
 
-Each application defines its own fields via document definitions in its data contract. Details of the [DPNS data contract documents](https://github.com/dashpay/platform/blob/master/packages/dpns-contract/schema/dpns-contract-documents.json) are described below as an example. This contract defines two document types (`preorder` and `domain`) and provides the functionality described in the [Name Service explanation](../explanations/dpns.md).
+Each application defines its own fields via document definitions in its data contract. Details of the [DPNS data contract documents](https://github.com/dashpay/platform/blob/master/packages/dpns-contract/schema/v1/dpns-contract-documents.json) are described below as an example. This contract defines two document types (`preorder` and `domain`) and provides the functionality described in the [Name Service explanation](../explanations/dpns.md).
 
 | Document Type | Field Name | Data Type |
 | - | - | - |

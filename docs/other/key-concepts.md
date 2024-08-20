@@ -8,7 +8,7 @@ In order to pay for these various operations, Dash must be spent by either the a
 
 # Data Contracts
 
-A data contract is an agreement between your application and the Dash network as to how your data should be stored and validated by the Dash network. The concept is analogous to creating a schema for a document-oriented database. Data contracts are JSON objects, and an example contract for the [Dash Platform Naming Service (DPNS)](https://github.com/dashpay/platform/blob/master/packages/dpns-contract/schema/dpns-contract-documents.json) is included below:
+A data contract is an agreement between your application and the Dash network as to how your data should be stored and validated by the Dash network. The concept is analogous to creating a schema for a document-oriented database. Data contracts are JSON objects, and an example contract for the [Dash Platform Naming Service (DPNS)](https://github.com/dashpay/platform/blob/master/packages/dpns-contract/schema/v1/dpns-contract-documents.json) is included below:
 
 ```json
 {
