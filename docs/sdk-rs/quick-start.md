@@ -65,15 +65,16 @@ rpcpassword=<password>
 
 Restart Dash Core to apply the changes.
 
-> 🚧 **Using Dash Platform without Dash Core**
->
-> The Rust SDK requests proofs for all data retrieved from Platform. This makes it the recommended
-> (most secure) option, but also is why a Dash Core full node is currently required.
->
-> The [JavaScript SDK](../tutorials/introduction.md) provides access to Dash Platform without
-> requiring a full node; however, it **_does not support Dash Platform's proofs_**. The Rust DAPI
-> client can also perform read operations without a full node if proofs are not requested. See the
-> [DAPI client example](#dapi-client-example) below for details.
+:::{admonition} **Using Dash Platform without Dash Core**
+:class: attention
+The Rust SDK requests proofs for all data retrieved from Platform. This makes it the recommended
+(most secure) option, but also is why a Dash Core full node is currently required.
+
+The [JavaScript SDK](../tutorials/introduction.md) provides access to Dash Platform without
+requiring a full node; however, it **_does not support Dash Platform's proofs_**. The Rust DAPI
+client can also perform read operations without a full node if proofs are not requested. See the
+[DAPI client example](#dapi-client-example) below for details.
+:::
 
 ## Create a new project
 
@@ -169,11 +170,11 @@ Identity balance: 932523994
 
 ## SDK documentation
 
-> 🚧 Work in progress
->
-> SDK documentation will be available on docs.rs once the Dash SDK crate is published. Meanwhile,
-> the [pre-release documentation](https://dashpay.github.io/docs-platform/dash_sdk/) is available
-> for reference. Please keep in mind that it is incomplete and may be outdated.
+:::{attention}
+SDK documentation will be available on docs.rs once the Dash SDK crate is published. Meanwhile,
+the [pre-release documentation](https://dashpay.github.io/docs-platform/dash_sdk/) is available
+for reference. Please keep in mind that it is incomplete and may be outdated.
+:::
 
 ## DAPI client example
 

@@ -27,11 +27,11 @@ detailed examples or see a simple example in the
 See the [Platform Terminal User Interface (TUI)](https://github.com/dashpay/platform-tui/) for an
 application that uses the SDK to execute various state transitions.
 
-> 🚧 Work in progress
->
-> SDK documentation will be available on docs.rs once the Dash SDK crate is published. Meanwhile,
-> the [pre-release documentation](https://dashpay.github.io/docs-platform/dash_sdk/) is available
-> for reference. Please keep in mind that it is incomplete and may be outdated.
+:::{attention}
+SDK documentation will be available on docs.rs once the Dash SDK crate is published. Meanwhile,
+the [pre-release documentation](https://dashpay.github.io/docs-platform/dash_sdk/) is available
+for reference. Please keep in mind that it is incomplete and may be outdated.
+:::
 
 ### Mocking
 
