@@ -1787,6 +1787,110 @@ grpcurl -proto protos/platform/v0/platform.proto \
 :::
 ::::
 
+### getPathElements
+
+Retrieves elements for a specified path in the platform.
+
+**Returns**: The elements or a cryptographic proof.
+
+**Parameters**:
+
+| Name    | Type     | Required | Description |
+| ------- | -------- | -------- | ----------- |
+| `path`  | Array    | Yes      | The path for which elements are being requested |
+| `keys`  | Array    | No       | The keys associated with the elements being requested |
+| `prove` | Boolean  | No       | Set to `true` to receive a proof that contains the requested elements |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+# `path` array values be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "path": ["path_element_1", "path_element_2"],
+      "keys": ["key1", "key2"]
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getPathElements
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "elements": {},
+    "metadata": {
+      "height": "3256",
+      "coreChainLockedHeight": 1087397,
+      "epoch": 780,
+      "timeMs": "1724164508171",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-50"
+    }
+  }
+}
+```
+:::
+::::
+
+### getPrefundedSpecializedBalance
+
+Retrieves the pre-funded specialized balance for a specific identity.
+
+**Returns**: The balance or a cryptographic proof.
+
+**Parameters**:
+
+| Name    | Type     | Required | Description |
+| ------- | -------- | -------- | ----------- |
+| `id`    | Bytes    | Yes      | The ID of the identity whose balance is being requested |
+| `prove` | Boolean  | No       | Set to `true` to receive a proof that contains the requested balance |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+# `id` must be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "id": "zrrtwQwGj7NujFpg3a5OBjTg9AzrpL2XPEzmr+qN1Vw="
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getPrefundedSpecializedBalance
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "balance": "100000000",
+    "metadata": {
+      "height": "6860",
+      "coreChainLockedHeight": 927080,
+      "epoch": 852,
+      "timeMs": "1701983732299",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-37"
+    }
+  }
+}
+```
+:::
+::::
+
 ### getProofs
 
 :::::{dropdown} ⚠️ For internal use only
