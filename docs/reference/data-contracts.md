@@ -174,36 +174,29 @@ There are a variety of constraints currently defined for performance and securit
 
 | Description | Value |
 | ----------- | ----- |
-| Minimum number of properties | [1](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L22) |
-| Maximum number of properties | [100](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L23) |
-| Minimum property name length | [1](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L20) (Note: minimum length was 3 prior to v0.23) |
-| Maximum property name length | [64](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L20) |
+| Minimum number of properties | [1](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L22) |
+| Maximum number of properties | [100](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L23) |
+| Minimum property name length | [1](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L9) |
+| Maximum property name length | [64](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L9) |
 | Property name characters     | Alphanumeric (`A-Z`, `a-z`, `0-9`)<br>Hyphen (`-`) <br>Underscore (`_`) |
-
-Prior to Dash Platform v0.23 there were stricter limitations on minimum property name length and the characters that could be used in property names.
 
 #### Required Properties (Optional)
 
 Each document may have some fields that are required for the document to be valid and other optional fields. Required fields are defined via the `required` array, which contains a list of the field names that must be present in the document. The `required` object should only be included for documents with at least one required property.
-
-```json
-"required": [
-  "<field name a>",
-  "<field name b>"
-]
-```
-
 **Example**  
 The following example (excerpt from the DPNS contract's `domain` document) demonstrates a document that has 6 required fields:
 
 ```json
 "required": [
-  "nameHash",
+  "$createdAt",
+  "$updatedAt",
+  "$transferredAt",
   "label",
   "normalizedLabel",
   "normalizedParentDomainName",
   "preorderSalt",
-  "records"
+  "records",
+  "subdomainRules"
 ],
 ```
 
