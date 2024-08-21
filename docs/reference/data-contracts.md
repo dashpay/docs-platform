@@ -6,9 +6,48 @@
 
 ## Overview
 
-Data contracts define the schema (structure) of data an application will store on Dash Platform. Contracts are described using [JSON Schema](https://json-schema.org/understanding-json-schema/) which allows the platform to validate the submitted contract-related data.
+Data contracts define the schema (structure) of data an application will store on Dash Platform. Contracts are described using [JSON Schema](https://json-schema.org/understanding-json-schema/) which allows the platform to validate the submitted contract-related data. This minimal example shows a data contract for a simple note-taking application, where each document represents a note with a single text message.
 
-The following sections provide details that developers need to construct valid contracts. All data contracts must define one or more [documents](#documents) that conform to the [general data contract constraints](#general-constraints).
+:::{code-block} json
+:caption: Note application data contract
+{
+  "note": {
+    "properties": {
+      "message": {
+        "type": "string",
+        "position": 0,
+        "description": "Stores a note message"
+      }
+    },
+    "additionalProperties": false
+  }
+}
+:::
+
+The following sections provide details that developers need to configure and construct valid contracts. All data contracts must define one or more [documents](#documents) that conform to the [general data contract constraints](#general-constraints). Additionally, several contract-level [configuration parameters](#contract-configuration) can be set to modify the mutability, retention, and security behavior of the contract and its documents.
+
+## Contract Configuration
+
+Data contracts support three categories of configuration options to provide flexibility in contract design. It is only necessary to include them in a data contract when non-default values are used.
+
+| Contract option                         | Default | Description |
+|-----------------------------------------|---------|-------------|
+| `canBeDeleted`                          | `false` | Determines if the contract can be deleted |
+| `readonly`                              | `false` | Determines if the contract is read-only |
+| `keepsHistory`                          | `false` | Enables or disables the storing of contract update history |
+
+| Document default option                 | Default | Description |
+|-----------------------------------------|---------|-------------|
+| `documentsKeepHistory`<br>`ContractDefault`   | `false` | Sets the default behavior for whether documents keep history within the contract|
+| `documentsMutable`<br>`ContractDefault`       | `true`  | Sets the default mutability of documents within the contract |
+| `documentsCanBeDeleted`<br>`ContractDefault`  | `true`  | Sets the default behavior for whether documents within the contract can be deleted|
+
+| Security option                         | Description |
+|-----------------------------------------|-------------|
+| `requiresIdentity`<br>`EncryptionBoundedKey`  | Indicates the contract requires a contract-specific identity encryption key. Key options:<br>`0` - Unique non-replaceable<br>`1` - Multiple<br>`2` - Multiple with reference to latest  |
+| `requiresIdentity`<br>`DecryptionBoundedKey`  | Indicates the contract requires a contract-specific identity decryption key. Key options:<br>`0` - Unique non-replaceable<br>`1` - Multiple<br>`2` - Multiple with reference to latest |
+
+The default values for these configuration options are defined in the [Rust DPP implementation](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/src/data_contract/config/fields.rs).
 
 ## Documents
 
