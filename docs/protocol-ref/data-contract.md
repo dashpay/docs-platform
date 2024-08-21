@@ -239,7 +239,7 @@ property must be incremented if the contract is updated.
 
 ### Data Contract Documents
 
-The `documents` object defines each type of document required by the data contract. At a minimum, a document must consist of 1 or more properties. Documents may also define [indices](#document-indices) and a list of [required properties](#required-properties-optional). The `additionalProperties` properties keyword must be included as described in the [constraints](#additional-properties) section.
+The `documents` object defines each type of document required by the data contract. At a minimum, a document must consist of 1 or more properties. Documents may also define [indices](#document-indices) and a list of [required properties](#required-properties). The `additionalProperties` properties keyword must be included as described in the [constraints](#additional-properties) section.
 
 The following example shows a minimal `documents` object defining a single document (`note`) that has one property (`message`).
 

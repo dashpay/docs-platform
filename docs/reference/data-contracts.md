@@ -51,7 +51,7 @@ The default values for these configuration options are defined in the [Rust DPP 
 
 ## Documents
 
-The `documents` object defines each type of document required by the data contract. At a minimum, a document must consist of 1 or more [properties](#document-properties). Documents may also define [indices](#document-indices) and a list of [required properties](#required-properties-optional). The `additionalProperties` properties keyword must be included as described in the [constraints](#additional-properties) section.
+The `documents` object defines each type of document required by the data contract. At a minimum, a document must consist of 1 or more [properties](#document-properties). Documents may also define [indices](#document-indices) and a list of [required properties](#required-properties). The `additionalProperties` properties keyword must be included as described in the [constraints](#additional-properties) section.
 
 The following example shows a minimal `documents` object defining a single document (`note`) with one property (`message`).
 
@@ -80,7 +80,7 @@ Documents support the following configuration options to provide flexibility in 
 | `canBeDeleted`                       | boolean  | If true, documents can be deleted. Default: true. |
 | `transferable`                       | integer  | Transferable without a marketplace sell:<br>`0` - Never<br>`1` - Always |
 | `tradeMode`                          | integer  | Built-in marketplace system:<br>`0` - None<br>`1` - Direct purchase (the purchaser can buy the item without requiring approval) |
-| `creationRestrictionMode`            | integer  | Restriction of document creation: `0` - No restrictions<br>`1` - Contract owner only<br>`2` - No creation (System Only). |
+| `creationRestrictionMode`            | integer  | Restriction of document creation:<br>`0` - No restrictions<br>`1` - Contract owner only<br>`2` - No creation (System Only). |
 
 | Security option | Type | Description |
 |-----------------|------|-------------|
@@ -104,7 +104,7 @@ Documents support the following configuration options to provide flexibility in 
   | `canBeDeleted`                       | boolean  | If true, documents can be deleted. Default: true. |
   | `transferable`                       | integer  | Transferable without a marketplace sell:<br>`0` - Never<br>`1` - Always |
   | `tradeMode`                          | integer  | Built-in marketplace system:<br>`0` - None<br>`1` - Direct purchase (the purchaser can buy the item without requiring approval) |
-  | `creationRestrictionMode`            | integer  | Restriction of document creation: `0` - No restrictions<br>`1` - Contract owner only<br>`2` - No creation (System Only). |
+  | `creationRestrictionMode`            | integer  | Restriction of document creation:<br>`0` - No restrictions<br>`1` - Contract owner only<br>`2` - No creation (System Only). |
   | `requiresIdentity`<br>`EncryptionBoundedKey` | integer  | Key requirements for identity encryption:<br>`0` - Unique non-replaceable<br>`1` - Multiple<br>`2` - Multiple with reference to latest key |
   | `requiresIdentity`<br>`DecryptionBoundedKey` | integer  | Key requirements for identity decryption:<br>`0` - Unique non-replaceable<br>`1` - Multiple<br>`2` - Multiple with reference to latest key |
   | [`properties`](#document-properties) | object   | Defines the properties of the document. |
@@ -133,6 +133,18 @@ The following example (from the [DPNS contract's `domain` document](https://gith
 The `properties` object defines each field that a document will use. Each field consists of an object that, at a minimum, must define its data `type` (`string`, `number`, `integer`, `boolean`, `array`, `object`) and a [`position`](#assigning-property-position).
 
 Fields may also apply a variety of optional JSON Schema constraints related to the format, range, length, etc. of the data. A full explanation of JSON Schema capabilities is beyond the scope of this document. For more information regarding its data types and the constraints that can be applied, please refer to the [JSON Schema reference](https://json-schema.org/understanding-json-schema/reference/index.html) documentation.
+
+#### Property Constraints
+
+There are a variety of constraints currently defined for performance and security reasons.
+
+| Description | Value |
+| ----------- | ----- |
+| Minimum number of properties | [1](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L22) |
+| Maximum number of properties | [100](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L23) |
+| Minimum property name length | [1](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L9) |
+| Maximum property name length | [64](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L9) |
+| Property name characters     | Alphanumeric (`A-Z`, `a-z`, `0-9`)<br>Hyphen (`-`) <br>Underscore (`_`) |
 
 #### Assigning property `position`
 
@@ -168,21 +180,10 @@ const contractDocuments = {
 };
 ```
 
-#### Property Constraints
-
-There are a variety of constraints currently defined for performance and security reasons.
-
-| Description | Value |
-| ----------- | ----- |
-| Minimum number of properties | [1](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L22) |
-| Maximum number of properties | [100](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L23) |
-| Minimum property name length | [1](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L9) |
-| Maximum property name length | [64](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L9) |
-| Property name characters     | Alphanumeric (`A-Z`, `a-z`, `0-9`)<br>Hyphen (`-`) <br>Underscore (`_`) |
-
-#### Required Properties (Optional)
+#### Required Properties
 
 Each document may have some fields that are required for the document to be valid and other optional fields. Required fields are defined via the `required` array, which contains a list of the field names that must be present in the document. The `required` object should only be included for documents with at least one required property.
+
 **Example**  
 The following example (excerpt from the DPNS contract's `domain` document) demonstrates a document that has 6 required fields:
 

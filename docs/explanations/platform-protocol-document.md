@@ -27,7 +27,7 @@ Dash Platform Protocol (DPP) defines a set of base fields that must be present i
 | $updatedAt | Time (in milliseconds) the document was last updated |
 
 :::{attention}
-The `$createdAt` and `$updatedAt` fields will only be present in documents that add them to the list of [required properties](../reference/data-contracts.md#required-properties-optional).
+The `$createdAt` and `$updatedAt` fields will only be present in documents that add them to the list of [required properties](../reference/data-contracts.md#required-properties).
 :::
 
 ### Data Contract Fields
