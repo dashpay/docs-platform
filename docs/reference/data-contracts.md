@@ -207,6 +207,20 @@ The following example (excerpt from the DPNS contract's `domain` document) demon
 ],
 ```
 
+#### Transient Properties
+
+Each document may have transient fields that require validation but do not need to be stored by the system once validated. Transient fields are defined in the `transient` array. The `transient` object should only be included for documents with at least one transient property.
+
+**Example**  
+
+The following example (from the [DPNS contract's `domain` document](https://github.com/dashpay/platform/blob/master/packages/dpns-contract/schema/v1/dpns-contract-documents.json)) demonstrates a document that has 1 transient field:
+
+```json
+    "transient": [
+      "preorderSalt"
+    ]
+```
+
 ### Document Indices
 
 Document indices may be defined if indexing on document fields is required. The `indices` object should only be included for documents with at least one index.
