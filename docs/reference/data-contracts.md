@@ -69,6 +69,65 @@ The following example shows a minimal `documents` object defining a single docum
 }
 ```
 
+### Document Configuration
+
+Documents support the following configuration options to provide flexibility in contract design. It is only necessary to include them in a data contract when non-default values are used.
+
+| Document option | Type | Description |
+|-----------------|------|-------------|
+| `documentsKeepHistory`               | boolean  | If true, documents keep a history of all changes. Default: false. |
+| `documentsMutable`                   | boolean  | If true, documents are mutable. Default: true. |
+| `canBeDeleted`                       | boolean  | If true, documents can be deleted. Default: true. |
+| `transferable`                       | integer  | Transferable without a marketplace sell:<br>`0` - Never<br>`1` - Always |
+| `tradeMode`                          | integer  | Built-in marketplace system:<br>`0` - None<br>`1` - Direct purchase (the purchaser can buy the item without requiring approval) |
+| `creationRestrictionMode`            | integer  | Restriction of document creation: `0` - No restrictions<br>`1` - Contract owner only<br>`2` - No creation (System Only). |
+
+| Security option | Type | Description |
+|-----------------|------|-------------|
+| `requiresIdentity`<br>`EncryptionBoundedKey` | integer  | Key requirements for identity encryption:<br>`0` - Unique non-replaceable<br>`1` - Multiple<br>`2` - Multiple with reference to latest key |
+| `requiresIdentity`<br>`DecryptionBoundedKey` | integer  | Key requirements for identity decryption:<br>`0` - Unique non-replaceable<br>`1` - Multiple<br>`2` - Multiple with reference to latest key |
+| `signatureSecurity`<br>`LevelRequirement`  | integer  | Public key security level:<br>`1` - Critical<br>`2` - High<br>`3` - Medium. Default is High if none specified. |
+
+:::{dropdown} List of all usable document properties
+
+  This list of properties is defined in the [Rust DPP implementation](https://github.com/dashpay/platform/blob/v1.0.2/packages/rs-dpp/src/data_contract/document_type/mod.rs#L31) and the [document meta-schema](https://github.com/dashpay/platform/blob/v1.0.2/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json).
+
+  | Property Name | Type | Description |
+  |---------------|------|-------------|
+  | `type`                               | string   | Specifies the type of the document, constrained to "object". |
+  | `$schema`                            | string   | The schema URL reference for the document. |
+  | `$defs`                              | object   | References the `documentProperties` definition. |
+  | [`indices`](#document-indices)       | array    | Defines indices for the document with properties like `name`, `unique`, `nullSearchable`, and `contested`. |
+  | `signatureSecurity`<br>`LevelRequirement`  | integer  | Public key security level:<br>`1` - Critical<br>`2` - High<br>`3` - Medium. Default is High if none specified. |
+  | `documentsKeepHistory`               | boolean  | If true, documents keep a history of all changes. Default: false. |
+  | `documentsMutable`                   | boolean  | If true, documents are mutable. Default: true. |
+  | `canBeDeleted`                       | boolean  | If true, documents can be deleted. Default: true. |
+  | `transferable`                       | integer  | Transferable without a marketplace sell:<br>`0` - Never<br>`1` - Always |
+  | `tradeMode`                          | integer  | Built-in marketplace system:<br>`0` - None<br>`1` - Direct purchase (the purchaser can buy the item without requiring approval) |
+  | `creationRestrictionMode`            | integer  | Restriction of document creation: `0` - No restrictions<br>`1` - Contract owner only<br>`2` - No creation (System Only). |
+  | `requiresIdentity`<br>`EncryptionBoundedKey` | integer  | Key requirements for identity encryption:<br>`0` - Unique non-replaceable<br>`1` - Multiple<br>`2` - Multiple with reference to latest key |
+  | `requiresIdentity`<br>`DecryptionBoundedKey` | integer  | Key requirements for identity decryption:<br>`0` - Unique non-replaceable<br>`1` - Multiple<br>`2` - Multiple with reference to latest key |
+  | [`properties`](#document-properties) | object   | Defines the properties of the document. |
+  | [`transient`](#transient-properties) | array    | An array of strings specifying transient properties that are validated by Platform but not stored. |
+  | [`additionalProperties`](#additional-properties) | boolean  | Specifies whether additional properties are allowed. Must be set to false, meaning no additional properties are allowed beyond those defined. |
+:::
+
+**Example**
+
+The following example (from the [DPNS contract's `domain` document](https://github.com/dashpay/platform/blob/master/packages/dpns-contract/schema/v1/dpns-contract-documents.json)) demonstrates several the use of several configuration options:
+
+```json
+{
+  "domain": {
+    "documentsMutable": false,
+    "canBeDeleted": true,
+    "transferable": 1,
+    "tradeMode": 1,
+    "..."
+  }
+}
+```
+
 ### Document Properties
 
 The `properties` object defines each field that a document will use. Each field consists of an object that, at a minimum, must define its data `type` (`string`, `number`, `integer`, `boolean`, `array`, `object`) and a [`position`](#assigning-property-position).
