@@ -403,29 +403,25 @@ There are a variety of constraints currently defined for performance and securit
 
 ### Keyword
 
-> 🚧
->
-> The `$ref` keyword has been [disabled](https://github.com/dashpay/platform/pull/300) since Platform v0.22.
-
 | Keyword | Constraint |
 | ------- | ---------- |
-| `default`                                              | Restricted - cannot be used (defined in DPP logic) |
-| `propertyNames`                                        | Restricted - cannot be used (defined in DPP logic) |
-| `uniqueItems: true`                                    | `maxItems` must be defined (maximum: 100000) |
-| `pattern: <something>`                                 | `maxLength` must be defined (maximum: 50000) |
-| `format: <something>`                                  | `maxLength` must be defined (maximum: 50000) |
-| `$ref: <something>`                                    | Disabled for data contracts |
+| `default`             | Restricted - cannot be used (defined in DPP logic) |
+| `propertyNames`       | Restricted - cannot be used (defined in DPP logic) |
+| `uniqueItems: true`   | `maxItems` must be defined (maximum: 100000) |
+| `pattern: <something>` | `maxLength` must be defined (maximum: [50000](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L187)) |
+| `format: <something>` | `maxLength` must be defined (maximum: [50000](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L200)) |
+| `$ref: <something>`   | Disabled for data contracts |
 | `if`, `then`, `else`, `allOf`, `anyOf`, `oneOf`, `not` | Disabled for data contracts |
-| `dependencies`                                         | Not supported. Use `dependentRequired` and `dependentSchema` instead |
-| `additionalItems`                                      | Not supported. Use `items: false` and `prefixItems` instead |
-| `patternProperties`                                    | Restricted - cannot be used for data contracts |
-| `pattern`                                              | Accept only [RE2](https://github.com/google/re2/wiki/Syntax) compatible regular expressions (defined in DPP logic) |
+| `dependencies`        | Not supported. Use `dependentRequired` and `dependentSchema` instead |
+| `additionalItems`     | Not supported. Use `items: false` and `prefixItems` instead |
+| `patternProperties`   | Restricted - cannot be used for data contracts |
+| `pattern`             | Accept only [RE2](https://github.com/google/re2/wiki/Syntax) compatible regular expressions (defined in DPP logic) |
 
 ### Data Size
 
 **Note:** These constraints are defined in the Dash Platform Protocol logic (not in JSON Schema).
 
-All serialized data (including state transitions) is limited to a maximum size of [16 KB](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/util/serializer.rs#L8).
+All serialized data (including state transitions) is limited to a maximum size of [16 KB](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/src/util/cbor_serializer.rs#L8).
 
 ### Additional Properties
 
