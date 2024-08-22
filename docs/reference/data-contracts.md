@@ -235,6 +235,7 @@ The `indices` array consists of one or more objects that each contain:
 ```json
 "indices": [ 
   {
+    "name": "<index name a>",
     "properties": [
       { "<field name a>": "<asc"|"desc>" },
       { "<field name b>": "<asc"|"desc>" }
@@ -252,6 +253,7 @@ The `indices` array consists of one or more objects that each contain:
     }
   },
   {
+    "name": "<index name b>",
     "properties": [
       { "<field name c>": "<asc"|"desc>" },
     ], 
@@ -297,13 +299,13 @@ For performance and security reasons, indices have the following constraints. Th
 
 | Description | Value |
 | ----------- | ----- |
-| Minimum/maximum length of index `name` | [1](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L413) / [32](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L414) |
-| Maximum number of indices | [10](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L446) |
-| Maximum number of unique indices | [3](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/data_contract/validation/data_contract_validator.rs#L40) |
-| Maximum number of properties in a single index | [10](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L433) |
-| Maximum length of indexed string property | [63](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/data_contract/validation/data_contract_validator.rs#L39) |
-| **Note: Dash Platform v0.22+. [does not allow indices for arrays](https://github.com/dashpay/platform/pull/225)**<br>Maximum length of indexed byte array property | [255](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/data_contract/validation/data_contract_validator.rs#L43) |
-| **Note: Dash Platform v0.22+. [does not allow indices for arrays](https://github.com/dashpay/platform/pull/225)**<br>Maximum number of indexed array items | [1024](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/data_contract/validation/data_contract_validator.rs#L44) |
+| Minimum / maximum length of index `name` | [1](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L311) / [32](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L312) |
+| Maximum number of indices | [10](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L390) |
+| Maximum number of unique indices | [10](https://github.com/dashpay/platform/blob/master/packages/rs-platform-version/src/version/v1.rs#L989) |
+| Maximum number of properties in a single index | [10](https://github.com/dashpay/platform/blob/v1.0.2/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L331) |
+| Maximum length of indexed string property | [63](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/v0/mod.rs#L72) |
+| Maximum length of indexed byte array property | [255](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/v0/mod.rs#L73) |
+| Maximum number of indexed array items | [1024](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/v0/mod.rs#L74) |
 | Usage of `$id` in an index [disallowed](https://github.com/dashpay/platform/pull/178) | N/A |
 
 **Example**  
@@ -322,19 +324,31 @@ The following example (excerpt from the DPNS contract's `preorder` document) cre
 
 ### Full Document Syntax
 
-This example syntax shows the structure of a documents object that defines two documents, an index, and a required field.
+This example syntax shows the structure of a document object including all optional properties.
+
+:::{dropdown} Document schema
+:open:
 
 ```json
 {
   "<document name a>": {
+    "documentsKeepHistory": true|false,
+    "documentsMutable": true|false,
+    "canBeDeleted": true|false,
+    "transferable": 0|1,
+    "tradeMode": 0|1,
+    "creationRestrictionMode": 0|1|2,
+    "requiresIdentityEncryptionBoundedKey": 0|1|2,
+    "requiresIdentityDecryptionBoundedKey": 0|1|2,
+    "signatureSecurityLevelRequirement": 1|2|3,
     "type": "object",
     "properties": {
-      "<field name b>": {
-        "type": "<field data type>",
+      "<property name b>": {
+        "type": "<property data type>",
         "position": "<number>"
       },
-      "<field name c>": {
-        "type": "<field data type>",
+      "<property name c>": {
+        "type": "<property data type>",
         "position": "<number>"
       },
     },
@@ -342,15 +356,26 @@ This example syntax shows the structure of a documents object that defines two d
       {
         "name": "<index name>",
         "properties": [
-          {
-            "<field name c>": "asc"
-          }
-        ],
-        "unique": true|false
+          { "<property name c>": "<asc"|"desc>" },
+        ], 
+        "unique": true|false,
+        "nullSearchable": true|false,
+        "contested": {
+          "fieldMatches": [
+            {
+              "field": "<property name c>",
+              "regexPattern": "<regex>"
+            }
+          ],
+          "resolution": 0
+        }
       },
     ],
     "required": [
       "<field name c>"
+    ],
+    "transient": [
+      "<field name b>"
     ]
     "additionalProperties": false
   },
@@ -367,9 +392,10 @@ This example syntax shows the structure of a documents object that defines two d
       },
     },
     "additionalProperties": false
-  },    
+  },  
 }
 ```
+:::
 
 ## General Constraints
 
