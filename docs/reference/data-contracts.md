@@ -226,9 +226,10 @@ The `indices` array consists of:
   * A `properties` array composed of a `<field name: sort order>` object for each document field that is part of the index (sort order: [`asc` only](https://github.com/dashpay/platform/pull/435) for Dash Platform v0.23)
   * An (optional) `unique` element that determines if duplicate values are allowed for the document
 
-> 🚧 Compound Indices
->
-> When defining an index with multiple properties (i.e a compound index), the order in which the properties are listed is important. Refer to the [mongoDB documentation](https://docs.mongodb.com/manual/core/index-compound/#prefixes) for details regarding the significance of the order as it relates to querying capabilities. Dash uses [GroveDB](https://github.com/dashpay/grovedb), which works similarly but does require listing all the index's fields in query order by statements.
+:::{admonition} Compound Indices
+:class: attention
+When defining an index with multiple properties (i.e a compound index), the order in which the properties are listed is important. Refer to the [mongoDB documentation](https://docs.mongodb.com/manual/core/index-compound/#prefixes) for details regarding the significance of the order as it relates to querying capabilities. Dash uses [GroveDB](https://github.com/dashpay/grovedb), which works similarly but does require listing all the index's fields in query order by statements.
+:::
 
 ```json
 "indices": [ 
@@ -245,6 +246,38 @@ The `indices` array consists of:
     ], 
   }    
 ]
+```
+
+#### Contested indices
+
+Contested unique indices provide a way for multiple identities to compete for ownership when a new document field matches a predefined pattern. This system enables fair distribution of valuable documents through community-driven decision-making.
+
+A two week contest begins when a match occurs. For the first week, additional contenders can join by paying a fee of 0.2 Dash. During this period, masternodes and evonodes vote on the outcome. The contest can result in the awarding of the document to the winner, a locked vote where no document is awarded, or potentially a restart of the contest if specific conditions are met.
+
+The table below describes the properties used to configure a contested index:
+
+| Property Name | Type | Description |
+|-|-|-|
+| fieldMatches | array | Array containing conditions to check |
+| fieldMatches.field | string | Name of the field to check for matches |
+| fieldMatches.regexPattern | string | Regex used to check for matches |
+| resolution | integer | Method to resolve the contest:<br>`0` - masternode voting |
+
+**Example**
+
+This example (from the [DPNS contract's `domain` document](https://github.com/dashpay/platform/blob/master/packages/dpns-contract/schema/v1/dpns-contract-documents.json)) demonstrates the use of a contested index:
+
+``` json
+"contested": {
+  "fieldMatches": [
+    {
+      "field": "normalizedLabel",
+      "regexPattern": "^[a-zA-Z01-]{3,19}$"
+    }
+  ],
+  "resolution": 0,
+  "description": "If the normalized label part of this index is less than 20 characters (all alphabet a-z, A-Z, 0, 1, and -) then a masternode vote contest takes place to give out the name"
+}
 ```
 
 #### Index Constraints
