@@ -219,17 +219,18 @@ The following example (from the [DPNS contract's `domain` document](https://gith
 
 Document indices may be defined if indexing on document fields is required. The `indices` object should only be included for documents with at least one index.
 
-The `indices` array consists of:
+The `indices` array consists of one or more objects that each contain:
 
-* One or more objects that each contain:
-  * A unique `name` for the index
-  * A `properties` array composed of a `<field name: sort order>` object for each document field that is part of the index (sort order: [`asc` only](https://github.com/dashpay/platform/pull/435) for Dash Platform v0.23)
-  * An (optional) `unique` element that determines if duplicate values are allowed for the document
-
-:::{admonition} Compound Indices
-:class: attention
-When defining an index with multiple properties (i.e a compound index), the order in which the properties are listed is important. Refer to the [mongoDB documentation](https://docs.mongodb.com/manual/core/index-compound/#prefixes) for details regarding the significance of the order as it relates to querying capabilities. Dash uses [GroveDB](https://github.com/dashpay/grovedb), which works similarly but does require listing all the index's fields in query order by statements.
-:::
+* A unique `name` for the index
+* A `properties` array composed of a `<field name: sort order>` object for each document field that is part of the index
+  
+  :::{admonition} Compound Indices
+  :class: attention
+  When defining an index with multiple properties, the ordering of properties is important. Refer to the [mongoDB documentation](https://docs.mongodb.com/manual/core/index-compound/#prefixes) for details. Dash uses [GroveDB](https://github.com/dashpay/grovedb), which works similarly but requires listing all the index's fields in query order by statements.
+  :::
+* An optional `unique` element that determines if duplicate values are allowed for the document
+* An optional `nullSearchable` element that indicates whether the index allows searching for NULL values. If nullSearchable is false (default: true) and all properties of the index are null then no reference is added.
+* An optional `contested` element that determines if duplicate values are allowed for the document
 
 ```json
 "indices": [ 
@@ -238,7 +239,17 @@ When defining an index with multiple properties (i.e a compound index), the orde
       { "<field name a>": "<asc"|"desc>" },
       { "<field name b>": "<asc"|"desc>" }
     ], 
-    "unique": true|false
+    "unique": true|false,
+    "nullSearchable": true|false,
+    "contested": {
+      "fieldMatches": [
+        {
+          "field": "<field name a>",
+          "regexPattern": "<regex>"
+        }
+      ],
+      "resolution": 0
+    }
   },
   {
     "properties": [
