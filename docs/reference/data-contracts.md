@@ -42,7 +42,7 @@ Data contracts support three categories of configuration options to provide flex
 | `documentsMutable`<br>`ContractDefault`       | `true`  | Sets the default mutability of documents within the contract |
 | `documentsCanBeDeleted`<br>`ContractDefault`  | `true`  | Sets the default behavior for whether documents within the contract can be deleted|
 
-## Key management
+## Key Management
 
 Dash Platform provides an advanced level of security and control by enabling the isolation of encryption and decryption keys on a contract-specific or document-specific basis. This granular approach to key management enables developers to configure their applications for whatever level of security they require.
 
