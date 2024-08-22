@@ -28,7 +28,7 @@ The following sections provide details that developers need to configure and con
 
 ## Contract Configuration
 
-Data contracts support three categories of configuration options to provide flexibility in contract design. It is only necessary to include them in a data contract when non-default values are used.
+Data contracts support three categories of configuration options to provide flexibility in contract design. It is only necessary to include them in a data contract when non-default values are used. The default values for these configuration options are defined in the [Rust DPP implementation](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/src/data_contract/config/fields.rs).
 
 | Contract option                         | Default | Description |
 |-----------------------------------------|---------|-------------|
@@ -42,12 +42,29 @@ Data contracts support three categories of configuration options to provide flex
 | `documentsMutable`<br>`ContractDefault`       | `true`  | Sets the default mutability of documents within the contract |
 | `documentsCanBeDeleted`<br>`ContractDefault`  | `true`  | Sets the default behavior for whether documents within the contract can be deleted|
 
+## Key management
+
+Dash Platform provides an advanced level of security and control by enabling the isolation of encryption and decryption keys on a contract-specific or document-specific basis. This granular approach to key management enables developers to configure their applications for whatever level of security they require.
+
 | Security option                         | Description |
 |-----------------------------------------|-------------|
 | `requiresIdentity`<br>`EncryptionBoundedKey`  | Indicates the contract requires a contract-specific identity encryption key. Key options:<br>`0` - Unique non-replaceable<br>`1` - Multiple<br>`2` - Multiple with reference to latest  |
 | `requiresIdentity`<br>`DecryptionBoundedKey`  | Indicates the contract requires a contract-specific identity decryption key. Key options:<br>`0` - Unique non-replaceable<br>`1` - Multiple<br>`2` - Multiple with reference to latest |
 
-The default values for these configuration options are defined in the [Rust DPP implementation](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/src/data_contract/config/fields.rs).
+:::{tip}
+These security options can be set at the root level of the data contract or the root level of specific documents within the contract depending on requirements.
+:::
+
+**Example**
+
+The following example (from the [DashPay contract's `contactRequest` document](https://github.com/dashpay/platform/blob/v1.0.2/packages/dashpay-contract/schema/v1/dashpay.schema.json#L142-L146)) demonstrates the use of both key-related options at the document level:
+
+``` json
+"contactRequest": {
+  "requiresIdentityEncryptionBoundedKey": 2,
+  "requiresIdentityDecryptionBoundedKey": 2,
+}
+```
 
 ## Documents
 
@@ -84,8 +101,8 @@ Documents support the following configuration options to provide flexibility in 
 
 | Security option | Type | Description |
 |-----------------|------|-------------|
-| `requiresIdentity`<br>`EncryptionBoundedKey` | integer  | Key requirements for identity encryption:<br>`0` - Unique non-replaceable<br>`1` - Multiple<br>`2` - Multiple with reference to latest key |
-| `requiresIdentity`<br>`DecryptionBoundedKey` | integer  | Key requirements for identity decryption:<br>`0` - Unique non-replaceable<br>`1` - Multiple<br>`2` - Multiple with reference to latest key |
+| [`requiresIdentity`<br>`EncryptionBoundedKey`](#key-management) | integer  | Key requirements for identity encryption:<br>`0` - Unique non-replaceable<br>`1` - Multiple<br>`2` - Multiple with reference to latest key |
+| [`requiresIdentity`<br>`DecryptionBoundedKey`](#key-management) | integer  | Key requirements for identity decryption:<br>`0` - Unique non-replaceable<br>`1` - Multiple<br>`2` - Multiple with reference to latest key |
 | `signatureSecurity`<br>`LevelRequirement`  | integer  | Public key security level:<br>`1` - Critical<br>`2` - High<br>`3` - Medium. Default is High if none specified. |
 
 :::{dropdown} List of all usable document properties
@@ -105,8 +122,8 @@ Documents support the following configuration options to provide flexibility in 
   | `transferable`                       | integer  | Transferable without a marketplace sell:<br>`0` - Never<br>`1` - Always |
   | `tradeMode`                          | integer  | Built-in marketplace system:<br>`0` - None<br>`1` - Direct purchase (the purchaser can buy the item without requiring approval) |
   | `creationRestrictionMode`            | integer  | Restriction of document creation:<br>`0` - No restrictions<br>`1` - Contract owner only<br>`2` - No creation (System Only). |
-  | `requiresIdentity`<br>`EncryptionBoundedKey` | integer  | Key requirements for identity encryption:<br>`0` - Unique non-replaceable<br>`1` - Multiple<br>`2` - Multiple with reference to latest key |
-  | `requiresIdentity`<br>`DecryptionBoundedKey` | integer  | Key requirements for identity decryption:<br>`0` - Unique non-replaceable<br>`1` - Multiple<br>`2` - Multiple with reference to latest key |
+  | [`requiresIdentity`<br>`EncryptionBoundedKey`](#key-management) | integer  | Key requirements for identity encryption:<br>`0` - Unique non-replaceable<br>`1` - Multiple<br>`2` - Multiple with reference to latest key |
+  | [`requiresIdentity`<br>`DecryptionBoundedKey`](#key-management) | integer  | Key requirements for identity decryption:<br>`0` - Unique non-replaceable<br>`1` - Multiple<br>`2` - Multiple with reference to latest key |
   | [`properties`](#document-properties) | object   | Defines the properties of the document. |
   | [`transient`](#transient-properties) | array    | An array of strings specifying transient properties that are validated by Platform but not stored. |
   | [`additionalProperties`](#additional-properties) | boolean  | Specifies whether additional properties are allowed. Must be set to false, meaning no additional properties are allowed beyond those defined. |
@@ -114,7 +131,7 @@ Documents support the following configuration options to provide flexibility in 
 
 **Example**
 
-The following example (from the [DPNS contract's `domain` document](https://github.com/dashpay/platform/blob/master/packages/dpns-contract/schema/v1/dpns-contract-documents.json)) demonstrates several the use of several configuration options:
+The following example (from the [DPNS contract's `domain` document](https://github.com/dashpay/platform/blob/master/packages/dpns-contract/schema/v1/dpns-contract-documents.json)) demonstrates the use of several configuration options:
 
 ```json
 {
