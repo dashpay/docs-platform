@@ -33,7 +33,7 @@ Data contracts support three categories of configuration options to provide flex
 | Contract option                         | Default | Description |
 |-----------------------------------------|---------|-------------|
 | `canBeDeleted`                          | `false` | Determines if the contract can be deleted |
-| `readonly`                              | `false` | Determines if the contract is read-only |
+| `readonly`                              | `false` | Determines if the contract is read-only. Read-only contracts cannot be updated. |
 | `keepsHistory`                          | `false` | Enables or disables the storing of contract update history |
 
 | Document default option                 | Default | Description |
