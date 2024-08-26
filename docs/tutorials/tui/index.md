@@ -16,6 +16,7 @@ This screen is the application's main menu. The interface provides quick navigat
 Click an option below to jump to the section describing it in more detail:
 
 - [Identity management](#identity-management)
+- [Name service (DPNS)](#name-service-dpns)
 - [Contracts](#contracts)
 - [Wallet](#wallet)
 - [Platform information](#platform-information)
@@ -26,6 +27,12 @@ Click an option below to jump to the section describing it in more detail:
 This screen is where identity operations are done, including requesting identities, transferring credits, and registering [DPNS names](https://docs.dash.org/projects/platform/en/stable/docs/explanations/dpns.html). Press `p` to enable proofs.
 
 ![Identities screen](./img/TUI-2.png)
+
+## Name Service (DPNS)
+
+This screen view information related to your identities and any names linked to them. It also provides access to the voting screen where masternodes can vote on [requests for premium names](../../explanations/dpns.md#conflict-resolution).
+
+![DPNS screen](./img/TUI-dpns.png)
 
 ## Contracts
 
