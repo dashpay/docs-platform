@@ -17,9 +17,9 @@ Click an option below to jump to the section describing it in more detail:
 
 - [Identity management](#identity-management)
 - [Contracts](#contracts)
-- [Strategies](#strategies)
 - [Wallet](#wallet)
 - [Platform information](#platform-information)
+- [Strategies](#strategies)
 
 ## Identity management
 
@@ -32,6 +32,25 @@ This screen is where identity operations are done, including requesting identiti
 This screen is where you will add, manage and remove [contracts](https://docs.dash.org/projects/platform/en/stable/docs/tutorials/contracts-and-documents.html). System contracts encompass [Dashpay](https://docs.dash.org/projects/platform/en/stable/docs/explanations/dashpay.html) and [DPNS](https://docs.dash.org/projects/platform/en/stable/docs/explanations/dpns.html) contracts as of today, other contracts must be fetched by ID.
 
 ![Contracts screen](./img/TUI-8.png)
+
+## Wallet
+
+This screen lets you see a loaded wallet's information, including wallet type, public key, address, balance and number of UTXOs.
+
+![Wallet screen](./img/TUI-43.png)
+
+This screen also provides options for you to:
+
+- Register identities
+- Load previously registered identities
+- Split the UTXOs currently in your wallet into a desired number of UTXOs with "Get more utxos". This is helpful for strategies that require many asset lock proofs.
+- Load evonode identities (identities capable of [masternode voting](../../explanations/identity.md#voting))
+
+## Platform information
+
+This screen lets you see information on the epochs and the current version voting
+
+![Platform information screen](./img/TUI-49.png)
 
 ## Strategies
 
@@ -64,22 +83,3 @@ Remember that when adding a number of operations to the strategy, it is the numb
 #### Add strategy operation
 
 ![Add strategy screen](./img/TUI-29.png)
-
-## Wallet
-
-This screen lets you see a loaded wallet's information, including wallet type, public key, address, balance and number of UTXOs.
-
-![Wallet screen](./img/TUI-43.png)
-
-This screen also provides options for you to:
-
-- Register identities
-- Load previously registered identities
-- Split the UTXOs currently in your wallet into a desired number of UTXOs with "Get more utxos". This is helpful for strategies that require many asset lock proofs.
-- Load evonode identities (identities capable of masternode voting)
-
-## Platform information
-
-This screen lets you see information on the epochs and the current version voting
-
-![Platform information screen](./img/TUI-49.png)
