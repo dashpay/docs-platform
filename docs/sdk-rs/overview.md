@@ -39,6 +39,6 @@ The Dash Platform SDK supports mocking through the `mocks` feature which provide
 to define mock expectations and use the SDK without a connection to Platform.
 
 You can see examples of mocking in
-[mock_fetch.rs](https://github.com/dashpay/platform/blob/v1.0-dev/packages/rs-sdk/tests/fetch/mock_fetch.rs)
+[mock_fetch.rs](https://github.com/dashpay/platform/blob/master/packages/rs-sdk/tests/fetch/mock_fetch.rs)
 and
-[mock_fetch_many.rs](https://github.com/dashpay/platform/blob/v1.0-dev/packages/rs-sdk/tests/fetch/mock_fetch_many.rs).
+[mock_fetch_many.rs](https://github.com/dashpay/platform/blob/master/packages/rs-sdk/tests/fetch/mock_fetch_many.rs).

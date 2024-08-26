@@ -57,7 +57,7 @@ These security options can be set at the root level of the data contract or the 
 
 **Example**
 
-The following example (from the [DashPay contract's `contactRequest` document](https://github.com/dashpay/platform/blob/v1.0.2/packages/dashpay-contract/schema/v1/dashpay.schema.json#L142-L146)) demonstrates the use of both key-related options at the document level:
+The following example (from the [DashPay contract's `contactRequest` document](https://github.com/dashpay/platform/blob/master/packages/dashpay-contract/schema/v1/dashpay.schema.json#L142-L146)) demonstrates the use of both key-related options at the document level:
 
 ``` json
 "contactRequest": {
@@ -107,7 +107,7 @@ Documents support the following configuration options to provide flexibility in 
 
 :::{dropdown} List of all usable document properties
 
-  This list of properties is defined in the [Rust DPP implementation](https://github.com/dashpay/platform/blob/v1.0.2/packages/rs-dpp/src/data_contract/document_type/mod.rs#L31) and the [document meta-schema](https://github.com/dashpay/platform/blob/v1.0.2/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json).
+  This list of properties is defined in the [Rust DPP implementation](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/src/data_contract/document_type/mod.rs#L31) and the [document meta-schema](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json).
 
   | Property Name | Type | Description |
   |---------------|------|-------------|
@@ -319,7 +319,7 @@ For performance and security reasons, indices have the following constraints. Th
 | Minimum / maximum length of index `name` | [1](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L311) / [32](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L312) |
 | Maximum number of indices | [10](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L390) |
 | Maximum number of unique indices | [10](https://github.com/dashpay/platform/blob/master/packages/rs-platform-version/src/version/v1.rs#L989) |
-| Maximum number of properties in a single index | [10](https://github.com/dashpay/platform/blob/v1.0.2/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L331) |
+| Maximum number of properties in a single index | [10](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L331) |
 | Maximum length of indexed string property | [63](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/v0/mod.rs#L72) |
 | Maximum length of indexed byte array property | [255](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/v0/mod.rs#L73) |
 | Maximum number of indexed array items | [1024](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/v0/mod.rs#L74) |
@@ -416,7 +416,7 @@ This example syntax shows the structure of a document object including all optio
 
 ## General Constraints
 
-There are a variety of constraints currently defined for performance and security reasons. The following constraints are applicable to all aspects of data contracts. Unless otherwise noted, these constraints are defined in the platform's JSON Schema rules (e.g. [rs-dpp data contract meta schema](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json)).
+There are a variety of constraints currently defined for performance and security reasons. The following constraints are applicable to all aspects of data contracts. Unless otherwise noted, these constraints are defined in the platform's JSON Schema rules (e.g. [rs-dpp document meta schema](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json)).
 
 ### Keyword
 
