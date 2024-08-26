@@ -95,9 +95,9 @@ Documents support the following configuration options to provide flexibility in 
 | `documentsKeepHistory`               | boolean  | If true, documents keep a history of all changes. Default: false. |
 | `documentsMutable`                   | boolean  | If true, documents are mutable. Default: true. |
 | `canBeDeleted`                       | boolean  | If true, documents can be deleted. Default: true. |
-| `transferable`                       | integer  | Transferable without a marketplace sell:<br>`0` - Never<br>`1` - Always |
-| `tradeMode`                          | integer  | Built-in marketplace system:<br>`0` - None<br>`1` - Direct purchase (the purchaser can buy the item without requiring approval) |
-| `creationRestrictionMode`            | integer  | Restriction of document creation:<br>`0` - No restrictions<br>`1` - Contract owner only<br>`2` - No creation (System Only). |
+| `transferable`                       | integer  | Transferable without a marketplace sell:<br>`0` - Never<br>`1` - Always<br>See the [NFT page](../explanations/nft.md#transfer-and-trade) for more details |
+| `tradeMode`                          | integer  | Built-in marketplace system:<br>`0` - None<br>`1` - Direct purchase (the purchaser can buy the item without requiring approval)<br>See the [NFT page](../explanations/nft.md#transfer-and-trade) for more details |
+| `creationRestrictionMode`            | integer  | Restriction of document creation:<br>`0` - No restrictions<br>`1` - Contract owner only<br>`2` - No creation (System Only)<br>See the [NFT page](../explanations/nft.md#creation-restrictions) for more details |
 
 | Security option | Type | Description |
 |-----------------|------|-------------|
