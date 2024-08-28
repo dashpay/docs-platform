@@ -6,13 +6,13 @@
 
 
 broadcasttransaction
-generatetoaddress
 getbestblockhash
 getblockbyhash
 getblockbyheight
 getblockhash
-getmnlistdiff
 getstatus
 gettransaction
+subscribetoblockheaderswithchainlocks
+subscribetomasternodelist
 subscribetotransactionswithproofs
 ```
