@@ -495,7 +495,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 | Name    | Type    | Required | Description |
 | ------- | ------- | -------- | ------------ |
-| `id`    | Bytes   | Yes      | An identity ID
+| `id`    | Bytes   | Yes      | An identity ID<br>Note: masternode IDs are created uniquely as described in the [masternode identity IDs section](#masternode-identity-ids)
 | `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested identity
 
 **Example Request and Response**
@@ -546,7 +546,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 | Name    | Type    | Required | Description |
 | ------- | ------- | -------- | ------------ |
-| `id`    | Bytes   | Yes      | An identity ID
+| `id`    | Bytes   | Yes      | An identity ID<br>Note: masternode IDs are created uniquely as described in the [masternode identity IDs section](#masternode-identity-ids)
 | `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested identity
 
 **Example Request and Response**
@@ -651,7 +651,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 | Name    | Type    | Required | Description |
 | ------- | ------- | -------- | ------------ |
-| `identity_id`    | Bytes   | Yes      | An identity ID
+| `identity_id`    | Bytes   | Yes      | An identity ID<br>Note: masternode IDs are created uniquely as described in the [masternode identity IDs section](#masternode-identity-ids)
 | `contract_id`    | Bytes   | Yes      | A contract ID
 | `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested identity contract nonce
 
@@ -733,7 +733,7 @@ Current identity contract nonce: 0
 
 | Name    | Type    | Required | Description |
 | ------- | ------- | -------- | ------------ |
-| `identity_td`  | String | Yes | An identity ID
+| `identity_td`  | String | Yes | An identity ID<br>Note: masternode IDs are created uniquely as described in the [masternode identity IDs section](#masternode-identity-ids)
 | `request_type` | [KeyRequestType](#request-types) | Yes | Request all keys (`all_keys`), specific keys (`specific_keys`), search for keys (`search_key`)
 | `limit` | Integer  | Yes     | The maximum number of revisions to return |
 | `offset` | Integer | Yes     | The offset of the first revision to return |
@@ -881,7 +881,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 | Name    | Type    | Required | Description |
 | ------- | ------- | -------- | ------------ |
-| `identity_id`    | Bytes   | Yes      | An identity ID
+| `identity_id`    | Bytes   | Yes      | An identity ID<br>Note: masternode IDs are created uniquely as described in the [masternode identity IDs section](#masternode-identity-ids)
 | `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested identity nonce
 
 **Example Request and Response**
@@ -960,7 +960,7 @@ Current identity nonce: 0
 
 | Name                 | Type                    | Required | Description |
 |----------------------|-------------------------|----------|-------------|
-| `identities_ids`     | Array of Strings        | Yes      | An array of identity IDs |
+| `identities_ids`     | Array of Strings        | Yes      | An array of identity IDs<br>Note: masternode IDs are created uniquely as described in the [masternode identity IDs section](#masternode-identity-ids) |
 | `contract_id`        | String                  | Yes      | The ID of the contract |
 | `document_type_name` | String                  | No       | Name of the document type |
 | `purposes`           | Array of [KeyPurpose](#key-purposes) | No | Array of purposes for which keys are requested |
