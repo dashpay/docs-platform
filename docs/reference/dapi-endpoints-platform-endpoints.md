@@ -25,6 +25,35 @@ Some [additional metadata](https://github.com/dashpay/platform/blob/master/packa
 
 Dash Platform 0.25.16 included a [breaking change that added versioning](https://github.com/dashpay/platform/pull/1522) to these endpoints so future updates can be done without creating significant issues for API consumers.
 
+```{eval-rst}
+.. _mn-identity-id:
+```
+
+## Masternode identity IDs
+
+[Masternode identities](../explanations/identity.md#masternode-identities) are created automatically
+by the system based on the [Core masternode registration transaction (protx)
+hash](inv:core:std#ref-txs-proregtx). Masternode identity IDs are created by converting the protx
+hash to base58. This can be done using an [online base58
+encoder](https://appdevtools.com/base58-encoder-decoder) or through JavaScript using the [bs58
+package](https://www.npmjs.com/package/bs58) as shown below.
+
+```{eval-rst}
+.. _reference-dapi-endpoints-platform-grpc-protx-to-id:
+```
+
+:::{code-block} javascript
+:caption: Protx hash to identity ID
+
+const bs58 = require('bs58').default;
+
+const protx = 'b09cfb1d82a643408818d4a02f491a7ed2dc66f074618706221f2f49f2bae0de';
+const base58Protx = bs58.encode(Buffer.from(protx, 'hex'));
+console.log(`Masternode identity id (base58): ${base58Protx}`);
+// Output:
+//  Masternode identity id (base58): CtRbCAi9R5hhC9VdsgxtRMw7MSVrBCZNEELdkTxpy5Kj
+:::
+
 ## Endpoint Details
 
 ### broadcastStateTransition
@@ -323,30 +352,8 @@ Retrieves the state of a vote for a specific contested resource.
 
 | Name    | Type    | Required | Description                                                           |
 | ------- | ------- | -------- | --------------------------------------------------------------------- |
-| `id`    | Bytes   | Yes      | An identity `id`                                                      |
+| `id`    | Bytes   | Yes      | An identity `id`<br>Note: masternode IDs are created uniquely as described in the [masternode identity IDs section](#masternode-identity-ids) |
 | `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested identity. The data requested will be encoded as part of the proof in the response.|
-
-:::{note}
-Masternode identity IDs are created by converting the masternode protx hash to base58. This
-can be done using and [online base58 encoder](https://appdevtools.com/base58-encoder-decoder) or
-through JavaScript using the [bs58 package](https://www.npmjs.com/package/bs58) as shown below.
-:::
-
-```{eval-rst}
-.. _reference-dapi-endpoints-platform-grpc-protx-to-id:
-```
-
-:::{code-block} javascript
-:caption: Protx hash to identity ID
-
-const bs58 = require('bs58').default;
-
-const protx = 'b09cfb1d82a643408818d4a02f491a7ed2dc66f074618706221f2f49f2bae0de';
-const base58Protx = bs58.encode(Buffer.from(protx, 'hex'));
-console.log(`Masternode identity id (base58): ${base58Protx}`);
-// Output:
-//  Masternode identity id (base58): CtRbCAi9R5hhC9VdsgxtRMw7MSVrBCZNEELdkTxpy5Kj
-:::
 
 **Example Request and Response**
 
