@@ -12,8 +12,9 @@
 Dash library for JavaScript/TypeScript ecosystem (Wallet, DAPI, Primitives, BLS, ...)
 
 :::{warning}
-The JavaScript SDK provides easy access to Dash Platform without requiring a full node;
-however, it **_does not support Dash Platform's proofs_**. Therefore, it is less secure than the
+The JavaScript SDK should only be used in production when connected to trusted nodes. While it
+provides easy access to Dash Platform without requiring a full node, it **_does not support Dash
+Platform's proofs or verify synchronized blockchain data_**. Therefore, it is less secure than the
 [Rust SDK](../sdk-rs/overview.md), which requests proofs for all queried data.
 :::
 
