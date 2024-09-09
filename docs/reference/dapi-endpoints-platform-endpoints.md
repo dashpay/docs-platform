@@ -176,7 +176,7 @@ Retrieves the voting record of a specific identity.
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "v0": {
-      "identity_id": "zrrtwQwGj7NujFpg3a5OBjTg9AzrpL2XPEzmr+qN1Vw="
+      "identity_id": "HxUSbKaFxbuvTUprfr5a0yU6u4EasTdSWvSxOwKjmxw="
     }
   }' \
   seed-1.testnet.networks.dash.org:1443 \
@@ -191,16 +191,15 @@ grpcurl -proto protos/platform/v0/platform.proto \
 {
   "v0": {
     "votes": {
-      "contested_resource_identity_votes": [],
-      "finished_results": true
+      "finishedResults": true
     },
     "metadata": {
-      "height": "2874",
-      "core_chain_locked_height": 1086880,
-      "epoch": 761,
-      "time_ms": "1724093690163",
-      "protocol_version": 1,
-      "chain_id": "dash-testnet-50"
+      "height": "7762",
+      "coreChainLockedHeight": 1099677,
+      "epoch": 1260,
+      "timeMs": "1725889742454",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-51"
     }
   }
 }
@@ -259,12 +258,12 @@ grpcurl -proto protos/platform/v0/platform.proto \
       "finishedResults": true
     },
     "metadata": {
-      "height": "2746",
-      "coreChainLockedHeight": 1086784,
-      "epoch": 757,
-      "timeMs": "1724079623407",
+      "height": "7762",
+      "coreChainLockedHeight": 1099677,
+      "epoch": 1260,
+      "timeMs": "1725889742454",
       "protocolVersion": 1,
-      "chainId": "dash-testnet-50"
+      "chainId": "dash-testnet-51"
     }
   }
 }
@@ -372,7 +371,7 @@ loadDpp();
 const dpp = new DashPlatformProtocol();
 const client = new DAPIClient();
 
-const identityId = Identifier.from('EuzJmuZdBSJs2eTrxHEp6QqJztbp6FKDNGMeb4W2Ds7h');
+const identityId = Identifier.from('36LGwPSXef8q8wpdnx4EdDeVNuqCYNAE9boDu5bxytsm');
 client.platform.getIdentity(identityId).then((response) => {
   const identity = dpp.identity.createFromBuffer(response.getIdentity());
   console.log(identity.toJSON());
@@ -398,7 +397,7 @@ const platformPromiseClient = new PlatformPromiseClient(
   'https://seed-1.testnet.networks.dash.org:1443',
 );
 
-const id = Identifier.from('EuzJmuZdBSJs2eTrxHEp6QqJztbp6FKDNGMeb4W2Ds7h');
+const id = Identifier.from('36LGwPSXef8q8wpdnx4EdDeVNuqCYNAE9boDu5bxytsm');
 const idBuffer = Buffer.from(id);
 const getIdentityRequest = new GetIdentityRequest();
 getIdentityRequest.setId(idBuffer);
@@ -671,7 +670,7 @@ loadDpp();
 const dpp = new DashPlatformProtocol(null);
 const client = new DAPIClient();
 
-const identityId = Identifier.from('EuzJmuZdBSJs2eTrxHEp6QqJztbp6FKDNGMeb4W2Ds7h');
+const identityId = Identifier.from('36LGwPSXef8q8wpdnx4EdDeVNuqCYNAE9boDu5bxytsm');
 const contractId = Identifier.from('GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec');
 client.platform.getIdentityContractNonce(identityId, contractId).then((response) => {
   console.log(`Current identity contract nonce: ${response.getIdentityContractNonce()}`);
@@ -913,7 +912,7 @@ loadDpp();
 const dpp = new DashPlatformProtocol(null);
 const client = new DAPIClient();
 
-const identityId = Identifier.from('EuzJmuZdBSJs2eTrxHEp6QqJztbp6FKDNGMeb4W2Ds7h');
+const identityId = Identifier.from('36LGwPSXef8q8wpdnx4EdDeVNuqCYNAE9boDu5bxytsm');
 client.platform.getIdentityNonce(identityId).then((response) => {
   console.log(`Current identity nonce: ${response.getIdentityNonce()}`);
 });
