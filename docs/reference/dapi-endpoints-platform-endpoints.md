@@ -2147,6 +2147,85 @@ grpcurl -proto protos/platform/v0/platform.proto \
 :::
 ::::
 
+### getStatus
+
+Retrieves status information related to Dash Platform.
+
+**Returns**: Status details including version, node, chain, network, and state sync information, or a cryptographic proof.
+
+**Parameters**:
+
+This endpoint does not require any parameters.
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {}
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getStatus
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "version": {
+      "software": {
+        "dapi": "1.2.0",
+        "drive": "1.2.0",
+        "tenderdash": "1.2.1"
+      },
+      "protocol": {
+        "tenderdash": {
+          "p2p": 10,
+          "block": 14
+        },
+        "drive": {
+          "latest": 1,
+          "current": 1
+        }
+      }
+    },
+    "node": {
+      "id": "H/vx0yVB3Lj1VVMFKVcEqf+a3CQ=",
+      "proTxHash": "LkhlGi6cDLTy+3q4dAYapK8M0otZaVYx5qNa85UO9vs="
+    },
+    "chain": {
+      "latestBlockHash": "XY1U/Ay7DCdZqJJwM4sXSw1OFdBIbnVYFc9sJep1hNw=",
+      "latestAppHash": "9wq6IzU4AjuL27HybKqvWOOPCbnpBJQjk6q64nsd7i8=",
+      "latestBlockHeight": "7768",
+      "earliestBlockHash": "CPoCwn7AOQujAeT8fj1+rbNQyBk+PmKgk2iXBuOiC/o=",
+      "earliestAppHash": "vwzLnKBxugGubmegwJD5eAPSbVbWddzVExeBy8rI7I8=",
+      "earliestBlockHeight": "1",
+      "maxPeerBlockHeight": "7768",
+      "coreChainLockedHeight": 1099682
+    },
+    "network": {
+      "chainId": "dash-testnet-51",
+      "peersCount": 61,
+      "listening": true
+    },
+    "stateSync": {},
+    "time": {
+      "local": "1725890999274",
+      "block": "1725890829092",
+      "genesis": "0",
+      "epoch": 1260
+    }
+  }
+}
+```
+:::
+::::
+
 ### getTotalCreditsInPlatform
 
 Retrieves the total credits in the platform.
