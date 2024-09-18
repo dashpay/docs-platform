@@ -46,6 +46,7 @@ data returned is valid and complete. The endpoints are versioned so updates can 
 |   2   | [`getContestedResourceIdentityVotes`](../reference/dapi-endpoints-platform-endpoints.md#getcontestedresourceidentityvotes) | **Added in Dash Platform v1.0.0**<br>Retrieves the voting record of a specific identity. |
 |   2   | [`getContestedResourceVotersForIdentity`](../reference/dapi-endpoints-platform-endpoints.md#getcontestedresourcevotersforidentity) | **Added in Dash Platform v1.0.0**<br>Retrieves the voters for a specific identity associated with a contested resource. |
 |   2   | [`getContestedResourceVoteState`](../reference/dapi-endpoints-platform-endpoints.md#getcontestedresourcevotestate) | **Added in Dash Platform v1.0.0**<br>Retrieves the state of a vote for a specific contested resource. |
+|   2   | [`getEvonodesProposedEpochBlocksByIds`](../reference/dapi-endpoints-platform-endpoints.md#getevonodesproposedepochblocksbyids) | **Added in Dash Platform v1.3.0**<br>Retrieves the number of blocks proposed by the specified evonodes in a certain epoch, based on their IDs. |
 |   2   | [`getIdentity`](../reference/dapi-endpoints-platform-endpoints.md#getidentity) | Returns the requested identity |
 |   2   | [`getIdentityBalance`](../reference/dapi-endpoints-platform-endpoints.md#getidentitybalance) | Returns the requested identity's balance |
 |   2   | [`getIdentityBalanceAndRevision`](../reference/dapi-endpoints-platform-endpoints.md#getidentitybalanceandrevision) | Returns the requested identity's balance and revision |

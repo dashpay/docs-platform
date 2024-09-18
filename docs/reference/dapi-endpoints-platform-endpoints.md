@@ -351,7 +351,7 @@ Retrieves the state of a vote for a specific contested resource.
 
 ### getEvonodesProposedEpochBlocksByIds
 
-Retrieves the proposed blocks from evonodes for a specified epoch, based on their IDs.
+Retrieves the number of blocks proposed by the specified evonodes in a certain epoch, based on their IDs.
 
 **Returns**: A list of evonodes and their proposed block counts or a cryptographic proof.
 
