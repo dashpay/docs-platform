@@ -344,6 +344,70 @@ Retrieves the state of a vote for a specific contested resource.
   :::
   ::::
 
+### getEvonodesProposedEpochBlocksByIds
+
+Retrieves the proposed blocks from evonodes for a specified epoch, based on their IDs.
+
+**Returns**: A list of evonodes and their proposed block counts or a cryptographic proof.
+
+**Parameters**:
+
+| Name               | Type     | Required | Description |
+| ------------------ | -------- | -------- | ----------- |
+| `epoch`            | Integer  | No       | The epoch to query for. If not set, the current epoch will be used. |
+| `ids`              | Array of bytes | Yes    | List of evonode IDs for which proposed blocks are retrieved. |
+| `prove`            | Boolean  | No       | Set to `true` to receive a proof that contains the requested data. |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "ids": [
+        "jspLy7OhJKsoOv1C2tO9sgd7OAlll4ig8dr/zlufAB8=","dUuJ2ujbIPxM7l462wexRtfv5Qimb6Co4QlGdbnao14="
+      ],
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getEvonodesProposedEpochBlocksByIds
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "evonodesProposedBlockCountsInfo": {
+      "evonodesProposedBlockCounts": [
+        {
+          "proTxHash": "dUuJ2ujbIPxM7l462wexRtfv5Qimb6Co4QlGdbnao14="
+        },
+        {
+          "proTxHash": "jspLy7OhJKsoOv1C2tO9sgd7OAlll4ig8dr/zlufAB8=",
+          "count": "13"
+        }
+      ]
+    },
+    "metadata": {
+      "height": "13621",
+      "coreChainLockedHeight": 1105397,
+      "epoch": 1482,
+      "timeMs": "1726691577244",
+      "protocolVersion": 3,
+      "chainId": "dash-testnet-51"
+    }
+  }
+}
+```
+:::
+::::
+
 ### getIdentity
 
 **Returns**: [Identity](../explanations/identity.md) information for the requested identity  
