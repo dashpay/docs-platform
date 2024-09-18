@@ -36,7 +36,9 @@ by the system based on the [Core masternode registration transaction (protx)
 hash](inv:core:std#ref-txs-proregtx). Masternode identity IDs are created by converting the protx
 hash to base58. This can be done using an [online base58
 encoder](https://appdevtools.com/base58-encoder-decoder) or through JavaScript using the [bs58
-package](https://www.npmjs.com/package/bs58) as shown below.
+package](https://www.npmjs.com/package/bs58) as shown below. For gRPCurl, convert the protx hash to
+base64 instead. This can be done using an [online hex to base64
+encoder](https://base64.guru/converter/encode/hex).
 
 ```{eval-rst}
 .. _reference-dapi-endpoints-platform-grpc-protx-to-id:
@@ -47,11 +49,14 @@ package](https://www.npmjs.com/package/bs58) as shown below.
 
 const bs58 = require('bs58').default;
 
-const protx = 'b09cfb1d82a643408818d4a02f491a7ed2dc66f074618706221f2f49f2bae0de';
+const protx = '8eca4bcbb3a124ab283afd42dad3bdb2077b3809659788a0f1daffce5b9f001f';
 const base58Protx = bs58.encode(Buffer.from(protx, 'hex'));
 console.log(`Masternode identity id (base58): ${base58Protx}`);
+const base64Protx = Buffer.from(protx, 'hex').toString('base64');
+console.log(`Masternode identity id (base58): ${base64Protx}`);
 // Output:
-//  Masternode identity id (base58): CtRbCAi9R5hhC9VdsgxtRMw7MSVrBCZNEELdkTxpy5Kj
+//  Masternode identity id (base58): AcPogCxrxeas7jrWYG7TnLHKbsA5KLHGfvg6oYgANZ8J
+//  Masternode identity id (base64): jspLy7OhJKsoOv1C2tO9sgd7OAlll4ig8dr/zlufAB8=
 :::
 
 ## Endpoint Details
