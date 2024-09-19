@@ -360,7 +360,7 @@ Retrieves the number of blocks proposed by the specified evonodes in a certain e
 | Name               | Type     | Required | Description |
 | ------------------ | -------- | -------- | ----------- |
 | `epoch`            | Integer  | No       | The epoch to query for. If not set, the current epoch will be used |
-| `ids`              | Array of bytes | Yes    | List of evonode IDs for which proposed blocks are retrieved |
+| `ids`              | Array    | Yes    | An array of evonode IDs for which proposed blocks are retrieved IDs<br>Note: masternode IDs are created uniquely as described in the [masternode identity IDs section](#masternode-identity-ids) |
 | `prove`            | Boolean  | No       | Set to `true` to receive a proof that contains the requested data |
 
 **Example Request and Response**
@@ -1094,6 +1094,70 @@ Current identity nonce: 0
 :::
 ::::
 
+### getIdentitiesBalances
+
+Retrieves the balances for a list of identities.
+
+**Returns**: A list of identities with their corresponding balances or a cryptographic proof.
+
+**Parameters**:
+
+| Name      | Type    | Required | Description                                              |
+|-----------|---------|----------|----------------------------------------------------------|
+| `ids`     | Array   | No       | An array of identity IDs for which balances are requested<br>Note: masternode IDs are created uniquely as described in the [masternode identity IDs section](#masternode-identity-ids) |
+| `prove`   | Boolean | No       | Set to `true` to receive a proof containing the requested balances |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "ids": [
+        "jspLy7OhJKsoOv1C2tO9sgd7OAlll4ig8dr/zlufAB8=","dUuJ2ujbIPxM7l462wexRtfv5Qimb6Co4QlGdbnao14="
+      ],
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getIdentitiesBalances
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "identitiesBalances": {
+      "entries": [
+        {
+          "identity_id": "jspLy7OhJKsoOv1C2tO9sgd7OAlll4ig8dr/zlufAB8=",
+          "balance": 1000000
+        },
+        {
+          "identity_id": "dUuJ2ujbIPxM7l462wexRtfv5Qimb6Co4QlGdbnao14=",
+          "balance": 2500000
+        }
+      ]
+    },
+    "metadata": {
+      "height": "13621",
+      "coreChainLockedHeight": 1105397,
+      "epoch": 1482,
+      "timeMs": "1726691577244",
+      "protocolVersion": 3,
+      "chainId": "dash-testnet-51"
+    }
+  }
+}
+```
+:::
+::::
+
 ### getIdentitiesContractKeys
 
 **Returns**: Keys associated to a specific contract for multiple [Identities](../explanations/identity.md).
@@ -1102,7 +1166,7 @@ Current identity nonce: 0
 
 | Name                 | Type                    | Required | Description |
 |----------------------|-------------------------|----------|-------------|
-| `identities_ids`     | Array of Strings        | Yes      | An array of identity IDs<br>Note: masternode IDs are created uniquely as described in the [masternode identity IDs section](#masternode-identity-ids) |
+| `identities_ids`     | Array                   | Yes      | An array of identity IDs<br>Note: masternode IDs are created uniquely as described in the [masternode identity IDs section](#masternode-identity-ids) |
 | `contract_id`        | String                  | Yes      | The ID of the contract |
 | `document_type_name` | String                  | No       | Name of the document type |
 | `purposes`           | Array of [KeyPurpose](#key-purposes) | No | Array of purposes for which keys are requested |
