@@ -359,9 +359,9 @@ Retrieves the number of blocks proposed by the specified evonodes in a certain e
 
 | Name               | Type     | Required | Description |
 | ------------------ | -------- | -------- | ----------- |
-| `epoch`            | Integer  | No       | The epoch to query for. If not set, the current epoch will be used. |
-| `ids`              | Array of bytes | Yes    | List of evonode IDs for which proposed blocks are retrieved. |
-| `prove`            | Boolean  | No       | Set to `true` to receive a proof that contains the requested data. |
+| `epoch`            | Integer  | No       | The epoch to query for. If not set, the current epoch will be used |
+| `ids`              | Array of bytes | Yes    | List of evonode IDs for which proposed blocks are retrieved |
+| `prove`            | Boolean  | No       | Set to `true` to receive a proof that contains the requested data |
 
 **Example Request and Response**
 
@@ -404,6 +404,68 @@ grpcurl -proto protos/platform/v0/platform.proto \
       "coreChainLockedHeight": 1105397,
       "epoch": 1482,
       "timeMs": "1726691577244",
+      "protocolVersion": 3,
+      "chainId": "dash-testnet-51"
+    }
+  }
+}
+```
+:::
+::::
+
+### getEvonodesProposedEpochBlocksByRange
+
+Retrieves the number of blocks proposed by evonodes for a specified epoch.
+
+**Returns**: A list of evonodes and their proposed block counts or a cryptographic proof.
+
+**Parameters**:
+
+| Name               | Type     | Required | Description |
+| ------------------ | -------- | -------- | ----------- |
+| `epoch`            | Integer  | No       | The epoch to query for. If not set, the current epoch will be used |
+| `limit`            | Integer  | No       | Maximum number of evonodes proposed epoch blocks to return |
+| `start_after`      | Bytes    | No       | Retrieve results starting after this document |
+| `start_at`         | Bytes    | No       | Retrieve results starting at this document |
+| `prove`            | Boolean  | No       | Set to `true` to receive a proof that contains the requested data |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "epoch": 0,
+      "limit": 10,
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getEvonodesProposedEpochBlocksByRange
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "evonodesProposedBlockCountsInfo": {
+      "evonodesProposedBlockCounts": [
+        {
+          "proTxHash": "BbaHl4NE+iQzsqqZ1B9kPi2FgaeJzcIwhIic7KUkTqg=",
+          "count": "1"
+        }
+      ]
+    },
+    "metadata": {
+      "height": "20263",
+      "coreChainLockedHeight": 1105827,
+      "epoch": 1499,
+      "timeMs": "1726752270072",
       "protocolVersion": 3,
       "chainId": "dash-testnet-51"
     }
