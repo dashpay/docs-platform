@@ -18,7 +18,8 @@ In this tutorial we will show how to configure the client for use in the remaini
 ## Code
 
 :::{tip}
-The JavaScript Dash SDK connects to testnet by default. Mainnet can only be accessed by [connecting via address](./connecting-to-testnet.md#connect-to-a-network).
+The JavaScript Dash SDK connects to mainnet by default. To connect to other networks,
+set the `network` option when instantiating the client as shown in the following example.
 :::
 
 Save the following client configuration module in a file named `setupDashClient.js`. This module
@@ -30,7 +31,7 @@ will be re-used in later tutorials.
 
 // Fully configured client options
 const clientOptions = {
-  // The network to connect to ('testnet' or 'local')
+  // The network to connect to ('mainnet', 'testnet' or 'local')
   network: 'testnet',
 
   // Wallet configuration for transactions and account management

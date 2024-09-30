@@ -27,7 +27,8 @@ npm install dash
 ### 2. Connect to Dash Platform
 
 :::{tip}
-The JavaScript Dash SDK connects to testnet by default. Mainnet can only be accessed by [connecting via address](#connect-via-address).
+The JavaScript Dash SDK connects to mainnet by default. To connect to other networks,
+set the `network` option when instantiating the client as shown in the following example.
 :::
 
 Create a file named `dashConnect.js` with the following contents. Then run it by typing `node dashConnect.js` from the command line:

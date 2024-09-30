@@ -43,7 +43,7 @@ const Dash = require('dash');
 const { PlatformProtocol: { Identifier } } = Dash;
 
 const myContractId = 'a contract ID';
-const client = new Dash.Client();
+const client = new Dash.Client({ network: 'testnet' });
 
 client.platform.contracts.get(myContractId)
   .then((myContract) => {
