@@ -26,7 +26,7 @@ Click an option below to jump to the section describing it in more detail:
 
 This screen is where identity operations are done, including requesting identities, transferring credits, and registering [DPNS names](https://docs.dash.org/projects/platform/en/stable/docs/explanations/dpns.html). Press `p` to enable proofs.
 
-![Identities screen](./img/TUI-2.png)
+![Identities screen](./img/identities/identities.png)
 
 ## Name Service (DPNS)
 
@@ -38,7 +38,7 @@ This screen view information related to your identities and any names linked to 
 
 This screen is where you will add, manage and remove [contracts](https://docs.dash.org/projects/platform/en/stable/docs/tutorials/contracts-and-documents.html). System contracts encompass [Dashpay](https://docs.dash.org/projects/platform/en/stable/docs/explanations/dashpay.html) and [DPNS](https://docs.dash.org/projects/platform/en/stable/docs/explanations/dpns.html) contracts as of today, other contracts must be fetched by ID.
 
-![Contracts screen](./img/TUI-8.png)
+![Contracts screen](./img/contracts.png)
 
 ## Wallet
 
@@ -57,7 +57,7 @@ This screen also provides options for you to:
 
 This screen lets you see information on the epochs and the current version voting
 
-![Platform information screen](./img/TUI-49.png)
+![Platform information screen](./img/platform-info.png)
 
 ## Strategies
 
