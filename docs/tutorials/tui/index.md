@@ -98,8 +98,8 @@ Masternode and evonode owners that want to participate in voting should [load th
 :::
 
 Since some names may be popular, the DPNS name registration process includes a voting mechanism to
-resolve conflicts when multiple identities request the same name. The contested resources screen and
-vote status can be viewed by anyone; however, voting can only be done by masternodes and evonodes.
+resolve conflicts when multiple identities request the same name. Anyone can view the contested
+resources screen and vote status; however, voting can only be done by masternodes and evonodes.
 
 ### DPNS Contested resources
 
@@ -111,22 +111,22 @@ From the [DPNS main screen](#name-service-dpns), press `v` to open the voting sc
 
 ![DPNS screen](./img/dpns/dpns.png)
 
-On the contested resources screen, the left side lists all names requiring votes. Scroll up or down
+The left side of the contested resources screen lists all names requiring votes. Scroll up or down
 to select a name, then press `s` to see the current voting status.
 
 ![DPNS contested resources screen](./img/dpns/dpns-contested-resources.png)
 
-The vote status lists all identities currently requesting the name along with the number of votes
-for each one. Vote count for the abstain and lock categories are also shown.
+The vote status lists all identities currently requesting the name and the number of votes for each
+one. Vote count for the abstain and lock categories are also shown.
 
 ![DPNS contested resources screen showing status](./img/dpns/dpns-contested-resources-status.png)
 
 #### Voting
 
 :::{attention}
-Voting can only be done by masternodes and evonodes and each node can only modify their vote four
-times. See the [load masternode identity section](#load-masternode-identity) for how to import your
-masternode voting key to vote using the TUI.
+Voting can only be done by masternodes and evonodes, and each node can only modify its vote four
+times. See the [load masternode identity section](#load-masternode-identity) for instructions on
+importing your masternode voting key to vote using the TUI.
 :::
 
 To vote on a contested resource, press `v` to open the voting screen, select your preferred option, and press `Enter` to submit your response.
@@ -146,7 +146,7 @@ Check the status again to confirm that your vote was successful.
 :::{note}
 A bug in the Platform TUI currently requires a wallet to be loaded before a masternode identity can
 be loaded. Go to the [wallet screen](#wallet) and press `r` to create a random wallet if you have
-not already created a wallet.
+not already created one.
 :::
 
 From the [Identities main screen](#identity-management), press `m` to load a masternode or evonode
@@ -162,7 +162,7 @@ You will be returned to the Identities main screen and should see "Loaded Evonod
 
 ![Load masternode success](./img/identities/identity-load-mn-3-success.png)
 
-Refresh the screen to see the identity by pressing `q` to return to the main screen and then
-reopening the Identities screen by pressing `i`.
+Refresh the screen to see the identity by pressing `q` to return to the main screen, and then reopen
+the Identities screen by pressing `i`.
 
 ![Load masternode refreshed screen](./img/identities/identity-load-mn-4-refresh.png)
