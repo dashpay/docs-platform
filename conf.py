@@ -28,7 +28,6 @@ extensions = [
   'sphinx.ext.autodoc',
   'sphinx_copybutton',
   'sphinx_design',
-  'sphinx_search.extension',
   'sphinx.ext.intersphinx',
 ]
 
