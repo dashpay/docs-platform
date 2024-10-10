@@ -48,11 +48,27 @@ This process only applies to names that meet the following conditions:
 All other available names can be registered immediately.
 :::
 
-The voting window begins when a name matching the criteria above is requested and ends after two weeks. Additional identities can request the same name during the first week. Masternodes and evonodes can vote for one of the identities, abstain, or vote to lock the request.
+#### Timeline
 
-After voting concludes, the name is either awarded to one of the identities or locked. If the vote locks the name, no identity receives it. Locked names can no longer be requested or awarded in Dash Platform v1.0, but future updates may add unlock capabilities.
+A two-week voting window begins when a name matching the criteria above is requested. Additional identities can request the same name during the first week of the voting window.
 
-Assuming masternodes do not vote to lock, the identity receiving the most votes takes ownership of the name. If only one identity requests the name, they will receive it even if no masternodes vote.
+#### Voting details
+
+As with governance voting, evonode votes are worth four, and regular masternode votes are worth one. Voting is done using the voting key assigned in the provider transaction used to register or update the node. Masternodes and evonodes can:
+
+1. Vote for one of the identities.
+1. Vote to abstain. These votes are not counted when determining the outcome.
+1. Vote to lock the request. Locked names are not awarded to anyone.
+
+#### Vote outcome
+
+After voting ends, the name is either awarded to one of the identities or locked. The outcome is based on which item receives the most votes.
+
+Assuming masternodes do not vote to lock, the identity receiving the most votes takes ownership of the name. However, if the vote locks the name, no identity receives it. If only one identity requests the name, they will receive it even if no masternodes vote.
+
+:::{note}
+Locked names can no longer be requested or awarded in Dash Platform v1, but the plan is to change this in future updates.
+:::
 
 ### Implementation
 
