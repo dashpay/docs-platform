@@ -156,6 +156,14 @@ identity. Paste the node's protx hash and press `Enter`.
 
 On the next screen, paste the node's voting private key and press `Enter`.
 
+:::{tip}
+If you use the [Dash Masternode Tool](https://github.com/Bertrand256/dash-masternode-tool), you can
+get the key by opening the masternode details screen and copying the value from the *Voting private
+key* field.
+
+![DMT voting key](./img/dmt-voting-key.png)
+:::
+
 ![Load masternode voting key](./img/identities/identity-load-mn-2-key.png)
 
 You will be returned to the Identities main screen and should see "Loaded Evonode Identity".
