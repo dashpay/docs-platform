@@ -2,7 +2,11 @@
 .. tutorials-withdraw-identity-balance:
 ```
 
-# Withdraw credits
+:::{attention}
+Mainnet withdrawals will not be available until the activation of Dash Platform v1.4 on mainnet in late October or early November. They are already available on testnet.
+:::
+
+# Withdraw an Identity's balance
 
 The purpose of this tutorial is to walk through the steps necessary to withdraw credits back to a Dash address.
 

@@ -13,10 +13,10 @@ The following tutorials cover creating and managing identities as well as creati
 identities-and-names/register-an-identity
 identities-and-names/retrieve-an-identity
 identities-and-names/topup-an-identity-balance
+identities-and-names/withdraw-an-identity-balance
 identities-and-names/update-an-identity
 identities-and-names/retrieve-an-accounts-identities
 identities-and-names/transfer-credits-to-an-identity
-identities-and-names/withdraw-credits-from-an-identity
 identities-and-names/register-a-name-for-an-identity
 identities-and-names/retrieve-a-name
 ```
