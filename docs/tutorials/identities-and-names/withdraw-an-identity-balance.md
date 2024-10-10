@@ -8,11 +8,11 @@ Mainnet withdrawals will not be available until the activation of Dash Platform 
 
 # Withdraw an Identity's balance
 
-The purpose of this tutorial is to walk through the steps necessary to withdraw credits back to a Dash address.
+The purpose of this tutorial is to walk through the steps necessary to withdraw part of their identity's balance from Platform to a Dash address.
 
 ## Overview
 
-Over time, users may want to convert [Platform credits](../../explanations/identity.md#credits) back to Dash for use on the Core chain.
+Over time, users may want to convert some of their identity's [Platform credits](../../explanations/identity.md#credits) back to Dash for use on the Core chain.
 
 ## Prerequisites
 
@@ -36,16 +36,17 @@ const withdrawCredits = async () => {
   console.log('Identity balance before transfer: ', identity.balance);
 
   const toAddress = 'a Dash address goes here';
-  const withdrawalAmount = 190000; // Number of credits to withdraw
+  const amount = 1000000; // Number of credits to withdraw
+  const amountDash = amount / (1000 * 100000000);
 
-  console.log('Starting credit withdrawal...');
+  console.log(`Withdrawing ${amount} credits (${amountDash} DASH)`);
   // Temporarily force minRelay to have a value so withdrawal succeeds
   // https://github.com/dashpay/platform/issues/2233
   client.wallet.storage.getDefaultChainStore().state.fees.minRelay = 1000;
 
   const response = await client.platform.identities.withdrawCredits(
     identity,
-    withdrawalAmount,
+    amount,
     {
       toAddress,
     },
