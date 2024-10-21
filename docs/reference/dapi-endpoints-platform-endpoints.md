@@ -726,7 +726,8 @@ grpcurl -proto protos/platform/v0/platform.proto \
 **Returns**: An [identity](../explanations/identity.md) associated with the provided public key hash
 
 :::{note}
-This endpoint only works for unique keys. Since masternode keys do not have to be unique (e.g. voting keys), some masternode identities cannot be retrieved using this endpoint.
+This endpoint only works for unique keys. Since masternode keys do not have to be unique (e.g.,
+voting keys), some masternode identities cannot be retrieved using this endpoint.
 :::
 
 **Parameters**:
