@@ -4,36 +4,72 @@
 
 # Frequently Asked Questions
 
-## What is Evolution?
+## DPNS names
 
-"Evolution" is a codename used to reference various products. It includes "Dash Platform," a FireBase-like platform for developing backends for websites and applications, hosted on the masternode network.
+:::{tip}
+See the [Name Service (DPNS)](../explanations/dpns.md) page for additional information on the
+Dash Platform Name Service (DPNS).
+:::
 
-Also, the term " Evolution" refers to several other products that we are going to develop on top of the platform. An example of such an app is DashPay - an easy to use payment solution with usernames and contact lists.
+:::{dropdown} How can I register a name?
 
-## How does a DAPI client discover the IP address of masternodes hosting DAPI endpoints?
+Currently, names can be registered using several technical tools; however, the upcoming [DashPay
+Android](https://play.google.com/store/apps/details?id=hashengineering.darkcoin.wallet) update will
+provide a much easier way to do this.
 
-The DNS seed will provide a deterministic masternode list (DML) to the client. More on the deterministic MN list can be found here:
+Developers and other technical users may want to experiment with registering names using the [JS
+SDK](https://docs.dash.org/projects/platform/en/stable/docs/tutorials/identities-and-names/register-a-name-for-an-identity.html)
+or [Platform TUI](https://github.com/dashpay/platform-tui/)
 
-- DML spec: https://github.com/dashpay/dips/blob/master/dip-0003.md
-- DML verification: https://github.com/dashpay/dips/blob/master/dip-0004.md
+:::
 
-## Why can't I connect to DAPI from a page served over HTTPS?
+:::{dropdown} How long does it take to register and receive a name?
 
-Modern browsers block connections to insecure content when the main page is loaded securely. At the moment, there are technical obstacles to serving DAPI content over HTTPS. Until then, the only way to test DAPI from a web page is to serve the web page insecurely. Dash Core team is evaluating different ways to work around this browser restriction and have a trustworthy connection to DAPI.
+Regular (non-premium) names are registered and received immediately. [Premium
+names](../explanations/dpns.md#conflict-resolution) must go through a two-week voting period before
+receiving the name.
+:::
 
-## Will it be possible to use apps with only an identity, or will a DPNS name have to be registered first?
+::::{dropdown} Can I register multiple names?
 
-Apps can interact with an identity whether or not it has a DPNS name registered. Someone may create an app that requires one, but it's not a platform restriction.
+:::{note}
+**Note**: the mobile apps do not currently support registering more than one name under the same
+mnemonic.
+:::
 
-## Should it be possible to create multiple identities using a single private key?
+Yes, each [identity](../explanations/identity.md) can have multiple names.
+::::
 
-It may not be a very good practice, but this is not restricted.
+:::{dropdown} What is a contested (premium) name?
 
-## Will DAPI RPCs always be free? How will DoS attacks be mitigated?
+Any name meeting the following criteria is considered premium:
 
-Right now there's only IP based rate limits. Generally Core team wants platform data to be available for everyone, so there are no plans today to have paid queries.
+* Less than 20 characters long (i.e. "alice", "quantumexplorer") AND
+* Contain no numbers or only contain the number(s) 0 and/or 1 (i.e. "bob", "carol01")
 
-## When I try to load the Dash javascript library, why is there is a syntax error "Invalid regular expression"?
+These names require a two-week waiting period during which masternodes and evonodes vote to
+determine who (if anyone) receives the name. To pay for the voting, anyone requesting the name must
+pay a 0.2 DASH name request fee.
+:::
 
-This can be caused by loading the script with the wrong character encoding. The `dash` npm package uses UTF-8 encoding. Try this:
-`<script src="https://unpkg.com/dash" encoding="UTF-8"></script>`
+:::{dropdown} What happens if no one votes for a contested username request?
+
+If no one votes, the first identity requesting the name will receive it.
+:::
+
+:::{dropdown} Can locked names be requested by someone else later?
+
+Locked names can no longer be requested or awarded in Dash Platform v1. The plan is to change this
+in future updates, but the exact details have not been defined.
+:::
+
+:::{dropdown} What happens if there is a tie vote?
+
+If there is a tie, the first identity requesting the name will receive it. This applies even if
+there is a tie between votes for an identity and votes to lock the name.
+:::
+
+:::{dropdown} Is it necessary to have a DPNS name to use Platform apps ?
+
+No, apps can interact with an identity whether or not it has a DPNS name registered. Someone may create an app that requires names, but it is not a platform requirement.
+:::
