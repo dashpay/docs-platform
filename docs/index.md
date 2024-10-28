@@ -147,7 +147,6 @@ reference/dapi-endpoints
 reference/query-syntax
 reference/data-contracts
 reference/glossary
-reference/frequently-asked-questions
 ```
 
 ```{toctree}
@@ -171,6 +170,7 @@ protocol-ref/errors
 :caption: Resources
 :hidden:
 
+resources/faq
 resources/repository-overview
 Platform Explorer <https://platform-explorer.com/>
 Testnet Block Explorer <https://insight.testnet.networks.dash.org:3002/insight/>

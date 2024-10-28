@@ -2,7 +2,7 @@
 .. _reference-faq:
 ```
 
-# Frequently Asked Questions
+# FAQ
 
 ## DPNS names
 
