@@ -19,8 +19,7 @@ provide a much easier way to do this.
 
 Developers and other technical users may want to experiment with registering names using the [JS
 SDK](https://docs.dash.org/projects/platform/en/stable/docs/tutorials/identities-and-names/register-a-name-for-an-identity.html)
-or [Platform TUI](https://github.com/dashpay/platform-tui/)
-
+or [Platform TUI](https://github.com/dashpay/platform-tui/).
 :::
 
 :::{dropdown} How long does it take to register and receive a name?
@@ -69,7 +68,24 @@ If there is a tie, the first identity requesting the name will receive it. This 
 there is a tie between votes for an identity and votes to lock the name.
 :::
 
-:::{dropdown} Is it necessary to have a DPNS name to use Platform apps ?
+:::{dropdown} Is it necessary to have a DPNS name to use Platform apps?
 
 No, apps can interact with an identity whether or not it has a DPNS name registered. Someone may create an app that requires names, but it is not a platform requirement.
+:::
+
+:::{dropdown} Why do names have "0" and "1" in them when viewed in some apps?
+
+Some apps display the normalized name instead of the requested (display) name. To mitigate
+[homograph attacks](https://en.wikipedia.org/wiki/IDN_homograph_attack), `o` is replaced with `0`
+and `i`/`l` are replaced with `1` internally for validation. For example, "Alice" is normalized to
+"a11ce".
+
+Once any iteration of the normalized name is registered, the alternatives cannot be registered. For
+example, once "Alice" is registered, none of the following will be available:
+
+* alice
+* a1ice
+* a11ce
+* al1ce
+
 :::
