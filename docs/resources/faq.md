@@ -29,12 +29,6 @@ names](../explanations/dpns.md#conflict-resolution) must go through a two-week v
 receiving the name.
 :::
 
-:::{dropdown} What characters are valid in names?
-
-Names can contain the characters `0-9`, `-` (hyphen), and `A-Z` (case insensitive). Names cannot
-begin or end with a hyphen (e.g. `-name` or `name-`).
-:::
-
 ::::{dropdown} Can I register multiple names?
 
 :::{note}
@@ -44,6 +38,29 @@ mnemonic.
 
 Yes, each [identity](../explanations/identity.md) can have multiple names.
 ::::
+
+:::{dropdown} What characters are valid in names?
+
+Names can contain the characters `0-9`, `-` (hyphen), and `A-Z` (case insensitive). Names cannot
+begin or end with a hyphen (e.g. `-name` or `name-`).
+:::
+
+:::{dropdown} Why do names have "0" and "1" in them when viewed in some apps?
+
+Some apps display the normalized name instead of the requested (display) name. To mitigate
+[homograph attacks](https://en.wikipedia.org/wiki/IDN_homograph_attack), `o` is replaced with `0`
+and `i`/`l` are replaced with `1` internally for validation. For example, "Alice" is normalized to
+"a11ce".
+
+Once any iteration of the normalized name is registered, the alternatives cannot be registered. For
+example, once "Alice" is registered, none of the following will be available:
+
+* alice
+* a1ice
+* a11ce
+* al1ce
+
+:::
 
 :::{dropdown} What is a contested (premium) name?
 
@@ -74,30 +91,13 @@ If there is a tie, the first identity requesting the name will receive it. This 
 there is a tie between votes for an identity and votes to lock the name.
 :::
 
-:::{dropdown} Is it necessary to have a DPNS name to use Platform apps?
-
-No, apps can interact with an identity whether or not it has a DPNS name registered. Someone may create an app that requires names, but it is not a platform requirement.
-:::
-
 :::{dropdown} How many times can a masternode change their vote for a name?
 
 Masternodes and evonodes can vote a total of 5 times per name. At the end of the voting period, the
 most recent vote is the one that is counted.
 :::
 
-:::{dropdown} Why do names have "0" and "1" in them when viewed in some apps?
+:::{dropdown} Is it necessary to have a DPNS name to use Platform apps?
 
-Some apps display the normalized name instead of the requested (display) name. To mitigate
-[homograph attacks](https://en.wikipedia.org/wiki/IDN_homograph_attack), `o` is replaced with `0`
-and `i`/`l` are replaced with `1` internally for validation. For example, "Alice" is normalized to
-"a11ce".
-
-Once any iteration of the normalized name is registered, the alternatives cannot be registered. For
-example, once "Alice" is registered, none of the following will be available:
-
-* alice
-* a1ice
-* a11ce
-* al1ce
-
+No, apps can interact with an identity whether or not it has a DPNS name registered. Someone may create an app that requires names, but it is not a platform requirement.
 :::
