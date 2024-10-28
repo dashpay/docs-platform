@@ -29,6 +29,12 @@ names](../explanations/dpns.md#conflict-resolution) must go through a two-week v
 receiving the name.
 :::
 
+:::{dropdown} What characters are valid in names?
+
+Names can contain the characters `0-9`, `-` (hyphen), and `A-Z` (case insensitive). Names cannot
+begin or end with a hyphen (e.g. `-name` or `name-`).
+:::
+
 ::::{dropdown} Can I register multiple names?
 
 :::{note}
@@ -71,6 +77,12 @@ there is a tie between votes for an identity and votes to lock the name.
 :::{dropdown} Is it necessary to have a DPNS name to use Platform apps?
 
 No, apps can interact with an identity whether or not it has a DPNS name registered. Someone may create an app that requires names, but it is not a platform requirement.
+:::
+
+:::{dropdown} How many times can a masternode change their vote for a name?
+
+Masternodes and evonodes can vote a total of 5 times per name. At the end of the voting period, the
+most recent vote is the one that is counted.
 :::
 
 :::{dropdown} Why do names have "0" and "1" in them when viewed in some apps?
