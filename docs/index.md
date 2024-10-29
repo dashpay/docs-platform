@@ -64,12 +64,12 @@ cryptocurrency. Let's jump right in!
     .. grid-item-card:: 📖 Resources
         :margin: 2 2 auto auto
         :link-type: ref
-        :link: resources-repository-overview
+        :link: resources-faq
         
         Links to helpful sites and tools
         
         +++
-        :ref:`Click to begin <resources-repository-overview>`
+        :ref:`Click to begin <resources-faq>`
 
     .. grid-item-card:: 🛠️ Dash SDK
         :margin: 2 2 auto auto

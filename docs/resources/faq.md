@@ -1,5 +1,5 @@
 ```{eval-rst}
-.. _reference-faq:
+.. _resources-faq:
 ```
 
 # FAQ
@@ -22,13 +22,6 @@ SDK](https://docs.dash.org/projects/platform/en/stable/docs/tutorials/identities
 or [Platform TUI](https://github.com/dashpay/platform-tui/).
 :::
 
-:::{dropdown} How long does it take to register and receive a name?
-
-Regular (non-premium) names are registered and received immediately. [Premium
-names](../explanations/dpns.md#conflict-resolution) must go through a two-week voting period before
-receiving the name.
-:::
-
 ::::{dropdown} Can I register multiple names?
 
 :::{note}
@@ -39,10 +32,25 @@ mnemonic.
 Yes, each [identity](../explanations/identity.md) can have multiple names.
 ::::
 
+:::{dropdown} How can I check if a specific name is available?
+
+You can search for the name on the [Platform Explorer](https://platform-explorer.com/). You can also
+check [https://dash.vote](https://dash.vote) for the list of contested names currently being voted
+on.
+
+:::
+
+:::{dropdown} How long does it take to register and receive a name?
+
+Regular (non-premium) names are registered and received immediately. [Premium
+names](../explanations/dpns.md#conflict-resolution) must go through a two-week voting period before
+receiving the name.
+:::
+
 :::{dropdown} What characters are valid in names?
 
-Names can contain the characters `0-9`, `-` (hyphen), and `A-Z` (case insensitive). Names cannot
-begin or end with a hyphen (e.g. `-name` or `name-`).
+Names can contain the characters `0-9`, `-` (hyphen), `a-z`, and `A-Z`. Names cannot begin or end
+with a hyphen (e.g. `-name` or `name-`).
 :::
 
 :::{dropdown} Why do names have "0" and "1" in them when viewed in some apps?
@@ -77,6 +85,23 @@ pay a 0.2 DASH name request fee.
 :::{dropdown} What happens if no one votes for a contested username request?
 
 If no one votes, the first identity requesting the name will receive it.
+:::
+
+:::{dropdown} How do I prove my identity if requesting a contested name?
+
+Masternode and evonode owners have not settled on a specific process; however, this forum page was created to assist with establishing consensus on who should receive contested names: [Dash Forum Contested Usernames page](https://www.dash.org/forum/index.php?threads/contested-usernames-view-discuss-gain-support.55367/).
+
+:::
+
+:::{dropdown} What are locked names and why are they locked?
+
+Locked names are [contested (premium) names](../explanations/dpns.md#conflict-resolution) that were
+previously requested and voted on by masternodes and evonodes. The voters decided the name should
+not be awarded to the person requesting it. Some examples of names that may be locked are:
+
+* Businesses or brands (e.g., Coke, Google, IBM)
+* Potentially controversial names (political, religious, etc.)
+* Well-known community members or celebrities if the source of the request is unknown
 :::
 
 :::{dropdown} Can locked names be requested by someone else later?
