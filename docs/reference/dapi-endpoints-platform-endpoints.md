@@ -349,6 +349,79 @@ Retrieves the state of a vote for a specific contested resource.
   :::
   ::::
 
+### getCurrentQuorumsInfo
+
+Retrieves current quorum details, including validator sets and metadata for each quorum.
+
+**Returns**: Information about current quorums, including quorum hashes, validator sets, and
+cryptographic proof.
+
+**Parameters**:
+
+| Name          | Type   | Required | Description |
+| ------------- | ------ | -------- | ----------- |
+| `version`     | Object | No       | Version object containing request parameters |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {}
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getCurrentQuorumsInfo
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "quorumHashes": [
+      "AAABC9mcu+F3eC33hC9wyZAP20QQNHz4kYnfFQPwa5A="
+    ],
+    "currentQuorumHash": "AAABP7yY5DKt8UlLUR/QJlH8BI108xugKSEIOrR6iAA=",
+    "validatorSets": [
+      {
+        "quorumHash": "AAABC9mcu+F3eC33hC9wyZAP20QQNHz4kYnfFQPwa5A=",
+        "coreHeight": 1131096,
+        "members": [
+          {
+            "proTxHash": "BbaHl4NE+iQzsqqZ1B9kPi2FgaeJzcIwhIic7KUkTqg=",
+            "nodeIp": "52.24.124.162"
+          },
+          {
+            "proTxHash": "iCUb1LEk7+uHU33qvuxU9sj1dfTfgfEM9ejuoHMJK28=",
+            "nodeIp": "52.33.28.47"
+          },
+          {
+            "proTxHash": "FD3Namt2hP3gHoihDl1l3popJExezVhtFKNCZXAl8RM=",
+            "nodeIp": "35.164.23.245"
+          }
+        ],
+        "thresholdPublicKey": "ixciXjkgFnI/cQNXS51yBi4MYgdPZWjRGxsubEsfzItgvTlABUxow9S1eCE7w9+f"
+      }
+    ],
+    "lastBlockProposer": "iCUb1LEk7+uHU33qvuxU9sj1dfTfgfEM9ejuoHMJK28=",
+    "metadata": {
+      "height": "43865",
+      "coreChainLockedHeight": 1131112,
+      "epoch": 2483,
+      "timeMs": "1730295469308",
+      "protocolVersion": 4,
+      "chainId": "dash-testnet-51"
+    }
+  }
+}
+```
+:::
+::::
+
 ### getEvonodesProposedEpochBlocksByIds
 
 Retrieves the number of blocks proposed by the specified evonodes in a certain epoch, based on their IDs.
