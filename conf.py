@@ -28,6 +28,7 @@ extensions = [
   'sphinx.ext.autodoc',
   'sphinx_copybutton',
   'sphinx_design',
+  'sphinxcontrib.googleanalytics',  
   'sphinx.ext.intersphinx',
 ]
 
@@ -144,6 +145,11 @@ html_context = {
     "github_version": "1.0.0",
     "doc_path": "",
 }
+
+# -- Google analytics config ----------------------------------------------
+
+googleanalytics_id = 'G-B3JNYGTPR0'
+googleanalytics_enabled = True
 
 def setup(app):
     app.add_js_file('js/pydata-search-close.js')
