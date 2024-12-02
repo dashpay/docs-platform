@@ -116,6 +116,12 @@ If there is a tie, the first identity requesting the name will receive it. This 
 there is a tie between votes for an identity and votes to lock the name.
 :::
 
+:::{dropdown} Can usernames be transferred?
+
+Currently, usernames are non-transferrable. Future updates may enable transfers.
+
+:::
+
 :::{dropdown} How many times can a masternode change their vote for a name?
 
 Masternodes and evonodes can vote a total of 5 times per name. At the end of the voting period, the
@@ -126,3 +132,29 @@ most recent vote is the one that is counted.
 
 No, apps can interact with an identity whether or not it has a DPNS name registered. Someone may create an app that requires names, but it is not a platform requirement.
 :::
+
+## DashPay
+
+:::{dropdown} Can someone tell when Dash is sent from one username to another?
+
+No. Although contact requests are public in Dash Platform, the extended public keys are encrypted in
+such a way that only the two users involved in a contact's two way relationship can decrypt those
+keys. This ensures that when any two users make payments in DashPay, only they know the sender and
+receiver while 3rd parties do not. This means that outside observers cannot link the identities
+involved in the transaction.
+
+See the [DashPay DIP](https://github.com/dashpay/dips/blob/master/dip-0015.md) for more details.
+
+:::
+
+:::{dropdown} What info is encrypted, how is it encrypted and who can decrypt it?
+
+Your extended public (xPub) key is encrypted with an ECDH shared key when you send a contact request
+to someone else. Only the recipient of the contact request can decrypt the information in the
+document.
+
+See the [DashPay DIP](https://github.com/dashpay/dips/blob/master/dip-0015.md#the-contact-request)
+for more details.
+
+:::
+
