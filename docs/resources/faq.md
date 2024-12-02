@@ -53,6 +53,17 @@ Names can contain the characters `0-9`, `-` (hyphen), `a-z`, and `A-Z`. Names ca
 with a hyphen (e.g. `-name` or `name-`).
 :::
 
+:::{dropdown} Are names case-sensitive?
+
+Yes and no. Internally, name validation and processing are case-insensitive. For example, if you
+request the name "Sam", the system will check the availability of the case-insensitive version
+("sam"). Once registered, no other case variants of that name can registered (i.e., "SAM", "saM",
+etc.).
+
+However, each name also includes a label field that stores the exact case-sensitive version of the
+name as you requested (e.g. "Sam").
+:::
+
 :::{dropdown} Why do names have "0" and "1" in them when viewed in some apps?
 
 Some apps display the normalized name instead of the requested (display) name. To mitigate
