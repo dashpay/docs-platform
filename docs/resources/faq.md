@@ -135,6 +135,11 @@ No, apps can interact with an identity whether or not it has a DPNS name registe
 
 ## DashPay
 
+:::{tip}
+See the [DashPay page](../explanations/dashpay.md) and the [DashPay
+DIP](https://github.com/dashpay/dips/blob/master/dip-0015.md) for additional information on the Dash Platform Name Service (DPNS).
+:::
+
 :::{dropdown} Can someone tell when Dash is sent from one username to another?
 
 No. Although contact requests are public in Dash Platform, the extended public keys are encrypted in
