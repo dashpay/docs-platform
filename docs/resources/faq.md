@@ -133,6 +133,18 @@ most recent vote is the one that is counted.
 No, apps can interact with an identity whether or not it has a DPNS name registered. Someone may create an app that requires names, but it is not a platform requirement.
 :::
 
+:::{dropdown} What are identities and how are they related to usernames?
+
+Identities are separate from names and work behind the scenes to provide the foundation for various
+features. An identity consists primarily of one or more public keys recorded on the platform chain
+that can be used to control a user’s profile and cryptographically sign their data. All interactions
+with Platform, like creating and updating documents, are done using an identity.
+
+Usernames are DNS-like labels that can be associated with identities. Each identity can have
+multiple usernames.
+
+:::
+
 ## DashPay
 
 :::{tip}
@@ -163,3 +175,10 @@ for more details.
 
 :::
 
+:::{dropdown} Are contacts public? Can I look up someone's entire contact list on Platform?
+
+Contact request documents on Dash Platform are public. Certain details, like public keys, are
+encrypted to ensure payments between users cannot be linked to their username. However, it is
+possible to see what contact requests someone has sent and which ones they have accepted.
+
+:::
