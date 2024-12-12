@@ -28,7 +28,7 @@ You can see an [example usage here](https://github.com/dashpay/platform/blob/mas
 
 ```js
 const DAPIClient = require('@dashevo/dapi-client');
-const client = new DAPIClient();
+const client = new DAPIClient({ network: 'testnet' });
 
 (async () => {
   const bestBlockHash = await client.core.getBestBlockHash();
