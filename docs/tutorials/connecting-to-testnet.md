@@ -62,6 +62,7 @@ Using a seed node is the preferred method in most cases. The client uses the pro
 const Dash = require('dash');
 
 const client = new Dash.Client({
+  network: 'testnet',
   seeds: [{
     host: 'seed-1.testnet.networks.dash.org:1443',
   }],
