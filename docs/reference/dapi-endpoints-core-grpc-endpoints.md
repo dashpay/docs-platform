@@ -29,6 +29,7 @@ const DAPIClient = require('@dashevo/dapi-client');
 const { Transaction } = require('@dashevo/dashcore-lib');
 
 const client = new DAPIClient({
+  network: 'testnet',
   seeds: [{
     host: 'seed-1.testnet.networks.dash.org',
     port: 1443,
@@ -90,6 +91,7 @@ corePromiseClient.client.broadcastTransaction({ transaction: tx.toBuffer() })
 const DAPIClient = require('@dashevo/dapi-client');
 
 const client = new DAPIClient({
+  network: 'testnet',
   seeds: [{
     host: 'seed-1.testnet.networks.dash.org',
     port: 1443,
@@ -160,6 +162,7 @@ grpcurl -proto protos/core/v0/core.proto \
 const DAPIClient = require('@dashevo/dapi-client');
 
 const client = new DAPIClient({
+  network: 'testnet',
   seeds: [{
     host: 'seed-1.testnet.networks.dash.org',
     port: 1443,
@@ -294,6 +297,7 @@ Note: The gRPCurl response `bestBlockHash` and `chainWork` data is Base64 encode
 const DAPIClient = require('@dashevo/dapi-client');
 
 const client = new DAPIClient({
+  network: 'testnet',
   seeds: [{
     host: 'seed-1.testnet.networks.dash.org',
     port: 1443,
@@ -578,6 +582,7 @@ This endpoint is currently disabled until its security and performance are evalu
 const DAPIClient = require('@dashevo/dapi-client');
 
 const client = new DAPIClient({
+  network: 'testnet',
   seeds: [{
     host: 'seed-1.testnet.networks.dash.org',
     port: 1443,
@@ -675,6 +680,7 @@ This endpoint is currently disabled until its security and performance are evalu
 const DAPIClient = require('@dashevo/dapi-client');
 
 const client = new DAPIClient({
+  network: 'testnet',
   seeds: [{
     host: 'seed-1.testnet.networks.dash.org',
     port: 1443,
@@ -766,6 +772,7 @@ Deprecated in Dash Platform v1.0.0
 const DAPIClient = require('@dashevo/dapi-client');
 
 const client = new DAPIClient({
+  network: 'testnet',
   seeds: [{
     host: 'seed-1.testnet.networks.dash.org',
     port: 1443,
