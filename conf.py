@@ -80,6 +80,7 @@ intersphinx_disabled_reftypes = ["*"]
 html_theme = "pydata_sphinx_theme"
 html_static_path = ['_static']
 html_logo = 'img/dash_logo.png'
+html_favicon = "_static/img/favicon-144x144.png"
 html_css_files = [
     'css/footer.css',
     'css/pydata-overrides.css',
@@ -105,31 +106,9 @@ html_theme_options = {
     "github_url": "https://github.com/dashpay/docs-platform",
     "show_toc_level": 2,
     "show_nav_level": 1,
-    "favicons": [
-      {
-         "rel": "icon",
-         "sizes": "16x16",
-         "href": "img/favicon-16x16.png",
-      },
-      {
-         "rel": "icon",
-         "sizes": "32x32",
-         "href": "img/favicon-32x32.png",
-      },
-      {
-         "rel": "icon",
-         "sizes": "96x96",
-         "href": "img/favicon-96x96.png",
-      },
-      {
-         "rel": "icon",
-         "sizes": "144x144",
-         "href": "img/favicon-144x144.png",
-      },
-   ],
-   "footer_start": ["copyright"],
-   "footer_center": ["sphinx-version"],
-   "footer_end": ["theme-version"],   
+    "footer_start": ["copyright"],
+    "footer_center": ["sphinx-version"],
+    "footer_end": ["theme-version"],   
 #    "navbar_start": ["navbar-logo", "languages"],
 #    "navbar_center": ["languages", "navbar-nav", "languages"],
 #    "navbar_end": ["navbar-icon-links", "version"],
