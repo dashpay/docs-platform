@@ -23,7 +23,7 @@ Once an identity is created, its credit balance is used to pay for activity (e.g
 ### Identity Create Process
 
 :::{note}
-On Testnet, a [test Dash faucet](https://insight.testnet.networks.dash.org:3002/insight/) is available. It dispenses small amounts to enable all users to directly acquire the funds necessary to create an identity and username.
+On Testnet, a [test Dash faucet](https://insight.testnet.networks.dash.org/insight/) is available. It dispenses small amounts to enable all users to directly acquire the funds necessary to create an identity and username.
 :::
 
 First, a sponsor (which could be a business, another person, or even the same user who is creating the identity) spends Dash in a transaction to create an invitation. The transaction contains one or more outputs which lock some Dash funds to establish credits within Dash platform.

@@ -64,4 +64,4 @@ Once we connect, we output the newly generated mnemonic from `client.wallet.expo
 
 # Next Step
 
-Using the [faucet](https://testnet-faucet.dash.org/), send test funds to the "unused address" from the console output. You will need to wait until the funds are confirmed to use them. The [block explorer](https://insight.testnet.networks.dash.org:3002/insight/) can be used to check confirmations.
+Using the [faucet](https://testnet-faucet.dash.org/), send test funds to the "unused address" from the console output. You will need to wait until the funds are confirmed to use them. The [block explorer](https://insight.testnet.networks.dash.org/insight/) can be used to check confirmations.
