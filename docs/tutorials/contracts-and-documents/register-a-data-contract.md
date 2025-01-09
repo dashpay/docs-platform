@@ -10,6 +10,7 @@ In this tutorial we will register a data contract.
 
 * [General prerequisites](../../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
 * A wallet mnemonic with some funds in it: [Tutorial: Create and Fund a Wallet](../../tutorials/create-and-fund-a-wallet.md)
+* A configured client: [Setup SDK Client](../setup-sdk-client.md)
 * A Dash Platform Identity: [Tutorial: Register an Identity](../../tutorials/identities-and-names/register-an-identity.md)
 
 ## Code
@@ -32,11 +33,13 @@ data.
 The fifth tab shows a data contract configured to store contract history. This allows all contract
 revisions to be retrieved in the future as needed.
 
-> 🚧
->
-> Since Platform v0.25.16, each document property must assign `position` value to support [backwards compatibility](https://github.com/dashpay/platform/pull/1594) for contract updates.
->
-> Since Platform v0.23, an index can [only use the ascending order](https://github.com/dashevo/platform/pull/435) (`asc`). Future updates will remove this restriction.
+The sixth tab shows a data contract configured for creating NFTs. It allows documents to be deleted, transferred, or traded. It also limits document creation to the contract owner. See the [NFT explanation section](../../explanations/nft.md) for more details about NFTs on Dash Platform. **_Note: the JavaScript SDK supports NFT contract registration, but does not currently support trades or transfers._**
+
+:::{attention}
+Since Platform v0.25.16, each document property must assign `position` value to support [backwards compatibility](https://github.com/dashpay/platform/pull/1594) for contract updates.
+
+Since Platform v0.23, an index can [only use the ascending order](https://github.com/dashpay/platform/pull/435) (`asc`). Future updates will remove this restriction.
+:::
 
 ::::{tab-set}
 :::{tab-item} 1. Minimal contract
@@ -160,11 +163,87 @@ array of bytes (e.g. a NodeJS Buffer).
 }
 ```
 :::
+
+:::{tab-item} 6. NFT Contract
+:sync: nft
+```json
+// To use contract documents as NFTs, configure settings for modifying
+// deleting, transferring, trading, or restricting creation as needed
+{
+  "card": {
+    "type": "object",
+    "documentsMutable": false,    // true = documents can be modified (replaced)
+    "canBeDeleted": true,         // true = documents can be deleted
+    "transferable": 1,            // 0 = transfers disabled; 1 = transfers enabled
+    "tradeMode": 1,               // 0 = no trading; 1 = direct purchases
+    "creationRestrictionMode": 1, // 0 = anyone can mint; 1 = only contract owner can mint
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "Name of the card",
+        "minLength": 0,
+        "maxLength": 63,
+        "position": 0
+      },
+      "description": {
+        "type": "string",
+        "description": "Description of the card",
+        "minLength": 0,
+        "maxLength": 256,
+        "position": 1
+      },
+      "attack": {
+        "type": "integer",
+        "description": "Attack power of the card",
+        "position": 2
+      },
+      "defense": {
+        "type": "integer",
+        "description": "Defense level of the card",
+        "position": 3
+      }
+    },
+    "indices": [
+      {
+        "name": "owner",
+        "properties": [
+          {
+            "$ownerId": "asc"
+          }
+        ]
+      },
+      {
+        "name": "attack",
+        "properties": [
+          {
+            "attack": "asc"
+          }
+        ]
+      },
+      {
+        "name": "defense",
+        "properties": [
+          {
+            "defense": "asc"
+          }
+        ]
+      }
+    ],
+    "required": [
+      "name",
+      "attack",
+      "defense"
+    ],
+    "additionalProperties": false
+  }
+}
+```
+:::
 ::::
 
-> 📘
->
-> Please refer to the [data contract reference page](../../reference/data-contracts.md) for more comprehensive details related to contracts and documents.
+:::{note
+Please refer to the [data contract reference page](../../reference/data-contracts.md) for more comprehensive details related to contracts and documents.
+:::
 
 ### Registering the data contract
 
@@ -174,18 +253,9 @@ The following examples demonstrate the details of creating contracts using the f
 :::{tab-item} 1. Minimal contract
 :sync: minimal
 ```javascript
-const Dash = require('dash');
+const setupDashClient = require('../setupDashClient');
 
-const clientOpts = {
-  network: 'testnet',
-  wallet: {
-    mnemonic: 'a Dash wallet mnemonic with funds goes here',
-    unsafeOptions: {
-      skipSynchronizationBeforeHeight: 875000, // only sync from mid-2023
-    },    
-  },
-};
-const client = new Dash.Client(clientOpts);
+const client = setupDashClient();
 
 const registerContract = async () => {
   const { platform } = client;
@@ -222,18 +292,9 @@ registerContract()
 :::{tab-item} 2. Indexed
 :sync: indexed
 ```javascript
-const Dash = require('dash');
+const setupDashClient = require('../setupDashClient');
 
-const clientOpts = {
-  network: 'testnet',
-  wallet: {
-    mnemonic: 'a Dash wallet mnemonic with funds goes here',
-    unsafeOptions: {
-      skipSynchronizationBeforeHeight: 875000, // only sync from mid-2023
-    },
-  },
-};
-const client = new Dash.Client(clientOpts);
+const client = setupDashClient();
 
 const registerContract = async () => {
   const { platform } = client;
@@ -274,18 +335,9 @@ registerContract()
 :::{tab-item} 3. Timestamps
 :sync: timestamp
 ```javascript
-const Dash = require('dash');
+const setupDashClient = require('../setupDashClient');
 
-const clientOpts = {
-  network: 'testnet',
-  wallet: {
-    mnemonic: 'a Dash wallet mnemonic with funds goes here',
-    unsafeOptions: {
-      skipSynchronizationBeforeHeight: 875000, // only sync from mid-2023
-    },
-  },
-};
-const client = new Dash.Client(clientOpts);
+const client = setupDashClient();
 
 const registerContract = async () => {
   const { platform } = client;
@@ -322,18 +374,9 @@ registerContract()
 :::{tab-item} 4. Binary data
 :sync: binary
 ```javascript
-const Dash = require('dash');
+const setupDashClient = require('../setupDashClient');
 
-const clientOpts = {
-  network: 'testnet',
-  wallet: {
-    mnemonic: 'a Dash wallet mnemonic with funds goes here',
-    unsafeOptions: {
-      skipSynchronizationBeforeHeight: 875000, // only sync from mid-2023
-    },
-  },
-};
-const client = new Dash.Client(clientOpts);
+const client = setupDashClient();
 
 const registerContract = async () => {
   const { platform } = client;
@@ -372,18 +415,9 @@ registerContract()
 :::{tab-item} 5. Contract with history
 :sync: history
 ```javascript
-const Dash = require('dash');
+const setupDashClient = require('../setupDashClient');
 
-const clientOpts = {
-  network: 'testnet',
-  wallet: {
-    mnemonic: 'a Dash wallet mnemonic with funds goes here',
-    unsafeOptions: {
-      skipSynchronizationBeforeHeight: 875000, // only sync from mid-2023
-    },
-  },
-};
-const client = new Dash.Client(clientOpts);
+const client = setupDashClient();
 
 const registerContract = async () => {
   const { platform } = client;
@@ -423,11 +457,106 @@ registerContract()
   .finally(() => client.disconnect());
 ```
 :::
+
+:::{tab-item} 6. NFT Contract
+:sync: nft
+```javascript
+const setupDashClient = require('../setupDashClient');
+
+const client = setupDashClient();
+
+const registerContract = async () => {
+  const { platform } = client;
+  const identity = await platform.identities.get('an identity ID goes here');
+
+  const contractDocuments = {
+    card: {
+      type: "object",
+      documentsMutable: false,    // Documents cannot be modified/replaced
+      canBeDeleted: true,         // Documents can be deleted
+      transferable: 1,            // Transfers enabled
+      tradeMode: 1,               // Direct purchase trades enabled
+      creationRestrictionMode: 1, // Only the contract owner can mint      
+      properties: {
+        name: {
+          type: "string",
+          description: "Name of the card",
+          minLength: 0,
+          maxLength: 63,
+          position: 0
+        },
+        description: {
+          type: "string",
+          description: "Description of the card",
+          minLength: 0,
+          maxLength: 256,
+          position: 1
+        },
+        attack: {
+          type: "integer",
+          description: "Attack power of the card",
+          position: 2
+        },
+        defense: {
+          type: "integer",
+          description: "Defense level of the card",
+          position: 3
+        }
+      },
+      indices: [
+        {
+          name: "owner",
+          properties: [
+            {
+              $ownerId: "asc"
+            }
+          ]
+        },
+        {
+          name: "attack",
+          properties: [
+            {
+              attack: "asc"
+            }
+          ]
+        },
+        {
+          name: "defense",
+          properties: [
+            {
+              defense: "asc"
+            }
+          ]
+        }
+      ],
+      required: [
+        "name",
+        "attack",
+        "defense"
+      ],
+      additionalProperties: false
+    }
+  }
+
+  const contract = await platform.contracts.create(contractDocuments, identity);
+  console.dir({ contract: contract.toJSON() });
+
+  // Sign and submit the data contract
+  await platform.contracts.publish(contract, identity);
+  return contract;
+};
+
+registerContract()
+  .then((d) => console.log('Contract registered:\n', d.toJSON()))
+  .catch((e) => console.error('Something went wrong:\n', e))
+  .finally(() => client.disconnect());
+```
+:::
 ::::
 
-> 👍
->
-> **Make a note of the returned data contract `id` as it will be used used in subsequent tutorials throughout the documentation.**
+:::{attention}
+Make a note of the returned data contract `id` as it will be used used in subsequent tutorials throughout the documentation.
+:::
 
 ## What's Happening
 
@@ -435,8 +564,7 @@ After we initialize the Client, we create an object defining the documents this 
 
 Once the data contract has been created, we still need to submit it to DAPI. The `platform.contracts.publish` method takes a data contract and an identity parameter. Internally, it creates a State Transition containing the previously created contract, signs the state transition, and submits the signed state transition to DAPI. A response will only be returned if an error is encountered.
 
-> 📘 Wallet Operations
->
-> The JavaScript SDK does not cache wallet information. It re-syncs the entire Core chain for some wallet operations (e.g. `client.getWalletAccount()`) which can result in wait times of  5+ minutes.
->
-> A future release will add caching so that access is much faster after the initial sync. For now, the `skipSynchronizationBeforeHeight` option can be used to sync the wallet starting at a certain block height.
+:::{note}
+:class: note
+Since the SDK does not cache wallet information, lengthy re-syncs (5+ minutes) may be required for some Core chain wallet operations. See [Wallet Operations](../setup-sdk-client.md#wallet-operations) for options.
+:::

@@ -15,9 +15,9 @@ Fees on Dash Platform are divided into two main categories:
 
 Storage fees cover the costs to store the various types of data throughout the network, while processing fees cover the computational costs incurred by the masternodes to process state transitions. For everyday use, processing fees are minuscule compared to storage fees. However, they are important in the prevention of attacks on the network, in which case they become prohibitively expensive.
 
-> 👍 Fee System DIP
->
-> Comprehensive details regarding fees will be available in an upcoming *Dash Platform Fee System* DIP.
+:::{tip}
+Comprehensive details regarding fees will be available in an upcoming *Dash Platform Fee System* DIP.
+:::
 
 ## Costs
 
@@ -34,9 +34,9 @@ The current cost schedule is outlined in the table below:
 | Load from memory | 20 / byte |
 | Blake3 hash function | 400 + 64 / 64-byte block |
 
-> 📘 Credits
->
-> Refer to the [Identity explanation](../explanations/identity.md) section for information regarding how credits are created.
+:::{note}
+Refer to the [Identity explanation](../explanations/identity.md) section for information regarding how credits are created.
+:::
 
 ## Fee Multiplier
 

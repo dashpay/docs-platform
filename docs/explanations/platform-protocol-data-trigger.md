@@ -4,17 +4,15 @@
 
 # Data Trigger
 
->❗️
->
-> This page is intended to provide a brief description of how data triggers work in the initial version of Dash Platform. The design will likely undergo changes in the future.
+This page is intended to provide a brief description of how data triggers work in the initial version of Dash Platform. The design will likely undergo changes in the future.
 
 ## Overview
 
 Although [data contracts](../explanations/platform-protocol-data-contract.md) provide much needed constraints on the structure of the data being stored on Dash Platform, there are limits to what they can do. Certain system data contracts may require server-side validation logic to operate effectively. For example, [DPNS](../explanations/dpns.md) must enforce some rules to ensure names remain DNS compatible. [Dash Platform Protocol](../explanations/platform-protocol.md) (DPP) supports this application-specific custom logic using Data Triggers.
 
-> ❗️ Constraints
->
-> Given a number of technical considerations (security, masternode processing capacity, etc.), data triggers are not considered a platform feature at this time. They are currently hard-coded in Dash Platform Protocol and only used in system data contracts.
+:::{attention}
+Given a number of technical considerations (security, masternode processing capacity, etc.), data triggers are not considered a platform feature at this time. They are currently hard-coded in Dash Platform Protocol and only used in system data contracts.
+:::
 
 ## Details
 

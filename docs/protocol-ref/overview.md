@@ -14,7 +14,7 @@ In addition to ensuring data complies with predefined JSON Schemas, DPP also def
 
 ## Reference Implementation
 
-The current reference implementation is the (Rust) [rs-dpp](https://github.com/dashevo/platform/tree/master/packages/rs-dpp) library. The schemas and meta-schemas referred to in this specification can be found here in the reference implementation: <https://github.com/dashpay/platform/tree/master/packages/rs-dpp/src/schema>.
+The current reference implementation is the (Rust) [rs-dpp](https://github.com/dashpay/platform/tree/master/packages/rs-dpp) library. The schemas and meta-schemas referred to in this specification can be found here in the reference implementation: <https://github.com/dashpay/platform/tree/master/packages/rs-dpp/src/schema>.
 
 ## Release Notes
 

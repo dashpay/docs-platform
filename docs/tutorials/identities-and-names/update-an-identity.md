@@ -10,31 +10,23 @@ Since Dash Platform v0.23, it is possible to update identities to add new keys o
 
 - [General prerequisites](../../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
 - A wallet mnemonic with some funds in it: [Tutorial: Create and Fund a Wallet](../../tutorials/create-and-fund-a-wallet.md)
+- A configured client: [Setup SDK Client](../setup-sdk-client.md)
 - A Dash Platform Identity: [Tutorial: Register an Identity](../../tutorials/identities-and-names/register-an-identity.md)
 
 ## Code
 
 The two examples below demonstrate updating an existing identity to add a new key and disabling an existing key:
 
-> 🚧
->
-> The current SDK version signs all state transitions with public key id `1`. If it is disabled, the SDK will be unable to use the identity. Future SDK versions will provide a way to also sign using keys added in an identity update.
+:::{attention}
+The current SDK version signs all state transitions with public key id `1`. If it is disabled, the SDK will be unable to use the identity. Future SDK versions will provide a way to also sign using keys added in an identity update.
+:::
 
 ::::{tab-set}
 :::{tab-item} Disable identity key
 ```javascript
-const Dash = require('dash');
+const setupDashClient = require('../setupDashClient');
 
-const clientOpts = {
-  network: 'testnet',
-  wallet: {
-    mnemonic: 'a Dash wallet mnemonic with funds goes here',
-    unsafeOptions: {
-      skipSynchronizationBeforeHeight: 875000, // only sync from mid-2023
-    },    
-  },
-};
-const client = new Dash.Client(clientOpts);
+const client = setupDashClient();
 
 const updateIdentityDisableKey = async () => {
   const identityId = 'an identity ID goes here';
@@ -61,21 +53,9 @@ updateIdentityDisableKey()
 
 :::{tab-item} Add identity key
 ```javascript
-const Dash = require('dash');
-const {
-  PlatformProtocol: { IdentityPublicKey, IdentityPublicKeyWithWitness },
-} = Dash;
+const setupDashClient = require('../setupDashClient');
 
-const clientOpts = {
-  network: 'testnet',
-  wallet: {
-    mnemonic: 'a Dash wallet mnemonic with funds goes here',
-    unsafeOptions: {
-      skipSynchronizationBeforeHeight: 875000, // only sync from mid-2023
-    },    
-  },
-};
-const client = new Dash.Client(clientOpts);
+const client = setupDashClient();
 
 const updateIdentityAddKey = async () => {
   const identityId = 'an identity ID goes here';
@@ -136,8 +116,8 @@ After we initialize the Client, we retrieve our existing identity and set an `id
 2. An object containing the key(s) to be added
 3. An object containing the id and private key for each public key being added
 
-> 📘
->
-> When adding new public keys, they must be signed using the associated private key to prove ownership of the keys.
+:::{note}
+When adding new public keys, they must be signed using the associated private key to prove ownership of the keys.
+:::
 
 Internally, the method creates a State Transition containing the updated identity, signs the state transition, and submits the signed state transition to DAPI. After the identity is updated, we output it to the console.

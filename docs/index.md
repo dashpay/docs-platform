@@ -111,11 +111,13 @@ intro/testnet
 tutorials/introduction
 tutorials/connecting-to-testnet
 tutorials/create-and-fund-a-wallet
+tutorials/setup-sdk-client
 tutorials/identities-and-names
 tutorials/contracts-and-documents
 tutorials/send-funds
 tutorials/use-dapi-client-methods
 tutorials/setup-a-node
+tutorials/tui/index
 ```
 
 ```{toctree}
@@ -132,6 +134,7 @@ explanations/drive
 explanations/platform-consensus
 explanations/dashpay
 explanations/fees
+explanations/nft
 ```
 
 ```{toctree}
@@ -169,17 +172,18 @@ protocol-ref/errors
 :hidden:
 
 resources/repository-overview
-Testnet Block Explorer <https://testnet-insight.dashevo.org/insight/>
+Platform Explorer <https://platform-explorer.com/>
+Testnet Block Explorer <https://insight.testnet.networks.dash.org:3002/insight/>
 Testnet Faucet <http://faucet.testnet.networks.dash.org/>
-JavaScript SDK <https://github.com/dashevo/platform/tree/master/packages/js-dash-sdk#readme>
+JavaScript SDK <https://github.com/dashpay/platform/tree/master/packages/js-dash-sdk#readme>
 resources/source-code
-Previous Version of Docs <https://docs.dash.org/projects/platform/en/0.24.0/docs/>
+Previous Version of Docs <https://docs.dash.org/projects/platform/en/0.25.0/docs/>
 ```
 
 ```{toctree}
 :maxdepth: 2
 :titlesonly:
-:caption: Dash SDK
+:caption: JavaScript SDK
 :hidden:
 
 sdk-js/overview
@@ -188,6 +192,16 @@ sdk-js/getting-started/getting-started
 sdk-js/platform/platform
 sdk-js/usage/usage
 sdk-js/wallet/wallet
+```
+
+```{toctree}
+:maxdepth: 2
+:titlesonly:
+:caption: Rust SDK
+:hidden:
+
+sdk-rs/overview
+sdk-rs/quick-start
 ```
 
 ```{toctree}

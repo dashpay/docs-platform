@@ -14,7 +14,7 @@ Documents are defined in an application's [Data Contract](../explanations/platfo
 
 ### Base Fields
 
-Dash Platform Protocol (DPP) defines a set of base fields that must be present in all documents. For the [reference implementation](https://github.com/dashevo/platform/tree/master/packages/rs-dpp), the base fields shown below are defined in the [document base schema](https://github.com/dashevo/platform/blob/master/packages/rs-dpp/src/schema/document/v0/documentBase.json).
+Dash Platform Protocol (DPP) defines a set of base fields that must be present in all documents. For the [reference implementation](https://github.com/dashpay/platform/tree/master/packages/rs-dpp), the base fields shown below are defined in the [document base schema](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/src/schema/document/v0/documentBase.json).
 
 | Field Name | Description |
 | - | - |
@@ -26,13 +26,13 @@ Dash Platform Protocol (DPP) defines a set of base fields that must be present i
 | $createdAt | Time (in milliseconds) the document was created |
 | $updatedAt | Time (in milliseconds) the document was last updated |
 
-> 🚧 Timestamp fields
->
-> Note: The `$createdAt` and `$updatedAt` fields will only be present in documents that add them to the list of [required properties](../reference/data-contracts.md#required-properties-optional).
+:::{attention}
+The `$createdAt` and `$updatedAt` fields will only be present in documents that add them to the list of [required properties](../reference/data-contracts.md#required-properties).
+:::
 
 ### Data Contract Fields
 
-Each application defines its own fields via document definitions in its data contract. Details of the [DPNS data contract documents](https://github.com/dashevo/platform/blob/master/packages/dpns-contract/schema/dpns-contract-documents.json) are described below as an example. This contract defines two document types (`preorder` and `domain`) and provides the functionality described in the [Name Service explanation](../explanations/dpns.md).
+Each application defines its own fields via document definitions in its data contract. Details of the [DPNS data contract documents](https://github.com/dashpay/platform/blob/master/packages/dpns-contract/schema/v1/dpns-contract-documents.json) are described below as an example. This contract defines two document types (`preorder` and `domain`) and provides the functionality described in the [Name Service explanation](../explanations/dpns.md).
 
 | Document Type | Field Name | Data Type |
 | - | - | - |
@@ -114,6 +114,6 @@ The document replace transition is used to update the data in an existing Dash P
 
 The document delete transition is used to delete an existing Dash Platform document. It only requires the fields found in the base document transition.
 
-> 📘
->
-> For more detailed information, see the [Platform Protocol Reference - Document](../protocol-ref/document.md) page.
+:::{note}
+For more detailed information, see the [Platform Protocol Reference - Document](../protocol-ref/document.md) page.
+:::

@@ -4,13 +4,13 @@
 
 # Platform gRPC Endpoints
 
-Please refer to the [gRPC Overview](../reference/dapi-endpoints-grpc-overview.md) for details regarding running the examples shown below, encoding/decoding the request/response data, and clients available for several languages.
+Please refer to the [gRPC Overview](../reference/dapi-endpoints-grpc-overview.md) for details regarding running the examples shown below.
 
 ## Data Proofs and Metadata
 
-Platform gRPC endpoints can provide [proofs](https://github.com/dashpay/platform/blob/master/packages/dapi-grpc/protos/platform/v0/platform.proto#L17-L22) so the data returned for a request can be verified as being valid. When requesting proofs, the data requested will be encoded as part of the proof in the response. Full support is not yet available in the JavaScript client, but can be used via the low level [dapi-grpc library](https://github.com/dashevo/platform/tree/master/packages/dapi-grpc).
+Platform gRPC endpoints can provide [proofs](https://github.com/dashpay/platform/blob/master/packages/dapi-grpc/protos/platform/v0/platform.proto#L17-L22) so the data returned for a request can be verified as being valid. When requesting proofs, the data requested will be encoded as part of the proof in the response. Full support is not yet available in the JavaScript client, but can be used via the low level [dapi-grpc library](https://github.com/dashpay/platform/tree/master/packages/dapi-grpc).
 
-Some [additional metadata](https://github.com/dashevo/platform/blob/master/packages/dapi-grpc/protos/platform/v0/platform.proto#L48-L55) is also provided with responses:
+Some [additional metadata](https://github.com/dashpay/platform/blob/master/packages/dapi-grpc/protos/platform/v0/platform.proto#L48-L55) is also provided with responses:
 
 | Metadata field          | Description                                           |
 | :---------------------- | :---------------------------------------------------- |
@@ -25,17 +25,51 @@ Some [additional metadata](https://github.com/dashevo/platform/blob/master/packa
 
 Dash Platform 0.25.16 included a [breaking change that added versioning](https://github.com/dashpay/platform/pull/1522) to these endpoints so future updates can be done without creating significant issues for API consumers.
 
+```{eval-rst}
+.. _mn-identity-id:
+```
+
+## Masternode identity IDs
+
+[Masternode identities](../explanations/identity.md#masternode-identities) are created automatically
+by the system based on the [Core masternode registration transaction (protx)
+hash](inv:core:std#ref-txs-proregtx). Masternode identity IDs are created by converting the protx
+hash to base58. This can be done using an [online base58
+encoder](https://appdevtools.com/base58-encoder-decoder) or through JavaScript using the [bs58
+package](https://www.npmjs.com/package/bs58) as shown below. For gRPCurl, convert the protx hash to
+base64 instead. This can be done using an [online hex to base64
+encoder](https://base64.guru/converter/encode/hex).
+
+```{eval-rst}
+.. _reference-dapi-endpoints-platform-grpc-protx-to-id:
+```
+
+:::{code-block} javascript
+:caption: Protx hash to identity ID
+
+const bs58 = require('bs58').default;
+
+const protx = '8eca4bcbb3a124ab283afd42dad3bdb2077b3809659788a0f1daffce5b9f001f';
+const base58Protx = bs58.encode(Buffer.from(protx, 'hex'));
+console.log(`Masternode identity id (base58): ${base58Protx}`);
+const base64Protx = Buffer.from(protx, 'hex').toString('base64');
+console.log(`Masternode identity id (base58): ${base64Protx}`);
+// Output:
+//  Masternode identity id (base58): AcPogCxrxeas7jrWYG7TnLHKbsA5KLHGfvg6oYgANZ8J
+//  Masternode identity id (base64): jspLy7OhJKsoOv1C2tO9sgd7OAlll4ig8dr/zlufAB8=
+:::
+
 ## Endpoint Details
 
 ### broadcastStateTransition
 
-> 📘
->
-> **Note:** The [`waitForStateTransitionResult` endpoint](#waitforstatetransitionresult) should be used in conjunction with this one for instances where proof of block confirmation is required.
-
 Broadcasts a [state transition](../explanations/platform-protocol-state-transition.md) to the platform via DAPI to make a change to layer 2 data. The `broadcastStateTransition` call returns once the state transition has been accepted into the mempool.
 
 **Returns**: Nothing or error
+
+:::{note}
+The [`waitForStateTransitionResult` endpoint](#waitforstatetransitionresult) should be used after `broadcastStateTransition` if proof of block confirmation is required.
+:::
 
 **Parameters**:
 
@@ -55,23 +89,401 @@ Broadcasts a [state transition](../explanations/platform-protocol-state-transiti
 
 **Response**: No response except on error
 
-### getIdentity
+### getContestedResources
 
-> 🚧 Breaking changes
->
-> Due to serialization changes in Dash Platform 0.25, using wasm-dpp is recommended when working with identities, data contracts, and documents.
+Retrieves the contested resources for a specific contract, document type, and index.
+
+**Returns**: A list of contested resource values or a cryptographic proof.
+
+**Parameters**:
+
+| Name                   | Type     | Required | Description                                                                 |
+| ---------------------- | -------- | -------- | --------------------------------------------------------------------------- |
+| `contract_id`          | Bytes    | Yes      | The ID of the data contract associated with the contested resources         |
+| `document_type_name`   | String   | Yes      | The name of the document type associated with the contested resources       |
+| `index_name`           | String   | Yes      | The name of the index used to query the contested resources                 |
+| `start_index_values`   | Array    | No       | Start values for index, for pagination                                      |
+| `end_index_values`     | Array    | No       | End values for index, for pagination                                        |
+| `start_at_value_info`  | Object   | No       | Start value information for pagination                                      |
+| `count`                | Integer  | No       | Number of contested resources to return                                     |
+| `order_ascending`      | Boolean  | No       | Sort order for results                                                      |
+| `prove`                | Boolean  | No       | Set to `true` to receive a proof that contains the requested contested resources |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+:sync: grpcurl
+```shell
+# `contract_id` must be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "contract_id": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
+      "document_type_name": "domain",
+      "index_name": "parentNameAndLabel"
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getContestedResources
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+:sync: grpcurl
+```json
+{
+  "v0": {
+    "contestedResourceValues": {
+      "contestedResourceValues": [
+        "EgRkYXNo"
+      ]
+    },
+    "metadata": {
+      "height": "2729",
+      "coreChainLockedHeight": 1086764,
+      "epoch": 756,
+      "timeMs": "1724076831562",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-50"
+    }
+  }
+}
+```
+:::
+::::
+
+### getContestedResourceIdentityVotes
+
+Retrieves the voting record of a specific identity.
+
+**Returns**: A list of contested resource votes or a cryptographic proof.
+
+**Parameters**:
+
+| Name                           | Type     | Required | Description |
+| ------------------------------ | -------- | -------- | ------------|
+| `identity_id`                  | Bytes    | Yes      | The ID of the identity whose votes are being requested |
+| `limit`                        | Integer  | No       | Maximum number of results to return |
+| `offset`                       | Integer  | No       | Offset for pagination |
+| `order_ascending`              | Boolean  | No       | Sort order for results |
+| `start_at_vote_poll_id_info`   | Object   | No       | Start poll ID information for pagination |
+| `prove`                        | Boolean  | No       | Set to `true` to receive a proof that contains the requested identity votes |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+# `identity_id` must be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "identity_id": "HxUSbKaFxbuvTUprfr5a0yU6u4EasTdSWvSxOwKjmxw="
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getContestedResourceIdentityVotes
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "votes": {
+      "finishedResults": true
+    },
+    "metadata": {
+      "height": "7762",
+      "coreChainLockedHeight": 1099677,
+      "epoch": 1260,
+      "timeMs": "1725889742454",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-51"
+    }
+  }
+}
+```
+:::
+::::
+
+### getContestedResourceVotersForIdentity
+
+Retrieves the voters for a specific identity associated with a contested resource.
+
+**Returns**: A list of voters or a cryptographic proof.
+
+**Parameters**:
+
+| Name                   | Type     | Required | Description                                                                 |
+| ---------------------- | -------- | -------- | --------------------------------------------------------------------------- |
+| `contract_id`          | Bytes    | Yes      | The ID of the data contract associated with the contested resource          |
+| `document_type_name`   | String   | Yes      | The name of the document type associated with the contested resource        |
+| `index_name`           | String   | Yes      | The name of the index used to query the contested resource                  |
+| `index_values`         | Array    | Yes      | The values used to query the contested resource                             |
+| `contestant_id`        | Bytes    | Yes      | The ID of the identity for which to retrieve voters                         |
+| `start_at_identifier_info` | Object | No      | Start identifier information for pagination                                 |
+| `count`                | Integer  | No       | Number of results to return                                                 |
+| `order_ascending`      | Boolean  | No       | Sort order for results                                                      |
+| `prove`                | Boolean  | No       | Set to `true` to receive a proof that contains the requested voters         |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+# `contract_id` and `contestant_id` must be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "contract_id": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
+      "document_type_name": "domain",
+      "index_name": "parentNameAndLabel",
+      "index_values": [],
+      "contestant_id": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU="
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getContestedResourceVotersForIdentity
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "contestedResourceVoters": {
+      "finishedResults": true
+    },
+    "metadata": {
+      "height": "7762",
+      "coreChainLockedHeight": 1099677,
+      "epoch": 1260,
+      "timeMs": "1725889742454",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-51"
+    }
+  }
+}
+```
+:::
+::::
+
+### getContestedResourceVoteState
+
+Retrieves the state of a vote for a specific contested resource.
+
+**Returns**: The state of the contested resource vote, including the current contenders and the tally of votes.
+
+**Parameters**:
+
+| Name                                             | Type     | Required | Description                                                                                             |
+| ------------------------------------------------ | -------- | -------- | ------------------------------------------------------------------------------------------------------- |
+| `contract_id`                                    | Bytes    | Yes      | The ID of the data contract associated with the contested resource |
+| `document_type_name`                             | String   | Yes      | The name of the document type associated with the contested resource |
+| `index_name`                                     | String   | Yes      | The name of the index used to query the contested resource |
+| `index_values`                                   | Array    | Yes      | The values used to query the contested resource. |
+| `result_type`                                    | Enum     | Yes      | Specifies the result type to return: `DOCUMENTS`, `VOTE_TALLY`, or `DOCUMENTS_AND_VOTE_TALLY` |
+| `allow_include_locked_and`<br>`_abstaining_vote_tally` | Boolean  | No       | Include votes that are locked or abstaining in the tally |
+| `start_at_identifier_info`                       | Object   | No       | Start identifier information for pagination |
+| `count`                                          | Integer  | No       | Number of results to return |
+| `prove`                                          | Boolean  | No       | Set to `true` to receive a proof that contains the requested vote state |
+
+```{eval-rst}
+..
+  Commented out info
+  The following example isn't fully functional
+  
+  **Example Request and Response**
+
+  ::::{tab-set}
+  :::{tab-item} gRPCurl
+  ```shell
+  grpcurl -proto protos/platform/v0/platform.proto \
+    -d '{
+      "v0": {
+        "contract_id": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
+        "document_type_name": "domain",
+        "index_name": "parentNameAndLabel",
+        "index_values": ["EgRkYXNo", "value2"],
+        "result_type": 1
+      }
+    }' \
+    seed-1.testnet.networks.dash.org:1443 \
+    org.dash.platform.dapi.v0.Platform/getContestedResourceVoteState
+  ```
+  :::
+  ::::
+
+```{eval-rst}
+..
+  Commented out info
+  The following example isn't fully functional
+  
+  ::::{tab-set}
+  :::{tab-item} Response (gRPCurl)
+  ```json
+  {
+    "v0": {
+      "contested_resource_contenders": {
+        "contenders": [{"identifier": "id1", "vote_count": 10}, {"identifier": "id2", "vote_count": 5}]
+      },
+      "metadata": {
+        "height": "6852",
+        "coreChainLockedHeight": 927072,
+        "epoch": 850,
+        "timeMs": "1701983652299",
+        "protocolVersion": 1,
+        "chainId": "dash-testnet-37"
+      }
+    }
+  }
+  ```
+  :::
+  ::::
+
+### getEvonodesProposedEpochBlocksByIds
+
+Retrieves the number of blocks proposed by the specified evonodes in a certain epoch, based on their IDs.
+
+**Returns**: A list of evonodes and their proposed block counts or a cryptographic proof.
+
+**Parameters**:
+
+| Name               | Type     | Required | Description |
+| ------------------ | -------- | -------- | ----------- |
+| `epoch`            | Integer  | No       | The epoch to query for. If not set, the current epoch will be used |
+| `ids`              | Array    | Yes    | An array of evonode IDs for which proposed blocks are retrieved IDs<br>Note: masternode IDs are created uniquely as described in the [masternode identity IDs section](#masternode-identity-ids) |
+| `prove`            | Boolean  | No       | Set to `true` to receive a proof that contains the requested data |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "ids": [
+        "jspLy7OhJKsoOv1C2tO9sgd7OAlll4ig8dr/zlufAB8=","dUuJ2ujbIPxM7l462wexRtfv5Qimb6Co4QlGdbnao14="
+      ],
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getEvonodesProposedEpochBlocksByIds
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "evonodesProposedBlockCountsInfo": {
+      "evonodesProposedBlockCounts": [
+        {
+          "proTxHash": "dUuJ2ujbIPxM7l462wexRtfv5Qimb6Co4QlGdbnao14="
+        },
+        {
+          "proTxHash": "jspLy7OhJKsoOv1C2tO9sgd7OAlll4ig8dr/zlufAB8=",
+          "count": "13"
+        }
+      ]
+    },
+    "metadata": {
+      "height": "13621",
+      "coreChainLockedHeight": 1105397,
+      "epoch": 1482,
+      "timeMs": "1726691577244",
+      "protocolVersion": 3,
+      "chainId": "dash-testnet-51"
+    }
+  }
+}
+```
+:::
+::::
+
+### getEvonodesProposedEpochBlocksByRange
+
+Retrieves the number of blocks proposed by evonodes for a specified epoch.
+
+**Returns**: A list of evonodes and their proposed block counts or a cryptographic proof.
+
+**Parameters**:
+
+| Name               | Type     | Required | Description |
+| ------------------ | -------- | -------- | ----------- |
+| `epoch`            | Integer  | No       | The epoch to query for. If not set, the current epoch will be used |
+| `limit`            | Integer  | No       | Maximum number of evonodes proposed epoch blocks to return |
+| `start_after`      | Bytes    | No       | Retrieve results starting after this document |
+| `start_at`         | Bytes    | No       | Retrieve results starting at this document |
+| `prove`            | Boolean  | No       | Set to `true` to receive a proof that contains the requested data |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "epoch": 0,
+      "limit": 10,
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getEvonodesProposedEpochBlocksByRange
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "evonodesProposedBlockCountsInfo": {
+      "evonodesProposedBlockCounts": [
+        {
+          "proTxHash": "BbaHl4NE+iQzsqqZ1B9kPi2FgaeJzcIwhIic7KUkTqg=",
+          "count": "1"
+        }
+      ]
+    },
+    "metadata": {
+      "height": "20263",
+      "coreChainLockedHeight": 1105827,
+      "epoch": 1499,
+      "timeMs": "1726752270072",
+      "protocolVersion": 3,
+      "chainId": "dash-testnet-51"
+    }
+  }
+}
+```
+:::
+::::
+
+### getIdentity
 
 **Returns**: [Identity](../explanations/identity.md) information for the requested identity  
 **Parameters**:
 
 | Name    | Type    | Required | Description                                                           |
 | ------- | ------- | -------- | --------------------------------------------------------------------- |
-| `id`    | Bytes   | Yes      | An identity `id`                                                      |
-| `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested identity |
-
-> 📘
->
-> **Note**: When requesting proofs, the data requested will be encoded as part of the proof in the response.
+| `id`    | Bytes   | Yes      | An identity `id`<br>Note: masternode IDs are created uniquely as described in the [masternode identity IDs section](#masternode-identity-ids) |
+| `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested identity. The data requested will be encoded as part of the proof in the response.|
 
 **Example Request and Response**
 
@@ -90,7 +502,7 @@ loadDpp();
 const dpp = new DashPlatformProtocol();
 const client = new DAPIClient();
 
-const identityId = Identifier.from('4EfA9Jrvv3nnCFdSf7fad59851iiTRZ6Wcu6YVJ4iSeF');
+const identityId = Identifier.from('36LGwPSXef8q8wpdnx4EdDeVNuqCYNAE9boDu5bxytsm');
 client.platform.getIdentity(identityId).then((response) => {
   const identity = dpp.identity.createFromBuffer(response.getIdentity());
   console.log(identity.toJSON());
@@ -116,7 +528,7 @@ const platformPromiseClient = new PlatformPromiseClient(
   'https://seed-1.testnet.networks.dash.org:1443',
 );
 
-const id = Identifier.from('4EfA9Jrvv3nnCFdSf7fad59851iiTRZ6Wcu6YVJ4iSeF');
+const id = Identifier.from('36LGwPSXef8q8wpdnx4EdDeVNuqCYNAE9boDu5bxytsm');
 const idBuffer = Buffer.from(id);
 const getIdentityRequest = new GetIdentityRequest();
 getIdentityRequest.setId(idBuffer);
@@ -139,7 +551,7 @@ platformPromiseClient
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "v0": {
-      "id": "MBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/aw="
+      "id": "HxUSbKaFxbuvTUprfr5a0yU6u4EasTdSWvSxOwKjmxw="
     }
   }' \
   seed-1.testnet.networks.dash.org:1443 \
@@ -154,7 +566,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 ```json
 {
   "$version":"0",
-  "id":"4EfA9Jrvv3nnCFdSf7fad59851iiTRZ6Wcu6YVJ4iSeF",
+  "id":"EuzJmuZdBSJs2eTrxHEp6QqJztbp6FKDNGMeb4W2Ds7h",
   "publicKeys":[
     {
       "$version":"0",
@@ -190,14 +602,14 @@ grpcurl -proto protos/platform/v0/platform.proto \
 ```json
 {
   "v0": {
-    "identity": "ADASwZuY7AAzrds2zWS39RBnDyo1GkMEtfaZQUQobv2sAgAAAAAAAAAAIQLItHR7UoysX933psxjcC7gTtfRMykE4IUQND6gDc5UagABAAEAAgAAACECAe4o+E9UhTkFZ+k5wrWGAQtjpp7JLKtTXclqjHGRNgIA/QAAAAQrpPz8AA==",
+    "identity": "AB8VEmymhcW7r01Ka36+WtMlOruBGrE3Ulr0sTsCo5scBAAAAAAAAAAAIQMSQ7bd3xPfA+9xn2+FLl/AJrQTEhdW/OUafgjhbjs6qwABAAEAAgAAACED8nl3p8oFHACE5DGvv8Y9sBxWEVPLpUDUlSD7yICx0OoAAgACAAEAAAAhA9BQqn5pbKnveG+CTGpr+sheSghjJFEUYpm//gO1HPa1AAMAAwMBAAAAIQK7PbawzDv5oNWL3icaXEeAnv5xigN0gUMXRVzn6VgPQwD8J+gRAgA=",
     "metadata": {
-      "height": "6730",
-      "coreChainLockedHeight": 926904,
-      "epoch": 844,
-      "timeMs": "1701959872131",
+      "height": "5986",
+      "coreChainLockedHeight": 1097381,
+      "epoch": 1170,
+      "timeMs": "1725566939334",
       "protocolVersion": 1,
-      "chainId": "dash-testnet-37"
+      "chainId": "dash-testnet-51"
     }
   }
 }
@@ -213,7 +625,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 | Name    | Type    | Required | Description |
 | ------- | ------- | -------- | ------------ |
-| `id`    | Bytes   | Yes      | An identity ID
+| `id`    | Bytes   | Yes      | An identity ID<br>Note: masternode IDs are created uniquely as described in the [masternode identity IDs section](#masternode-identity-ids)
 | `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested identity
 
 **Example Request and Response**
@@ -226,7 +638,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "v0": {
-      "id": "MBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/aw="
+      "id": "HxUSbKaFxbuvTUprfr5a0yU6u4EasTdSWvSxOwKjmxw="
     }
   }' \
   seed-1.testnet.networks.dash.org:1443 \
@@ -241,14 +653,14 @@ grpcurl -proto protos/platform/v0/platform.proto \
 ```json
 {
   "v0": {
-    "balance": "17912102140",
+    "balance": "669520130",
     "metadata": {
-      "height": "6858",
-      "coreChainLockedHeight": 927080,
-      "epoch": 850,
-      "timeMs": "1701983632299",
+      "height": "5986",
+      "coreChainLockedHeight": 1097381,
+      "epoch": 1170,
+      "timeMs": "1725566939334",
       "protocolVersion": 1,
-      "chainId": "dash-testnet-37"
+      "chainId": "dash-testnet-51"
     }
   }
 }
@@ -264,7 +676,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 | Name    | Type    | Required | Description |
 | ------- | ------- | -------- | ------------ |
-| `id`    | Bytes   | Yes      | An identity ID
+| `id`    | Bytes   | Yes      | An identity ID<br>Note: masternode IDs are created uniquely as described in the [masternode identity IDs section](#masternode-identity-ids)
 | `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested identity
 
 **Example Request and Response**
@@ -277,7 +689,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "v0": {
-      "id": "MBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/aw="
+      "id": "HxUSbKaFxbuvTUprfr5a0yU6u4EasTdSWvSxOwKjmxw="
     }
   }' \
   seed-1.testnet.networks.dash.org:1443 \
@@ -292,17 +704,16 @@ grpcurl -proto protos/platform/v0/platform.proto \
 ```json
 {
   "v0": {
-    "balance_and_revision": {
-      "balance": "17912102140",
-      "revision": "0"
+    "balanceAndRevision": {
+      "balance": "669520130"
     },
     "metadata": {
-      "height": "6862",
-      "core_chain_locked_height": 927086,
-      "epoch": 851,
-      "time_ms": "1701984361792",
-      "protocol_version": 1,
-      "chain_id": "dash-testnet-37"
+      "height": "5986",
+      "coreChainLockedHeight": 1097381,
+      "epoch": 1170,
+      "timeMs": "1725566939334",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-51"
     }
   }
 }
@@ -361,6 +772,88 @@ grpcurl -proto protos/platform/v0/platform.proto \
 :::
 ::::
 
+### getIdentityContractNonce
+
+**Returns**: Current contract nonce for the requested [Identity](../explanations/identity.md)
+
+**Parameters**:
+
+| Name    | Type    | Required | Description |
+| ------- | ------- | -------- | ------------ |
+| `identity_id`    | Bytes   | Yes      | An identity ID<br>Note: masternode IDs are created uniquely as described in the [masternode identity IDs section](#masternode-identity-ids)
+| `contract_id`    | Bytes   | Yes      | A contract ID
+| `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested identity contract nonce
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} JavaScript (dapi-client)
+:sync: js-dapi-client
+```javascript
+const DAPIClient = require('@dashevo/dapi-client');
+const {
+  default: loadDpp,
+  DashPlatformProtocol,
+  Identifier,
+} = require('@dashevo/wasm-dpp');
+
+loadDpp();
+const dpp = new DashPlatformProtocol(null);
+const client = new DAPIClient();
+
+const identityId = Identifier.from('36LGwPSXef8q8wpdnx4EdDeVNuqCYNAE9boDu5bxytsm');
+const contractId = Identifier.from('GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec');
+client.platform.getIdentityContractNonce(identityId, contractId).then((response) => {
+  console.log(`Current identity contract nonce: ${response.getIdentityContractNonce()}`);
+});
+```
+:::
+
+:::{tab-item} gRPCurl
+:sync: grpcurl
+```shell
+# `id` must be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "identity_id": "HxUSbKaFxbuvTUprfr5a0yU6u4EasTdSWvSxOwKjmxw=",
+      "contract_id": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU="
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getIdentityContractNonce
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (dapi-client)
+:sync: js-dapi-client
+```text
+Current identity contract nonce: 0
+```
+:::
+
+:::{tab-item} Response (gRPCurl)
+:sync: grpcurl
+```json
+{
+  "v0": {
+    "identityContractNonce": "3",
+    "metadata": {
+      "height": "5986",
+      "coreChainLockedHeight": 1097381,
+      "epoch": 1170,
+      "timeMs": "1725566939334",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-51"
+    }
+  }
+}
+```
+:::
+::::
+
 ### getIdentityKeys
 
 **Returns**: Keys for an [Identity](../explanations/identity.md).
@@ -369,7 +862,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 | Name    | Type    | Required | Description |
 | ------- | ------- | -------- | ------------ |
-| `identity_td`  | String | Yes | An identity ID
+| `identity_td`  | String | Yes | An identity ID<br>Note: masternode IDs are created uniquely as described in the [masternode identity IDs section](#masternode-identity-ids)
 | `request_type` | [KeyRequestType](#request-types) | Yes | Request all keys (`all_keys`), specific keys (`specific_keys`), search for keys (`search_key`)
 | `limit` | Integer  | Yes     | The maximum number of revisions to return |
 | `offset` | Integer | Yes     | The offset of the first revision to return |
@@ -406,7 +899,7 @@ To search for identity keys, use the `search_keys` request type. The options for
   "purpose_map": {
     "0": {
       "security_level_map": {
-        "0": "ALL_KEYS_OF_KIND_REQUEST"
+        "0": "CURRENT_KEY_OF_KIND_REQUEST"
       }
     }
   }
@@ -417,13 +910,16 @@ To search for identity keys, use the `search_keys` request type. The options for
 
 ::::{tab-set}
 :::{tab-item} gRPCurl (All keys)
+
+Request all identity keys
+
+Note: `identityId` must be represented in base64
+
 ```shell
-# Request all identity keys
-# `identityId` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "v0": {
-      "identity_id": "MBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/aw=",
+      "identity_id": "HxUSbKaFxbuvTUprfr5a0yU6u4EasTdSWvSxOwKjmxw=",
       "request_type": {
         "allKeys": {}
       }
@@ -434,20 +930,24 @@ grpcurl -proto protos/platform/v0/platform.proto \
 ```
 :::
 :::{tab-item} gRPCurl (Specific keys)
+
+Request specific keys
+
+Note: `identityId` must be represented in base64
+
 ```shell
-# Request specific keys
-# `identityId` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "v0": {
-      "identity_id": "MBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/aw=",
+      "identity_id": "HxUSbKaFxbuvTUprfr5a0yU6u4EasTdSWvSxOwKjmxw=",
       "request_type": {
         "specificKeys": {
           "keyIds": [
             1
           ]
         }
-      }
+      },
+      "limit": 1
     }
   }' \
   seed-1.testnet.networks.dash.org:1443 \
@@ -456,24 +956,28 @@ grpcurl -proto protos/platform/v0/platform.proto \
 :::
 
 :::{tab-item} gRPCurl (Search keys)
+
+Search keys
+
+Note: `identityId` must be represented in base64
+
 ```shell
-# Search keys
-# `identityId` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "v0": {
-      "identity_id": "MBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/aw=",
+      "identity_id": "HxUSbKaFxbuvTUprfr5a0yU6u4EasTdSWvSxOwKjmxw=",
       "request_type": {
         "search_key": {
           "purpose_map": {
             "0": {
               "security_level_map": {
-                "0": "ALL_KEYS_OF_KIND_REQUEST"
+                "0": "CURRENT_KEY_OF_KIND_REQUEST"
               }
             }
           }
         }
-      }
+      },
+      "limit": 1
     }
   }' \
   seed-1.testnet.networks.dash.org:1443 \
@@ -485,23 +989,25 @@ grpcurl -proto protos/platform/v0/platform.proto \
 ::::{tab-set}
 :::{tab-item} Response (gRPCurl)
 :sync: grpcurl
+All keys
 ```json
-// All keys
 {
   "v0": {
     "keys": {
       "keysBytes": [
-        "AAAAAAAAACECyLR0e1KMrF/d96bMY3Au4E7X0TMpBOCFEDQ+oA3OVGoA",
-        "AAEAAgAAACECAe4o+E9UhTkFZ+k5wrWGAQtjpp7JLKtTXclqjHGRNgIA"
+        "AAAAAAAAACEDEkO23d8T3wPvcZ9vhS5fwCa0ExIXVvzlGn4I4W47OqsA",
+        "AAEAAgAAACED8nl3p8oFHACE5DGvv8Y9sBxWEVPLpUDUlSD7yICx0OoA",
+        "AAIAAQAAACED0FCqfmlsqe94b4JMamv6yF5KCGMkURRimb/+A7Uc9rUA",
+        "AAMDAQAAACECuz22sMw7+aDVi94nGlxHgJ7+cYoDdIFDF0Vc5+lYD0MA"
       ]
     },
     "metadata": {
-      "height": "9240",
-      "coreChainLockedHeight": 929379,
-      "epoch": 941,
-      "timeMs": "1702309782764",
+      "height": "5986",
+      "coreChainLockedHeight": 1097381,
+      "epoch": 1170,
+      "timeMs": "1725566939334",
       "protocolVersion": 1,
-      "chainId": "dash-testnet-37"
+      "chainId": "dash-testnet-51"
     }
   }
 }
@@ -509,102 +1015,16 @@ grpcurl -proto protos/platform/v0/platform.proto \
 :::
 ::::
 
-### getIdentities
+### getIdentityNonce
 
-**Returns**: [Identity](../explanations/identity.md) information for the requested identities  
+**Returns**: Current nonce for the requested [Identity](../explanations/identity.md)
 
 **Parameters**:
 
 | Name    | Type    | Required | Description |
 | ------- | ------- | -------- | ------------ |
-| `ids`   | Array   | Yes      | An array of identity IDs
-| `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested identity
-
-**Example Request and Response**
-
-::::{tab-set}
-:::{tab-item} gRPCurl
-:sync: grpcurl
-```shell
-# `id` must be represented in base64
-grpcurl -proto protos/platform/v0/platform.proto \
-  -d '{
-    "v0": {
-      "ids": [
-        "MBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/aw="
-      ]
-    }
-  }' \
-  seed-1.testnet.networks.dash.org:1443 \
-  org.dash.platform.dapi.v0.Platform/getIdentities
-```
-:::
-::::
-
-::::{tab-set}
-:::{tab-item} Response (gRPCurl)
-:sync: grpcurl
-```json
-{
-  "v0": {
-    "identities": {
-      "identityEntries": [
-        {
-          "key": "MBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/aw=",
-          "value": {
-            "value": "ADASwZuY7AAzrds2zWS39RBnDyo1GkMEtfaZQUQobv2sAgAAAAAAAAAAIQLItHR7UoysX933psxjcC7gTtfRMykE4IUQND6gDc5UagABAAEAAgAAACECAe4o+E9UhTkFZ+k5wrWGAQtjpp7JLKtTXclqjHGRNgIA/QAAAAQrpPz8AA=="
-          }
-        }
-      ]
-    },
-    "metadata": {
-      "height": "6851",
-      "coreChainLockedHeight": 927070,
-      "epoch": 850,
-      "timeMs": "1701982306949",
-      "protocolVersion": 1,
-      "chainId": "dash-testnet-37"
-    }
-  }
-}
-
-```
-:::
-::::
-
-### getIdentitiesByPublicKeyHashes
-
-**Returns**: An array of [identities](../explanations/identity.md) associated with the provided public key hashes  
-**Parameters**:
-
-| Name                | Type    | Required | Description                                                             |
-| ------------------- | ------- | -------- | ----------------------------------------------------------------------- |
-| `public_key_hashes` | Bytes   | Yes      | Public key hashes (sha256-ripemd160) of identity public keys            |
-| `prove`             | Boolean | No       | Set to `true` to receive a proof that contains the requested identities |
-
-> 📘
->
-> **Note**: When requesting proofs, the data requested will be encoded as part of the proof in the response.
-
-> 📘 Public key hash
->
-> Note: the hash must be done using all fields of the identity public key object - e.g.
->
-> ```json
-> {
->   "$version": "0",
->   "id": 0,
->   "purpose": 0,
->   "securityLevel": 0,
->   "contractBounds": null,
->   "type": 0,
->   "readOnly": false,
->   "data": "Asi0dHtSjKxf3femzGNwLuBO19EzKQTghRA0PqANzlRq",
->   "disabledAt": null
-> }
-> ```
->
-> When using the js-dpp library, the hash can be accessed via the [IdentityPublicKey object's](https://github.com/dashevo/platform/blob/master/packages/js-dpp/lib/identity/IdentityPublicKey.js) `hash` method (e.g. `identity.getPublicKeyById(0).hash()`).
+| `identity_id`    | Bytes   | Yes      | An identity ID<br>Note: masternode IDs are created uniquely as described in the [masternode identity IDs section](#masternode-identity-ids)
+| `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested identity nonce
 
 **Example Request and Response**
 
@@ -614,105 +1034,43 @@ grpcurl -proto protos/platform/v0/platform.proto \
 ```javascript
 const DAPIClient = require('@dashevo/dapi-client');
 const {
-  default: loadDpp, DashPlatformProtocol,
+  default: loadDpp,
+  DashPlatformProtocol,
+  Identifier,
 } = require('@dashevo/wasm-dpp');
 
+loadDpp();
+const dpp = new DashPlatformProtocol(null);
 const client = new DAPIClient();
-loadDpp();
-const dpp = new DashPlatformProtocol();
 
-const publicKeyHash = 'b8d1591aa74d440e0af9c0be16c55bbc141847f7';
-const publicKeysBuffer = [Buffer.from(publicKeyHash, 'hex')];
-
-client.platform.getIdentitiesByPublicKeyHashes(publicKeysBuffer)
-  .then((response) => {
-    const retrievedIdentity = dpp.identity.createFromBuffer(response.identities[0]);
-    console.log(retrievedIdentity.toJSON());
-  });
-```
-:::
-
-:::{tab-item} JavaScript (dapi-grpc)
-:sync: js-dapi-grpc
-```javascript
-const {
-  v0: { PlatformPromiseClient, GetIdentitiesByPublicKeyHashesRequest },
-} = require('@dashevo/dapi-grpc');
-const { DashPlatformProtocol, default: loadDpp } = require('@dashevo/wasm-dpp');
-
-loadDpp();
-const dpp = new DashPlatformProtocol();
-
-const platformPromiseClient = new PlatformPromiseClient(
-  'https://seed-1.testnet.networks.dash.org:1443',
-);
-
-const publicKeyHash = 'b8d1591aa74d440e0af9c0be16c55bbc141847f7';
-const publicKeysBuffer = [Buffer.from(publicKeyHash, 'hex')];
-
-const getIdentitiesByPublicKeyHashesRequest = new GetIdentitiesByPublicKeyHashesRequest();
-getIdentitiesByPublicKeyHashesRequest.setPublicKeyHashesList(publicKeysBuffer);
-
-platformPromiseClient
-  .getIdentitiesByPublicKeyHashes(getIdentitiesByPublicKeyHashesRequest)
-  .then((response) => {
-    const identitiesResponse = response.getIdentities().getIdentitiesList();
-    console.log(dpp.identity.createFromBuffer(Buffer.from(identitiesResponse[0])).toJSON());
-  })
-  .catch((e) => console.error(e));
+const identityId = Identifier.from('36LGwPSXef8q8wpdnx4EdDeVNuqCYNAE9boDu5bxytsm');
+client.platform.getIdentityNonce(identityId).then((response) => {
+  console.log(`Current identity nonce: ${response.getIdentityNonce()}`);
+});
 ```
 :::
 
 :::{tab-item} gRPCurl
 :sync: grpcurl
 ```shell
-# `public_key_hashes` must be represented in base64
+# `id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "v0": {
-      "public_key_hashes":"uNFZGqdNRA4K+cC+FsVbvBQYR/c="
+      "identity_id": "HxUSbKaFxbuvTUprfr5a0yU6u4EasTdSWvSxOwKjmxw="
     }
   }' \
   seed-1.testnet.networks.dash.org:1443 \
-  org.dash.platform.dapi.v0.Platform/getIdentitiesByPublicKeyHashes
+  org.dash.platform.dapi.v0.Platform/getIdentityNonce
 ```
 :::
 ::::
 
 ::::{tab-set}
-:::{tab-item} Response (JavaScript)
+:::{tab-item} Response (dapi-client)
 :sync: js-dapi-client
-```json
-{
-  "$version":"0",
-  "id":"4EfA9Jrvv3nnCFdSf7fad59851iiTRZ6Wcu6YVJ4iSeF",
-  "publicKeys":[
-    {
-      "$version":"0",
-      "id":0,
-      "purpose":0,
-      "securityLevel":0,
-      "contractBounds":null,
-      "type":0,
-      "readOnly":false,
-      "data":"Asi0dHtSjKxf3femzGNwLuBO19EzKQTghRA0PqANzlRq",
-      "disabledAt":null
-    },
-    {
-      "$version":"0",
-      "id":1,
-      "purpose":0,
-      "securityLevel":2,
-      "contractBounds":null,
-      "type":0,
-      "readOnly":false,
-      "data":"AgHuKPhPVIU5BWfpOcK1hgELY6aeySyrU13JaoxxkTYC",
-      "disabledAt":null
-    }
-  ],
-  "balance":17912102140,
-  "revision":0
-}
+```text
+Current identity nonce: 0
 ```
 :::
 
@@ -721,21 +1079,147 @@ grpcurl -proto protos/platform/v0/platform.proto \
 ```json
 {
   "v0": {
-    "identities": {
-      "identityEntries": [
+    "identityNonce": "3",
+    "metadata": {
+      "height": "5990",
+      "coreChainLockedHeight": 1097384,
+      "epoch": 1170,
+      "timeMs": "1725567663863",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-51"
+    }
+  }
+}
+```
+:::
+::::
+
+### getIdentitiesBalances
+
+Retrieves the balances for a list of identities.
+
+**Returns**: A list of identities with their corresponding balances or a cryptographic proof.
+
+**Parameters**:
+
+| Name      | Type    | Required | Description                                              |
+|-----------|---------|----------|----------------------------------------------------------|
+| `ids`     | Array   | No       | An array of identity IDs for which balances are requested<br>Note: masternode IDs are created uniquely as described in the [masternode identity IDs section](#masternode-identity-ids) |
+| `prove`   | Boolean | No       | Set to `true` to receive a proof containing the requested balances |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "ids": [
+        "jspLy7OhJKsoOv1C2tO9sgd7OAlll4ig8dr/zlufAB8=","dUuJ2ujbIPxM7l462wexRtfv5Qimb6Co4QlGdbnao14="
+      ],
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getIdentitiesBalances
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "identitiesBalances": {
+      "entries": [
         {
-          "publicKeyHash": "uNFZGqdNRA4K+cC+FsVbvBQYR/c=",
-          "value": "ADASwZuY7AAzrds2zWS39RBnDyo1GkMEtfaZQUQobv2sAgAAAAAAAAAAIQLItHR7UoysX933psxjcC7gTtfRMykE4IUQND6gDc5UagABAAEAAgAAACECAe4o+E9UhTkFZ+k5wrWGAQtjpp7JLKtTXclqjHGRNgIA/QAAAAQrpPz8AA=="
+          "identity_id": "jspLy7OhJKsoOv1C2tO9sgd7OAlll4ig8dr/zlufAB8=",
+          "balance": 1000000
+        },
+        {
+          "identity_id": "dUuJ2ujbIPxM7l462wexRtfv5Qimb6Co4QlGdbnao14=",
+          "balance": 2500000
         }
       ]
     },
     "metadata": {
-      "height": "6733",
-      "coreChainLockedHeight": 926908,
-      "epoch": 844,
-      "timeMs": "1701960418324",
+      "height": "13621",
+      "coreChainLockedHeight": 1105397,
+      "epoch": 1482,
+      "timeMs": "1726691577244",
+      "protocolVersion": 3,
+      "chainId": "dash-testnet-51"
+    }
+  }
+}
+```
+:::
+::::
+
+### getIdentitiesContractKeys
+
+**Returns**: Keys associated to a specific contract for multiple [Identities](../explanations/identity.md).
+
+**Parameters**:
+
+| Name                 | Type                    | Required | Description |
+|----------------------|-------------------------|----------|-------------|
+| `identities_ids`     | Array                   | Yes      | An array of identity IDs<br>Note: masternode IDs are created uniquely as described in the [masternode identity IDs section](#masternode-identity-ids) |
+| `contract_id`        | String                  | Yes      | The ID of the contract |
+| `document_type_name` | String                  | No       | Name of the document type |
+| `purposes`           | Array of [KeyPurpose](#key-purposes) | No | Array of purposes for which keys are requested |
+| `prove`              | Boolean                 | No       | Set to `true` to receive a proof that contains the requested identity keys |
+
+#### Key Purposes
+
+**Key Purposes** define the intent of usage for each key. Here are the available purposes:
+
+- `AUTHENTICATION` - Keys used for authentication purposes.
+- `ENCRYPTION` - Keys used for encrypting data.
+- `DECRYPTION` - Keys used for decrypting data.
+- `TRANSFER` - Keys used for transferring assets.
+- `VOTING` - Keys used for voting mechanisms.
+
+#### Example Request and Response
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+# Request identity keys associated with the specified contract
+# `identities_ids` and `contract_id` must be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "identities_ids": [
+        "HxUSbKaFxbuvTUprfr5a0yU6u4EasTdSWvSxOwKjmxw=",
+        "NBgQk65dTNttDYDGLZNLrb1QEAWB91jqkqXtK1KU4Dc="
+      ],
+      "purposes": [],
+      "contract_id": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU="
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getIdentitiesContractKeys
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+:sync: grpcurl
+```json
+{
+  "v0": {
+    "identitiesKeys": {},
+    "metadata": {
+      "height": "5990",
+      "coreChainLockedHeight": 1097384,
+      "epoch": 1170,
+      "timeMs": "1725567663863",
       "protocolVersion": 1,
-      "chainId": "dash-testnet-37"
+      "chainId": "dash-testnet-51"
     }
   }
 }
@@ -745,21 +1229,13 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ### getDataContract
 
-> 🚧 Breaking changes
->
-> Due to serialization changes in Dash Platform 0.25, using wasm-dpp is recommended when working with identities, data contracts, and documents.
-
 **Returns**: [Data Contract](../explanations/platform-protocol-data-contract.md) information for the requested data contract  
 **Parameters**:
 
 | Name    | Type    | Required | Description                                                                |
 | ------- | ------- | -------- | -------------------------------------------------------------------------- |
 | `id`    | Bytes   | Yes      | A data contract `id`                                                       |
-| `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested data contract |
-
-> 📘
->
-> **Note**: When requesting proofs, the data requested will be encoded as part of the proof in the response.
+| `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested data contract. The data requested will be encoded as part of the proof in the response. |
 
 **Example Request and Response**
 
@@ -849,7 +1325,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
     "requiresIdentityDecryptionBoundedKey":null
   },
   "version":1,
-  "ownerId":"4EfA9Jrvv3nnCFdSf7fad59851iiTRZ6Wcu6YVJ4iSeF",
+  "ownerId":"EuzJmuZdBSJs2eTrxHEp6QqJztbp6FKDNGMeb4W2Ds7h",
   "schemaDefs":null,
   "documentSchemas":{
     "domain":{
@@ -1025,14 +1501,14 @@ grpcurl -proto protos/platform/v0/platform.proto \
 ```json
 {
   "v0": {
-    "dataContract": "AOZoxlmvZq7h5ywYbd57W34KHXEqCcQNVyH2Ir9TxTFVAAAAAAABAAABMBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/awAAgZkb21haW4WBhIEdHlwZRIGb2JqZWN0EgdpbmRpY2VzFQMWAxIEbmFtZRIScGFyZW50TmFtZUFuZExhYmVsEgpwcm9wZXJ0aWVzFQIWARIabm9ybWFsaXplZFBhcmVudERvbWFpbk5hbWUSA2FzYxYBEg9ub3JtYWxpemVkTGFiZWwSA2FzYxIGdW5pcXVlEwEWAxIEbmFtZRIOZGFzaElkZW50aXR5SWQSCnByb3BlcnRpZXMVARYBEhxyZWNvcmRzLmRhc2hVbmlxdWVJZGVudGl0eUlkEgNhc2MSBnVuaXF1ZRMBFgISBG5hbWUSCWRhc2hBbGlhcxIKcHJvcGVydGllcxUBFgESG3JlY29yZHMuZGFzaEFsaWFzSWRlbnRpdHlJZBIDYXNjEgpwcm9wZXJ0aWVzFgcSBWxhYmVsFgYSBHR5cGUSBnN0cmluZxIHcGF0dGVybhIqXlthLXpBLVowLTldW2EtekEtWjAtOS1dezAsNjF9W2EtekEtWjAtOV0kEgltaW5MZW5ndGgCAxIJbWF4TGVuZ3RoAj8SCHBvc2l0aW9uAgASC2Rlc2NyaXB0aW9uEhlEb21haW4gbGFiZWwuIGUuZy4gJ0JvYicuEg9ub3JtYWxpemVkTGFiZWwWBhIEdHlwZRIGc3RyaW5nEgdwYXR0ZXJuEjxeW2EtaGota20tbnAtejAtOV1bYS1oai1rbS1ucC16MC05LV17MCw2MX1bYS1oai1rbS1ucC16MC05XSQSCW1heExlbmd0aAI/Eghwb3NpdGlvbgIBEgtkZXNjcmlwdGlvbhKjRG9tYWluIGxhYmVsIGNvbnZlcnRlZCB0byBsb3dlcmNhc2UgZm9yIGNhc2UtaW5zZW5zaXRpdmUgdW5pcXVlbmVzcyB2YWxpZGF0aW9uLiAibyIsICJpIiBhbmQgImwiIHJlcGxhY2VkIHdpdGggIjAiIGFuZCAiMSIgdG8gbWl0aWdhdGUgaG9tb2dyYXBoIGF0dGFjay4gZS5nLiAnYjBiJxIIJGNvbW1lbnQSXE11c3QgYmUgZXF1YWwgdG8gdGhlIGxhYmVsIGluIGxvd2VyY2FzZS4gIm8iLCAiaSIgYW5kICJsIiBtdXN0IGJlIHJlcGxhY2VkIHdpdGggIjAiIGFuZCAiMSIuEhBwYXJlbnREb21haW5OYW1lFgYSBHR5cGUSBnN0cmluZxIHcGF0dGVybhItXiR8XlthLXpBLVowLTldW2EtekEtWjAtOS1dezAsNjF9W2EtekEtWjAtOV0kEgltaW5MZW5ndGgCABIJbWF4TGVuZ3RoAj8SCHBvc2l0aW9uAgISC2Rlc2NyaXB0aW9uEidBIGZ1bGwgcGFyZW50IGRvbWFpbiBuYW1lLiBlLmcuICdkYXNoJy4SGm5vcm1hbGl6ZWRQYXJlbnREb21haW5OYW1lFgcSBHR5cGUSBnN0cmluZxIHcGF0dGVybhJBXiR8XlthLWhqLWttLW5wLXowLTldW2EtaGota20tbnAtejAtOS1cLl17MCw2MX1bYS1oai1rbS1ucC16MC05XSQSCW1pbkxlbmd0aAIAEgltYXhMZW5ndGgCPxIIcG9zaXRpb24CAxILZGVzY3JpcHRpb24SokEgcGFyZW50IGRvbWFpbiBuYW1lIGluIGxvd2VyY2FzZSBmb3IgY2FzZS1pbnNlbnNpdGl2ZSB1bmlxdWVuZXNzIHZhbGlkYXRpb24uICJvIiwgImkiIGFuZCAibCIgcmVwbGFjZWQgd2l0aCAiMCIgYW5kICIxIiB0byBtaXRpZ2F0ZSBob21vZ3JhcGggYXR0YWNrLiBlLmcuICdkYXNoJxIIJGNvbW1lbnQSwE11c3QgZWl0aGVyIGJlIGVxdWFsIHRvIGFuIGV4aXN0aW5nIGRvbWFpbiBvciBlbXB0eSB0byBjcmVhdGUgYSB0b3AgbGV2ZWwgZG9tYWluLiAibyIsICJpIiBhbmQgImwiIG11c3QgYmUgcmVwbGFjZWQgd2l0aCAiMCIgYW5kICIxIi4gT25seSB0aGUgZGF0YSBjb250cmFjdCBvd25lciBjYW4gY3JlYXRlIHRvcCBsZXZlbCBkb21haW5zLhIMcHJlb3JkZXJTYWx0FgYSBHR5cGUSBWFycmF5EglieXRlQXJyYXkTARIIbWluSXRlbXMCIBIIbWF4SXRlbXMCIBIIcG9zaXRpb24CBBILZGVzY3JpcHRpb24SIlNhbHQgdXNlZCBpbiB0aGUgcHJlb3JkZXIgZG9jdW1lbnQSB3JlY29yZHMWBxIEdHlwZRIGb2JqZWN0Egpwcm9wZXJ0aWVzFgISFGRhc2hVbmlxdWVJZGVudGl0eUlkFggSBHR5cGUSBWFycmF5EglieXRlQXJyYXkTARIIbWluSXRlbXMCIBIIbWF4SXRlbXMCIBIIcG9zaXRpb24CABIQY29udGVudE1lZGlhVHlwZRIhYXBwbGljYXRpb24veC5kYXNoLmRwcC5pZGVudGlmaWVyEgtkZXNjcmlwdGlvbhI+SWRlbnRpdHkgSUQgdG8gYmUgdXNlZCB0byBjcmVhdGUgdGhlIHByaW1hcnkgbmFtZSB0aGUgSWRlbnRpdHkSCCRjb21tZW50EiNNdXN0IGJlIGVxdWFsIHRvIHRoZSBkb2N1bWVudCBvd25lchITZGFzaEFsaWFzSWRlbnRpdHlJZBYIEgR0eXBlEgVhcnJheRIJYnl0ZUFycmF5EwESCG1pbkl0ZW1zAiASCG1heEl0ZW1zAiASCHBvc2l0aW9uAgESEGNvbnRlbnRNZWRpYVR5cGUSIWFwcGxpY2F0aW9uL3guZGFzaC5kcHAuaWRlbnRpZmllchILZGVzY3JpcHRpb24SPUlkZW50aXR5IElEIHRvIGJlIHVzZWQgdG8gY3JlYXRlIGFsaWFzIG5hbWVzIGZvciB0aGUgSWRlbnRpdHkSCCRjb21tZW50EiNNdXN0IGJlIGVxdWFsIHRvIHRoZSBkb2N1bWVudCBvd25lchINbWluUHJvcGVydGllcwIBEg1tYXhQcm9wZXJ0aWVzAgESCHBvc2l0aW9uAgUSFGFkZGl0aW9uYWxQcm9wZXJ0aWVzEwASCCRjb21tZW50EpBDb25zdHJhaW50IHdpdGggbWF4IGFuZCBtaW4gcHJvcGVydGllcyBlbnN1cmUgdGhhdCBvbmx5IG9uZSBpZGVudGl0eSByZWNvcmQgaXMgdXNlZCAtIGVpdGhlciBhIGBkYXNoVW5pcXVlSWRlbnRpdHlJZGAgb3IgYSBgZGFzaEFsaWFzSWRlbnRpdHlJZGASDnN1YmRvbWFpblJ1bGVzFgYSBHR5cGUSBm9iamVjdBIKcHJvcGVydGllcxYBEg9hbGxvd1N1YmRvbWFpbnMWBBIEdHlwZRIHYm9vbGVhbhILZGVzY3JpcHRpb24SW1RoaXMgb3B0aW9uIGRlZmluZXMgd2hvIGNhbiBjcmVhdGUgc3ViZG9tYWluczogdHJ1ZSAtIGFueW9uZTsgZmFsc2UgLSBvbmx5IHRoZSBkb21haW4gb3duZXISCCRjb21tZW50Ek9Pbmx5IHRoZSBkb21haW4gb3duZXIgaXMgYWxsb3dlZCB0byBjcmVhdGUgc3ViZG9tYWlucyBmb3Igbm9uIHRvcC1sZXZlbCBkb21haW5zEghwb3NpdGlvbgIAEghwb3NpdGlvbgIGEgtkZXNjcmlwdGlvbhJCU3ViZG9tYWluIHJ1bGVzIGFsbG93IGRvbWFpbiBvd25lcnMgdG8gZGVmaW5lIHJ1bGVzIGZvciBzdWJkb21haW5zEhRhZGRpdGlvbmFsUHJvcGVydGllcxMAEghyZXF1aXJlZBUBEg9hbGxvd1N1YmRvbWFpbnMSCHJlcXVpcmVkFQYSBWxhYmVsEg9ub3JtYWxpemVkTGFiZWwSGm5vcm1hbGl6ZWRQYXJlbnREb21haW5OYW1lEgxwcmVvcmRlclNhbHQSB3JlY29yZHMSDnN1YmRvbWFpblJ1bGVzEhRhZGRpdGlvbmFsUHJvcGVydGllcxMAEggkY29tbWVudBL7ATdJbiBvcmRlciB0byByZWdpc3RlciBhIGRvbWFpbiB5b3UgbmVlZCB0byBjcmVhdGUgYSBwcmVvcmRlci4gVGhlIHByZW9yZGVyIHN0ZXAgaXMgbmVlZGVkIHRvIHByZXZlbnQgbWFuLWluLXRoZS1taWRkbGUgYXR0YWNrcy4gbm9ybWFsaXplZExhYmVsICsgJy4nICsgbm9ybWFsaXplZFBhcmVudERvbWFpbiBtdXN0IG5vdCBiZSBsb25nZXIgdGhhbiAyNTMgY2hhcnMgbGVuZ3RoIGFzIGRlZmluZWQgYnkgUkZDIDEwMzUuIERvbWFpbiBkb2N1bWVudHMgYXJlIGltbXV0YWJsZTogbW9kaWZpY2F0aW9uIGFuZCBkZWxldGlvbiBhcmUgcmVzdHJpY3RlZAhwcmVvcmRlchYGEgR0eXBlEgZvYmplY3QSB2luZGljZXMVARYDEgRuYW1lEgpzYWx0ZWRIYXNoEgpwcm9wZXJ0aWVzFQEWARIQc2FsdGVkRG9tYWluSGFzaBIDYXNjEgZ1bmlxdWUTARIKcHJvcGVydGllcxYBEhBzYWx0ZWREb21haW5IYXNoFgYSBHR5cGUSBWFycmF5EglieXRlQXJyYXkTARIIbWluSXRlbXMCIBIIbWF4SXRlbXMCIBIIcG9zaXRpb24CABILZGVzY3JpcHRpb24SWURvdWJsZSBzaGEtMjU2IG9mIHRoZSBjb25jYXRlbmF0aW9uIG9mIGEgMzIgYnl0ZSByYW5kb20gc2FsdCBhbmQgYSBub3JtYWxpemVkIGRvbWFpbiBuYW1lEghyZXF1aXJlZBUBEhBzYWx0ZWREb21haW5IYXNoEhRhZGRpdGlvbmFsUHJvcGVydGllcxMAEggkY29tbWVudBJKUHJlb3JkZXIgZG9jdW1lbnRzIGFyZSBpbW11dGFibGU6IG1vZGlmaWNhdGlvbiBhbmQgZGVsZXRpb24gYXJlIHJlc3RyaWN0ZWQ=",
+    "dataContract": "AOZoxlmvZq7h5ywYbd57W34KHXEqCcQNVyH2Ir9TxTFVAAAAAAABAQAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIGZG9tYWluFgsSEGRvY3VtZW50c011dGFibGUTABIMY2FuQmVEZWxldGVkEwESDHRyYW5zZmVyYWJsZQIBEgl0cmFkZU1vZGUCARIEdHlwZRIGb2JqZWN0EgdpbmRpY2VzFQIWBBIEbmFtZRIScGFyZW50TmFtZUFuZExhYmVsEgpwcm9wZXJ0aWVzFQIWARIabm9ybWFsaXplZFBhcmVudERvbWFpbk5hbWUSA2FzYxYBEg9ub3JtYWxpemVkTGFiZWwSA2FzYxIGdW5pcXVlEwESCWNvbnRlc3RlZBYDEgxmaWVsZE1hdGNoZXMVARYCEgVmaWVsZBIPbm9ybWFsaXplZExhYmVsEgxyZWdleFBhdHRlcm4SE15bYS16QS1aMDEtXXszLDE5fSQSCnJlc29sdXRpb24CABILZGVzY3JpcHRpb24SqklmIHRoZSBub3JtYWxpemVkIGxhYmVsIHBhcnQgb2YgdGhpcyBpbmRleCBpcyBsZXNzIHRoYW4gMjAgY2hhcmFjdGVycyAoYWxsIGFscGhhYmV0IGEteiwgQS1aLCAwLCAxLCBhbmQgLSkgdGhlbiBhIG1hc3Rlcm5vZGUgdm90ZSBjb250ZXN0IHRha2VzIHBsYWNlIHRvIGdpdmUgb3V0IHRoZSBuYW1lFgMSBG5hbWUSCmlkZW50aXR5SWQSDm51bGxTZWFyY2hhYmxlEwASCnByb3BlcnRpZXMVARYBEhByZWNvcmRzLmlkZW50aXR5EgNhc2MSCnByb3BlcnRpZXMWBxIFbGFiZWwWBhIEdHlwZRIGc3RyaW5nEgdwYXR0ZXJuEipeW2EtekEtWjAtOV1bYS16QS1aMC05LV17MCw2MX1bYS16QS1aMC05XSQSCW1pbkxlbmd0aAIDEgltYXhMZW5ndGgCPxIIcG9zaXRpb24CABILZGVzY3JpcHRpb24SGURvbWFpbiBsYWJlbC4gZS5nLiAnQm9iJy4SD25vcm1hbGl6ZWRMYWJlbBYGEgR0eXBlEgZzdHJpbmcSB3BhdHRlcm4SPF5bYS1oai1rbS1ucC16MC05XVthLWhqLWttLW5wLXowLTktXXswLDYxfVthLWhqLWttLW5wLXowLTldJBIJbWF4TGVuZ3RoAj8SCHBvc2l0aW9uAgESC2Rlc2NyaXB0aW9uEqNEb21haW4gbGFiZWwgY29udmVydGVkIHRvIGxvd2VyY2FzZSBmb3IgY2FzZS1pbnNlbnNpdGl2ZSB1bmlxdWVuZXNzIHZhbGlkYXRpb24uICJvIiwgImkiIGFuZCAibCIgcmVwbGFjZWQgd2l0aCAiMCIgYW5kICIxIiB0byBtaXRpZ2F0ZSBob21vZ3JhcGggYXR0YWNrLiBlLmcuICdiMGInEggkY29tbWVudBJcTXVzdCBiZSBlcXVhbCB0byB0aGUgbGFiZWwgaW4gbG93ZXJjYXNlLiAibyIsICJpIiBhbmQgImwiIG11c3QgYmUgcmVwbGFjZWQgd2l0aCAiMCIgYW5kICIxIi4SEHBhcmVudERvbWFpbk5hbWUWBhIEdHlwZRIGc3RyaW5nEgdwYXR0ZXJuEi1eJHxeW2EtekEtWjAtOV1bYS16QS1aMC05LV17MCw2MX1bYS16QS1aMC05XSQSCW1pbkxlbmd0aAIAEgltYXhMZW5ndGgCPxIIcG9zaXRpb24CAhILZGVzY3JpcHRpb24SJ0EgZnVsbCBwYXJlbnQgZG9tYWluIG5hbWUuIGUuZy4gJ2Rhc2gnLhIabm9ybWFsaXplZFBhcmVudERvbWFpbk5hbWUWBxIEdHlwZRIGc3RyaW5nEgdwYXR0ZXJuEkFeJHxeW2EtaGota20tbnAtejAtOV1bYS1oai1rbS1ucC16MC05LVwuXXswLDYxfVthLWhqLWttLW5wLXowLTldJBIJbWluTGVuZ3RoAgASCW1heExlbmd0aAI/Eghwb3NpdGlvbgIDEgtkZXNjcmlwdGlvbhKiQSBwYXJlbnQgZG9tYWluIG5hbWUgaW4gbG93ZXJjYXNlIGZvciBjYXNlLWluc2Vuc2l0aXZlIHVuaXF1ZW5lc3MgdmFsaWRhdGlvbi4gIm8iLCAiaSIgYW5kICJsIiByZXBsYWNlZCB3aXRoICIwIiBhbmQgIjEiIHRvIG1pdGlnYXRlIGhvbW9ncmFwaCBhdHRhY2suIGUuZy4gJ2Rhc2gnEggkY29tbWVudBLATXVzdCBlaXRoZXIgYmUgZXF1YWwgdG8gYW4gZXhpc3RpbmcgZG9tYWluIG9yIGVtcHR5IHRvIGNyZWF0ZSBhIHRvcCBsZXZlbCBkb21haW4uICJvIiwgImkiIGFuZCAibCIgbXVzdCBiZSByZXBsYWNlZCB3aXRoICIwIiBhbmQgIjEiLiBPbmx5IHRoZSBkYXRhIGNvbnRyYWN0IG93bmVyIGNhbiBjcmVhdGUgdG9wIGxldmVsIGRvbWFpbnMuEgxwcmVvcmRlclNhbHQWBhIEdHlwZRIFYXJyYXkSCWJ5dGVBcnJheRMBEghtaW5JdGVtcwIgEghtYXhJdGVtcwIgEghwb3NpdGlvbgIEEgtkZXNjcmlwdGlvbhIiU2FsdCB1c2VkIGluIHRoZSBwcmVvcmRlciBkb2N1bWVudBIHcmVjb3JkcxYFEgR0eXBlEgZvYmplY3QSCnByb3BlcnRpZXMWARIIaWRlbnRpdHkWBxIEdHlwZRIFYXJyYXkSCWJ5dGVBcnJheRMBEghtaW5JdGVtcwIgEghtYXhJdGVtcwIgEghwb3NpdGlvbgIBEhBjb250ZW50TWVkaWFUeXBlEiFhcHBsaWNhdGlvbi94LmRhc2guZHBwLmlkZW50aWZpZXISC2Rlc2NyaXB0aW9uEjFJZGVudGlmaWVyIG5hbWUgcmVjb3JkIHRoYXQgcmVmZXJzIHRvIGFuIElkZW50aXR5Eg1taW5Qcm9wZXJ0aWVzAgESCHBvc2l0aW9uAgUSFGFkZGl0aW9uYWxQcm9wZXJ0aWVzEwASDnN1YmRvbWFpblJ1bGVzFgYSBHR5cGUSBm9iamVjdBIKcHJvcGVydGllcxYBEg9hbGxvd1N1YmRvbWFpbnMWBBIEdHlwZRIHYm9vbGVhbhILZGVzY3JpcHRpb24SW1RoaXMgb3B0aW9uIGRlZmluZXMgd2hvIGNhbiBjcmVhdGUgc3ViZG9tYWluczogdHJ1ZSAtIGFueW9uZTsgZmFsc2UgLSBvbmx5IHRoZSBkb21haW4gb3duZXISCCRjb21tZW50Ek9Pbmx5IHRoZSBkb21haW4gb3duZXIgaXMgYWxsb3dlZCB0byBjcmVhdGUgc3ViZG9tYWlucyBmb3Igbm9uIHRvcC1sZXZlbCBkb21haW5zEghwb3NpdGlvbgIAEghwb3NpdGlvbgIGEgtkZXNjcmlwdGlvbhJCU3ViZG9tYWluIHJ1bGVzIGFsbG93IGRvbWFpbiBvd25lcnMgdG8gZGVmaW5lIHJ1bGVzIGZvciBzdWJkb21haW5zEhRhZGRpdGlvbmFsUHJvcGVydGllcxMAEghyZXF1aXJlZBUBEg9hbGxvd1N1YmRvbWFpbnMSCHJlcXVpcmVkFQkSCiRjcmVhdGVkQXQSCiR1cGRhdGVkQXQSDiR0cmFuc2ZlcnJlZEF0EgVsYWJlbBIPbm9ybWFsaXplZExhYmVsEhpub3JtYWxpemVkUGFyZW50RG9tYWluTmFtZRIMcHJlb3JkZXJTYWx0EgdyZWNvcmRzEg5zdWJkb21haW5SdWxlcxIJdHJhbnNpZW50FQESDHByZW9yZGVyU2FsdBIUYWRkaXRpb25hbFByb3BlcnRpZXMTABIIJGNvbW1lbnQS+wE3SW4gb3JkZXIgdG8gcmVnaXN0ZXIgYSBkb21haW4geW91IG5lZWQgdG8gY3JlYXRlIGEgcHJlb3JkZXIuIFRoZSBwcmVvcmRlciBzdGVwIGlzIG5lZWRlZCB0byBwcmV2ZW50IG1hbi1pbi10aGUtbWlkZGxlIGF0dGFja3MuIG5vcm1hbGl6ZWRMYWJlbCArICcuJyArIG5vcm1hbGl6ZWRQYXJlbnREb21haW4gbXVzdCBub3QgYmUgbG9uZ2VyIHRoYW4gMjUzIGNoYXJzIGxlbmd0aCBhcyBkZWZpbmVkIGJ5IFJGQyAxMDM1LiBEb21haW4gZG9jdW1lbnRzIGFyZSBpbW11dGFibGU6IG1vZGlmaWNhdGlvbiBhbmQgZGVsZXRpb24gYXJlIHJlc3RyaWN0ZWQIcHJlb3JkZXIWCBIQZG9jdW1lbnRzTXV0YWJsZRMAEgxjYW5CZURlbGV0ZWQTARIEdHlwZRIGb2JqZWN0EgdpbmRpY2VzFQEWAxIEbmFtZRIKc2FsdGVkSGFzaBIKcHJvcGVydGllcxUBFgESEHNhbHRlZERvbWFpbkhhc2gSA2FzYxIGdW5pcXVlEwESCnByb3BlcnRpZXMWARIQc2FsdGVkRG9tYWluSGFzaBYGEgR0eXBlEgVhcnJheRIJYnl0ZUFycmF5EwESCG1pbkl0ZW1zAiASCG1heEl0ZW1zAiASCHBvc2l0aW9uAgASC2Rlc2NyaXB0aW9uEllEb3VibGUgc2hhLTI1NiBvZiB0aGUgY29uY2F0ZW5hdGlvbiBvZiBhIDMyIGJ5dGUgcmFuZG9tIHNhbHQgYW5kIGEgbm9ybWFsaXplZCBkb21haW4gbmFtZRIIcmVxdWlyZWQVARIQc2FsdGVkRG9tYWluSGFzaBIUYWRkaXRpb25hbFByb3BlcnRpZXMTABIIJGNvbW1lbnQSSlByZW9yZGVyIGRvY3VtZW50cyBhcmUgaW1tdXRhYmxlOiBtb2RpZmljYXRpb24gYW5kIGRlbGV0aW9uIGFyZSByZXN0cmljdGVk",
     "metadata": {
-      "height": "6750",
-      "coreChainLockedHeight": 926935,
-      "epoch": 845,
-      "timeMs": "1701963780843",
+      "height": "5990",
+      "coreChainLockedHeight": 1097384,
+      "epoch": 1170,
+      "timeMs": "1725567663863",
       "protocolVersion": 1,
-      "chainId": "dash-testnet-37"
+      "chainId": "dash-testnet-51"
     }
   }
 }
@@ -1111,11 +1587,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 | `start_at_ms` | Integer | Yes | Request revisions starting at this timestamp |
 | `limit` | Integer  | Yes      | The maximum number of revisions to return |
 | `offset` | Integer | Yes      | The offset of the first revision to return |
-| `prove` | Boolean  | No       | Set to `true` to receive a proof that contains the requested data contract |
-
-> 📘
->
-> **Note**: When requesting proofs, the data requested will be encoded as part of the proof in the response.
+| `prove` | Boolean  | No       | Set to `true` to receive a proof that contains the requested data contract. The data requested will be encoded as part of the proof in the response.|
 
 **Example Request and Response**
 
@@ -1134,7 +1606,7 @@ loadDpp();
 const dpp = new DashPlatformProtocol(null);
 const client = new DAPIClient();
 
-const contractId = Identifier.from('2ciAVGRuzogbR2NNtNfbn6YdW7BkLWntC7jrLNRMZN9n');
+const contractId = Identifier.from('23iZPjG4ADx8CYGorW4yM8FUo1gihQL2fZszWLTMFyQf');
 client.platform.getDataContractHistory(contractId, 0, 2, 0).then((response) => {
   for (const key in response.getDataContractHistory()) {
     const revision = response.getDataContractHistory()[key];
@@ -1153,7 +1625,7 @@ client.platform.getDataContractHistory(contractId, 0, 2, 0).then((response) => {
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "v0": {
-      "id":"GAGPHaxHbGDQv62LYIMuYbOaYjqD36X/pIXADxTfJvE=",
+      "id":"D43WwBJeadt7AR8wRmcagPiCmi/YvDBHYwheFKzMfyw=",
       "limit": 2,
       "offset": 0,
       "start_at_ms": 0,
@@ -1268,36 +1740,26 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ### getDocuments
 
-> 🚧 Breaking changes
->
-> Due to serialization changes in Dash Platform 0.25, using wasm-dpp is recommended when working with identities, data contracts, and documents.
-
 **Returns**: [Document](../explanations/platform-protocol-document.md) information for the requested document(s)  
 **Parameters**:
 
-> 📘 Parameter constraints
->
-> **Note**: The `where`, `order_by`, `limit`, `start_at`, and `start_after` parameters must comply with the limits defined on the [Query Syntax](../reference/query-syntax.md) page.
->
-> Additionally, note that `where` and `order_by` must be [CBOR](https://tools.ietf.org/html/rfc7049) encoded.
+:::{note}
+The `where`, `order_by`, `limit`, `start_at`, and `start_after` parameters must comply with the limits defined on the [Query Syntax](../reference/query-syntax.md) page.
+:::
 
 | Name                    | Type    | Required | Description                                                                                      |
 | ----------------------- | ------- | -------- | ------------------------------------------------------------------------------------------------ |
 | `data_contract_id`      | Bytes   | Yes      | A data contract `id`                                                                             |
 | `document_type`         | String  | Yes      | A document type defined by the data contract (e.g. `preorder` or `domain` for the DPNS contract) |
-| `where` \*              | Bytes   | No       | Where clause to filter the results (**must be CBOR encoded**)                                    |
-| `order_by` \*           | Bytes   | No       | Sort records by the field(s) provided (**must be CBOR encoded**)                                 |
+| `where` \*              | Bytes   | No       | Where clause to filter the results |
+| `order_by` \*           | Bytes   | No       | Sort records by the field(s) provided |
 | `limit`                 | Integer | No       | Maximum number of results to return                                                              |
 | ----------              |         |          |                                                                                                  |
 | _One_ of the following: |         |          |                                                                                                  |
 | `start_at`              | Integer | No       | Return records beginning with the index provided                                                 |
 | `start_after`           | Integer | No       | Return records beginning after the index provided                                                |
 | ----------              |         |          |                                                                                                  |
-| `prove`                 | Boolean | No       | Set to `true` to receive a proof that contains the requested document(s)                         |
-
-> 📘
->
-> **Note**: When requesting proofs, the data requested will be encoded as part of the proof in the response.
+| `prove`                 | Boolean | No       | Set to `true` to receive a proof that contains the requested document(s). The data requested will be encoded as part of the proof in the response. |
 
 **Example Request and Response**
 
@@ -1450,7 +1912,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
       "requiresIdentityDecryptionBoundedKey":null
     },
     "version":1,
-    "ownerId":"4EfA9Jrvv3nnCFdSf7fad59851iiTRZ6Wcu6YVJ4iSeF",
+    "ownerId":"EuzJmuZdBSJs2eTrxHEp6QqJztbp6FKDNGMeb4W2Ds7h",
     "schemaDefs":null,
     "documentSchemas":{
       "domain":[
@@ -1470,19 +1932,19 @@ grpcurl -proto protos/platform/v0/platform.proto \
 :sync: grpcurl
 ```json
 {
-  "v0":{
-    "documents":{
-      "documents":[
-        "AANHCCLI23JAM6yPcJwiyAaVouU4btv1kXxaMF0mfXTDOM4WaCQNLedQ0rpbl1UMTZhEbnVeMfL4941ZD08iyFwBAAAHQ2hyb25pYwdjaHIwbjFjAQRkYXNoBGRhc2jU/03mq/VbDbGS/r9demy/KbIZjJyFGwtcyEKq9bv0miIBOM4WaCQNLedQ0rpbl1UMTZhEbnVeMfL4941ZD08iyFwAAQA="
+  "v0": {
+    "documents": {
+      "documents": [
+        "AAZ1S7dbhY4VJrSCvjs2Z1DIwa9Qt9MAyjbJdh7gPu6oDsGC/h1Ayf+ZzXp2zLWDF4XB2qMLWZ0brsAKo0r/0sYBAAcAAAGRivixugAAAZGK+LG6AAABkYr4sboAF2F1ZzI1LTEyMzQ1Njc4OTAxMjM0NTY3F2F1ZzI1LTEyMzQ1Njc4OTAxMjM0NTY3AQRkYXNoBGRhc2gAIQEOwYL+HUDJ/5nNenbMtYMXhcHaowtZnRuuwAqjSv/SxgEA"
       ]
     },
-    "metadata":{
-      "height":"6755",
-      "coreChainLockedHeight":926945,
-      "epoch":845,
-      "timeMs":"1701964691399",
-      "protocolVersion":1,
-      "chainId":"dash-testnet-37"
+    "metadata": {
+      "height": "5991",
+      "coreChainLockedHeight": 1097384,
+      "epoch": 1170,
+      "timeMs": "1725567845055",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-51"
     }
   }
 }
@@ -1561,97 +2023,205 @@ grpcurl -proto protos/platform/v0/platform.proto \
 :::
 ::::
 
-### getProofs
+### getPathElements
 
-**Returns**: Proof information for the requested identities, contracts, and/or document(s)
+Retrieves elements for a specified path in the platform.
+
+**Returns**: The elements or a cryptographic proof.
 
 **Parameters**:
 
-A combination of one or more of the following are required fields are required:
-
-| Field | Type | Required | Description |
-| - | - | - | - |
-| `identities` | `IdentityRequest` | No | List of identity requests
-| `contracts`  | `ContractRequest` | No | List of contract requests
-| `documents`  | `DocumentRequest` | No | List of document requests
-
-**Request type details**
-
-| Field | Type | Required | Description |
-| - | - | - | - |
-| **IdentityRequest** | | |
-| `identity_id`  | Bytes       | Yes | Identity ID
-| `request_type` | Type (enum) | Yes | Type of identity proof data to request (options: FULL_IDENTITY, BALANCE, KEYS)
-| --------------- | | |
-| **ContractRequest** | | |
-| `contract_id` | Bytes | Yes | A contract ID
-| --------------- | | |
-| **DocumentRequest** | | |
-| `contract_id`                 | Bytes  | Yes | A contract ID
-| `document_type`               | String | Yes | Type of contract document
-| `document_type_keeps_history`   | Boolean | No |Indicates if the document type maintains a history
-| `document_id`                 | Bytes  | Yes | Document ID
+| Name    | Type     | Required | Description |
+| ------- | -------- | -------- | ----------- |
+| `path`  | Array    | Yes      | The path for which elements are being requested |
+| `keys`  | Array    | No       | The keys associated with the elements being requested |
+| `prove` | Boolean  | No       | Set to `true` to receive a proof that contains the requested elements |
 
 **Example Request and Response**
 
 ::::{tab-set}
 :::{tab-item} gRPCurl
-:sync: grpcurl
 ```shell
-# Request proofs for an identity and a data contract
-# `identityId` and `contractId` must be represented in base64
+# `path` array values be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "v0": {
-      "identities": [
-        {
-          "request_type": "FULL_IDENTITY",
-          "identity_id": "MBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/aw="
-        }
-      ],
-      "contracts": [
-        {
-          "contract_id": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU="
-        }
-      ],
-      "documents": []
+      "path": ["path_element_1", "path_element_2"],
+      "keys": ["key1", "key2"]
     }
   }' \
   seed-1.testnet.networks.dash.org:1443 \
-  org.dash.platform.dapi.v0.Platform/getProofs
+  org.dash.platform.dapi.v0.Platform/getPathElements
 ```
 :::
 ::::
 
 ::::{tab-set}
 :::{tab-item} Response (gRPCurl)
-:sync: grpcurl
 ```json
-// GroveDB proof for the requested identity and contract
 {
   "v0": {
-    "proof": {
-      "grovedbProof": "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ZxIHcGF0dGVybhIqXlthLXpBLVowLTldW2EtekEtWjAtOS1dezAsNjF9W2EtekEtWjAtOV0kEgltaW5MZW5ndGgCAxIJbWF4TGVuZ3RoAj8SCHBvc2l0aW9uAgASC2Rlc2NyaXB0aW9uEhlEb21haW4gbGFiZWwuIGUuZy4gJ0JvYicuEg9ub3JtYWxpemVkTGFiZWwWBhIEdHlwZRIGc3RyaW5nEgdwYXR0ZXJuEjxeW2EtaGota20tbnAtejAtOV1bYS1oai1rbS1ucC16MC05LV17MCw2MX1bYS1oai1rbS1ucC16MC05XSQSCW1heExlbmd0aAI/Eghwb3NpdGlvbgIBEgtkZXNjcmlwdGlvbhKjRG9tYWluIGxhYmVsIGNvbnZlcnRlZCB0byBsb3dlcmNhc2UgZm9yIGNhc2UtaW5zZW5zaXRpdmUgdW5pcXVlbmVzcyB2YWxpZGF0aW9uLiAibyIsICJpIiBhbmQgImwiIHJlcGxhY2VkIHdpdGggIjAiIGFuZCAiMSIgdG8gbWl0aWdhdGUgaG9tb2dyYXBoIGF0dGFjay4gZS5nLiAnYjBiJxIIJGNvbW1lbnQSXE11c3QgYmUgZXF1YWwgdG8gdGhlIGxhYmVsIGluIGxvd2VyY2FzZS4gIm8iLCAiaSIgYW5kICJsIiBtdXN0IGJlIHJlcGxhY2VkIHdpdGggIjAiIGFuZCAiMSIuEhBwYXJlbnREb21haW5OYW1lFgYSBHR5cGUSBnN0cmluZxIHcGF0dGVybhItXiR8XlthLXpBLVowLTldW2EtekEtWjAtOS1dezAsNjF9W2EtekEtWjAtOV0kEgltaW5MZW5ndGgCABIJbWF4TGVuZ3RoAj8SCHBvc2l0aW9uAgISC2Rlc2NyaXB0aW9uEidBIGZ1bGwgcGFyZW50IGRvbWFpbiBuYW1lLiBlLmcuICdkYXNoJy4SGm5vcm1hbGl6ZWRQYXJlbnREb21haW5OYW1lFgcSBHR5cGUSBnN0cmluZxIHcGF0dGVybhJBXiR8XlthLWhqLWttLW5wLXowLTldW2EtaGota20tbnAtejAtOS1cLl17MCw2MX1bYS1oai1rbS1ucC16MC05XSQSCW1pbkxlbmd0aAIAEgltYXhMZW5ndGgCPxIIcG9zaXRpb24CAxILZGVzY3JpcHRpb24SokEgcGFyZW50IGRvbWFpbiBuYW1lIGluIGxvd2VyY2FzZSBmb3IgY2FzZS1pbnNlbnNpdGl2ZSB1bmlxdWVuZXNzIHZhbGlkYXRpb24uICJvIiwgImkiIGFuZCAibCIgcmVwbGFjZWQgd2l0aCAiMCIgYW5kICIxIiB0byBtaXRpZ2F0ZSBob21vZ3JhcGggYXR0YWNrLiBlLmcuICdkYXNoJxIIJGNvbW1lbnQSwE11c3QgZWl0aGVyIGJlIGVxdWFsIHRvIGFuIGV4aXN0aW5nIGRvbWFpbiBvciBlbXB0eSB0byBjcmVhdGUgYSB0b3AgbGV2ZWwgZG9tYWluLiAibyIsICJpIiBhbmQgImwiIG11c3QgYmUgcmVwbGFjZWQgd2l0aCAiMCIgYW5kICIxIi4gT25seSB0aGUgZGF0YSBjb250cmFjdCBvd25lciBjYW4gY3JlYXRlIHRvcCBsZXZlbCBkb21haW5zLhIMcHJlb3JkZXJTYWx0FgYSBHR5cGUSBWFycmF5EglieXRlQXJyYXkTARIIbWluSXRlbXMCIBIIbWF4SXRlbXMCIBIIcG9zaXRpb24CBBILZGVzY3JpcHRpb24SIlNhbHQgdXNlZCBpbiB0aGUgcHJlb3JkZXIgZG9jdW1lbnQSB3JlY29yZHMWBxIEdHlwZRIGb2JqZWN0Egpwcm9wZXJ0aWVzFgISFGRhc2hVbmlxdWVJZGVudGl0eUlkFggSBHR5cGUSBWFycmF5EglieXRlQXJyYXkTARIIbWluSXRlbXMCIBIIbWF4SXRlbXMCIBIIcG9zaXRpb24CABIQY29udGVudE1lZGlhVHlwZRIhYXBwbGljYXRpb24veC5kYXNoLmRwcC5pZGVudGlmaWVyEgtkZXNjcmlwdGlvbhI+SWRlbnRpdHkgSUQgdG8gYmUgdXNlZCB0byBjcmVhdGUgdGhlIHByaW1hcnkgbmFtZSB0aGUgSWRlbnRpdHkSCCRjb21tZW50EiNNdXN0IGJlIGVxdWFsIHRvIHRoZSBkb2N1bWVudCBvd25lchITZGFzaEFsaWFzSWRlbnRpdHlJZBYIEgR0eXBlEgVhcnJheRIJYnl0ZUFycmF5EwESCG1pbkl0ZW1zAiASCG1heEl0ZW1zAiASCHBvc2l0aW9uAgESEGNvbnRlbnRNZWRpYVR5cGUSIWFwcGxpY2F0aW9uL3guZGFzaC5kcHAuaWRlbnRpZmllchILZGVzY3JpcHRpb24SPUlkZW50aXR5IElEIHRvIGJlIHVzZWQgdG8gY3JlYXRlIGFsaWFzIG5hbWVzIGZvciB0aGUgSWRlbnRpdHkSCCRjb21tZW50EiNNdXN0IGJlIGVxdWFsIHRvIHRoZSBkb2N1bWVudCBvd25lchINbWluUHJvcGVydGllcwIBEg1tYXhQcm9wZXJ0aWVzAgESCHBvc2l0aW9uAgUSFGFkZGl0aW9uYWxQcm9wZXJ0aWVzEwASCCRjb21tZW50EpBDb25zdHJhaW50IHdpdGggbWF4IGFuZCBtaW4gcHJvcGVydGllcyBlbnN1cmUgdGhhdCBvbmx5IG9uZSBpZGVudGl0eSByZWNvcmQgaXMgdXNlZCAtIGVpdGhlciBhIGBkYXNoVW5pcXVlSWRlbnRpdHlJZGAgb3IgYSBgZGFzaEFsaWFzSWRlbnRpdHlJZGASDnN1YmRvbWFpblJ1bGVzFgYSBHR5cGUSBm9iamVjdBIKcHJvcGVydGllcxYBEg9hbGxvd1N1YmRvbWFpbnMWBBIEdHlwZRIHYm9vbGVhbhILZGVzY3JpcHRpb24SW1RoaXMgb3B0aW9uIGRlZmluZXMgd2hvIGNhbiBjcmVhdGUgc3ViZG9tYWluczogdHJ1ZSAtIGFueW9uZTsgZmFsc2UgLSBvbmx5IHRoZSBkb21haW4gb3duZXISCCRjb21tZW50Ek9Pbmx5IHRoZSBkb21haW4gb3duZXIgaXMgYWxsb3dlZCB0byBjcmVhdGUgc3ViZG9tYWlucyBmb3Igbm9uIHRvcC1sZXZlbCBkb21haW5zEghwb3NpdGlvbgIAEghwb3NpdGlvbgIGEgtkZXNjcmlwdGlvbhJCU3ViZG9tYWluIHJ1bGVzIGFsbG93IGRvbWFpbiBvd25lcnMgdG8gZGVmaW5lIHJ1bGVzIGZvciBzdWJkb21haW5zEhRhZGRpdGlvbmFsUHJvcGVydGllcxMAEghyZXF1aXJlZBUBEg9hbGxvd1N1YmRvbWFpbnMSCHJlcXVpcmVkFQYSBWxhYmVsEg9ub3JtYWxpemVkTGFiZWwSGm5vcm1hbGl6ZWRQYXJlbnREb21haW5OYW1lEgxwcmVvcmRlclNhbHQSB3JlY29yZHMSDnN1YmRvbWFpblJ1bGVzEhRhZGRpdGlvbmFsUHJvcGVydGllcxMAEggkY29tbWVudBL7ATdJbiBvcmRlciB0byByZWdpc3RlciBhIGRvbWFpbiB5b3UgbmVlZCB0byBjcmVhdGUgYSBwcmVvcmRlci4gVGhlIHByZW9yZGVyIHN0ZXAgaXMgbmVlZGVkIHRvIHByZXZlbnQgbWFuLWluLXRoZS1taWRkbGUgYXR0YWNrcy4gbm9ybWFsaXplZExhYmVsICsgJy4nICsgbm9ybWFsaXplZFBhcmVudERvbWFpbiBtdXN0IG5vdCBiZSBsb25nZXIgdGhhbiAyNTMgY2hhcnMgbGVuZ3RoIGFzIGRlZmluZWQgYnkgUkZDIDEwMzUuIERvbWFpbiBkb2N1bWVudHMgYXJlIGltbXV0YWJsZTogbW9kaWZpY2F0aW9uIGFuZCBkZWxldGlvbiBhcmUgcmVzdHJpY3RlZAhwcmVvcmRlchYGEgR0eXBlEgZvYmplY3QSB2luZGljZXMVARYDEgRuYW1lEgpzYWx0ZWRIYXNoEgpwcm9wZXJ0aWVzFQEWARIQc2FsdGVkRG9tYWluSGFzaBIDYXNjEgZ1bmlxdWUTARIKcHJvcGVydGllcxYBEhBzYWx0ZWREb21haW5IYXNoFgYSBHR5cGUSBWFycmF5EglieXRlQXJyYXkTARIIbWluSXRlbXMCIBIIbWF4SXRlbXMCIBIIcG9zaXRpb24CABILZGVzY3JpcHRpb24SWURvdWJsZSBzaGEtMjU2IG9mIHRoZSBjb25jYXRlbmF0aW9uIG9mIGEgMzIgYnl0ZSByYW5kb20gc2FsdCBhbmQgYSBub3JtYWxpemVkIGRvbWFpbiBuYW1lEghyZXF1aXJlZBUBEhBzYWx0ZWREb21haW5IYXNoEhRhZGRpdGlvbmFsUHJvcGVydGllcxMAEggkY29tbWVudBJKUHJlb3JkZXIgZG9jdW1lbnRzIGFyZSBpbW11dGFibGU6IG1vZGlmaWNhdGlvbiBhbmQgZGVsZXRpb24gYXJlIHJlc3RyaWN0ZWQAAjfsugQjtjFH1tziawxcHm6Itrtfd4HxFXit+EBuIEGCEAIBYN8CAb/jxzcNWFZEpbAUm+m8bHmGDiDoIp0nmnAVzK1RREtVAtYIgZuRPU70BrwnGYqsfr3rqOmCvT+uOZn5JD+z2Fb7EAHRk0v0/UW0amfTj5Q3RgNXsCy34jIVuLie5yXuiKURfQQgMBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/awACwP9eCCC7wkAAAAApQ40uU7eIE6Lc7gSiikQMybwd7ICds9JRkR7mN9dsKsQAS6QXX9hmpIEs9jEW3eAXNz9stWYGeSq/BnIm9Y+L8XMERECiTcgqXvEL2837Y7t1JcjkYGVIFZ7NkS80ZLVeDUZzS0QAfdYjSzg2BIkhpiPAHQ5W4aN0OlpO7pNjwx46JLVtF5HEQLIaUC5PRYEMoQrfMJnG3PgKokrA37sdKCgo7Hxar/TcRABMapwxTKSfBkDooZq35By87R1c8Y4h4LvZXgOwY+CNfQR",
-      "quorumHash": "AAAAu4I2BiBDnydSZOLs2bV45yWb+vJFEKQi9wTc3hg=",
-      "signature": "t6IYrtqREmhCMGQva67DMYpqoY+4fIPB0245y/vhrs0L4qqv7+jDYFoppC7TzFCnCpXLxwOL15u8AOmGFsuMn7FA7qtz/rzJT0124Va1EL5ioeD0DwPVVCAEfQcN/7+6",
-      "round": 1,
-      "blockIdHash": "R6LgAhbTCMP2bbiktIm1nLnJ4csO0UvaK6vArGJ2ghs=",
-      "quorumType": 6
-    },
+    "elements": {},
     "metadata": {
-      "height": "9350",
-      "coreChainLockedHeight": 929436,
-      "epoch": 943,
-      "timeMs": "1702317747792",
+      "height": "3256",
+      "coreChainLockedHeight": 1087397,
+      "epoch": 780,
+      "timeMs": "1724164508171",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-50"
+    }
+  }
+}
+```
+:::
+::::
+
+### getPrefundedSpecializedBalance
+
+Retrieves the pre-funded specialized balance for a specific identity.
+
+**Returns**: The balance or a cryptographic proof.
+
+**Parameters**:
+
+| Name    | Type     | Required | Description |
+| ------- | -------- | -------- | ----------- |
+| `id`    | Bytes    | Yes      | The ID of the identity whose balance is being requested |
+| `prove` | Boolean  | No       | Set to `true` to receive a proof that contains the requested balance |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+# `id` must be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "id": "HxUSbKaFxbuvTUprfr5a0yU6u4EasTdSWvSxOwKjmxw="
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getPrefundedSpecializedBalance
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "balance": "100000000",
+    "metadata": {
+      "height": "6860",
+      "coreChainLockedHeight": 927080,
+      "epoch": 852,
+      "timeMs": "1701983732299",
       "protocolVersion": 1,
       "chainId": "dash-testnet-37"
     }
   }
 }
-
 ```
 :::
 ::::
+
+### getProofs
+
+:::::{dropdown} ⚠️ For internal use only
+  
+  This endpoint is only used for communication between DAPI and Drive. All external requests are rejected.
+
+  **Returns**: Proof information for the requested identities, contracts, and/or document(s)
+
+  **Parameters**:
+
+  A combination of one or more of the following are required fields are required:
+
+  | Field | Type | Required | Description |
+  | - | - | - | - |
+  | `identities` | `IdentityRequest` | No | List of identity requests
+  | `contracts`  | `ContractRequest` | No | List of contract requests
+  | `documents`  | `DocumentRequest` | No | List of document requests
+
+  **Request type details**
+
+  | Field | Type | Required | Description |
+  | - | - | - | - |
+  | **IdentityRequest** | | |
+  | `identity_id`  | Bytes       | Yes | Identity ID
+  | `request_type` | Type (enum) | Yes | Type of identity proof data to request (options: FULL_IDENTITY, BALANCE, KEYS)
+  | --------------- | | |
+  | **ContractRequest** | | |
+  | `contract_id` | Bytes | Yes | A contract ID
+  | --------------- | | |
+  | **DocumentRequest** | | |
+  | `contract_id`                 | Bytes  | Yes | A contract ID
+  | `document_type`               | String | Yes | Type of contract document
+  | `document_type_keeps_history`   | Boolean | No |Indicates if the document type maintains a history
+  | `document_id`                 | Bytes  | Yes | Document ID
+
+  **Example Request and Response**
+
+  ::::{tab-set}
+  :::{tab-item} gRPCurl
+  :sync: grpcurl
+  ```shell
+  # Request proofs for an identity and a data contract
+  # `identity_id` and `contract_id` must be represented in base64
+  grpcurl -proto protos/platform/v0/platform.proto \
+    -d '{
+      "v0": {
+        "identities": [
+          {
+            "request_type": "FULL_IDENTITY",
+            "identity_id": "HxUSbKaFxbuvTUprfr5a0yU6u4EasTdSWvSxOwKjmxw="
+          }
+        ],
+        "contracts": [
+          {
+            "contract_id": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU="
+          }
+        ],
+        "documents": []
+      }
+    }' \
+    seed-1.testnet.networks.dash.org:1443 \
+    org.dash.platform.dapi.v0.Platform/getProofs
+  ```
+  :::
+  ::::
+  ::::{tab-set}
+  :::{tab-item} Response (gRPCurl)
+  :sync: grpcurl
+  ```json
+  // GroveDB proof for the requested identity and contract
+  {
+    "v0": {
+      "proof": {
+        "grovedbProof": "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ZxIHcGF0dGVybhIqXlthLXpBLVowLTldW2EtekEtWjAtOS1dezAsNjF9W2EtekEtWjAtOV0kEgltaW5MZW5ndGgCAxIJbWF4TGVuZ3RoAj8SCHBvc2l0aW9uAgASC2Rlc2NyaXB0aW9uEhlEb21haW4gbGFiZWwuIGUuZy4gJ0JvYicuEg9ub3JtYWxpemVkTGFiZWwWBhIEdHlwZRIGc3RyaW5nEgdwYXR0ZXJuEjxeW2EtaGota20tbnAtejAtOV1bYS1oai1rbS1ucC16MC05LV17MCw2MX1bYS1oai1rbS1ucC16MC05XSQSCW1heExlbmd0aAI/Eghwb3NpdGlvbgIBEgtkZXNjcmlwdGlvbhKjRG9tYWluIGxhYmVsIGNvbnZlcnRlZCB0byBsb3dlcmNhc2UgZm9yIGNhc2UtaW5zZW5zaXRpdmUgdW5pcXVlbmVzcyB2YWxpZGF0aW9uLiAibyIsICJpIiBhbmQgImwiIHJlcGxhY2VkIHdpdGggIjAiIGFuZCAiMSIgdG8gbWl0aWdhdGUgaG9tb2dyYXBoIGF0dGFjay4gZS5nLiAnYjBiJxIIJGNvbW1lbnQSXE11c3QgYmUgZXF1YWwgdG8gdGhlIGxhYmVsIGluIGxvd2VyY2FzZS4gIm8iLCAiaSIgYW5kICJsIiBtdXN0IGJlIHJlcGxhY2VkIHdpdGggIjAiIGFuZCAiMSIuEhBwYXJlbnREb21haW5OYW1lFgYSBHR5cGUSBnN0cmluZxIHcGF0dGVybhItXiR8XlthLXpBLVowLTldW2EtekEtWjAtOS1dezAsNjF9W2EtekEtWjAtOV0kEgltaW5MZW5ndGgCABIJbWF4TGVuZ3RoAj8SCHBvc2l0aW9uAgISC2Rlc2NyaXB0aW9uEidBIGZ1bGwgcGFyZW50IGRvbWFpbiBuYW1lLiBlLmcuICdkYXNoJy4SGm5vcm1hbGl6ZWRQYXJlbnREb21haW5OYW1lFgcSBHR5cGUSBnN0cmluZxIHcGF0dGVybhJBXiR8XlthLWhqLWttLW5wLXowLTldW2EtaGota20tbnAtejAtOS1cLl17MCw2MX1bYS1oai1rbS1ucC16MC05XSQSCW1pbkxlbmd0aAIAEgltYXhMZW5ndGgCPxIIcG9zaXRpb24CAxILZGVzY3JpcHRpb24SokEgcGFyZW50IGRvbWFpbiBuYW1lIGluIGxvd2VyY2FzZSBmb3IgY2FzZS1pbnNlbnNpdGl2ZSB1bmlxdWVuZXNzIHZhbGlkYXRpb24uICJvIiwgImkiIGFuZCAibCIgcmVwbGFjZWQgd2l0aCAiMCIgYW5kICIxIiB0byBtaXRpZ2F0ZSBob21vZ3JhcGggYXR0YWNrLiBlLmcuICdkYXNoJxIIJGNvbW1lbnQSwE11c3QgZWl0aGVyIGJlIGVxdWFsIHRvIGFuIGV4aXN0aW5nIGRvbWFpbiBvciBlbXB0eSB0byBjcmVhdGUgYSB0b3AgbGV2ZWwgZG9tYWluLiAibyIsICJpIiBhbmQgImwiIG11c3QgYmUgcmVwbGFjZWQgd2l0aCAiMCIgYW5kICIxIi4gT25seSB0aGUgZGF0YSBjb250cmFjdCBvd25lciBjYW4gY3JlYXRlIHRvcCBsZXZlbCBkb21haW5zLhIMcHJlb3JkZXJTYWx0FgYSBHR5cGUSBWFycmF5EglieXRlQXJyYXkTARIIbWluSXRlbXMCIBIIbWF4SXRlbXMCIBIIcG9zaXRpb24CBBILZGVzY3JpcHRpb24SIlNhbHQgdXNlZCBpbiB0aGUgcHJlb3JkZXIgZG9jdW1lbnQSB3JlY29yZHMWBxIEdHlwZRIGb2JqZWN0Egpwcm9wZXJ0aWVzFgISFGRhc2hVbmlxdWVJZGVudGl0eUlkFggSBHR5cGUSBWFycmF5EglieXRlQXJyYXkTARIIbWluSXRlbXMCIBIIbWF4SXRlbXMCIBIIcG9zaXRpb24CABIQY29udGVudE1lZGlhVHlwZRIhYXBwbGljYXRpb24veC5kYXNoLmRwcC5pZGVudGlmaWVyEgtkZXNjcmlwdGlvbhI+SWRlbnRpdHkgSUQgdG8gYmUgdXNlZCB0byBjcmVhdGUgdGhlIHByaW1hcnkgbmFtZSB0aGUgSWRlbnRpdHkSCCRjb21tZW50EiNNdXN0IGJlIGVxdWFsIHRvIHRoZSBkb2N1bWVudCBvd25lchITZGFzaEFsaWFzSWRlbnRpdHlJZBYIEgR0eXBlEgVhcnJheRIJYnl0ZUFycmF5EwESCG1pbkl0ZW1zAiASCG1heEl0ZW1zAiASCHBvc2l0aW9uAgESEGNvbnRlbnRNZWRpYVR5cGUSIWFwcGxpY2F0aW9uL3guZGFzaC5kcHAuaWRlbnRpZmllchILZGVzY3JpcHRpb24SPUlkZW50aXR5IElEIHRvIGJlIHVzZWQgdG8gY3JlYXRlIGFsaWFzIG5hbWVzIGZvciB0aGUgSWRlbnRpdHkSCCRjb21tZW50EiNNdXN0IGJlIGVxdWFsIHRvIHRoZSBkb2N1bWVudCBvd25lchINbWluUHJvcGVydGllcwIBEg1tYXhQcm9wZXJ0aWVzAgESCHBvc2l0aW9uAgUSFGFkZGl0aW9uYWxQcm9wZXJ0aWVzEwASCCRjb21tZW50EpBDb25zdHJhaW50IHdpdGggbWF4IGFuZCBtaW4gcHJvcGVydGllcyBlbnN1cmUgdGhhdCBvbmx5IG9uZSBpZGVudGl0eSByZWNvcmQgaXMgdXNlZCAtIGVpdGhlciBhIGBkYXNoVW5pcXVlSWRlbnRpdHlJZGAgb3IgYSBgZGFzaEFsaWFzSWRlbnRpdHlJZGASDnN1YmRvbWFpblJ1bGVzFgYSBHR5cGUSBm9iamVjdBIKcHJvcGVydGllcxYBEg9hbGxvd1N1YmRvbWFpbnMWBBIEdHlwZRIHYm9vbGVhbhILZGVzY3JpcHRpb24SW1RoaXMgb3B0aW9uIGRlZmluZXMgd2hvIGNhbiBjcmVhdGUgc3ViZG9tYWluczogdHJ1ZSAtIGFueW9uZTsgZmFsc2UgLSBvbmx5IHRoZSBkb21haW4gb3duZXISCCRjb21tZW50Ek9Pbmx5IHRoZSBkb21haW4gb3duZXIgaXMgYWxsb3dlZCB0byBjcmVhdGUgc3ViZG9tYWlucyBmb3Igbm9uIHRvcC1sZXZlbCBkb21haW5zEghwb3NpdGlvbgIAEghwb3NpdGlvbgIGEgtkZXNjcmlwdGlvbhJCU3ViZG9tYWluIHJ1bGVzIGFsbG93IGRvbWFpbiBvd25lcnMgdG8gZGVmaW5lIHJ1bGVzIGZvciBzdWJkb21haW5zEhRhZGRpdGlvbmFsUHJvcGVydGllcxMAEghyZXF1aXJlZBUBEg9hbGxvd1N1YmRvbWFpbnMSCHJlcXVpcmVkFQYSBWxhYmVsEg9ub3JtYWxpemVkTGFiZWwSGm5vcm1hbGl6ZWRQYXJlbnREb21haW5OYW1lEgxwcmVvcmRlclNhbHQSB3JlY29yZHMSDnN1YmRvbWFpblJ1bGVzEhRhZGRpdGlvbmFsUHJvcGVydGllcxMAEggkY29tbWVudBL7ATdJbiBvcmRlciB0byByZWdpc3RlciBhIGRvbWFpbiB5b3UgbmVlZCB0byBjcmVhdGUgYSBwcmVvcmRlci4gVGhlIHByZW9yZGVyIHN0ZXAgaXMgbmVlZGVkIHRvIHByZXZlbnQgbWFuLWluLXRoZS1taWRkbGUgYXR0YWNrcy4gbm9ybWFsaXplZExhYmVsICsgJy4nICsgbm9ybWFsaXplZFBhcmVudERvbWFpbiBtdXN0IG5vdCBiZSBsb25nZXIgdGhhbiAyNTMgY2hhcnMgbGVuZ3RoIGFzIGRlZmluZWQgYnkgUkZDIDEwMzUuIERvbWFpbiBkb2N1bWVudHMgYXJlIGltbXV0YWJsZTogbW9kaWZpY2F0aW9uIGFuZCBkZWxldGlvbiBhcmUgcmVzdHJpY3RlZAhwcmVvcmRlchYGEgR0eXBlEgZvYmplY3QSB2luZGljZXMVARYDEgRuYW1lEgpzYWx0ZWRIYXNoEgpwcm9wZXJ0aWVzFQEWARIQc2FsdGVkRG9tYWluSGFzaBIDYXNjEgZ1bmlxdWUTARIKcHJvcGVydGllcxYBEhBzYWx0ZWREb21haW5IYXNoFgYSBHR5cGUSBWFycmF5EglieXRlQXJyYXkTARIIbWluSXRlbXMCIBIIbWF4SXRlbXMCIBIIcG9zaXRpb24CABILZGVzY3JpcHRpb24SWURvdWJsZSBzaGEtMjU2IG9mIHRoZSBjb25jYXRlbmF0aW9uIG9mIGEgMzIgYnl0ZSByYW5kb20gc2FsdCBhbmQgYSBub3JtYWxpemVkIGRvbWFpbiBuYW1lEghyZXF1aXJlZBUBEhBzYWx0ZWREb21haW5IYXNoEhRhZGRpdGlvbmFsUHJvcGVydGllcxMAEggkY29tbWVudBJKUHJlb3JkZXIgZG9jdW1lbnRzIGFyZSBpbW11dGFibGU6IG1vZGlmaWNhdGlvbiBhbmQgZGVsZXRpb24gYXJlIHJlc3RyaWN0ZWQAAjfsugQjtjFH1tziawxcHm6Itrtfd4HxFXit+EBuIEGCEAIBYN8CAb/jxzcNWFZEpbAUm+m8bHmGDiDoIp0nmnAVzK1RREtVAtYIgZuRPU70BrwnGYqsfr3rqOmCvT+uOZn5JD+z2Fb7EAHRk0v0/UW0amfTj5Q3RgNXsCy34jIVuLie5yXuiKURfQQgMBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/awACwP9eCCC7wkAAAAApQ40uU7eIE6Lc7gSiikQMybwd7ICds9JRkR7mN9dsKsQAS6QXX9hmpIEs9jEW3eAXNz9stWYGeSq/BnIm9Y+L8XMERECiTcgqXvEL2837Y7t1JcjkYGVIFZ7NkS80ZLVeDUZzS0QAfdYjSzg2BIkhpiPAHQ5W4aN0OlpO7pNjwx46JLVtF5HEQLIaUC5PRYEMoQrfMJnG3PgKokrA37sdKCgo7Hxar/TcRABMapwxTKSfBkDooZq35By87R1c8Y4h4LvZXgOwY+CNfQR",
+        "quorumHash": "AAAAu4I2BiBDnydSZOLs2bV45yWb+vJFEKQi9wTc3hg=",
+        "signature": "t6IYrtqREmhCMGQva67DMYpqoY+4fIPB0245y/vhrs0L4qqv7+jDYFoppC7TzFCnCpXLxwOL15u8AOmGFsuMn7FA7qtz/rzJT0124Va1EL5ioeD0DwPVVCAEfQcN/7+6",
+        "round": 1,
+        "blockIdHash": "R6LgAhbTCMP2bbiktIm1nLnJ4csO0UvaK6vArGJ2ghs=",
+        "quorumType": 6
+      },
+      "metadata": {
+        "height": "9350",
+        "coreChainLockedHeight": 929436,
+        "epoch": 943,
+        "timeMs": "1702317747792",
+        "protocolVersion": 1,
+        "chainId": "dash-testnet-37"
+      }
+    }
+  }
+  
+  ```
+  :::
+  ::::
+  :::::
 
 ### getProtocolVersionUpgradeState
 
@@ -1770,6 +2340,190 @@ grpcurl -proto protos/platform/v0/platform.proto \
 :::
 ::::
 
+### getStatus
+
+Retrieves status information related to Dash Platform.
+
+**Returns**: Status details including version, node, chain, network, and state sync information, or a cryptographic proof.
+
+**Parameters**:
+
+This endpoint does not require any parameters.
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {}
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getStatus
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "version": {
+      "software": {
+        "dapi": "1.2.0",
+        "drive": "1.2.0",
+        "tenderdash": "1.2.1"
+      },
+      "protocol": {
+        "tenderdash": {
+          "p2p": 10,
+          "block": 14
+        },
+        "drive": {
+          "latest": 1,
+          "current": 1
+        }
+      }
+    },
+    "node": {
+      "id": "H/vx0yVB3Lj1VVMFKVcEqf+a3CQ=",
+      "proTxHash": "LkhlGi6cDLTy+3q4dAYapK8M0otZaVYx5qNa85UO9vs="
+    },
+    "chain": {
+      "latestBlockHash": "XY1U/Ay7DCdZqJJwM4sXSw1OFdBIbnVYFc9sJep1hNw=",
+      "latestAppHash": "9wq6IzU4AjuL27HybKqvWOOPCbnpBJQjk6q64nsd7i8=",
+      "latestBlockHeight": "7768",
+      "earliestBlockHash": "CPoCwn7AOQujAeT8fj1+rbNQyBk+PmKgk2iXBuOiC/o=",
+      "earliestAppHash": "vwzLnKBxugGubmegwJD5eAPSbVbWddzVExeBy8rI7I8=",
+      "earliestBlockHeight": "1",
+      "maxPeerBlockHeight": "7768",
+      "coreChainLockedHeight": 1099682
+    },
+    "network": {
+      "chainId": "dash-testnet-51",
+      "peersCount": 61,
+      "listening": true
+    },
+    "stateSync": {},
+    "time": {
+      "local": "1725890999274",
+      "block": "1725890829092",
+      "genesis": "0",
+      "epoch": 1260
+    }
+  }
+}
+```
+:::
+::::
+
+### getTotalCreditsInPlatform
+
+Retrieves the total credits in the platform.
+
+**Returns**: The total amount of credits or a cryptographic proof.
+
+**Parameters**:
+
+| Name    | Type     | Required | Description |
+| ------- | -------- | -------- | ----------- |
+| `prove` | Boolean  | No       | Set to `true` to receive a proof that contains the requested credit total |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {}
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getTotalCreditsInPlatform
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "credits": "1594457743625920",
+    "metadata": {
+      "height": "3263",
+      "coreChainLockedHeight": 1087403,
+      "epoch": 781,
+      "timeMs": "1724165757972",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-50"
+    }
+  }
+}
+```
+:::
+::::
+
+### getVotePollsByEndDate
+
+Retrieves vote polls that will end within a specified date range.
+
+**Returns**: A list of vote polls or a cryptographic proof.
+
+**Parameters**:
+
+| Name               | Type     | Required | Description |
+| ------------------ | -------- | -------- | ----------- |
+| `start_time_info`  | Object   | No       | Start time information for filtering vote polls |
+| `end_time_info`    | Object   | No       | End time information for filtering vote polls |
+| `limit`            | Integer  | No       | Maximum number of results to return |
+| `offset`           | Integer  | No       | Offset for pagination |
+| `ascending`        | Boolean  | No       | Sort order for results |
+| `prove`            | Boolean  | No       | Set to `true` to receive a proof that contains the requested vote polls |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "start_time_info": {"start_time_ms": "1701980000000", "start_time_included": true},
+      "end_time_info": {"end_time_ms": "1702000000000", "end_time_included": true},
+      "limit": 10
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getVotePollsByEndDate
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "votePollsByTimestamps": {
+      "finishedResults": true
+    },
+    "metadata": {
+      "height": "2876",
+      "coreChainLockedHeight": 1086885,
+      "epoch": 761,
+      "timeMs": "1724094056585",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-50"
+    }
+  }
+}
+```
+:::
+::::
+
 ### waitForStateTransitionResult
 
 **Returns**: The state transition hash and either a proof that the state transition was confirmed in a block or an error.  
@@ -1778,11 +2532,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 | Name                    | Type    | Required | Description                      |
 | ----------------------- | ------- | -------- | -------------------------------- |
 | `state_transition_hash` | Bytes   | Yes      | Hash of the state transition     |
-| `prove`                 | Boolean | Yes      | Set to `true` to request a proof |
-
-> 📘
->
-> **Note**: When requesting proofs, the data requested will be encoded as part of the proof in the response.
+| `prove`                 | Boolean | Yes      | Set to `true` to request a proof. The data requested will be encoded as part of the proof in the response. |
 
 **Example Request**
 
@@ -1845,11 +2595,40 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ## Deprecated Endpoints
 
-No endpoints were deprecated in Dash Platform v0.25, but the previous version of documentation can be [viewed here](https://docs.dash.org/projects/platform/en/0.24.0/docs/reference/dapi-endpoints-platform-endpoints.html).
+The following endpoints were recently deprecated. See the [previous version of documentation](https://docs.dash.org/projects/platform/en/0.25.0/docs/reference/dapi-endpoints-platform-endpoints.html) for additional information on these endpoints.
+
+### getIdentities
+
+:::{attention}
+Deprecated in Dash Platform v1.0.0
+:::
+
+**Returns**: [Identity](../explanations/identity.md) information for the requested identities  
+
+**Parameters**:
+
+| Name    | Type    | Required | Description |
+| ------- | ------- | -------- | ------------ |
+| `ids`   | Array   | Yes      | An array of identity IDs
+| `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested identity
+
+### getIdentitiesByPublicKeyHashes
+
+:::{attention}
+Deprecated in Dash Platform v1.0.0
+:::
+
+**Returns**: An array of [identities](../explanations/identity.md) associated with the provided public key hashes  
+**Parameters**:
+
+| Name                | Type    | Required | Description                                                             |
+| ------------------- | ------- | -------- | ----------------------------------------------------------------------- |
+| `public_key_hashes` | Bytes   | Yes      | Public key hashes (sha256-ripemd160) of identity public keys            |
+| `prove`             | Boolean | No       | Set to `true` to receive a proof that contains the requested identities |
 
 ## Code Reference
 
 Implementation details related to the information on this page can be found in:
 
-* The [Platform repository](https://github.com/dashevo/platform/tree/master/packages/dapi) `packages/dapi/lib/grpcServer/handlers/core` folder
-* The [Platform repository](https://github.com/dashevo/platform/tree/master/packages/dapi-grpc) `packages/dapi-grpc/protos` folder
+* The [Platform repository](https://github.com/dashpay/platform/tree/master/packages/dapi) `packages/dapi/lib/grpcServer/handlers/core` folder
+* The [Platform repository](https://github.com/dashpay/platform/tree/master/packages/dapi-grpc) `packages/dapi-grpc/protos` folder

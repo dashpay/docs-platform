@@ -16,6 +16,7 @@ In this tutorial we will update an existing data contract.
 
 * [General prerequisites](../../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
 * A wallet mnemonic with some funds in it: [Tutorial: Create and Fund a Wallet](../../tutorials/create-and-fund-a-wallet.md)
+* A configured client: [Setup SDK Client](../setup-sdk-client.md)
 * A Dash Platform Identity: [Tutorial: Register an Identity](../../tutorials/identities-and-names/register-an-identity.md)
 * A Dash Platform Contract ID: [Tutorial: Register a Data Contract](../../tutorials/contracts-and-documents/register-a-data-contract.md)
 
@@ -26,18 +27,9 @@ The following examples demonstrate updating an existing contract to add a new pr
 ::::{tab-set}
 :::{tab-item} Minimal contract
 ```javascript
-const Dash = require('dash');
+const setupDashClient = require('../setupDashClient');
 
-const clientOpts = {
-  network: 'testnet',
-  wallet: {
-    mnemonic: 'a Dash wallet mnemonic with funds goes here',
-    unsafeOptions: {
-      skipSynchronizationBeforeHeight: 875000, // only sync from mid-2023
-    },    
-  },
-};
-const client = new Dash.Client(clientOpts);
+const client = setupDashClient();
 
 const updateContract = async () => {
   const { platform } = client;
@@ -67,18 +59,9 @@ updateContract()
 
 :::{tab-item} Contract with history
 ```javascript
-const Dash = require('dash');
+const setupDashClient = require('../setupDashClient');
 
-const clientOpts = {
-  network: 'testnet',
-  wallet: {
-    mnemonic: 'a Dash wallet mnemonic with funds goes here',
-    unsafeOptions: {
-      skipSynchronizationBeforeHeight: 875000, // only sync from mid-2023
-    },    
-  },
-};
-const client = new Dash.Client(clientOpts);
+const client = setupDashClient();
 
 const updateContract = async () => {
   const { platform } = client;
@@ -110,9 +93,9 @@ updateContract()
 :::
 ::::
 
-> 📘
->
-> Please refer to the [data contract reference page](../../reference/data-contracts.md) for more comprehensive details related to contracts and documents.
+:::{note}
+Please refer to the [data contract reference page](../../reference/data-contracts.md) for more comprehensive details related to contracts and documents.
+:::
 
 ## What's Happening
 
@@ -120,8 +103,7 @@ After we initialize the Client, we retrieve an existing contract owned by our id
 
 Once the data contract has been updated, we still need to submit it to DAPI. The `platform.contracts.update` method takes a data contract and an identity parameter. Internally, it creates a State Transition containing the updated contract, signs the state transition, and submits the signed state transition to DAPI. A response will only be returned if an error is encountered.
 
-> 📘 Wallet Operations
->
-> The JavaScript SDK does not cache wallet information. It re-syncs the entire Core chain for some wallet operations (e.g. `client.getWalletAccount()`) which can result in wait times of  5+ minutes.
->
-> A future release will add caching so that access is much faster after the initial sync. For now, the `skipSynchronizationBeforeHeight` option can be used to sync the wallet starting at a certain block height.
+:::{note}
+:class: note
+Since the SDK does not cache wallet information, lengthy re-syncs (5+ minutes) may be required for some Core chain wallet operations. See [Wallet Operations](../setup-sdk-client.md#wallet-operations) for options.
+:::

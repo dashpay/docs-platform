@@ -13,24 +13,16 @@ identity. Additional details regarding credits can be found in the [credits desc
   installed)
 - A wallet mnemonic with some funds in it: [Tutorial: Create and Fund a
   Wallet](../../tutorials/create-and-fund-a-wallet.md)
+- A configured client: [Setup SDK Client](../setup-sdk-client.md)
 - Two Dash Platform Identities: [Tutorial: Register an
   Identity](../../tutorials/identities-and-names/register-an-identity.md)
 
 ## Code
 
 ```javascript
-const Dash = require('dash');
+const setupDashClient = require('../setupDashClient');
 
-const clientOpts = {
-  network: 'testnet',
-  wallet: {
-    mnemonic: 'a Dash wallet mnemonic with testnet funds goes here',
-    unsafeOptions: {
-      skipSynchronizationBeforeHeight: 875000, // only sync from mid-2023
-    },
-  },
-};
-const client = new Dash.Client(clientOpts);
+const client = setupDashClient();
 
 const transferCreditsToIdentity = async () => {
   const identityId = 'identity ID of the sender goes here';
@@ -38,7 +30,7 @@ const transferCreditsToIdentity = async () => {
 
   const recipientID = 'identity ID of the recipient goes here';
   console.log('Recipient identity balance before transfer: ', recipientIdentity.balance);
-  const transferAmount = 1000; // Number of credits to transfer
+  const transferAmount = 300000; // Number of credits to transfer
 
   await client.platform.identities.creditTransfer(
     identity,
@@ -58,12 +50,7 @@ transferCreditsToIdentity()
 
 After connecting to the Client, we call `platform.identities.creditTransfer` with our identity, the recipient's identity ID, and the amount to transfer. After the credits are transferred to the recipient, we retrieve the recipient's identity and output their updated balance to the console.
 
-> 📘 Wallet Operations
->
-> The JavaScript SDK does not cache wallet information. It re-syncs the entire Core chain for some
-> wallet operations (e.g. `client.getWalletAccount()`) which can result in wait times of  5+
-> minutes.
->
-> A future release will add caching so that access is much faster after the initial sync. For now,
-> the `skipSynchronizationBeforeHeight` option can be used to sync the wallet starting at a certain
-> block height.
+:::{note}
+:class: note
+Since the SDK does not cache wallet information, lengthy re-syncs (5+ minutes) may be required for some Core chain wallet operations. See [Wallet Operations](../setup-sdk-client.md#wallet-operations) for options.
+:::

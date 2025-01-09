@@ -28,12 +28,21 @@ extensions = [
   'sphinx.ext.autodoc',
   'sphinx_copybutton',
   'sphinx_design',
-  'sphinx_search.extension',
   'sphinx.ext.intersphinx',
 ]
 
 templates_path = ['_templates']
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'README.md', '.devcontainer', 'scripts', 'img/dev/gifs/README.md', 'docs/other']
+exclude_patterns = [
+    '_build',
+    'Thumbs.db',
+    '.DS_Store',
+    'README.md',
+    '.devcontainer',
+    'scripts',
+    'img/dev/gifs/README.md',
+    'docs/other',
+    'docs/ai-prompt.md'
+]
 
 # The master toctree document.
 master_doc = 'index'
@@ -132,7 +141,7 @@ html_context = {
     # "github_url": "https://github.com", # or your GitHub Enterprise site
     "github_user": "dashpay",
     "github_repo": "docs-platform",
-    "github_version": "0.25.0",
+    "github_version": "1.0.0",
     "doc_path": "",
 }
 

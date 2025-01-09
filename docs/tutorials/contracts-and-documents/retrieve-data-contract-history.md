@@ -12,6 +12,7 @@ information.
 ## Prerequisites
 
 * [General prerequisites](../../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
+* A configured client: [Setup SDK Client](../setup-sdk-client.md)
 * A Dash Platform contract ID for a contract configured to keep history: [Tutorial: Register a Data Contract](../../tutorials/contracts-and-documents/register-a-data-contract.md)
 
 ## Code
@@ -19,9 +20,9 @@ information.
 ### Retrieving data contract history
 
 ```javascript
-const Dash = require('dash');
+const setupDashClient = require('../setupDashClient');
 
-const client = new Dash.Client({ network: 'testnet' });
+const client = setupDashClient();
 
 const retrieveContractHistory = async () => {
   const contractId = '8cvMFwa2YbEsNNoc1PXfTacy2PVq2SzVnkZLeQSzjfi6'
@@ -108,10 +109,9 @@ The following example response shows a retrieved contract history:
 ]
 ```
 
-> 📘
->
-> Please refer to the [data contract reference page](../../reference/data-contracts.md) for more
-> comprehensive details related to contracts and documents.
+:::{note}
+Please refer to the [data contract reference page](../../reference/data-contracts.md) for more comprehensive details related to contracts and documents.
+:::
 
 ## What's Happening
 

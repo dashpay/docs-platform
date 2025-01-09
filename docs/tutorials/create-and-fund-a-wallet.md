@@ -54,9 +54,9 @@ Mnemonic: thrive wolf habit timber birth service crystal patient tiny depart tow
 Unused address: yXF7LsyajRvJGX96vPHBmo9Dwy9zEvzkbh
 ```
 
-> 🚧
->
-> **Please save your mnemonic for the next step and for re-use in subsequent tutorials throughout the documentation.**
+:::{attention}
+Please save your mnemonic for the next step and for re-use in subsequent tutorials throughout the documentation.
+:::
 
 # What's Happening
 
@@ -64,4 +64,4 @@ Once we connect, we output the newly generated mnemonic from `client.wallet.expo
 
 # Next Step
 
-Using the faucet at https://testnet-faucet.dash.org/, send test funds to the "unused address" from the console output. You will need to wait until the funds are confirmed to use them. There is a block explorer running at https://testnet-insight.dashevo.org/insight/ which can be used to check confirmations.
+Using the [faucet](https://testnet-faucet.dash.org/), send test funds to the "unused address" from the console output. You will need to wait until the funds are confirmed to use them. The [block explorer](https://insight.testnet.networks.dash.org:3002/insight/) can be used to check confirmations.

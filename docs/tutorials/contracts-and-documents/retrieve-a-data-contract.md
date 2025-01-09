@@ -9,6 +9,7 @@ In this tutorial we will retrieve the data contract created in the [Register a D
 ## Prerequisites
 
 - [General prerequisites](../../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
+- A configured client: [Setup SDK Client](../setup-sdk-client.md)
 - A Dash Platform Contract ID: [Tutorial: Register a Data Contract](../../tutorials/contracts-and-documents/register-a-data-contract.md)
 
 ## Code
@@ -16,9 +17,9 @@ In this tutorial we will retrieve the data contract created in the [Register a D
 ### Retrieving a data contract
 
 ```javascript
-const Dash = require('dash');
+const setupDashClient = require('../setupDashClient');
 
-const client = new Dash.Client({ network: 'testnet' });
+const client = setupDashClient();
 
 const retrieveContract = async () => {
   const contractId = '8cvMFwa2YbEsNNoc1PXfTacy2PVq2SzVnkZLeQSzjfi6';
@@ -33,16 +34,16 @@ retrieveContract()
 
 ### Updating the client app list
 
-> 📘
->
-> In many cases it may be desirable to work with a newly retrieved data contract using the `<contract name>.<contract document>` syntax (e.g. `dpns.domain`). Data contracts that were created after the client was initialized or not included in the initial client options can be added via `client.getApps().set(...)`.
+:::{note}
+In many cases it may be desirable to work with a newly retrieved data contract using the `<contract name>.<contract document>` syntax (e.g. `dpns.domain`). Data contracts that were created after the client was initialized or not included in the initial client options can be added via `client.getApps().set(...)`.
+:::
 
 ```javascript
 const Dash = require('dash');
 const { PlatformProtocol: { Identifier } } = Dash;
 
 const myContractId = 'a contract ID';
-const client = new Dash.Client();
+const client = new Dash.Client({ network: 'testnet' });
 
 client.platform.contracts.get(myContractId)
   .then((myContract) => {
@@ -84,9 +85,9 @@ The following example response shows a retrieved contract:
 }
 ```
 
-> 📘
->
-> Please refer to the [data contract reference page](../../reference/data-contracts.md) for more comprehensive details related to contracts and documents.
+:::{note}
+Please refer to the [data contract reference page](../../reference/data-contracts.md) for more comprehensive details related to contracts and documents.
+:::
 
 ## What's Happening
 

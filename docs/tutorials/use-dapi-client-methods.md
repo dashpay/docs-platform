@@ -12,7 +12,7 @@ In addition to the SDK methods for interacting with identities, names, contracts
 
 # Code
 
-The following example demonstrates several of the Core DAPI client methods. DAPI client also has several Platform methods accessible via `getDAPIClient().platform.*`. The methods can be found here in the [js-dapi-client repository](https://github.com/dashevo/platform/tree/master/packages/js-dapi-client/lib/methods).
+The following example demonstrates several of the Core DAPI client methods. DAPI client also has several Platform methods accessible via `getDAPIClient().platform.*`. The methods can be found here in the [js-dapi-client repository](https://github.com/dashpay/platform/tree/master/packages/js-dapi-client/lib/methods).
 
 ```javascript
 const Dash = require('dash');
@@ -23,8 +23,9 @@ async function dapiClientMethods() {
   console.log(await client.getDAPIClient().core.getBlockHash(1));
   console.log(await client.getDAPIClient().core.getBestBlockHash());
   console.log(await client.getDAPIClient().core.getBlockByHeight(1));
+  await client.getDAPIClient().core.getMasternodeStatus();
 
-  return client.getDAPIClient().core.getStatus();
+  return client.getDAPIClient().core.getBlockchainStatus();
 }
 
 dapiClientMethods()
@@ -33,6 +34,6 @@ dapiClientMethods()
   .finally(() => client.disconnect());
 ```
 
-> 📘
->
-> Examples using DAPI client to access many of the DAPI endpoints can be found in the [DAPI Endpoint Reference section](../reference/dapi-endpoints.md).
+:::{note}
+Examples using DAPI client to access many of the DAPI endpoints can be found in the [DAPI Endpoint Reference section](../reference/dapi-endpoints.md).
+:::

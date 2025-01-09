@@ -9,22 +9,14 @@ In this tutorial we will retrieve some of the current data from a data contract.
 ## Prerequisites
 
 - [General prerequisites](../../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
-- A Dash Platform Contract ID: [Tutorial: Register a Data Contract](../../tutorials/contracts-and-documents/register-a-data-contract.md)
+- A configured client: [Setup SDK Client](../setup-sdk-client.md)- A Dash Platform Contract ID: [Tutorial: Register a Data Contract](../../tutorials/contracts-and-documents/register-a-data-contract.md)
 
 ## Code
 
 ```javascript
-const Dash = require('dash');
+const setupDashClient = require('../setupDashClient');
 
-const clientOpts = {
-  network: 'testnet',
-  apps: {
-    tutorialContract: {
-      contractId: '8cvMFwa2YbEsNNoc1PXfTacy2PVq2SzVnkZLeQSzjfi6',
-    },
-  },
-};
-const client = new Dash.Client(clientOpts);
+const client = setupDashClient();
 
 const getDocuments = async () => {
   return client.platform.documents.get('tutorialContract.note', {
@@ -42,9 +34,9 @@ getDocuments()
   .finally(() => client.disconnect());
 ```
 
-> 👍 Initializing the Client with a contract identity
->
-> The example above shows how access to contract documents via `<contract name>.<contract document>` syntax (e.g. `tutorialContract.note`) can be enabled by passing a contract identity to the constructor. Please refer to the [Dash SDK documentation](https://github.com/dashevo/platform/blob/master/packages/js-dash-sdk/docs/getting-started/multiple-apps.md) for details.
+:::{tip}
+The example above shows how access to contract documents via `<contract name>.<contract document>` syntax (e.g. `tutorialContract.note`) can be enabled by passing a contract identity to the constructor. Please refer to the [Dash SDK documentation](https://github.com/dashpay/platform/blob/master/packages/js-dash-sdk/docs/getting-started/multiple-apps.md) for details.
+:::
 
 ### Queries
 
@@ -56,9 +48,9 @@ The following examples show the structure of a `note` document (from the data co
 
 The values returned by `.toJSON()` include the base document properties (prefixed with `$`) present in all documents along with the data contract defined properties.
 
-> 📘
->
-> Note: When using `.toJSON()`, binary data is displayed as a base64 string (since JSON is a text-based format).
+:::{note}
+Note: When using `.toJSON()`, binary data is displayed as a base64 string (since JSON is a text-based format).
+:::
 
 The values returned by `.getData()` (and also shown in the console.dir() `data` property) represent _only_ the properties defined in the `note` document described by the [tutorial data contract](../../tutorials/contracts-and-documents/register-a-data-contract.md#code).
 
@@ -147,8 +139,8 @@ Document {
 
 After we initialize the Client, we request some documents. The `client.platform.documents.get` method takes two arguments: a record locator and a query object. The records locator consists of an app name (e.g. `tutorialContract`) and the top-level document type requested, (e.g. `note`).
 
-> 📘 DPNS Contract
->
-> Note: Access to the DPNS contract is built into the Dash SDK. DPNS documents may be accessed via the `dpns` app name (e.g. `dpns.domain`).
+:::{note}
+Access to the DPNS contract is built into the Dash SDK. DPNS documents may be accessed via the `dpns` app name (e.g. `dpns.domain`).
+:::
 
 If you need more than the first 100 documents, you'll have to make additional requests with `startAt` incremented by 100 each time. In the future, the Dash SDK may return documents with paging information to make this easier and reveal how many documents are returned in total.

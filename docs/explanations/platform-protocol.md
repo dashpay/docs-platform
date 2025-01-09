@@ -14,9 +14,9 @@ To ensure the consistency and integrity of data stored on Layer 2, all data is g
 
 A data contract is a database schema that a developer needs to register with the platform in order to start using any decentralized storage functionality. Data contracts are described using the JSON Schema language and must follow some basic rules as described in the platform protocol repository.
 
-> 📘 Contract updates
->
-> Dash's data contracts support backwards-compatible modifications after their initial deployment unlike many smart contract based systems. This provides developers with additional flexibility when designing applications.
+:::{note}
+Dash's data contracts support backwards-compatible modifications after their initial deployment unlike many smart contract based systems. This provides developers with additional flexibility when designing applications.
+:::
 
 For additional detail, see the [Data Contract](../explanations/platform-protocol-data-contract.md) explanation.
 
@@ -46,8 +46,8 @@ For additional detail, see the [State Transition](../explanations/platform-proto
 | :------ | :---------- |
 | 0.25    | See details in the [GitHub release](https://github.com/dashpay/platform/releases/tag/v0.25.0). |
 | 0.24    | See details in the [GitHub release](https://github.com/dashpay/platform/releases/tag/v0.24.0). |
-| 0.23    | See details in the [GitHub release](https://github.com/dashevo/platform/releases/tag/v0.23.0). |
-| 0.22    | See details in the [GitHub release](https://github.com/dashevo/platform/releases/tag/v0.22.0). |
+| 0.23    | See details in the [GitHub release](https://github.com/dashpay/platform/releases/tag/v0.23.0). |
+| 0.22    | See details in the [GitHub release](https://github.com/dashpay/platform/releases/tag/v0.22.0). |
 | 0.21    | See details in the [GitHub release](https://github.com/dashevo/js-dpp/releases/tag/v0.21.0). |
 | 0.20    | This release updated to a newer version of JSON Schema (2020-12 spec) and also switched to a new regex module ([Re2](https://github.com/google/re2)) for improved security. See more details in the [GitHub release](https://github.com/dashevo/js-dpp/releases/tag/v0.20.0). |
 

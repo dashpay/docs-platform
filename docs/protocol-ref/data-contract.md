@@ -18,7 +18,7 @@ There are a variety of constraints currently defined for performance and securit
 
 > 🚧
 >
-> The `$ref` keyword has been [disabled](https://github.com/dashevo/platform/pull/300) since Platform v0.22.
+> The `$ref` keyword has been [disabled](https://github.com/dashpay/platform/pull/300) since Platform v0.22.
 
 | Keyword                                                | Constraint                                                                                                         |
 | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
@@ -239,7 +239,7 @@ property must be incremented if the contract is updated.
 
 ### Data Contract Documents
 
-The `documents` object defines each type of document required by the data contract. At a minimum, a document must consist of 1 or more properties. Documents may also define [indices](#document-indices) and a list of [required properties](#required-properties-optional). The `additionalProperties` properties keyword must be included as described in the [constraints](#additional-properties) section.
+The `documents` object defines each type of document required by the data contract. At a minimum, a document must consist of 1 or more properties. Documents may also define [indices](#document-indices) and a list of [required properties](#required-properties). The `additionalProperties` properties keyword must be included as described in the [constraints](#additional-properties) section.
 
 The following example shows a minimal `documents` object defining a single document (`note`) that has one property (`message`).
 
@@ -346,7 +346,7 @@ The `indices` array consists of:
 **Note:**
 
 - The `indices` object should be excluded for documents that do not require indices.
-- When defining an index with multiple properties (i.e a compound index), the order in which the properties are listed is important. Refer to the [mongoDB documentation](https://docs.mongodb.com/manual/core/index-compound/#prefixes) for details regarding the significance of the order as it relates to querying capabilities. Dash uses [GroveDB](https://github.com/dashevo/grovedb) which works similarly but does requiring listing _all_ the index's fields in query order by statements.
+- When defining an index with multiple properties (i.e a compound index), the order in which the properties are listed is important. Refer to the [mongoDB documentation](https://docs.mongodb.com/manual/core/index-compound/#prefixes) for details regarding the significance of the order as it relates to querying capabilities. Dash uses [GroveDB](https://github.com/dashpay/grovedb) which works similarly but does requiring listing _all_ the index's fields in query order by statements.
 
 ```json
 "indices": [

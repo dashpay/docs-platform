@@ -29,17 +29,15 @@ Tendermint has been mainly designed to enable efficient verification and authent
 - The Validator set committing the block.
 - Various results returned by the application.
 
-> 📘 Notes about Tendermint
->
-> - Block execution only occurs after a block is committed. So, cryptographic proofs for the latest state are only available in the subsequent block.
->
-> - Information like the transaction results and the validator set is never directly included in the block - only their Merkle roots are.
->
-> - Verification of a block requires a separate data structure to store this information. We call this the “State.”
->
-> - Block verification also requires access to the previous block.
->
-> Additional information about Tendermint is available in the <a href="https://docs.tendermint.com/master/spec/#overview" target="_blank">Tendermint Core spec</a>.
+:::{note}
+
+- Block execution only occurs after a block is committed. So, cryptographic proofs for the latest state are only available in the subsequent block.
+- Information like the transaction results and the validator set is never directly included in the block - only their Merkle roots are.
+- Verification of a block requires a separate data structure to store this information. We call this the “State.”
+- Block verification also requires access to the previous block.
+
+Additional information about Tendermint is available in the <a href="https://docs.tendermint.com/master/spec/#overview" target="_blank">Tendermint Core spec</a>.
+:::
 
 ### Tendermint Limitations
 

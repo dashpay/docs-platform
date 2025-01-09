@@ -4,34 +4,19 @@
 
 # Dash masternode
 
-The purpose of this tutorial is to walk through the steps necessary to set up a masternode with Dash Platform services.
+The purpose of this tutorial is to walk through the steps necessary to set up a development node with Dash Platform services.
 
-## Prerequisites
+## Installation
 
-- [Docker](https://docs.docker.com/engine/install/) (v20.10.0+) and [docker-compose](https://docs.docker.com/compose/install/) (v1.25.0+) installed
-- An installation of [NodeJS](https://nodejs.org/en/download/) (v20, NPM v8.0+)
-
-The following is not necessary for setting up a local network for development, but is helpful if setting up a testnet masternode:
-
-- Access to a Linux system configured with a non-root user ([guide](https://docs.dash.org/en/stable/masternodes/setup.html#set-up-your-vps))
-
-> 📘
->
-> More comprehensive details of using the dashmate tool can be found in the [dashmate README](https://github.com/dashevo/platform/tree/master/packages/dashmate).
-
-Use NPM to install dashmate globally in your system:
-
-```shell
-npm install -g dashmate
-```
+Please follow the steps in [the installation section](https://docs.dash.org/en/stable/docs/user/network/dashmate/index.html#installation) of dashmate documentation.
 
 ## Local Network
 
 Dashmate can be used to create a local network on a single computer. This network contains multiple nodes to mimic conditions and features found in testnet/mainnet settings.
 
-> 📘
->
-> Dashmate local networks use the [regtest network type](../../reference/glossary.md#regtest) so layer 1 blocks can be easily mined as needed.
+:::{note}
+Dashmate local networks use the [regtest network type](../../reference/glossary.md#regtest) so layer 1 blocks can be easily mined as needed.
+:::
 
 ### Setup
 
@@ -68,9 +53,9 @@ Example (partial) output of the setup wizard showing important information:
 
 ```
 
-> 📘
->
-> Make a note of the key and identity information displayed during setup as they may be required in the future.
+:::{note}
+Make a note of the key and identity information displayed during setup as they may be required in the future.
+:::
 
 ### Operation
 
@@ -150,9 +135,9 @@ const client = new Dash.Client(clientOpts);
 
 ## Testnet Masternode Setup
 
-> ❗️ Advanced Topic
->
-> Running a masternode requires familiarity with Dash Platform services. Improper configuration may impact testing so please exercise caution if running a masternode.
+:::{important}
+Running a masternode requires familiarity with Dash Platform services. Improper configuration may impact testing so please exercise caution if running a masternode.
+:::
 
 To setup a testnet masternode, please refer to the comprehensive documentation of the process as described [here](https://docs.dash.org/en/stable/masternodes/setup-testnet.html#dashmate-installation). The following video also details how to complete the process.
 
@@ -164,19 +149,17 @@ To setup a testnet masternode, please refer to the comprehensive documentation o
     </div>
 ```
 
-> 📘 Full Platform Node
->
-> A full node that with all Platform services can be started by simply running the setup command with the [node type setup parameter](https://github.com/dashevo/platform/tree/master/packages/dashmate#setup-node) set to  `fullnode` and then starting the node.
->
-> ``` text
-> dashmate setup testnet fullnode
-> dashmate start
-> ```
+A full node that with all Platform services can be started by simply running the setup command with the [node type setup parameter](https://github.com/dashpay/platform/tree/master/packages/dashmate#node-setup) set to  `fullnode` and then starting the node.
+
+``` text
+dashmate setup testnet fullnode
+dashmate start
+```
 
 ## Remote Development Network
 
-> 📘 Connecting to a remote development network
->
-> In order to connect to a remote [devnet](../../reference/glossary.md#devnet) (e.g. one run by Dash Core Group), please use one of the methods described in the [Connect to a Devnet](../../tutorials/connecting-to-testnet.md#connect-to-a-devnet) section.
+:::{note}
+In order to connect to a remote [devnet](../../reference/glossary.md#devnet) (e.g. one run by Dash Core Group), please use one of the methods described in the [Connect to a Devnet](../../tutorials/connecting-to-testnet.md#connect-to-a-devnet) section.
+:::
 
-For development we recommend using either a local network created via dashmate as [described above](#local-network) or using Testnet. While configuring a remote development network is possible using the Dash network deployment tool, it is beyond the scope of this documentation. For details regarding this tool, please refer to the [GitHub repository](https://github.com/dashevo/dash-network-deploy).
+For development we recommend using either a local network created via dashmate as [described above](#local-network) or using Testnet. While configuring a remote development network is possible using the Dash network deployment tool, it is beyond the scope of this documentation. For details regarding this tool, please refer to the [GitHub repository](https://github.com/dashpay/dash-network-deploy).

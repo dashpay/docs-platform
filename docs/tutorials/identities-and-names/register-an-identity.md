@@ -14,28 +14,19 @@ Identities serve as the basis for interactions with Dash Platform. They consist 
 
 - [General prerequisites](../../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
 - A wallet mnemonic with some funds in it: [How to Create and Fund a Wallet](../../tutorials/create-and-fund-a-wallet.md)
+- A configured client: [Setup SDK Client](../setup-sdk-client.md)
 
 ## Code
 
-> 📘 Wallet Operations
->
-> The JavaScript SDK does not cache wallet information. It re-syncs the entire Core chain for some wallet operations (e.g. `client.getWalletAccount()`) which can result in wait times of  5+ minutes.
->
-> A future release will add caching so that access is much faster after the initial sync. For now, the `skipSynchronizationBeforeHeight` option can be used to sync the wallet starting at a certain block height.
+:::{note}
+:class: note
+Since the SDK does not cache wallet information, lengthy re-syncs (5+ minutes) may be required for some Core chain wallet operations. See [Wallet Operations](../setup-sdk-client.md#wallet-operations) for options.
+:::
 
 ```javascript
-const Dash = require('dash');
+const setupDashClient = require('../setupDashClient');
 
-const clientOpts = {
-  network: 'testnet',
-  wallet: {
-    mnemonic: 'a Dash wallet mnemonic with testnet funds goes here',
-    unsafeOptions: {
-      skipSynchronizationBeforeHeight: 875000, // only sync from mid-2023
-    },
-  },
-};
-const client = new Dash.Client(clientOpts);
+const client = setupDashClient();
 
 const createIdentity = async () => {
   return client.platform.identities.register();
@@ -49,9 +40,9 @@ createIdentity()
 
 The Identity will be output to the console. The Identity will need to have one confirmation before it is accessible via `client.platform.identity.get`.
 
-> 👍
->
-> **Make a note of the returned identity `id` as it will be used used in subsequent tutorials throughout the documentation.**
+:::{attention}
+Make a note of the returned identity `id` as it will be used used in subsequent tutorials throughout the documentation.
+:::
 
 ## What's Happening
 

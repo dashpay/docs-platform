@@ -51,6 +51,6 @@ State transitions are constructed by client-side libraries and then submitted to
 
 Some state transitions (e.g. data contracts, identity) are validated solely by rules explicitly defined in DPP, while others (e.g. documents) are also subject to the rules defined by the relevant application’s data contract. Once the state transition has been validated, the platform stores the data and updates the platform state.
 
-> 📘
->
-> For more detailed information, see the [Platform Protocol Reference - State Transition](../protocol-ref/state-transition.md) page.
+:::{note}
+For more detailed information, see the [Platform Protocol Reference - State Transition](../protocol-ref/state-transition.md) page.
+:::
