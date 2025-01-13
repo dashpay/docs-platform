@@ -32,9 +32,17 @@ There are a variety of constraints currently defined for performance and securit
 
 #### Data Size
 
-**Note:** These constraints are defined in the Dash Platform Protocol logic (not in JSON Schema).
+| Parameter | Size |
+| - | - |
+| Maximum serialized data contract size | [16384 byes (16 KB)](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-platform-version/src/version/system_limits/v1.rs#L4) |
+| Maximum field value size | [5120 bytes (5 KB)](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-platform-version/src/version/system_limits/v1.rs#L5) |
+| Maximum state transition size | [20480 bytes (20 KB)](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-platform-version/src/version/system_limits/v1.rs#L6) |
 
-All serialized data (including state transitions) is limited to a maximum size of [16 KB](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/util/serializer.rs#L8).
+A document cannot exceed the maximum state transition size in any case. For example, although it is
+possible to define a data contract with 10 fields that each support the maximum field size (5120),
+it is not possible to create a document where all 10 fields contain the full 5120 bytes. This is
+because the overall document and state transition containing it would be too large (5120 * 10 =
+51200 bytes).
 
 #### Additional Properties
 
