@@ -34,7 +34,7 @@ There are a variety of constraints currently defined for performance and securit
 
 | Parameter | Size |
 | - | - |
-| Maximum serialized data contract size | [16384 byes (16 KB)](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-platform-version/src/version/system_limits/v1.rs#L4) |
+| Maximum serialized data contract size | [16384 bytes (16 KB)](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-platform-version/src/version/system_limits/v1.rs#L4) |
 | Maximum field value size | [5120 bytes (5 KB)](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-platform-version/src/version/system_limits/v1.rs#L5) |
 | Maximum state transition size | [20480 bytes (20 KB)](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-platform-version/src/version/system_limits/v1.rs#L6) |
 
