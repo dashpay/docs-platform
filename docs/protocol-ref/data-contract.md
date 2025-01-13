@@ -8,7 +8,7 @@
 
 Data contracts define the schema (structure) of data an application will store on Dash Platform. Contracts are described using [JSON Schema](https://json-schema.org/understanding-json-schema/) which allows the platform to validate the contract-related data submitted to it.
 
-The following sections provide details that developers need to construct valid contracts: [documents](#data-contract-documents) and [definitions](#data-contract-definitions). All data contracts must define one or more documents, whereas definitions are optional and may not be used for simple contracts.
+The following sections provide details that developers need to construct valid contracts. All data contracts must define one or more [documents](#data-contract-documents), whereas definitions are optional and may not be used for simple contracts.
 
 ### General Constraints
 
@@ -266,7 +266,7 @@ The following example shows a minimal `documents` object defining a single docum
 
 The `properties` object defines each field that will be used by a document. Each field consists of an object that, at a minimum, must define its data `type` (`string`, `number`, `integer`, `boolean`, `array`, `object`). Fields may also apply a variety of optional JSON Schema constraints related to the format, range, length, etc. of the data.
 
-**Note:** The `object` type is required to have properties defined either directly or via the data contract's [$defs](#data-contract-definitions).  For example, the body property shown below is an object containing a single string property (objectProperty):
+**Note:** The `object` type is required to have properties defined. For example, the body property shown below is an object containing a single string property (objectProperty):
 
 ```javascript
 const contractDocuments = {
@@ -453,40 +453,6 @@ This example syntax shows the structure of a documents object that defines two d
 #### Document Schema
 
 Full document schema details may be found in this section of the [rs-dpp data contract meta schema](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L368-L471).
-
-### Data Contract Definitions
-
-> ❗️ Definitions are currently unavailable
-
-The optional `$defs` object enables definition of aspects of a schema that are used in multiple places. This is done using the JSON Schema support for [reuse](https://json-schema.org/understanding-json-schema/structuring.html#defs). Items defined in `$defs` may then be referenced when defining `documents` through use of the `$ref` keyword.
-
-**Note:**
-
-- Properties defined in the `$defs` object must meet the same criteria as those defined in the `documents` object (e.g. the `additionalProperties` properties keyword must be included as described in the [constraints](#additional-properties) section).
-- Data contracts can only use the `$ref` keyword to reference their own `$defs`. Referencing external definitions is not supported by the platform protocol.
-
-**Example**  
-The following example shows a definition for a `message` object consisting of two properties:
-
-```json
-{
-  // Preceding content truncated ...
-  "$defs": {
-    "message": {
-      "type": "object",
-      "properties": {
-        "timestamp": {
-          "type": "number"
-        },
-        "description": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": false
-    }
-  }
-}
-```
 
 ## Data Contract State Transition Details
 
