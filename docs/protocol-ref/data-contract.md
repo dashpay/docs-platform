@@ -16,23 +16,19 @@ There are a variety of constraints currently defined for performance and securit
 
 #### Keyword
 
-> 🚧
->
-> The `$ref` keyword has been [disabled](https://github.com/dashpay/platform/pull/300) since Platform v0.22.
-
-| Keyword                                                | Constraint                                                                                                         |
-| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
-| `default`                                              | Restricted - cannot be used (defined in DPP logic)                                                                 |
-| `propertyNames`                                        | Restricted - cannot be used (defined in DPP logic)                                                                 |
-| `uniqueItems: true`                                    | `maxItems` must be defined (maximum: 100000)                                                                       |
-| `pattern: <something>`                                 | `maxLength` must be defined (maximum: 50000)                                                                       |
-| `format: <something>`                                  | `maxLength` must be defined (maximum: 50000)                                                                       |
-| `$ref: <something>`                                    | **Temporarily disabled**<br>`$ref` can only reference `$defs` - <br> remote references not supported               |
-| `if`, `then`, `else`, `allOf`, `anyOf`, `oneOf`, `not` | Disabled for data contracts                                                                                        |
-| `dependencies`                                         | Not supported. Use `dependentRequired` and `dependentSchema` instead                                               |
-| `additionalItems`                                      | Not supported. Use `items: false` and `prefixItems` instead                                                        |
-| `patternProperties`                                    | Restricted - cannot be used for data contracts                                                                     |
-| `pattern`                                              | Accept only [RE2](https://github.com/google/re2/wiki/Syntax) compatible regular expressions (defined in DPP logic) |
+| Keyword | Constraint |
+| ------- | ---------- |
+| `default`                   | Restricted - cannot be used (defined in DPP logic)  |
+| `propertyNames`             | Restricted - cannot be used (defined in DPP logic) |
+| `uniqueItems: true`         | `maxItems` must be defined (maximum: 100000) |
+| `pattern: <something>`      | `maxLength` must be defined (maximum: 50000) |
+| `format: <something>`       | `maxLength` must be defined (maximum: 50000) |
+| `$ref: <something>`         | **Disabled**<br>`$ref` can only reference `$defs` - <br> remote references not supported |
+| `if`, `then`, `else`, `allOf`, `anyOf`, `oneOf`, `not` | Disabled for data contracts |
+| `dependencies`              | Not supported. Use `dependentRequired` and `dependentSchema` instead |
+| `additionalItems`           | Not supported. Use `items: false` and `prefixItems` instead |
+| `patternProperties`         | Restricted - cannot be used for data contracts |
+| `pattern`                   | Accept only [RE2](https://github.com/google/re2/wiki/Syntax) compatible regular expressions (defined in DPP logic) |
 
 #### Data Size
 
