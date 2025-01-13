@@ -307,8 +307,6 @@ There are a variety of constraints currently defined for performance and securit
 | Maximum property name length | [64](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L20)                                            |
 | Property name characters     | Alphanumeric (`A-Z`, `a-z`, `0-9`)<br>Hyphen (`-`) <br>Underscore (`_`)                                                                                              |
 
-Prior to Dash Platform v0.23 there were stricter limitations on minimum property name length and the characters that could be used in property names.
-
 ##### Required Properties (Optional)
 
 Each document may have some fields that are required for the document to be valid and other fields that are optional. Required fields are defined via the `required` array which consists of a list of the field names from the document that must be present. The `required` object should be excluded for documents without any required properties.
@@ -337,8 +335,6 @@ The following example (excerpt from the DPNS contract's `domain` document) demon
 #### Document Indices
 
 Document indices may be defined if indexing on document fields is required.
-
-**Note:** Dash Platform v0.23 only allows [ascending default ordering](https://github.com/dashpay/platform/pull/435) for indices.
 
 The `indices` array consists of:
 
