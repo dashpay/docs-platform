@@ -12,7 +12,7 @@ The following sections provide details that developers need to construct valid c
 
 ### General Constraints
 
-There are a variety of constraints currently defined for performance and security reasons. The following constraints are applicable to all aspects of data contracts. Unless otherwise noted, these constraints are defined in the platform's JSON Schema rules (e.g. [rs-dpp data contract meta schema](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json)).
+There are a variety of constraints currently defined for performance and security reasons. The following constraints are applicable to all aspects of data contracts. Unless otherwise noted, these constraints are defined in the platform's JSON Schema rules (e.g. [rs-dpp data contract meta schema](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json)).
 
 #### Keyword
 
@@ -222,17 +222,20 @@ Details regarding the data contract object may be found in the [rs-dpp data cont
 
 ### Data Contract id
 
-The data contract `$id` is a hash of the `ownerId` and entropy as shown [here](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/data_contract/generate_data_contract.rs).
+The data contract `$id` is a hash of the `ownerId` and entropy as shown [here](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-dpp/src/data_contract/generate_data_contract.rs).
 
 ```rust
 // From the Rust reference implementation (rs-dpp)
 // generate_data_contract.rs
-/// Generate data contract id based on owner id and entropy
-pub fn generate_data_contract_id(owner_id: impl AsRef<[u8]>, entropy: impl AsRef<[u8]>) -> Vec<u8> {
+/// Generate data contract id based on owner id and identity nonce
+pub fn generate_data_contract_id_v0(
+    owner_id: impl AsRef<[u8]>,
+    identity_nonce: IdentityNonce,
+) -> Identifier {
     let mut b: Vec<u8> = vec![];
     let _ = b.write(owner_id.as_ref());
-    let _ = b.write(entropy.as_ref());
-    hash(b)
+    let _ = b.write(identity_nonce.to_be_bytes().as_slice());
+    Identifier::from(hash_double(b))
 }
 ```
 
@@ -299,13 +302,13 @@ const contractDocuments = {
 
 There are a variety of constraints currently defined for performance and security reasons.
 
-| Description                  | Value                                                                                                                                                                |
-| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Minimum number of properties | [1](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L22)                                             |
-| Maximum number of properties | [100](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L23)                                           |
-| Minimum property name length | [1](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L20) (Note: minimum length was 3 prior to v0.23) |
-| Maximum property name length | [64](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L20)                                            |
-| Property name characters     | Alphanumeric (`A-Z`, `a-z`, `0-9`)<br>Hyphen (`-`) <br>Underscore (`_`)                                                                                              |
+| Description | Value |
+| ----------- | ----- |
+| Minimum number of properties | [1](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L22) |
+| Maximum number of properties | [100](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L23) |
+| Minimum property name length | [1](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L20) |
+| Maximum property name length | [64](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L20) |
+| Property name characters     | Alphanumeric (`A-Z`, `a-z`, `0-9`)<br>Hyphen (`-`) <br>Underscore (`_`) |
 
 ##### Required Properties (Optional)
 
