@@ -374,16 +374,17 @@ The `indices` array consists of:
 
 For performance and security reasons, indices have the following constraints. These constraints are subject to change over time.
 
-| Description                                                                                                                                                        | Value                                                                                                                                                                                                                                                  |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Minimum/maximum length of index `name`                                                                                                                             | [1](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L413) / [32](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L414) |
-| Maximum number of indices                                                                                                                                          | [10](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L446)                                                                                                                             |
-| Maximum number of unique indices                                                                                                                                   | [3](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/data_contract/validation/data_contract_validator.rs#L40)                                                                                                                      |
-| Maximum number of properties in a single index                                                                                                                     | [10](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L433)                                                                                                                             |
-| Maximum length of indexed string property                                                                                                                          | [63](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/data_contract/validation/data_contract_validator.rs#L39)                                                                                                                     |
-| **Note: Dash Platform v0.22+. [does not allow indices for arrays](https://github.com/dashpay/platform/pull/225)**<br>Maximum length of indexed byte array property | [255](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/data_contract/validation/data_contract_validator.rs#L43)                                                                                                                    |
-| **Note: Dash Platform v0.22+. [does not allow indices for arrays](https://github.com/dashpay/platform/pull/225)**<br>Maximum number of indexed array items         | [1024](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/data_contract/validation/data_contract_validator.rs#L44)                                                                                                                   |
-| Usage of `$id` in an index [disallowed](https://github.com/dashpay/platform/pull/178)                                                                              | N/A                                                                                                                                                                                                                                                    |
+| Description | Value |
+| ----------- | ----- |
+| Minimum/maximum length of index `name` | [1](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L311) / [32](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L312) |
+| Maximum number of indices | [10](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L390) |
+| Maximum number of unique indices | [10](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-platform-version/src/version/dpp_versions/dpp_validation_versions/v2.rs#L24) |
+| Maximum number of properties in a single index | [10](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L331) |
+| Maximum length of indexed string property | [63](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/v0/mod.rs#L72) |
+| Maximum number of contested indices | [1](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-platform-version/src/version/dpp_versions/dpp_validation_versions/v2.rs#L22) |
+| **Note: Dash Platform v0.22+. [does not allow indices for arrays](https://github.com/dashpay/platform/pull/225)**<br>Maximum length of indexed byte array property | [255](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/v0/mod.rs#L73) |
+| **Note: Dash Platform v0.22+. [does not allow indices for arrays](https://github.com/dashpay/platform/pull/225)**<br>Maximum number of indexed array items         | [1024](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/v0/mod.rs#L74) |
+| Usage of `$id` in an index [disallowed](https://github.com/dashpay/platform/pull/178) | N/A |
 
 **Example**  
 The following example (excerpt from the DPNS contract's `preorder` document) creates an index named `saltedHash` on the `saltedDomainHash` property that also enforces uniqueness across all documents of that type:
@@ -455,7 +456,7 @@ This example syntax shows the structure of a documents object that defines two d
 
 #### Document Schema
 
-Full document schema details may be found in this section of the [rs-dpp data contract meta schema](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L368-L471).
+Full document schema details may be found in the [rs-dpp document meta schema](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json).
 
 ## Data Contract State Transition Details
 
