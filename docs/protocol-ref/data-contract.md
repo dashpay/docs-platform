@@ -58,15 +58,15 @@ Include the following at the same level as the `properties` keyword to ensure pr
 
 The data contract object consists of the following fields as defined in the JavaScript reference client ([rs-dpp](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json)):
 
-| Property        | Type           | Required | Description                                                                                                                                                                                                                                                                                              |
-| --------------- | -------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| protocolVersion | integer        | Yes      | The platform protocol version ([currently `1`](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/version/mod.rs#L9))                                                                                                                                                                  |
-| $schema         | string         | Yes      | A valid URL (default: <https://schema.dash.org/dpp-0-4-0/meta/data-contract>)                                                                                                                                                                                                                            |
-| $id             | array of bytes | Yes      | Contract ID generated from `ownerId` and entropy ([32 bytes; content media type: `application/x.dash.dpp.identifier`](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L378-L384))                                                        |
-| version         | integer        | Yes      | The data contract version                                                                                                                                                                                                                                                                                |
+| Property        | Type           | Required | Description |
+| --------------- | -------------- | -------- | ----------- |
+| protocolVersion | integer        | Yes      | The platform protocol version ([currently `7`](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-platform-version/src/version/mod.rs#L25)) |
+| $schema         | string         | Yes      | A valid URL (default: <https://schema.dash.org/dpp-0-4-0/meta/data-contract>) |
+| $id             | array of bytes | Yes      | Contract ID generated from `ownerId` and entropy ([32 bytes; content media type: `application/x.dash.dpp.identifier`](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L378-L384)) |
+| version         | integer        | Yes      | The data contract version |
 | ownerId         | array of bytes | Yes      | [Identity](../protocol-ref/identity.md) that registered the data contract defining the document ([32 bytes; content media type: `application/x.dash.dpp.identifier`](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L389-L395) |
-| documents       | object         | Yes      | Document definitions (see [Documents](#data-contract-documents) for details)                                                                                                                                                                                                                             |
-| $defs           | object         | No       | Definitions for `$ref` references used in the `documents` object (if present, must be a non-empty object with \<= 100 valid properties)                                                                                                                                                                  |
+| documents       | object         | Yes      | Document definitions (see [Documents](#data-contract-documents) for details) |
+| $defs           | object         | No       | Definitions for `$ref` references used in the `documents` object (if present, must be a non-empty object with \<= 100 valid properties) |
 
 ### Data Contract Schema
 
@@ -382,9 +382,9 @@ For performance and security reasons, indices have the following constraints. Th
 | Maximum number of properties in a single index | [10](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L331) |
 | Maximum length of indexed string property | [63](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/v0/mod.rs#L72) |
 | Maximum number of contested indices | [1](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-platform-version/src/version/dpp_versions/dpp_validation_versions/v2.rs#L22) |
-| **Note: Dash Platform v0.22+. [does not allow indices for arrays](https://github.com/dashpay/platform/pull/225)**<br>Maximum length of indexed byte array property | [255](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/v0/mod.rs#L73) |
-| **Note: Dash Platform v0.22+. [does not allow indices for arrays](https://github.com/dashpay/platform/pull/225)**<br>Maximum number of indexed array items         | [1024](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/v0/mod.rs#L74) |
 | Usage of `$id` in an index [disallowed](https://github.com/dashpay/platform/pull/178) | N/A |
+| **Note: Dash Platform v0.22+ [does not allow indices for arrays](https://github.com/dashpay/platform/pull/225).**<br>Maximum length of indexed byte array property | [255](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/v0/mod.rs#L73) |
+| **Note: Dash Platform v0.22+ [does not allow indices for arrays](https://github.com/dashpay/platform/pull/225).**<br>Maximum number of indexed array items         | [1024](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/v0/mod.rs#L74) |
 
 **Example**  
 The following example (excerpt from the DPNS contract's `preorder` document) creates an index named `saltedHash` on the `saltedDomainHash` property that also enforces uniqueness across all documents of that type:
@@ -466,14 +466,14 @@ There are two data contract-related state transitions: [data contract create](#d
 
 Data contracts are created on the platform by submitting the [data contract object](#data-contract-object) in a data contract create state transition consisting of:
 
-| Field                | Type                                          | Description                                                                                                                                           |
-| -------------------- | --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| protocolVersion      | integer                                       | The platform protocol version ([currently `1`](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/version/mod.rs#L9))               |
-| type                 | integer                                       | State transition type (`0` for data contract create)                                                                                                  |
-| dataContract         | [data contract object](#data-contract-object) | Object containing the data contract details                                                                                                           |
-| entropy              | array of bytes                                | Entropy used to generate the data contract ID. Generated as [shown here](../protocol-ref/state-transition.md#entropy-generation). (32 bytes) |
-| signaturePublicKeyId | number                                        | The `id` of the [identity public key](../protocol-ref/identity.md#identity-publickeys) that signed the state transition                      |
-| signature            | array of bytes                                | Signature of state transition data (65 or 96 bytes)                                                                                                   |
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| protocolVersion      | integer        | The platform protocol version ([currently `1`](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/version/mod.rs#L9)) |
+| type                 | integer        | State transition type (`0` for data contract create)  |
+| dataContract         | [data contract object](#data-contract-object) | Object containing the data contract details |
+| entropy              | array of bytes | Entropy used to generate the data contract ID. Generated as [shown here](../protocol-ref/state-transition.md#entropy-generation). (32 bytes) |
+| signaturePublicKeyId | number         | The `id` of the [identity public key](../protocol-ref/identity.md#identity-publickeys) that signed the state transition |
+| signature            | array of bytes | Signature of state transition data (65 or 96 bytes) |
 
 Each data contract state transition must comply with this JSON-Schema definition established in [rs-dpp](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/stateTransition/dataContractCreate.json):
 
@@ -564,13 +564,13 @@ of a data contract can be updated:
 Data contracts are updated on the platform by submitting the modified [data contract  
 object](#data-contract-object) in a data contract update state transition consisting of:
 
-| Field                | Type                                          | Description                                                                                                                                                           |
-| -------------------- | --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| protocolVersion      | integer                                       | The platform protocol version ([currently `1`](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/version/mod.rs#L9))                               |
-| type                 | integer                                       | State transition type (`4` for data contract update)                                                                                                                  |
+| Field                | Type           | Description |
+| -------------------- | -------------- | ----------- |
+| protocolVersion      | integer        | The platform protocol version ([currently `1`](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/version/mod.rs#L9)) |
+| type                 | integer        | State transition type (`4` for data contract update) |
 | dataContract         | [data contract object](#data-contract-object) | Object containing the updated data contract details<br>**Note:** the data contract's [`version` property](#data-contract-version) must be incremented with each update |
-| signaturePublicKeyId | number                                        | The `id` of the [identity public key](../protocol-ref/identity.md#identity-publickeys) that signed the state transition                                      |
-| signature            | array of bytes                                | Signature of state transition data (65 or 96 bytes)                                                                                                                   |
+| signaturePublicKeyId | number         | The `id` of the [identity public key](../protocol-ref/identity.md#identity-publickeys) that signed the state transition |
+| signature            | array of bytes | Signature of state transition data (65 or 96 bytes) |
 
 Each data contract state transition must comply with this JSON-Schema definition established in  
 [rs-dpp](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/stateTransition/dataContractUpdate.json):
