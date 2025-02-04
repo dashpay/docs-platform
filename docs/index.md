@@ -135,6 +135,7 @@ explanations/platform-consensus
 explanations/dashpay
 explanations/fees
 explanations/nft
+explanations/tokens
 ```
 
 ```{toctree}
