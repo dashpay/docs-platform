@@ -115,24 +115,22 @@ When creating a token, you define its **configuration**, which includes:
 
 ## Distribution Rules
 
-Tokens can have "distribution rules” to define **how new tokens are introduced** over time:
+Tokens can have distribution rules to define how new tokens are introduced over time. The three
+distribution options are summarized below:
 
-1. **Manual Minting**  
-   - If configured to allow manual minting, authorized users (or groups) can create new tokens at will (subject to `maxSupply`).
+| Method | Description |  Example |  Notes |
+| ------ | ----------- | -------- | ------ |
+| Manual Minting      | Authorized users/groups can create new tokens until `maxSupply` is reached | On-demand minting | - Requires proper configuration to enable<br>- Minting actions may be logged or controlled via permissions |
+| Programmed Distribution | A fixed number of tokens are automatically minted to designated identities at a specific timestamp | *On Jan 1, 2047, allocate `X` tokens to the provided identity* | - Automates token release at known times<br>- Useful for predictable, one-time or recurring events at fixed timestamps |
+| Perpetual Distribution | Scheduled release of tokens based on blocks or time intervals | *Emit 100 tokens every 20 blocks*, or *Halve the emission every year* | - Offers ongoing, dynamic token emission patterns.<br>- Supports variable rates (e.g., linear, steps).<br>- Configurable to trigger automatically or require manual "release" actions. |
+  
+Dash Platform also supports three options to control the destination for newly minted tokens:
 
-2. **Programmed Distribution**  
-   - "Hard-coded” events: At a specific future timestamp, a fixed number of tokens automatically mint to certain identities.  
-   - Example: On `Jan 1st, 2027`, allocate `X` tokens to identity `Alice`.
-
-3. **Perpetual Distribution** *(in active development)*  
-   - Releasing tokens on a block-based or time-based schedule, potentially with variable amounts (linear, logarithmic, stepwise, etc.).  
-   - Example: "Emit 100 tokens every 20 blocks,” or "Halve the emission every year,” etc.  
-   - These distributions can be automatically triggered (if configured) or must be manually invoked with a "release” action.
-
-4. **Mint Destination Rules**  
-   - **Choose Destination**: The minter can specify which identity receives newly minted tokens.  
-   - **Fixed Destination**: Newly minted tokens always go to a predetermined identity.  
-   - These can be combined or set exclusively.
+| Option | Description | Notes |
+| - | - | - |
+| **Choose Destination** | The minter can dynamically specify which identity receives newly minted tokens at the time of minting. | - Offers flexibility for varied or on-demand allocation.<br>- Requires minter input for each mint event. |
+| **Fixed Destination**  | Newly minted tokens are always directed to one predetermined (fixed) identity. | - Ensures a strict, predictable allocation.<br>- No choice at the time of minting once configured. |
+| **Combination / Exclusive** | These two approaches can be used exclusively (only one rule active) or combined for more granular control. | - In a combined setup, some mints could go to a fixed address while others go to a chosen address. |
 
 ## Example Workflow
 
