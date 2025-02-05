@@ -4,16 +4,54 @@
 
 # Tokens
 
-The Dash Platform token system is designed to let developers create and manage tokens (similar to ERC-20 style assets) without writing full-blown smart contracts. It leverages Dash’s data contracts, state transition types, and built-in access control (via "groups”) to provide flexible token management.
+Dash Platform is designed to let developers create and manage tokens (similar to ERC-20 style assets) without writing smart contracts. Tokens leverage data contracts, state transitions, and built-in access control (via data contract groups) to provide flexible token management.
 
 Dash Platform’s token functionality provides an easy, account-based approach to creating and managing tokens—much simpler than writing custom smart contracts. Features include:
 
-- **Flexible Configuration**: Localization, supply limits, admin rules, freeze/pause rules, etc
-- **Robust Access Control**: Multi-signature "groups” with user-defined thresholds
+- **Flexible Configuration**: Localization, supply limits, admin rules, freeze/pause rules, etc.
+- **Access Control**: Multi-signature "groups” with user-defined thresholds
 - **Built-in Distribution**: Manual minting or scheduled release over time
 - **Seamless Integration**: Tokens live alongside documents in a single data contract, enabling additional use cases (e.g., ticketing, digital assets, stablecoins)
 
-As this feature continues to develop, expect refinements to distribution types, group logic, and new queries or transitional actions. For now, this documentation should serve as a starting point to understand the fundamental pieces of the new token system.
+## Token Features
+
+The following sections describe the features and options available for token creators using Dash
+Platform.
+
+### Burn
+
+- Destroys a specified amount of tokens from the sender’s balance.  
+- Can be restricted (i.e., not everyone can burn tokens unless configured).
+
+### Mint
+
+- Creates new tokens, either to a specified identity or a fixed destination (depending on configuration).  
+- Requires the sender (or group) to have `mint` permissions.
+
+### Transfer
+
+Moves a given amount of tokens from the sender to a recipient identity. Three types of optional notes can be provided:
+
+- Public note (visible to everyone)  
+- Shared encrypted note (only sender & recipient can decrypt)  
+- Private encrypted note (only sender can decrypt)
+
+### Freeze and Unfreeze
+
+- Freeze prevents an identity from transferring tokens. This is typically used by regulated tokens (e.g., stablecoins).  
+- Unfreeze removes the restriction and enables transfers for the previously frozen identity.
+
+### Destroy Frozen
+
+:::{note}
+This feature can only be used if it was enabled in the token configuration.
+:::
+
+Destroys tokens from a frozen identity’s balance (e.g., blacklisting stolen tokens in stablecoin systems).
+
+### Emergency Action
+
+Globally pause or unpause an entire token. While paused, no transfers can occur.
 
 ## Data Contract Structure
 
@@ -80,39 +118,6 @@ Tokens can have "distribution rules” to define **how new tokens are introduced
    - **Choose Destination**: The minter can specify which identity receives newly minted tokens.  
    - **Fixed Destination**: Newly minted tokens always go to a predetermined identity.  
    - These can be combined or set exclusively.
-
-## Token State Transitions
-
-All token operations occur through **state transitions** (similar to documents in Dash Platform). Key operations include:
-
-1. **Mint**  
-   - Creates new tokens, either to a specified identity or a fixed destination (depending on configuration).  
-   - Requires the sender (or group) to have `mint` permissions.
-
-2. **Burn**  
-   - Destroys a specified amount of tokens from the sender’s balance.  
-   - Can be restricted (i.e., not everyone can burn tokens unless configured).
-
-3. **Transfer**  
-   - Moves a given amount of tokens from the sender to a recipient identity.  
-   - Optional **notes**:  
-     - Public note (visible to everyone)  
-     - Shared encrypted note (only sender & recipient can decrypt)  
-     - Private encrypted note (only sender can decrypt)
-
-4. **Freeze / Unfreeze**  
-   - Freezes an identity’s ability to **send** tokens. This is typically used by regulated tokens (e.g., stablecoins).  
-   - Unfreeze removes this restriction.
-
-5. **Destroy Frozen Funds**  
-   - If allowed, destroys tokens from a frozen identity’s balance (e.g., blacklisting stolen tokens in stablecoin systems).
-
-6. **Emergency Action (Pause / Unpause)**  
-   - Globally pause or unpause an entire token. While paused, no transfers can occur.
-
-7. **Group Actions**  
-   - If a token action (e.g., mint) requires multiple signatures, each group member submits the same state transition referencing the **same "action ID.”**  
-   - Once enough members (by "power”) have approved, the network finalizes the action.
 
 ## Example Workflow
 
