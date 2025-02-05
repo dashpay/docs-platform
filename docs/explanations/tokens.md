@@ -18,15 +18,10 @@ Dash Platform’s token functionality provides an easy, account-based approach t
 The following sections describe the features and options available for token creators using Dash
 Platform.
 
-### Burn
-
-- Destroys a specified amount of tokens from the sender’s balance.  
-- Can be restricted (i.e., not everyone can burn tokens unless configured).
-
 ### Mint
 
-- Creates new tokens, either to a specified identity or a fixed destination (depending on configuration).  
-- Requires the sender (or group) to have `mint` permissions.
+- Creates new tokens, either to a specified identity or a fixed destination depending on the  [distribution rules](#distribution-rules)  configuration
+- Requires the sender (or group) to have `mint` permissions
 
 ### Transfer
 
@@ -36,10 +31,15 @@ Moves a given amount of tokens from the sender to a recipient identity. Three ty
 - Shared encrypted note (only sender & recipient can decrypt)  
 - Private encrypted note (only sender can decrypt)
 
+### Burn
+
+- Destroys a specified amount of tokens from the sender’s balance
+- Can be restricted (i.e., not everyone can burn tokens unless configured)
+
 ### Freeze and Unfreeze
 
-- Freeze prevents an identity from transferring tokens. This is typically used by regulated tokens (e.g., stablecoins).  
-- Unfreeze removes the restriction and enables transfers for the previously frozen identity.
+- Freeze prevents an identity from transferring tokens. This is typically used by regulated tokens (e.g., stablecoins)
+- Unfreeze removes the restriction and enables transfers for the previously frozen identity
 
 ### Destroy Frozen
 
@@ -53,22 +53,37 @@ Destroys tokens from a frozen identity’s balance (e.g., blacklisting stolen to
 
 Globally pause or unpause an entire token. While paused, no transfers can occur.
 
+
+## Token Creation
+
+Creating a token on Dash Platform consists of creating a data contract, registering it on the network, and then creating tokens based on the schema defined in the data contract.
+
+
 ## Data Contract Structure
 
-Tokens live inside a **Data Contract** alongside "Groups.” A single contract can define:
+Tokens live inside the [data contract](./platform-protocol-data-contract.md) alongside documents and groups. A single contract can define:
 
 - **One or more tokens** (indexed by a "token contract position”—e.g., `0`, `1`, etc.).
 - **One or more groups** (for multi-signature / access-control rules).
 
 ### Groups
 
-A "Group” represents a set of members and the "power” of each member:
+Groups can be used to distribute token configuration and update authorization across multiple identities. Each group defines a set of member identities, the voting power of each member, and the required power threshold to authorize an action.
 
-- Each member has an integer "power.”
-- The group itself has a "required power” threshold to authorize an action.
-- You can have up to 256 members in a group, each with a maximum power of `2^16 - 1`.
+- Each group member is assigned an integer power.
+- The group itself has a required power threshold to authorize an action.
+- Groups can have up to 256 members, each with a maximum power of 2^16 - 1 (65536).
 - Changes to a token (e.g., mint, burn, freeze) can be configured so they require group authorization.
-  - Example: "2-of-3 multisig” among three admins, each with certain voting power.
+
+**Example**
+
+A group is defined with a required threshold of 10. The group members are assigned the following power:
+
+- Member A: 6  
+- Member B: 3  
+- Member C: 5  
+
+In this group, Member A and Member C have a combined power of 11 and can perform actions without approval from Member B. If Member B proposes an action, Member A and C must both approve for the action to be authorized.
 
 ### Token Configuration
 
@@ -139,18 +154,6 @@ Tokens can have "distribution rules” to define **how new tokens are introduced
    - Freeze/Unfreeze suspicious addresses.  
    - Burn tokens, or schedule them to be minted in the future, and so on.
 
-## Access Control: Groups in Depth
-
-- Each group has multiple members, each with a certain integer "power.”  
-- The group itself has a "required power” threshold.  
-- If the required threshold is 10, you could have:  
-  - **Member A**: power 6  
-  - **Member B**: power 3  
-  - **Member C**: power 2  
-- To pass an action requiring 10 points, you would need A + B together (9 does not meet 10), or A + C (8 does not meet 10). So in this example, you’d actually need all three.  
-
-*(This is just an example—actual group configuration is flexible.)*
-
 ## Overview of Token Queries
 
 Several new queries have been introduced to interact with tokens on the network:
@@ -180,5 +183,4 @@ Several new queries have been introduced to interact with tokens on the network:
 ## Future Extensions
 
 - **Smart Contracts**: In the future, more advanced logic (e.g., timed release with special conditions, or advanced marketplaces) can be built on top of these tokens.  
-- **Additional Distribution Types**: Some complicated emission patterns (e.g., polynomials, sinusoidal, etc.) might be simplified or removed, depending on real-world usage and developer feedback.  
 - **Document Cost in Tokens**: Eventually, creation of certain documents in a data contract could require payment in a specified token (e.g., for ticketing systems where you "redeem” a token to generate a user-specific ticket document).
