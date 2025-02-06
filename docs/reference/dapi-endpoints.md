@@ -75,6 +75,35 @@ data returned is valid and complete. The endpoints are versioned so updates can 
 |   2   | [`getVotePollsByEndDate`](../reference/dapi-endpoints-platform-endpoints.md#getvotepollsbyenddate) | Retrieves vote polls that will end within a specified date range |
 |   2   | [`waitForStateTransitionResult`](../reference/dapi-endpoints-platform-endpoints.md#waitforstatetransitionresult) | Responds with the state transition hash and either a proof that the state transition was confirmed in a block or an error |
 
+#### Security Group Endpoints
+
+:::{versionadded} 2.0.0
+:::
+
+Security groups provide a way to distribute token configuration and update authorization across multiple identities. Each group defines a set of member identities, the voting power of each member, and the required power threshold to authorize an action. The endpoints in this section are used to retrieve information about groups and the actions they are performing.
+
+| Endpoint | Description |
+| -------- | ----------- |
+| [`getGroupInfo`](../reference/dapi-endpoints-platform-endpoints.md#getgroupinfo) | Retrieves information about a specific group within a contract, including its members and required power. |
+| [`getGroupInfos`](../reference/dapi-endpoints-platform-endpoints.md#getgroupinfos) | Retrieves information about multiple groups within a contract, including their members and required power. |
+| [`getGroupActions`](../reference/dapi-endpoints-platform-endpoints.md#getgroupactions) | Retrieves a list of actions performed by a specific group within a contract. |
+| [`getGroupActionSigners`](../reference/dapi-endpoints-platform-endpoints.md#getgroupactionsigners) | Retrieves the signers for a specified group action within a contract, along with their assigned power. |
+
+#### Token Endpoints
+
+:::{versionadded} 2.0.0
+:::
+
+| Endpoint | Description |
+| -------- | ----------- |
+| [`getIdentityTokenBalances`](../reference/dapi-endpoints-platform-endpoints.md#getidentitytokenbalances) | Retrieves the token balances of a specified identity. |
+| [`getIdentitiesTokenBalances`](../reference/dapi-endpoints-platform-endpoints.md#getidentitiestokenbalances) | Retrieves the token balances for a list of specified identities. |
+| [`getIdentityTokenInfos`](../reference/dapi-endpoints-platform-endpoints.md#getidentitytokeninfos) | Retrieves information about specified tokens for a given identity. |
+| [`getIdentitiesTokenInfos`](../reference/dapi-endpoints-platform-endpoints.md#getidentitiestokeninfos) | Retrieves token information for a list of specified identities. |
+| [`getTokenStatuses`](../reference/dapi-endpoints-platform-endpoints.md#gettokenstatuses) | Retrieves the statuses of specified tokens. |
+| [`getTokenPreProgrammedDistributions`](../reference/dapi-endpoints-platform-endpoints.md#gettokenpreprogrammeddistributions) | Retrieves pre-programmed distributions of a specified token. |
+| [`getTokenTotalSupply`](../reference/dapi-endpoints-platform-endpoints.md#gettokentotalsupply) | Retrieves the total supply of a specified token, including aggregated user accounts and system-held amounts. |
+
 ```{eval-rst}
 ..
   Commented out info
