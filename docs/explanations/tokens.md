@@ -4,6 +4,8 @@
 
 # Tokens
 
+## Overview
+
 Dash Platform is designed to let developers create and manage tokens (similar to ERC-20 style assets) without writing smart contracts. Tokens leverage data contracts, state transitions, and built-in access control (via data contract groups) to provide flexible token management.
 
 Dash Platform’s token functionality provides an easy, account-based approach to creating and managing tokens—much simpler than writing custom smart contracts. Features include:
@@ -20,8 +22,8 @@ Platform.
 
 ### Mint
 
-- Creates new tokens, either to a specified identity or a fixed destination depending on the  [distribution rules](#distribution-rules)  configuration
-- Requires the sender (or group) to have `mint` permissions
+- Creates new tokens, either to a specified identity or a fixed destination depending on the  [distribution rules](#distribution-rules) configuration
+- Requires the sender (or group) to have mint permissions
 
 ### Transfer
 
@@ -57,6 +59,12 @@ Globally pause or unpause an entire token. While paused, no transfers can occur.
 ## Token Creation
 
 Creating a token on Dash Platform consists of creating a data contract, registering it on the network, and then creating tokens based on the schema defined in the data contract.
+
+### Contract setup
+
+Structurally, there is no difference between contracts incorporating tokens and a non-token contracts. While token contracts have a large set of token-specific options, there is no other difference.
+
+Once the data contract design is completed, the contract can be registered on the network in preparation for token minting and use. See the [contract registration tutorial](../tutorials/contracts-and-documents/register-a-data-contract.md) for examples of how to register a contract.
 
 
 ## Data Contract Structure
@@ -178,7 +186,4 @@ Several new queries have been introduced to interact with tokens on the network:
    - **Use Case**: Inspect the details of groups (multi-signature style access control).  
    - **Example**: Retrieve each group’s members, their power (vote weight), and the required power threshold to authorize actions such as minting or configuration changes.
 
-## Future Extensions
 
-- **Smart Contracts**: In the future, more advanced logic (e.g., timed release with special conditions, or advanced marketplaces) can be built on top of these tokens.  
-- **Document Cost in Tokens**: Eventually, creation of certain documents in a data contract could require payment in a specified token (e.g., for ticketing systems where you "redeem” a token to generate a user-specific ticket document).
