@@ -2671,6 +2671,387 @@ grpcurl -proto protos/platform/v0/platform.proto \
   [/block]
 ```
 
+## Security Group Endpoints
+
+Security groups provide a way to distribute token configuration and update authorization across multiple identities. Each group defines a set of member identities, the voting power of each member, and the required power threshold to authorize an action. The endpoints in this section are used to retrieve information about groups and the actions they are performing.
+
+### getGroupInfo
+
+Retrieves information about a specific group within a contract, including its members and required power.
+
+**Returns**: Group information containing member details and required power, or a cryptographic proof.
+
+**Parameters**:
+
+| Name                     | Type     | Required | Description |
+|--------------------------|---------|----------|-------------|
+| `contract_id`            | Bytes   | Yes      | The ID of the contract containing the group |
+| `group_contract_position` | UInt32  | Yes      | The position of the group within the contract |
+| `prove`                  | Boolean | No       | Set to `true` to receive a proof that contains the requested group information |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "contract_id": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
+      "group_contract_position": 1,
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getGroupInfo
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "group_info": {
+      "group_info": {
+        "members": [
+          {
+            "member_id": "01abcdef",
+            "power": 5
+          },
+          {
+            "member_id": "02abcdef",
+            "power": 10
+          }
+        ],
+        "group_required_power": 15
+      }
+    },
+    "metadata": {
+      "height": "2876",
+      "coreChainLockedHeight": 1086885,
+      "epoch": 761,
+      "timeMs": "1724094056585",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-50"
+    }
+  }
+}
+```
+:::
+::::
+
+### getGroupInfos
+
+Retrieves information about multiple groups within a contract, including their members and required power.
+
+**Returns**: A list of group information entries or a cryptographic proof.
+
+**Parameters**:
+
+| Name                                      | Type     | Required | Description |
+|-------------------------------------------|---------|----------|-------------|
+| `contract_id`                             | Bytes   | Yes      | The ID of the contract containing the groups |
+| `start_at_group_contract_position`        | Object  | No       | Filtering options for retrieving groups |
+| `start_at_group_contract_position`<br>`.start_group_contract_position` | UInt32  | No       | The position of the first group to retrieve |
+| `start_at_group_contract_position`<br>`.start_group_contract_position_included` | Boolean | No       | Whether the start position should be included in the results |
+| `count`                                   | UInt32  | No       | The maximum number of groups to retrieve |
+| `prove`                                   | Boolean | No       | Set to `true` to receive a proof that contains the requested group information |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "contract_id": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
+      "start_at_group_contract_position": {
+        "start_group_contract_position": 1,
+        "start_group_contract_position_included": true
+      },
+      "count": 5,
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getGroupInfos
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "group_infos": {
+      "group_infos": [
+        {
+          "group_contract_position": 1,
+          "members": [
+            {
+              "member_id": "01abcdef",
+              "power": 5
+            },
+            {
+              "member_id": "02abcdef",
+              "power": 10
+            }
+          ],
+          "group_required_power": 15
+        },
+        {
+          "group_contract_position": 2,
+          "members": [
+            {
+              "member_id": "03abcdef",
+              "power": 8
+            },
+            {
+              "member_id": "04abcdef",
+              "power": 12
+            }
+          ],
+          "group_required_power": 20
+        }
+      ]
+    },
+    "metadata": {
+      "height": "2876",
+      "coreChainLockedHeight": 1086885,
+      "epoch": 761,
+      "timeMs": "1724094056585",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-50"
+    }
+  }
+}
+```
+:::
+::::
+
+### getGroupActions
+
+Retrieves a list of actions performed by a specific group within a contract.
+
+**Parameters**:
+
+| Name                              | Type     | Required | Description |
+|-----------------------------------|---------|----------|-------------|
+| `contract_id`                     | Bytes   | Yes      | The ID of the contract containing the group |
+| `group_contract_position`         | UInt32  | Yes      | The position of the group within the contract |
+| `status`                          | Enum    | Yes      | The status of the actions to retrieve (`ACTIVE = 0`, `CLOSED = 1`) |
+| `start_at_action_id`              | Object  | No       | Filtering options for retrieving actions |
+| `start_at_action_id.`<br>`start_action_id` | Bytes  | No       | The action ID to start retrieving from |
+| `start_at_action_id.`<br>`start_action_id_included` | Boolean | No | Whether the start action should be included in the results |
+| `count`                           | UInt32  | No       | The maximum number of actions to retrieve |
+| `prove`                           | Boolean | No       | Set to `true` to receive a proof that contains the requested group actions |
+
+**Returns**: A list of group actions or a cryptographic proof. The response message contains details about actions performed by a group, including various event types related to token operations, document updates, contract updates, and emergency actions. The list of possible actions is shown in the table below:
+
+| Event Type        | Subtype                     | Description |
+|-------------------|---------------------------|-------------|
+| **TokenEvent**    | `mint`                     | Mints new tokens to a specified recipient. |
+|                   | `burn`                     | Burns (destroys) a specified amount of tokens. |
+|                   | `freeze`                   | Freezes a specific entity's tokens. |
+|                   | `unfreeze`                 | Unfreezes a specific entity's tokens. |
+|                   | `destroy_frozen_funds`     | Destroys frozen funds for a specified entity. |
+|                   | `transfer`                 | Transfers tokens to another recipient. |
+|                   | `emergency_action`         | Performs emergency actions like pausing or resuming the contract. |
+|                   | `token_config_update`      | Updates token configuration settings. |
+| **DocumentEvent** | `create`                   | Represents the creation of a document. |
+| **ContractEvent** | `update`                   | Represents updates to a contract. |
+
+**Response Object**
+
+| Name                | Type      | Description |
+|---------------------|----------|-------------|
+| `group_actions`    | Object   | Contains a list of group actions |
+| `group_actions.group_actions` | Array of `GroupActionEntry` | A list of actions performed by the group |
+| `group_actions.group_actions[]`<br>`.action_id` | Bytes  | Unique identifier for the action |
+| `group_actions.group_actions[]`<br>`.event` | Object  | The event data associated with the action |
+| `group_actions.group_actions[]`<br>`.event.event_type` | Object  | The specific type of event |
+| `group_actions.group_actions[]`<br>`.event.event_type.token_event` | Object  | Token-related event details (if applicable). See [Token Event details](#token-event-fields) below for complete information. |
+| `group_actions.group_actions[]`<br>`.event.event_type.document_event` | Object  | Document-related event details |
+| `group_actions.group_actions[]`<br>`.event.event_type.document_event`<br>`.create` | Object  | Document creation event details |
+| `group_actions.group_actions[]`<br>`.event.event_type.document_event`<br>`.create.created_document` | Bytes | Created document data |
+| `group_actions.group_actions[]`<br>`.event.event_type.contract_event` | Object  | Contract-related event details |
+| `group_actions.group_actions[]`<br>`.event.event_type.contract_event`<br>`.update` | Object  | Contract update event details |
+| `group_actions.group_actions[]`<br>`.event.event_type.contract_event`<br>`.update.updated_contract` | Bytes | Updated contract data |
+| `metadata` | Object  | Metadata about the blockchain state. See [metadata details](#data-proofs-and-metadata) for complete information |
+
+#### Token Event Fields
+
+| Token Event Type | Field Name | Type | Description |
+|-----------------|------------|------|-------------|
+| `mint`   | `amount` | UInt64 | Amount of tokens to mint. |
+|          | `recipient_id` | Bytes | Identity ID of the recipient. |
+|          | `public_note` | String (Optional) | A public note for the mint event. |
+| `burn`   | `amount` | UInt64 | Amount of tokens to burn. |
+|          | `public_note` | String (Optional) | A public note for the burn event. |
+| `freeze` | `frozen_id` | Bytes | Identifier of the entity being frozen. |
+|          | `public_note` | String (Optional) | A public note for the freeze event. |
+| `unfreeze` | `frozen_id` | Bytes | Identifier of the entity being unfrozen. |
+|          | `public_note` | String (Optional) | A public note for the unfreeze event. |
+| `destroy_frozen_funds` | `frozen_id` | Bytes | Identifier of the frozen entity. |
+|          | `amount` | UInt64 | Amount of frozen funds to destroy. |
+|          | `public_note` | String (Optional) | A public note for the destruction event. |
+| `transfer` | `recipient_id` | Bytes | Identity ID of the recipient. |
+|          | `amount` | UInt64 | Amount of tokens transferred. |
+|          | `public_note` | String (Optional) | A public note for the transfer event. |
+|          | `shared_encrypted_note` | Object (Optional) | Encrypted note shared by sender and recipient. |
+|          | `personal_encrypted_note` | Object (Optional) | Personal encrypted note. |
+| `emergency_action` | `action_type` | Enum (`PAUSE = 0`, `RESUME = 1`) | Type of emergency action performed. |
+|           | `public_note` | String (Optional) | A public note for the emergency action. |
+| `token_config_update` | `token_config_update_item` | Bytes | Configuration update details. |
+|           | `public_note` | String (Optional) | A public note for the configuration update. |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "contract_id": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
+      "group_contract_position": 1,
+      "status": 0,
+      "start_at_action_id": {
+        "start_action_id": "01abcdef",
+        "start_action_id_included": true
+      },
+      "count": 5,
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getGroupActions
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "group_actions": {
+      "group_actions": [
+        {
+          "action_id": "01abcdef",
+          "event": {
+            "event_type": {
+              "token_event": {
+                "mint": {
+                  "amount": "1000",
+                  "recipient_id": "02abcdef",
+                  "public_note": "Minting 1000 tokens"
+                }
+              }
+            }
+          }
+        },
+        {
+          "action_id": "02abcdef",
+          "event": {
+            "event_type": {
+              "token_event": {
+                "burn": {
+                  "amount": "500",
+                  "public_note": "Burning 500 tokens"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "metadata": {
+      "height": "2876",
+      "coreChainLockedHeight": 1086885,
+      "epoch": 761,
+      "timeMs": "1724094056585",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-50"
+    }
+  }
+}
+```
+:::
+::::
+
+### getGroupActionSigners
+
+Retrieves the signers for a specified group action within a contract, along with their assigned power.
+
+**Returns**: A list of group action signers or a cryptographic proof.
+
+**Parameters**
+
+| Name                      | Type     | Required | Description |
+|---------------------------|---------|----------|-------------|
+| `contract_id`             | Bytes   | Yes      | The ID of the contract containing the group action. |
+| `group_contract_position` | UInt32  | Yes      | The position of the group within the contract. |
+| `status`                  | Enum    | Yes      | The status of the action (`ACTIVE = 0`, `CLOSED = 1`). |
+| `action_id`               | Bytes   | Yes      | The unique identifier of the action. |
+| `prove`                   | Boolean | No       | Set to `true` to receive a proof that contains the requested group action signers. |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "contract_id": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
+      "group_contract_position": 1,
+      "status": 0,
+      "action_id": "01abcdef",
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getGroupActionSigners
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "group_action_signers": {
+      "signers": [
+        {
+          "signer_id": "01abcdef",
+          "power": 5
+        },
+        {
+          "signer_id": "02abcdef",
+          "power": 10
+        }
+      ]
+    },
+    "metadata": {
+      "height": "2876",
+      "coreChainLockedHeight": 1086885,
+      "epoch": 761,
+      "timeMs": "1724094056585",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-50"
+    }
+  }
+}
+```
+:::
+::::
+
 ## Token Endpoints
 
 ### getIdentityTokenBalances
