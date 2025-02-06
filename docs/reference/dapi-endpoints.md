@@ -9,35 +9,12 @@
 endpoints expose some layer 1 information while the gRPC endpoints support layer 2 as well as
 streaming of events related to blocks and transactions/transitions.
 
-## JSON-RPC Endpoints
-
-| Layer | Endpoint | Description |
-| :---: | -------- | ----------- |
-|   1   | [`getBestBlockHash`](../reference/dapi-endpoints-json-rpc-endpoints.md#getbestblockhash) | Returns block hash of the chaintip |
-|   1   | [`getBlockHash`](../reference/dapi-endpoints-json-rpc-endpoints.md#getblockhash)         | Returns block hash of the requested block |
-
-## gRPC Endpoints
-
-### Core gRPC Service
-
-| Layer | Endpoint |   |
-| :---: | -------- | - |
-|   1   | [`broadcastTransaction`](../reference/dapi-endpoints-core-grpc-endpoints.md#broadcasttransaction) | Broadcasts the provided transaction |
-|   1   | [`getBestBlockHeight`](../reference/dapi-endpoints-core-grpc-endpoints.md#getbestblockheight) | *Added in Dash Platform v1.0.0*<br>Return the best block height|
-|   1   | [`getBlock`](../reference/dapi-endpoints-core-grpc-endpoints.md#getblock) | **Disabled in Dash Platform v1.0.0**<br>Returns information for the requested block |
-|   1   | [`getBlockchainStatus`](../reference/dapi-endpoints-core-grpc-endpoints.md#getblockchainstatus) | *Added in Dash Platform v1.0.0*<br>Returns blockchain status information |
-|   1   | [`getMasternodeStatus`](../reference/dapi-endpoints-core-grpc-endpoints.md#getmasternodestatus) | **Disabled in Dash Platform v1.0.0**<br>Returns masternode status information |
-|   1   | [`getTransaction`](../reference/dapi-endpoints-core-grpc-endpoints.md#gettransaction) | Returns details for the requested transaction |
-|   1   | [`subscribeTo` `BlockHeadersWithChainLocks`](../reference/dapi-endpoints-core-grpc-endpoints.md#subscribetoblockheaderswithchainlocks) | Returns the requested block headers along with the associated ChainLocks. |
-|   1   | [`subscribeToMasternodeList`](../reference/dapi-endpoints-core-grpc-endpoints.md#subscribetomasternodelist) | *Added in Dash Platform v1.0.0*<br>Returns the full masternode list from the genesis block to the chain tip as the first message and provides update messages with every new block |
-|   1   | [`subscribeTo` `TransactionsWithProofs`](../reference/dapi-endpoints-core-grpc-endpoints.md#subscribetotransactionswithproofs) | Returns transactions matching the provided bloom filter along with the associated [`islock` message](https://docs.dash.org/projects/core/en/stable/docs/reference/p2p-network-instantsend-messages.html#islock) and [merkle block](https://docs.dash.org/projects/core/en/stable/docs/reference/p2p-network-data-messages.html#merkleblock) |
-
-### Platform gRPC Endpoints
+## Platform Endpoints
 
 In addition to providing the request data, the following endpoints can also provide proofs that the
 data returned is valid and complete. The endpoints are versioned so updates can be made to them without introducing issues for endpoint consumers.
 
-#### Contested Resources
+### Contested Resources
 
 | Endpoint | Description |
 | -------- | ----------- |
@@ -47,7 +24,7 @@ data returned is valid and complete. The endpoints are versioned so updates can 
 | [`getContestedResourceVoteState`](../reference/dapi-endpoints-platform-endpoints.md#getcontestedresourcevotestate) | *Added in Dash Platform v1.0.0*<br>Retrieves the state of a vote for a specific contested resource. |
 | [`getVotePollsByEndDate`](../reference/dapi-endpoints-platform-endpoints.md#getvotepollsbyenddate) | Retrieves vote polls that will end within a specified date range |
 
-#### Data Contracts and Documents
+### Data Contracts and Documents
 
 | Endpoint | Description |
 | -------- | ----------- |
@@ -56,7 +33,7 @@ data returned is valid and complete. The endpoints are versioned so updates can 
 | [`getDataContractHistory`](../reference/dapi-endpoints-platform-endpoints.md#getdatacontracthistory) | Returns the requested data contract history |
 | [`getDocuments`](../reference/dapi-endpoints-platform-endpoints.md#getdocuments) | Returns the requested document(s) |
 
-#### Identities
+### Identities
 
 | Endpoint | Description |
 | -------- | ----------- |
@@ -70,7 +47,7 @@ data returned is valid and complete. The endpoints are versioned so updates can 
 | [`getIdentitiesBalances`](../reference/dapi-endpoints-platform-endpoints.md#getidentitiesbalances) | *Added in Dash Platform v1.3.0*<br>Retrieves the balances for a list of identities |
 | [`getIdentitiesContractKeys`](../reference/dapi-endpoints-platform-endpoints.md#getidentitiescontractkeys) | *Added in Dash Platform v1.0.0*<br>Returns keys associated to a specific contract for multiple Identities |
 
-#### Security Groups
+### Security Groups
 
 :::{versionadded} 2.0.0
 :::
@@ -84,14 +61,14 @@ Security groups provide a way to distribute token configuration and update autho
 | [`getGroupActions`](../reference/dapi-endpoints-platform-endpoints.md#getgroupactions) | Retrieves a list of actions performed by a specific group within a contract. |
 | [`getGroupActionSigners`](../reference/dapi-endpoints-platform-endpoints.md#getgroupactionsigners) | Retrieves the signers for a specified group action within a contract, along with their assigned power. |
 
-#### State Transitions
+### State Transitions
 
 | Endpoint | Description |
 | -------- | ----------- |
 | [`broadcastStateTransition`](../reference/dapi-endpoints-platform-endpoints.md#broadcaststatetransition) | Broadcasts the provided State Transition |
 | [`waitForStateTransitionResult`](../reference/dapi-endpoints-platform-endpoints.md#waitforstatetransitionresult) | Responds with the state transition hash and either a proof that the state transition was confirmed in a block or an error |
 
-#### System Info
+### System Info
 
 | Endpoint | Description |
 | -------- | ----------- |
@@ -107,7 +84,7 @@ Security groups provide a way to distribute token configuration and update autho
 | [`getStatus`](../reference/dapi-endpoints-platform-endpoints.md#getstatus) | *Added in Dash Platform v1.2.0*<br>Retrieves status information related to Dash Platform |
 | [`getTotalCreditsInPlatform`](../reference/dapi-endpoints-platform-endpoints.md#gettotalcreditsinplatform) | *Added in Dash Platform v1.1.0*<br>Retrieves the total credits in the platform |
 
-#### Tokens
+### Tokens
 
 :::{versionadded} 2.0.0
 :::
@@ -131,6 +108,29 @@ Security groups provide a way to distribute token configuration and update autho
   }
   [/block]
 ```
+
+## Core Endpoints
+
+### JSON-RPC Endpoints
+
+| Layer | Endpoint | Description |
+| :---: | -------- | ----------- |
+|   1   | [`getBestBlockHash`](../reference/dapi-endpoints-json-rpc-endpoints.md#getbestblockhash) | Returns block hash of the chaintip |
+|   1   | [`getBlockHash`](../reference/dapi-endpoints-json-rpc-endpoints.md#getblockhash)         | Returns block hash of the requested block |
+
+### gRPC Endpoints
+
+| Layer | Endpoint |   |
+| :---: | -------- | - |
+|   1   | [`broadcastTransaction`](../reference/dapi-endpoints-core-grpc-endpoints.md#broadcasttransaction) | Broadcasts the provided transaction |
+|   1   | [`getBestBlockHeight`](../reference/dapi-endpoints-core-grpc-endpoints.md#getbestblockheight) | *Added in Dash Platform v1.0.0*<br>Return the best block height|
+|   1   | [`getBlock`](../reference/dapi-endpoints-core-grpc-endpoints.md#getblock) | **Disabled in Dash Platform v1.0.0**<br>Returns information for the requested block |
+|   1   | [`getBlockchainStatus`](../reference/dapi-endpoints-core-grpc-endpoints.md#getblockchainstatus) | *Added in Dash Platform v1.0.0*<br>Returns blockchain status information |
+|   1   | [`getMasternodeStatus`](../reference/dapi-endpoints-core-grpc-endpoints.md#getmasternodestatus) | **Disabled in Dash Platform v1.0.0**<br>Returns masternode status information |
+|   1   | [`getTransaction`](../reference/dapi-endpoints-core-grpc-endpoints.md#gettransaction) | Returns details for the requested transaction |
+|   1   | [`subscribeTo` `BlockHeadersWithChainLocks`](../reference/dapi-endpoints-core-grpc-endpoints.md#subscribetoblockheaderswithchainlocks) | Returns the requested block headers along with the associated ChainLocks. |
+|   1   | [`subscribeToMasternodeList`](../reference/dapi-endpoints-core-grpc-endpoints.md#subscribetomasternodelist) | *Added in Dash Platform v1.0.0*<br>Returns the full masternode list from the genesis block to the chain tip as the first message and provides update messages with every new block |
+|   1   | [`subscribeTo` `TransactionsWithProofs`](../reference/dapi-endpoints-core-grpc-endpoints.md#subscribetotransactionswithproofs) | Returns transactions matching the provided bloom filter along with the associated [`islock` message](https://docs.dash.org/projects/core/en/stable/docs/reference/p2p-network-instantsend-messages.html#islock) and [merkle block](https://docs.dash.org/projects/core/en/stable/docs/reference/p2p-network-data-messages.html#merkleblock) |
 
 :::{note}
 The previous version of documentation can be [viewed
