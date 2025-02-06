@@ -2671,6 +2671,467 @@ grpcurl -proto protos/platform/v0/platform.proto \
   [/block]
 ```
 
+## Token Endpoints
+
+### getIdentityTokenBalances
+
+Retrieves token balances for a specified identity.
+
+**Returns**: A list of token balances or a cryptographic proof.
+
+**Parameters**:
+
+| Name         | Type     | Required | Description |
+|-------------|---------|----------|-------------|
+| `identity_id` | Bytes   | Yes      | The ID of the identity for which token balances are requested |
+| `token_ids`  | Array of Bytes | No | List of token IDs to filter the balances |
+| `prove`      | Boolean | No       | Set to `true` to receive a proof containing the requested token balances |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "identity_id": "HxUSbKaFxbuvTUprfr5a0yU6u4EasTdSWvSxOwKjmxw=",
+      "token_ids": ["1122334455667788", "99aabbccddeeff00"],
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getIdentityTokenBalances
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "tokenBalances": {
+      "token_balances": [
+        {
+          "token_id": "1122334455667788",
+          "balance": 1000
+        },
+        {
+          "token_id": "99aabbccddeeff00",
+          "balance": 500
+        }
+      ]
+    },
+    "metadata": {
+      "height": "2876",
+      "coreChainLockedHeight": 1086885,
+      "epoch": 761,
+      "timeMs": "1724094056585",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-50"
+    }
+  }
+}
+```
+:::
+::::
+
+### getIdentitiesTokenBalances
+
+Retrieves the token balances for a list of specified identities.
+
+**Returns**: A list of identity token balances or a cryptographic proof.
+
+**Parameters**:
+
+| Name         | Type     | Required | Description |
+|-------------|---------|----------|-------------|
+| `token_id`    | Bytes   | Yes      | The ID of the token whose balances are requested |
+| `identity_ids` | Array of Bytes | No      | A list of identity IDs to filter the balances |
+| `prove`        | Boolean | No      | Set to `true` to receive a proof that contains the requested token balances |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "token_id": "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
+      "identity_ids": ["HxUSbKaFxbuvTUprfr5a0yU6u4EasTdSWvSxOwKjmxw=", "02abcdef"],
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getIdentitiesTokenBalances
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "identity_token_balances": {
+      "identity_token_balances": [
+        {
+          "identity_id": "HxUSbKaFxbuvTUprfr5a0yU6u4EasTdSWvSxOwKjmxw=",
+          "balance": "500"
+        },
+        {
+          "identity_id": "02abcdef",
+          "balance": "1000"
+        }
+      ]
+    },
+    "metadata": {
+      "height": "2876",
+      "coreChainLockedHeight": 1086885,
+      "epoch": 761,
+      "timeMs": "1724094056585",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-50"
+    }
+  }
+}
+```
+:::
+::::
+
+### getIdentityTokenInfos
+
+Retrieves information about specified tokens for a given identity.
+
+**Returns**: A list of token information entries or a cryptographic proof.
+
+**Parameters**:
+
+| Name         | Type     | Required | Description |
+|-------------|---------|----------|-------------|
+| `identity_id` | Bytes   | Yes      | The ID of the identity whose token information is requested |
+| `token_ids`   | Array of Bytes | No      | A list of token IDs to retrieve information for |
+| `prove`       | Boolean | No      | Set to `true` to receive a proof that contains the requested token information |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "identity_id": "HxUSbKaFxbuvTUprfr5a0yU6u4EasTdSWvSxOwKjmxw=",
+      "token_ids": ["01abcdef", "02abcdef"],
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getIdentityTokenInfos
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "token_infos": {
+      "token_infos": [
+        {
+          "token_id": "01abcdef",
+          "info": {
+            "frozen": false
+          }
+        },
+        {
+          "token_id": "02abcdef",
+          "info": {
+            "frozen": true
+          }
+        }
+      ]
+    },
+    "metadata": {
+      "height": "2876",
+      "coreChainLockedHeight": 1086885,
+      "epoch": 761,
+      "timeMs": "1724094056585",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-50"
+    }
+  }
+}
+```
+:::
+::::
+
+### getIdentitiesTokenInfos
+
+Retrieves token information for a list of specified identities.
+
+**Returns**: A list of token information entries for the provided identities or a cryptographic proof.
+
+**Parameters**:
+
+| Name         | Type     | Required | Description |
+|-------------|---------|----------|-------------|
+| `token_id`    | Bytes   | Yes      | The ID of the token whose information is requested |
+| `identity_ids` | Array of Bytes | No      | A list of identity IDs to retrieve token information for |
+| `prove`        | Boolean | No      | Set to `true` to receive a proof that contains the requested token information |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "token_id": "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
+      "identity_ids": ["HxUSbKaFxbuvTUprfr5a0yU6u4EasTdSWvSxOwKjmxw=", "02abcdef"],
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getIdentitiesTokenInfos
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "identity_token_infos": {
+      "token_infos": [
+        {
+          "identity_id": "HxUSbKaFxbuvTUprfr5a0yU6u4EasTdSWvSxOwKjmxw=",
+          "info": {
+            "frozen": false
+          }
+        },
+        {
+          "identity_id": "02abcdef",
+          "info": {
+            "frozen": true
+          }
+        }
+      ]
+    },
+    "metadata": {
+      "height": "2876",
+      "coreChainLockedHeight": 1086885,
+      "epoch": 761,
+      "timeMs": "1724094056585",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-50"
+    }
+  }
+}
+```
+:::
+::::
+
+### getTokenStatuses
+
+Retrieves the statuses of specified tokens.
+
+**Returns**: A list of token statuses or a cryptographic proof.
+
+**Parameters**:
+
+| Name        | Type     | Required | Description |
+|------------|---------|----------|-------------|
+| `token_ids`  | Array of Bytes | Yes      | A list of token IDs to retrieve statuses for |
+| `prove`      | Boolean | No      | Set to `true` to receive a proof that contains the requested token statuses |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "token_ids": ["01abcdef", "02abcdef"],
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getTokenStatuses
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "token_statuses": {
+      "token_statuses": [
+        {
+          "token_id": "01abcdef",
+          "paused": false
+        },
+        {
+          "token_id": "02abcdef",
+          "paused": true
+        }
+      ]
+    },
+    "metadata": {
+      "height": "2876",
+      "coreChainLockedHeight": 1086885,
+      "epoch": 761,
+      "timeMs": "1724094056585",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-50"
+    }
+  }
+}
+```
+:::
+::::
+
+### getTokenPreProgrammedDistributions
+
+Retrieves pre-programmed distributions of a specified token.
+
+**Returns**: A list of token distributions scheduled over time or a cryptographic proof.
+
+**Parameters**:
+
+| Name                      | Type     | Required | Description |
+|---------------------------|---------|----------|-------------|
+| `token_id`                | Bytes   | Yes      | The ID of the token whose distributions are requested |
+| `start_at_info`           | Object  | No       | Filtering options for the distribution query |
+| `start_at_info.start_time_ms` | UInt64  | No       | Start timestamp (in milliseconds) for filtering distributions |
+| `start_at_info.start_recipient` | Bytes   | No       | The recipient ID to start retrieving distributions from |
+| `start_at_info.start_recipient_included` | Boolean | No       | Whether the start recipient should be included in the results |
+| `limit`                   | UInt32  | No       | Maximum number of results to return |
+| `prove`                   | Boolean | No       | Set to `true` to receive a proof that contains the requested token distributions |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "token_id": "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
+      "start_at_info": {
+        "start_time_ms": 1724094056000,
+        "start_recipient": "01abcdef",
+        "start_recipient_included": true
+      },
+      "limit": 10,
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getTokenPreProgrammedDistributions
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "token_distributions": {
+      "token_distributions": [
+        {
+          "timestamp": 1724094056000,
+          "distributions": [
+            {
+              "recipient_id": "01abcdef",
+              "amount": "500"
+            },
+            {
+              "recipient_id": "02abcdef",
+              "amount": "1000"
+            }
+          ]
+        }
+      ]
+    },
+    "metadata": {
+      "height": "2876",
+      "coreChainLockedHeight": 1086885,
+      "epoch": 761,
+      "timeMs": "1724094056585",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-50"
+    }
+  }
+}
+```
+:::
+::::
+
+### getTokenTotalSupply
+
+Retrieves the total supply of a specified token, including aggregated user accounts and system-held amounts.
+
+**Returns**: The total supply of a token or a cryptographic proof.
+
+**Parameters**:
+
+| Name        | Type     | Required | Description |
+|------------|---------|----------|-------------|
+| `token_id`  | Bytes   | Yes      | The ID of the token whose total supply is requested |
+| `prove`      | Boolean | No      | Set to `true` to receive a proof that contains the requested token supply data |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "token_id": "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getTokenTotalSupply
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "token_total_supply": {
+      "token_id": "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
+      "total_aggregated_amount_in_user_accounts": "1000000",
+      "total_system_amount": "500000"
+    },
+    "metadata": {
+      "height": "2876",
+      "coreChainLockedHeight": 1086885,
+      "epoch": 761,
+      "timeMs": "1724094056585",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-50"
+    }
+  }
+}
+```
+:::
+::::
+
 ## Deprecated Endpoints
 
 The following endpoints were recently deprecated. See the [previous version of documentation](https://docs.dash.org/projects/platform/en/0.25.0/docs/reference/dapi-endpoints-platform-endpoints.html) for additional information on these endpoints.
