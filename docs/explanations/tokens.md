@@ -38,10 +38,10 @@ Moves a given amount of tokens from the sender to a recipient identity. Three ty
 - Destroys a specified amount of tokens from the sender’s balance
 - Can be restricted (i.e., not everyone can burn tokens unless configured)
 
-### Freeze and Unfreeze
+### Freeze and Thaw
 
 - Freeze prevents an identity from transferring tokens. This is typically used by regulated tokens (e.g., stablecoins)
-- Unfreeze removes the restriction and enables transfers for the previously frozen identity
+- Unfreeze (thaw) removes the restriction and enables transfers for the previously frozen identity
 
 ### Destroy Frozen
 
@@ -55,6 +55,14 @@ Destroys tokens from a frozen identity’s balance (e.g., blacklisting stolen to
 
 Globally pause or unpause an entire token. While paused, no transfers can occur.
 
+### Group Actions
+
+- If a token action (e.g., mint) is protected by a control group, members of the group must cooperate to complete the action.
+- Once enough members (by power) approve, the network finalizes the action.
+
+### Configuration Updates
+
+Dash Platform tokens support dynamic configuration updates for token parameters including localization options, maximum supply, token history, group membership, and rules governing various features.
 
 ## Token Creation
 
@@ -67,12 +75,9 @@ Structurally, there is no difference between contracts incorporating tokens and 
 Once the data contract design is completed, the contract can be registered on the network in preparation for token minting and use. See the [contract registration tutorial](../tutorials/contracts-and-documents/register-a-data-contract.md) for examples of how to register a contract.
 
 
-## Data Contract Structure
+## Token Trading
 
-Tokens live inside the [data contract](./platform-protocol-data-contract.md) alongside documents and groups. A single contract can define:
-
-- **One or more tokens** (indexed by a "token contract position”—e.g., `0`, `1`, etc.).
-- **One or more groups** (for multi-signature / access-control rules).
+A planned token marketplace will support trading of tokens.
 
 ### Groups
 
@@ -139,51 +144,3 @@ Dash Platform also supports three options to control the destination for newly m
 | **Choose Destination** | The minter can dynamically specify which identity receives newly minted tokens at the time of minting. | - Offers flexibility for varied or on-demand allocation.<br>- Requires minter input for each mint event. |
 | **Fixed Destination**  | Newly minted tokens are always directed to one predetermined (fixed) identity. | - Ensures a strict, predictable allocation.<br>- No choice at the time of minting once configured. |
 | **Combination / Exclusive** | These two approaches can be used exclusively (only one rule active) or combined for more granular control. | - In a combined setup, some mints could go to a fixed address while others go to a chosen address. |
-
-## Example Workflow
-
-1. **Create a Data Contract**  
-   - Define "groups” for your multi-sig rules (optional).  
-   - Define a "token” with the appropriate configuration (max supply, distribution, etc.).
-
-2. **Issue a State Transition**  
-   - For instance, to mint tokens if you are an authorized minter.  
-   - If multi-signature is required, multiple members must submit transitions referencing the same "action ID.”
-
-3. **Query the Network**  
-   - **Get Identity Token Balances:** Confirm how many tokens each identity holds.  
-   - **Get Token Total Supply:** Verify total minted tokens match your expectations.  
-   - **Get Group Info:** Check which group members can sign off on future changes.
-
-4. **Perform Other Operations**  
-   - Transfer tokens between identities (with optional notes).  
-   - Freeze/Unfreeze suspicious addresses.  
-   - Burn tokens, or schedule them to be minted in the future, and so on.
-
-## Overview of Token Queries
-
-Several new queries have been introduced to interact with tokens on the network:
-
-1. **Get Identity Token Balances**  
-   - **Use Case**: Retrieve all token balances belonging to a **single identity** across multiple tokens.
-   - **Example**: Return the amounts of `TokenA`, `TokenB`, etc. owned by identity `X`.
-
-2. **Get Identities Token Balances**  
-   - **Use Case**: Retrieve the balances of **one particular token** across multiple identities.
-   - **Example**: Return the balances of `TokenA` for identities `X`, `Y`, `Z`.
-
-3. **Get Token Statuses / Infos**  
-   - **Use Case**: Check if a token is paused, or if an identity is frozen.  
-   - **Examples**:  
-     - **Is the token globally paused?**  
-     - **Is this identity’s balance frozen?**  
-
-4. **Get Token Total Supply**  
-   - **Use Case**: Audit the total supply of a token on-chain.  
-   - **Example**: Compare the "official” total supply vs. the sum of all balances across identities to verify everything is in sync.
-
-5. **Get Group Info**  
-   - **Use Case**: Inspect the details of groups (multi-signature style access control).  
-   - **Example**: Retrieve each group’s members, their power (vote weight), and the required power threshold to authorize actions such as minting or configuration changes.
-
-
