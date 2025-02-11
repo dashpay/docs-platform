@@ -8,24 +8,26 @@
 
 Dash Platform is designed to let developers create and manage tokens (similar to ERC-20 style assets) without writing smart contracts. Tokens leverage data contracts, state transitions, and built-in access control (via data contract groups) to provide flexible token management.
 
-Dash Platform’s token functionality provides an easy, account-based approach to creating and managing tokens—much simpler than writing custom smart contracts. Features include:
+## Token Features
+
+Dash Platform’s token functionality provides an easy, account-based approach to creating and managing tokens that is much simpler than writing custom smart contracts. Features include:
 
 - **Flexible Configuration**: Localization, supply limits, admin rules, freeze/pause rules, etc.
 - **Access Control**: Multi-signature "groups” with user-defined thresholds
 - **Built-in Distribution**: Manual minting or scheduled release over time
 - **Seamless Integration**: Tokens live alongside documents in a single data contract, enabling additional use cases (e.g., ticketing, digital assets, stablecoins)
 
-## Token Features
+### Actions
 
 The following sections describe the features and options available for token creators using Dash
 Platform.
 
-### Mint
+#### Mint
 
 - Creates new tokens, either to a specified identity or a fixed destination depending on the  [distribution rules](#distribution-rules) configuration
 - Requires the sender (or group) to have mint permissions
 
-### Transfer
+#### Transfer
 
 Moves a given amount of tokens from the sender to a recipient identity. Three types of optional notes can be provided:
 
@@ -33,17 +35,17 @@ Moves a given amount of tokens from the sender to a recipient identity. Three ty
 - Shared encrypted note (only sender & recipient can decrypt)  
 - Private encrypted note (only sender can decrypt)
 
-### Burn
+#### Burn
 
 - Destroys a specified amount of tokens from the sender’s balance
 - Can be restricted (i.e., not everyone can burn tokens unless configured)
 
-### Freeze and Thaw
+#### Freeze and Thaw
 
 - Freeze prevents an identity from transferring tokens. This is typically used by regulated tokens (e.g., stablecoins)
 - Unfreeze (thaw) removes the restriction and enables transfers for the previously frozen identity
 
-### Destroy Frozen
+#### Destroy Frozen
 
 :::{note}
 This feature can only be used if it was enabled in the token configuration.
@@ -51,33 +53,60 @@ This feature can only be used if it was enabled in the token configuration.
 
 Destroys tokens from a frozen identity’s balance (e.g., blacklisting stolen tokens in stablecoin systems).
 
-### Emergency Action
+#### Emergency Action
 
 Globally pause or unpause an entire token. While paused, no transfers can occur.
 
-### Group Actions
-
-- If a token action (e.g., mint) is protected by a control group, members of the group must cooperate to complete the action.
-- Once enough members (by power) approve, the network finalizes the action.
-
-### Configuration Updates
+#### Configuration Updates
 
 Dash Platform tokens support dynamic configuration updates for token parameters including localization options, maximum supply, token history, group membership, and rules governing various features.
 
-## Token Creation
+### Configuration
 
-Creating a token on Dash Platform consists of creating a data contract, registering it on the network, and then creating tokens based on the schema defined in the data contract.
+When creating a token, you define its configuration, which includes:
 
-### Contract setup
+1. **Naming Conventions / Localizations**  
+   - Token name in multiple languages, how to capitalize it, singular vs. plural form, etc.
 
-Structurally, there is no difference between contracts incorporating tokens and a non-token contracts. While token contracts have a large set of token-specific options, there is no other difference.
+2. **Decimals / Precision**  
+   - How many decimal places the token uses.
 
-Once the data contract design is completed, the contract can be registered on the network in preparation for token minting and use. See the [contract registration tutorial](../tutorials/contracts-and-documents/register-a-data-contract.md) for examples of how to register a contract.
+3. **Base Supply and Maximum Supply**  
+   - Initial supply at launch (`baseSupply`).  
+   - Hard cap (`maxSupply`). If `maxSupply = baseSupply`, no minting is possible.
 
+4. **History**
+   - Whether or not to store a full on-chain log of every token action (e.g., transfers, burns, etc.).
 
-## Token Trading
+5. **Paused State** (initial)
+   - Whether the token starts out "paused” (no transfers allowed) upon creation.
 
-A planned token marketplace will support trading of tokens.
+6. **Change Control Rules**
+   - Who (or what group) can change specific parameters later.  
+   - Whether the authority to change these parameters can be transferred or locked to "no one.”
+   - Example: "Only group #1 can update the max supply.”
+
+7. **Main Control Group**  
+   - A catch-all group that can be referenced in other fields to control multiple aspects of the token with the same group.
+
+#### Distribution Rules
+
+Tokens can have distribution rules to define how new tokens are introduced over time. The three
+distribution options are summarized below:
+
+| Method | Description |  Example |  Notes |
+| ------ | ----------- | -------- | ------ |
+| Manual Minting      | Authorized users/groups can create new tokens until `maxSupply` is reached | On-demand minting | - Requires proper configuration to enable<br>- Minting actions may be logged or controlled via permissions |
+| Programmed Distribution | A fixed number of tokens are automatically minted to designated identities at a specific timestamp | *On Jan 1, 2047, allocate `X` tokens to the provided identity* | - Automates token release at known times<br>- Useful for predictable, one-time or recurring events at fixed timestamps |
+| Perpetual Distribution | Scheduled release of tokens based on blocks or time intervals | *Emit 100 tokens every 20 blocks*, or *Halve the emission every year* | - Offers ongoing, dynamic token emission patterns.<br>- Supports variable rates (e.g., linear, steps).<br>- Configurable to trigger automatically or require manual "release" actions. |
+  
+Dash Platform also supports three options to control the destination for newly minted tokens:
+
+| Option | Description | Notes |
+| - | - | - |
+| **Choose Destination** | The minter can dynamically specify which identity receives newly minted tokens at the time of minting. | - Offers flexibility for varied or on-demand allocation.<br>- Requires minter input for each mint event. |
+| **Fixed Destination**  | Newly minted tokens are always directed to one predetermined (fixed) identity. | - Ensures a strict, predictable allocation.<br>- No choice at the time of minting once configured. |
+| **Combination / Exclusive** | These two approaches can be used exclusively (only one rule active) or combined for more granular control. | - In a combined setup, some mints could go to a fixed address while others go to a chosen address. |
 
 ### Groups
 
@@ -98,49 +127,16 @@ A group is defined with a required threshold of 10. The group members are assign
 
 In this group, Member A and Member C have a combined power of 11 and can perform actions without approval from Member B. If Member B proposes an action, Member A and C must both approve for the action to be authorized.
 
-### Token Configuration
+## Token Creation
 
-When creating a token, you define its **configuration**, which includes:
+Creating a token on Dash Platform consists of creating a data contract, registering it on the network, and then creating tokens based on the schema defined in the data contract.
 
-1. **Naming Conventions / Localizations**  
-   - Token name in multiple languages, how to capitalize it, singular vs. plural form, etc.
+### Contract setup
 
-2. **Decimals / Precision**  
-   - How many decimal places the token uses.
+Structurally, there is no difference between contracts incorporating tokens and a non-token contracts. While token contracts have a large set of token-specific options, there is no other difference.
 
-3. **Base Supply and Maximum Supply**  
-   - Initial supply at launch (`baseSupply`).  
-   - Hard cap (`maxSupply`). If `maxSupply = baseSupply`, no minting is possible.
+Once the data contract design is completed, the contract can be registered on the network in preparation for token minting and use. See the [contract registration tutorial](../tutorials/contracts-and-documents/register-a-data-contract.md) for examples of how to register a contract.
 
-4. **History Keeping**  
-   - Whether or not to store a full on-chain log of every token action (e.g., transfers, burns, etc.).
+## Token Trading
 
-5. **Paused State** (initial)  
-   - Whether the token starts out "paused” (no transfers allowed) upon creation.
-
-6. **Change Control Rules**  
-   - Who (or what group) can change specific fields later.  
-   - Whether the authority to change these fields can be **transferred** or locked to "no one.”  
-   - Example: "Only group #0 (2-of-3 multisig) can update the max supply.”
-
-7. **Main Control Group**  
-   - A "catch-all” group you can reference in other fields if you want the same group to control multiple aspects of the token.
-
-## Distribution Rules
-
-Tokens can have distribution rules to define how new tokens are introduced over time. The three
-distribution options are summarized below:
-
-| Method | Description |  Example |  Notes |
-| ------ | ----------- | -------- | ------ |
-| Manual Minting      | Authorized users/groups can create new tokens until `maxSupply` is reached | On-demand minting | - Requires proper configuration to enable<br>- Minting actions may be logged or controlled via permissions |
-| Programmed Distribution | A fixed number of tokens are automatically minted to designated identities at a specific timestamp | *On Jan 1, 2047, allocate `X` tokens to the provided identity* | - Automates token release at known times<br>- Useful for predictable, one-time or recurring events at fixed timestamps |
-| Perpetual Distribution | Scheduled release of tokens based on blocks or time intervals | *Emit 100 tokens every 20 blocks*, or *Halve the emission every year* | - Offers ongoing, dynamic token emission patterns.<br>- Supports variable rates (e.g., linear, steps).<br>- Configurable to trigger automatically or require manual "release" actions. |
-  
-Dash Platform also supports three options to control the destination for newly minted tokens:
-
-| Option | Description | Notes |
-| - | - | - |
-| **Choose Destination** | The minter can dynamically specify which identity receives newly minted tokens at the time of minting. | - Offers flexibility for varied or on-demand allocation.<br>- Requires minter input for each mint event. |
-| **Fixed Destination**  | Newly minted tokens are always directed to one predetermined (fixed) identity. | - Ensures a strict, predictable allocation.<br>- No choice at the time of minting once configured. |
-| **Combination / Exclusive** | These two approaches can be used exclusively (only one rule active) or combined for more granular control. | - In a combined setup, some mints could go to a fixed address while others go to a chosen address. |
+A planned token marketplace will support trading of tokens.
