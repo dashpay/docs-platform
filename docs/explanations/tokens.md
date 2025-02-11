@@ -63,43 +63,53 @@ Moves a given amount of tokens from the sender to a recipient identity. Three ty
 
 #### Destroy Frozen
 
-Destroys tokens from a frozen identity’s balance (e.g., blacklisting stolen tokens in stablecoin systems).
+- Destroy tokens from a frozen identity’s balance (e.g., blacklisting stolen tokens in stablecoin systems).
 
 #### Emergency Action
 
-Globally pause or unpause an entire token. While paused, no transfers can occur.
+- Globally pause or unpause an entire token. While paused, no transfers can occur.
 
 #### Configuration Updates
 
-Dash Platform tokens support dynamic configuration updates for token parameters including localization options, maximum supply, token history, group membership, and rules governing various features.
+Update token configuration parameters including:
+
+- Localization options
+- Maximum supply
+- History retention
+- Group membership
 
 ### Configuration
 
 When creating a token, you define its configuration, which includes:
 
-1. **Naming Conventions / Localizations**  
-   - Token name in multiple languages, how to capitalize it, singular vs. plural form, etc.
+#### Display Conventions
 
-2. **Decimals / Precision**  
-   - How many decimal places the token uses.
+- The token name in multiple languages, how to capitalize it, singular vs. plural form, etc.
+- How many decimal places the token uses
 
-3. **Base Supply and Maximum Supply**  
-   - Initial supply at launch (`baseSupply`).  
-   - Hard cap (`maxSupply`). If `maxSupply = baseSupply`, no minting is possible.
+#### Token Supply
 
-4. **History**
-   - Whether or not to store a full on-chain log of every token action (e.g., transfers, burns, etc.).
+- Initial supply at launch (base supply)
+- Maximum supply
+  - No minting is possible if the maximum supply equals the base supply
+  - Token can be configured to allow authorized parties to change the maximum supply
 
-5. **Paused State** (initial)
-   - Whether the token starts out "paused” (no transfers allowed) upon creation.
+#### History
 
-6. **Change Control Rules**
-   - Who (or what group) can change specific parameters later.  
-   - Whether the authority to change these parameters can be transferred or locked to "no one.”
-   - Example: "Only group #1 can update the max supply.”
+- Whether or not to store a full on-chain log of every token action (e.g., transfers, burns, etc.)
 
-7. **Main Control Group**  
-   - A catch-all group that can be referenced in other fields to control multiple aspects of the token with the same group.
+#### Initial State
+
+- Whether the token starts out paused (no transfers allowed) upon creation
+
+#### Change Control Rules
+
+- Who (or what group) can change specific parameters later
+- Whether the authority to change these parameters can be transferred or locked to "no one"
+- Example: "Only group #1 can update the max supply.”
+#### Main Control Group
+
+- A group that can be referenced in other fields to control multiple aspects of the token with the same group.
 
 #### Distribution Rules
 
