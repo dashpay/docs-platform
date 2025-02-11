@@ -173,6 +173,74 @@ Structurally, there is no difference between contracts incorporating tokens and 
 
 Once the data contract design is completed, the contract can be registered on the network in preparation for token minting and use. See the [contract registration tutorial](../tutorials/contracts-and-documents/register-a-data-contract.md) for examples of how to register a contract.
 
+### Example Contract
+
+```json
+{
+   "$format_version": "1",
+   "id": "AcYUCSvAmUwryNsQqkqqD1o3BnFuzepGtR3Mhh2swLk6",
+   "ownerId": "HLfavpy1B2mVHnpYYDKDVM76eWJRqvPfuuASy7cyJBXC",
+   "version": 1,
+   "documentSchemas": {},
+   "tokens": {
+     "0": {
+       "$format_version": "0",
+       "conventions": {
+         "$format_version": "0",
+         "localizations": {
+           "en": {
+             "shouldCapitalize": true,
+             "singularForm": "flurgon",
+             "pluralForm": "flurgons"
+           }
+         },
+         "decimals": 8
+       },
+       "baseSupply": 1000000,
+       "maxSupply": 5000000,
+       "transferable": true,
+       "keepsHistory": false,
+       "freezeRules": {
+         "V0": {
+           "authorized_to_make_change": "ContractOwner",
+           "admin_action_takers": "ContractOwner",
+           "changing_authorized_action_takers_to_no_one_allowed": false,
+           "changing_admin_action_takers_to_no_one_allowed": false,
+           "self_changing_admin_action_takers_allowed": false
+         }
+       },
+       "unfreezeRules": {
+         "V0": {
+           "authorized_to_make_change": "ContractOwner",
+           "admin_action_takers": "ContractOwner",
+           "changing_authorized_action_takers_to_no_one_allowed": false,
+           "changing_admin_action_takers_to_no_one_allowed": false,
+           "self_changing_admin_action_takers_allowed": false
+         }
+       },
+       "destroyFrozenFundsRules": {
+         "V0": {
+           "authorized_to_make_change": "ContractOwner",
+           "admin_action_takers": "ContractOwner",
+           "changing_authorized_action_takers_to_no_one_allowed": false,
+           "changing_admin_action_takers_to_no_one_allowed": false,
+           "self_changing_admin_action_takers_allowed": false
+         }
+       },
+       "emergencyActionRules": {
+         "V0": {
+           "authorized_to_make_change": "ContractOwner",
+           "admin_action_takers": "ContractOwner",
+           "changing_authorized_action_takers_to_no_one_allowed": false,
+           "changing_admin_action_takers_to_no_one_allowed": false,
+           "self_changing_admin_action_takers_allowed": false
+         }
+       }
+     }
+   }
+}
+```
+
 ## Token Trading
 
 A planned token marketplace will support trading of tokens.
