@@ -111,9 +111,21 @@ When creating a token, you define its configuration, which includes:
 
 - A group that can be referenced in other fields to control multiple aspects of the token with the same group.
 
-#### Distribution Rules
+#### Rules
 
-Tokens can have distribution rules to define how new tokens are introduced over time. The three
+Token rules assign permissions for various token control and configuration actions. There are two rule types: Admin and Control.
+
+##### Admin
+
+Admin rules are used to manage who has permission to perform actions by modifying which user or [group](#groups) is authorized to complete an action. An admin group can also modify who has admin authorization if the data contract has enabled that option.
+
+##### Control
+
+Control rules define who can perform token actions. This includes actions like [mint](#mint) or [burn](#burn), as well as [token distribution](#token-distribution).
+
+##### Token Distribution
+
+Tokens have distribution rules to define how new tokens are introduced over time. The three
 distribution options are summarized below:
 
 | Method | Description |  Example |  Notes |
@@ -137,11 +149,13 @@ Groups can be used to distribute token configuration and update authorization ac
 - Each group member is assigned an integer power.
 - The group itself has a required power threshold to authorize an action.
 - Groups can have up to 256 members, each with a maximum power of 2^16 - 1 (65536).
-- Changes to a token (e.g., mint, burn, freeze) can be configured so they require group authorization.
+- Changes to a token (e.g., mint, burn, freeze) can be configured so they require group authorization. This is done by assigning the group under the [token rule configuration](#rules).
 
 **Example**
 
-A group is defined with a required threshold of 10. The group members are assigned the following power:
+A token's mint action is protected by a [control rule](#control) that only authorizes a group to mint tokens. Therefore, members of the assigned group must cooperate to complete the action. Once enough members (by power) approve, the network will finalize the action. 
+
+For example, a group is defined with a required threshold of 10. The group members are assigned the following power:
 
 - Member A: 6  
 - Member B: 3  
@@ -153,7 +167,7 @@ In this group, Member A and Member C have a combined power of 11 and can perform
 
 Creating a token on Dash Platform consists of creating a data contract, registering it on the network, and then creating tokens based on the schema defined in the data contract.
 
-### Contract setup
+### Contract Setup
 
 Structurally, there is no difference between contracts incorporating tokens and a non-token contracts. While token contracts have a large set of token-specific options, there is no other difference.
 
