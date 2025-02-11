@@ -6,21 +6,37 @@
 
 ## Overview
 
-Dash Platform is designed to let developers create and manage tokens (similar to ERC-20 style assets) without writing smart contracts. Tokens leverage data contracts, state transitions, and built-in access control (via data contract groups) to provide flexible token management.
+Dash Platform is designed to let developers create and manage tokens (similar to ERC-20 style assets) without writing smart contracts. Tokens leverage data contracts, state transitions, and built-in access control (via data contract groups) to enable flexible token management.
 
 ## Token Features
 
 Dash Platform’s token functionality provides an easy, account-based approach to creating and managing tokens that is much simpler than writing custom smart contracts. Features include:
 
-- **Flexible Configuration**: Localization, supply limits, admin rules, freeze/pause rules, etc.
-- **Access Control**: Multi-signature "groups” with user-defined thresholds
-- **Built-in Distribution**: Manual minting or scheduled release over time
+- **Flexible [Configuration](#configuration)**: Localization, supply limits, admin rules, freeze/pause rules, etc.
+- **Access Control [Groups](#groups)**: Multi-party groups with user-defined thresholds support complex authorization schemes for token management
+- **Built-in [Distribution](#distribution-rules)**: Manual minting or scheduled release over time
 - **Seamless Integration**: Tokens live alongside documents in a single data contract, enabling additional use cases (e.g., ticketing, digital assets, stablecoins)
+
+The following sections describe the features and configuration options available for token creators
+using Dash Platform.
 
 ### Actions
 
-The following sections describe the features and options available for token creators using Dash
-Platform.
+:::{note}
+Authorization for token actions is based on the configuration defined in the data contract. Token creators may choose to disable specific actions or limit the ability to modify the token configuration.
+:::
+
+The initial token implementation includes all actions required to create, use, and manage tokens. This table summarizes available actions:
+
+| Action                 | Description |
+|------------------------|-------------|
+| [Mint](#mint)          | Mints new tokens to a specified recipient |
+| [Transfer](#transfer)  | Transfers tokens to another recipient |
+| [Burn](#burn)          | Burns (destroys) a specified amount of tokens |
+| [Freeze / Thaw](#freeze-and-thaw) | Freezes/thaws a specific entity's tokens |
+| [Destroy frozen funds](#destroy-frozen) | Destroys frozen funds for a specified entity |
+| [Emergency action](#emergency-action) | Performs emergency actions like pausing or resuming the contract |
+| [Token config update](#configuration-updates) | Updates token configuration settings |
 
 #### Mint
 
@@ -46,10 +62,6 @@ Moves a given amount of tokens from the sender to a recipient identity. Three ty
 - Unfreeze (thaw) removes the restriction and enables transfers for the previously frozen identity
 
 #### Destroy Frozen
-
-:::{note}
-This feature can only be used if it was enabled in the token configuration.
-:::
 
 Destroys tokens from a frozen identity’s balance (e.g., blacklisting stolen tokens in stablecoin systems).
 
