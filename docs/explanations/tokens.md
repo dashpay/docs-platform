@@ -14,7 +14,7 @@ Dash Platform’s token functionality provides a straightforward, account-based 
 
 - **Flexible [Configuration](#configuration)**: Localization, supply limits, admin rules, freeze/pause rules, etc.
 - **Access Control [Groups](#groups)**: Multi-party groups with user-defined thresholds support complex authorization schemes for token management
-- **Built-in [Distribution](#token-distribution-rules)**: Manual minting or scheduled release over time
+- **Built-in [Distribution](#distribution-rules)**: Manual minting or scheduled release over time
 - **Seamless Integration**: Tokens live alongside documents in a single data contract, enabling additional use cases (e.g., ticketing, digital assets, stablecoins)
 
 The following sections describe the features and configuration options available for token creators
@@ -40,7 +40,7 @@ The initial token implementation includes all actions required to create, use, a
 
 #### Mint
 
-- Creates new tokens to a specified identity or a fixed destination depending on the  [distribution rules](#token-distribution-rules) configuration
+- Creates new tokens to a specified identity or a fixed destination depending on the  [distribution rules](#distribution-rules) configuration
 - Requires the sender (or group) to have mint permissions
 
 #### Transfer
@@ -132,7 +132,7 @@ Admin level rule settings are used to manage who has permission to perform actio
 
 **Control**
 
-Control level rule settings define who can perform token actions. This includes actions like [mint](#mint) or [burn](#burn), as well as [token distribution](#token-distribution-rules).
+Control level rule settings define who can perform token actions. This includes actions like [mint](#mint) or [burn](#burn), as well as [token distribution](#distribution-rules).
 
 ##### Parameters
 
@@ -158,8 +158,23 @@ Rules can authorize no one, specific identities, or multiparty groups. The compl
 | `MainGroup`          | Only the [main control group](#main-control-group) is authorized |
 | `Group(<x>)`         | Only the specific group based in contract position "x" is authorized |
 
+##### Action Rules
 
-##### Token Distribution Rules
+Token action rules can be configured to allow updating who has access to many [token actions](#actions). The following table summarizes the available action rules:
+
+| Configuration Rule | Can be Changed?   | Default Authorized Party|
+|:-------------------|:------------------|:--------|
+| Conventions change rules   | Yes | NoOne |
+| Max supply change rules    | Yes | NoOne |
+| Manual minting rules       | Yes | Contract Owner |
+| Manual burning rules       | Yes | Contract Owner |
+| Freeze rules               | Yes | NoOne |
+| Unfreeze rules             | Yes | NoOne |
+| Destroy frozen funds rules | Yes | NoOne |
+| Emergency_action rules     | Yes | NoOne |
+| Main control group can be modified | Yes | NoOne |
+
+##### Distribution Rules
 
 Tokens have distribution rules to define how new tokens are introduced over time. The three
 distribution options are summarized below:
