@@ -6,11 +6,11 @@
 
 ## Overview
 
-Dash Platform is designed to let developers create and manage tokens (similar to ERC-20 style assets) without writing smart contracts. Tokens leverage data contracts, state transitions, and built-in access control (via data contract groups) to enable flexible token management.
+Dash Platform lets developers create and manage tokens (similar to ERC-20 style assets) without writing smart contracts. Tokens leverage data contracts, state transitions, and built-in access control (via data contract groups) to enable flexible token management.
 
 ## Token Features
 
-Dash Platform’s token functionality provides an easy, account-based approach to creating and managing tokens that is much simpler than writing custom smart contracts. Features include:
+Dash Platform’s token functionality provides a straightforward, account-based approach to creating and managing tokens that is much simpler than writing custom smart contracts. Features include:
 
 - **Flexible [Configuration](#configuration)**: Localization, supply limits, admin rules, freeze/pause rules, etc.
 - **Access Control [Groups](#groups)**: Multi-party groups with user-defined thresholds support complex authorization schemes for token management
@@ -23,7 +23,7 @@ using Dash Platform.
 ### Actions
 
 :::{note}
-Authorization for token actions is based on the configuration defined in the data contract. Token creators may choose to disable specific actions or limit the ability to modify the token configuration.
+Authorization for token actions is based on the configuration defined in the data contract. Token creators may disable specific actions or limit the ability to modify the token configuration.
 :::
 
 The initial token implementation includes all actions required to create, use, and manage tokens. This table summarizes available actions:
@@ -40,16 +40,15 @@ The initial token implementation includes all actions required to create, use, a
 
 #### Mint
 
-- Creates new tokens, either to a specified identity or a fixed destination depending on the  [distribution rules](#token-distribution-rules) configuration
+- Creates new tokens to a specified identity or a fixed destination depending on the  [distribution rules](#token-distribution-rules) configuration
 - Requires the sender (or group) to have mint permissions
 
 #### Transfer
 
-Moves a given amount of tokens from the sender to a recipient identity. Three types of optional notes can be provided:
-
-- Public note (visible to everyone)  
-- Shared encrypted note (only sender & recipient can decrypt)  
-- Private encrypted note (only sender can decrypt)
+- Moves a given amount of tokens from the sender to a recipient identity. Three types of optional notes can be provided:
+  - Public note (visible to everyone)  
+  - Shared encrypted note (only sender & recipient can decrypt)  
+  - Private encrypted note (only sender can decrypt)
 
 #### Burn
 
@@ -71,7 +70,7 @@ Moves a given amount of tokens from the sender to a recipient identity. Three ty
 
 #### Configuration Updates
 
-Update token configuration parameters including:
+Update token configuration parameters, including:
 
 - Localization options
 - Maximum supply
@@ -107,7 +106,7 @@ When creating a token, you define its configuration using the following paramete
 
 #### History
 
-- Whether or not to store a full on-chain log of every token action (e.g., transfers, burns, etc.)
+- Whether or not to store a complete on-chain log of every token action (e.g., transfers, burns, etc.)
 
 #### Initial State
 
@@ -117,7 +116,7 @@ When creating a token, you define its configuration using the following paramete
 
 - Who (or what group) can change specific parameters later
 - Whether the authority to change these parameters can be transferred or locked to "no one"
-- Example: "Only group #1 can update the max supply.”
+- Example: "Only group #1 can update the max supply.” See the [Rules section](#rules) for details.
 
 #### Main Control Group
 
@@ -125,15 +124,15 @@ When creating a token, you define its configuration using the following paramete
 
 #### Rules
 
-Token rules assign permissions for various token control and configuration actions. There are two rule types: Admin and Control.
+Token rules assign permissions for various token control and configuration actions. There are levels of authorization defined by rules: Admin and Control.
 
 **Admin**
 
-Admin rules are used to manage who has permission to perform actions by modifying which user or [group](#groups) is authorized to complete an action. An admin group can also modify who has admin authorization if the data contract has enabled that option.
+Admin level rule settings are used to manage who has permission to perform actions by modifying which user or [group](#groups) is authorized to complete an action. An admin group can also modify who has admin authorization if the data contract has enabled that option.
 
 **Control**
 
-Control rules define who can perform token actions. This includes actions like [mint](#mint) or [burn](#burn), as well as [token distribution](#token-distribution-rules).
+Control level rule settings define who can perform token actions. This includes actions like [mint](#mint) or [burn](#burn), as well as [token distribution](#token-distribution-rules).
 
 ##### Parameters
 
@@ -141,15 +140,15 @@ Each rule consists of the following parameters [defined in DPP](https://github.c
 
 | Field | Description |
 | - | - |
-| `authorized_to`<br>`_make_change` | This is who is authorized to make such a change. Valid values listed in the [authorized parties table](#authorized-parties). |
-| `admin_action_takers` | This is who is authorized to make such a change to the people authorized to make a change. Valid values listed in the [authorized parties table](#authorized-parties). |
+| `authorized_to`<br>`_make_change` | This is who is authorized to make such a change. Valid values are listed in the [authorized parties table](#authorized-parties). |
+| `admin_action_takers` | This is who is authorized to make such a change to the people authorized to make a change. Valid values are listed in the [authorized parties table](#authorized-parties). |
 | `changing_authorized`<br>`_action_takers_to`<br>`_no_one_allowed` | Are we allowed to change to `NoOne` in the future (default: false) |
 | `changing_admin_action`<br>`_takers_to_no_one_allowed` | Are we allowed to change the admin action takers to `NoOne` in the future (default: false) |
 | `self_changing_admin_`<br>`action_takers_allowed` | Can the admin action takers change themselves (default: false) |
 
 ###### Authorized Parties
 
-Rules can authorize no one, specific identities, or multiparty groups. The full set of options [defined by DPP](https://github.com/dashpay/platform/blob/v2.0-tokens-dev/packages/rs-dpp/src/data_contract/change_control_rules/authorized_action_takers.rs#L14-L21) is:
+Rules can authorize no one, specific identities, or multiparty groups. The complete set of options [defined by DPP](https://github.com/dashpay/platform/blob/v2.0-tokens-dev/packages/rs-dpp/src/data_contract/change_control_rules/authorized_action_takers.rs#L14-L21) is:
 
 | Authorized Party     | Description |
 |----------------------|-------------|
@@ -192,13 +191,13 @@ Groups can be used to distribute token configuration and update authorization ac
 
 A token's mint action is protected by a [rule](#rules) that only authorizes a group to mint tokens. Therefore, members of the assigned group must cooperate to complete the action. Once enough members (by power) approve, the network will finalize the action.
 
-For example, a group is defined with a required threshold of 10. The group members are assigned the following power:
+For example, a group is defined with a required threshold of 10. The group members are assigned the following powers:
 
 - Member A: 6  
 - Member B: 3  
 - Member C: 5  
 
-In this group, Member A and Member C have a combined power of 11 and can perform actions without approval from Member B. If Member B proposes an action, Member A and C must both approve for the action to be authorized.
+In this group, Member A and Member C have a combined power of 11 and can perform actions without approval from Member B. If Member B proposes an action, Member A and C must both approve to authorize the action.
 
 ## Token Creation
 
@@ -206,7 +205,7 @@ Creating a token on Dash Platform consists of creating a data contract, register
 
 ### Contract Setup
 
-Structurally, there is no difference between contracts incorporating tokens and a non-token contracts. While token contracts have a large set of token-specific options, there is no other difference.
+Structurally, there is no difference between contracts incorporating tokens and non-token contracts. While token contracts have a large set of token-specific options, there is no other difference.
 
 Once the data contract design is completed, the contract can be registered on the network in preparation for token minting and use. See the [contract registration tutorial](../tutorials/contracts-and-documents/register-a-data-contract.md) for examples of how to register a contract.
 
@@ -280,4 +279,4 @@ Once the data contract design is completed, the contract can be registered on th
 
 ## Token Trading
 
-A planned token marketplace will support trading of tokens.
+A planned token marketplace will support the trading of tokens.
