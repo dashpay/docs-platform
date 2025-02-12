@@ -14,7 +14,7 @@ Dash Platform’s token functionality provides an easy, account-based approach t
 
 - **Flexible [Configuration](#configuration)**: Localization, supply limits, admin rules, freeze/pause rules, etc.
 - **Access Control [Groups](#groups)**: Multi-party groups with user-defined thresholds support complex authorization schemes for token management
-- **Built-in [Distribution](#distribution-rules)**: Manual minting or scheduled release over time
+- **Built-in [Distribution](#token-distribution-rules)**: Manual minting or scheduled release over time
 - **Seamless Integration**: Tokens live alongside documents in a single data contract, enabling additional use cases (e.g., ticketing, digital assets, stablecoins)
 
 The following sections describe the features and configuration options available for token creators
@@ -40,7 +40,7 @@ The initial token implementation includes all actions required to create, use, a
 
 #### Mint
 
-- Creates new tokens, either to a specified identity or a fixed destination depending on the  [distribution rules](#distribution-rules) configuration
+- Creates new tokens, either to a specified identity or a fixed destination depending on the  [distribution rules](#token-distribution-rules) configuration
 - Requires the sender (or group) to have mint permissions
 
 #### Transfer
@@ -80,7 +80,18 @@ Update token configuration parameters including:
 
 ### Configuration
 
-When creating a token, you define its configuration, which includes:
+When creating a token, you define its configuration using the following parameters. Most parameters can be configured to allow modifications after data contract registration; however, the base supply is immutable:
+
+| Configuration Parameter | Mutable           | Default |
+|:------------------------|:------------------|:--------|
+| [Conventions](#display-conventions)      | Yes | N/A. Depends on implementation |
+| [Decimal precision](#display-conventions)| Yes | [8](https://github.com/dashpay/platform/blob/v2.0-tokens-dev/packages/rs-dpp/src/data_contract/associated_token/token_configuration_convention/v0/mod.rs#L38) |
+| [Base supply](#token-supply)             | **No**  | [100000](https://github.com/dashpay/platform/blob/v2.0-tokens-dev/packages/rs-dpp/src/data_contract/associated_token/token_configuration/v0/mod.rs#L159) |
+| [Maximum supply](#token-supply)          | Yes | None |
+| [Keep history](#history)                 | Yes | True |
+| [Start paused](#initial-state)           | Yes | False |
+| [Main control group](#main-control-group)| Yes | None |
+| Main control group can be modified       | Yes | NoOne |
 
 #### Display Conventions
 
@@ -107,6 +118,7 @@ When creating a token, you define its configuration, which includes:
 - Who (or what group) can change specific parameters later
 - Whether the authority to change these parameters can be transferred or locked to "no one"
 - Example: "Only group #1 can update the max supply.”
+
 #### Main Control Group
 
 - A group that can be referenced in other fields to control multiple aspects of the token with the same group.
@@ -115,15 +127,40 @@ When creating a token, you define its configuration, which includes:
 
 Token rules assign permissions for various token control and configuration actions. There are two rule types: Admin and Control.
 
-##### Admin
+**Admin**
 
 Admin rules are used to manage who has permission to perform actions by modifying which user or [group](#groups) is authorized to complete an action. An admin group can also modify who has admin authorization if the data contract has enabled that option.
 
-##### Control
+**Control**
 
-Control rules define who can perform token actions. This includes actions like [mint](#mint) or [burn](#burn), as well as [token distribution](#token-distribution).
+Control rules define who can perform token actions. This includes actions like [mint](#mint) or [burn](#burn), as well as [token distribution](#token-distribution-rules).
 
-##### Token Distribution
+##### Parameters
+
+Each rule consists of the following parameters [defined in DPP](https://github.com/dashpay/platform/blob/v2.0-tokens-dev/packages/rs-dpp/src/data_contract/change_control_rules/v0/mod.rs) that control its behavior:
+
+| Field | Description |
+| - | - |
+| `authorized_to`<br>`_make_change` | This is who is authorized to make such a change. Valid values listed in the [authorized parties table](#authorized-parties). |
+| `admin_action_takers` | This is who is authorized to make such a change to the people authorized to make a change. Valid values listed in the [authorized parties table](#authorized-parties). |
+| `changing_authorized`<br>`_action_takers_to`<br>`_no_one_allowed` | Are we allowed to change to `NoOne` in the future (default: false) |
+| `changing_admin_action`<br>`_takers_to_no_one_allowed` | Are we allowed to change the admin action takers to `NoOne` in the future (default: false) |
+| `self_changing_admin_`<br>`action_takers_allowed` | Can the admin action takers change themselves (default: false) |
+
+###### Authorized Parties
+
+Rules can authorize no one, specific identities, or multiparty groups. The full set of options [defined by DPP](https://github.com/dashpay/platform/blob/v2.0-tokens-dev/packages/rs-dpp/src/data_contract/change_control_rules/authorized_action_takers.rs#L14-L21) is:
+
+| Authorized Party     | Description |
+|----------------------|-------------|
+| `NoOne`              | No one is authorized |
+| `ContractOwner`      | Only the contract owner is authorized |
+| `Identity(Identifier)` | Only an identity is authorized |
+| `MainGroup`          | Only the [main control group](#main-control-group) is authorized |
+| `Group(<x>)`         | Only the specific group based in contract position "x" is authorized |
+
+
+##### Token Distribution Rules
 
 Tokens have distribution rules to define how new tokens are introduced over time. The three
 distribution options are summarized below:
@@ -153,7 +190,7 @@ Groups can be used to distribute token configuration and update authorization ac
 
 **Example**
 
-A token's mint action is protected by a [control rule](#control) that only authorizes a group to mint tokens. Therefore, members of the assigned group must cooperate to complete the action. Once enough members (by power) approve, the network will finalize the action. 
+A token's mint action is protected by a [rule](#rules) that only authorizes a group to mint tokens. Therefore, members of the assigned group must cooperate to complete the action. Once enough members (by power) approve, the network will finalize the action.
 
 For example, a group is defined with a required threshold of 10. The group members are assigned the following power:
 
