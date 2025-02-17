@@ -105,39 +105,4 @@ More detailed information about the `publicKeys` object can be found in the [ide
 
 ## State Transition Signing
 
-State transitions must be signed by a private key associated with the identity creating the state transition. Since v0.23, each identity must have at least two keys: a primary key (security level `0`) that is only used when signing identity update state transitions and an additional key (security level `2`) that is used to sign all other state transitions.
-
-The process to sign a state transition consists of the following steps:
-
-1. Canonical CBOR encode the state transition data - this include all ST fields except the `signature` and `signaturePublicKeyId`
-2. Sign the encoded data with a private key associated with the identity creating the state transition
-3. Set the state transition `signature` to the value of the signature created in the previous step
-4. For all state transitions _other than identity create or topup_, set the state transition`signaturePublicKeyId` to the [public key `id`](../protocol-ref/identity.md#public-key-id) corresponding to the key used to sign
-
-### Signature Validation
-
-The `signature` validation (see [js-dpp](https://github.com/dashpay/platform/blob/v0.24.5/packages/js-dpp/test/unit/stateTransition/validation/validateStateTransitionIdentitySignatureFactory.spec.js)) verifies that:
-
-1. The identity exists
-2. The identity has a public key
-3. The identity's public key is of type `ECDSA`
-4. The state transition signature is valid
-
-The example test output below shows the necessary criteria:
-
-```text
-validateStateTransitionIdentitySignatureFactory
-  ✔ should pass properly signed state transition
-  ✔ should return invalid result if owner id doesn't exist
-  ✔ should return MissingPublicKeyError if the identity doesn't have a matching public key
-  ✔ should return InvalidIdentityPublicKeyTypeError if type is not exist
-  ✔ should return InvalidStateTransitionSignatureError if signature is invalid
-  Consensus errors
-    ✔ should return InvalidSignaturePublicKeySecurityLevelConsensusError if InvalidSignaturePublicKeySecurityLevelError was thrown
-    ✔ should return PublicKeySecurityLevelNotMetConsensusError if PublicKeySecurityLevelNotMetError was thrown
-    ✔ should return WrongPublicKeyPurposeConsensusError if WrongPublicKeyPurposeError was thrown
-    ✔ should return PublicKeyIsDisabledConsensusError if PublicKeyIsDisabledError was thrown
-    ✔ should return InvalidStateTransitionSignatureError if DPPError was thrown
-    ✔ should throw unknown error
-    ✔ should not verify signature on dry run
-```
+State transitions must be signed by a private key associated with the identity creating the state transition. Each identity must have at least two keys: a primary key ([security level](./identity.md#public-key-securitylevel) `0`) that is only used when signing identity update state transitions and an additional key ([security level](./identity.md#public-key-securitylevel) `2`) that is used to sign all other state transitions.
