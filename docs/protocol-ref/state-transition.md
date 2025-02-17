@@ -26,7 +26,7 @@ All state transitions include the following fields:
 | Field           | Type           | Description |
 | --------------- | -------------- | ----------- |
 | protocolVersion | integer        | The platform protocol version (currently `1`) |
-| type            | integer        | State transition type:<br>`0` - [data contract create](../protocol-ref/data-contract.md#data-contract-creation)<br>`1` - [documents batch](../protocol-ref/document.md#document-submission)<br>`2` - [identity create](../protocol-ref/identity.md#identity-creation)<br>`3` - [identity topup](identity.md#identity-topup)<br>`4` - [data contract update](data-contract.md#data-contract-update)<br>`5` - [identity update](identity.md#identity-update) |
+| type            | integer        | State transition type:<br>`0` - [data contract create](../protocol-ref/data-contract.md#data-contract-creation)<br>`1` - [batch](#batch)<br>`2` - [identity create](../protocol-ref/identity.md#identity-creation)<br>`3` - [identity topup](identity.md#identity-topup)<br>`4` - [data contract update](data-contract.md#data-contract-update)<br>`5` - [identity update](identity.md#identity-update) |
 | signature       | array of bytes | Signature of state transition data (65 bytes) |
 
 Additionally, all state transitions except the identity create and topup state transitions include:
@@ -68,12 +68,12 @@ fn generate(&self) -> anyhow::Result<[u8; 32]> {
 
 More detailed information about the `dataContract` object can be found in the [data contract section](../protocol-ref/data-contract.md).
 
-### Documents Batch
+### Batch
 
 | Field           | Type           | Description |
 | --------------- | -------------- | ----------- |
 | ownerId     | array of bytes              | [Identity](../protocol-ref/identity.md) submitting the document(s) (32 bytes) |
-| transitions | array of transition objects | Document `create`, `replace`, or `delete` transitions (up to 10 objects) |
+| transitions | array of transition objects | A  batch of [document](../protocol-ref/document.md#document-submission) or token actions (up to 10 objects) |
 
 More detailed information about the `transitions` array can be found in the [document section](../protocol-ref/document.md).
 

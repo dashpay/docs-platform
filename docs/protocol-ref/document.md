@@ -6,18 +6,18 @@
 
 ## Document Submission
 
-Documents are sent to the platform by submitting the them in a document batch state transition consisting of:
+Documents are sent to the platform by submitting the them in a batch state transition consisting of:
 
 | Field | Type | Description|
 | - | - | - |
 | protocolVersion | integer | The platform protocol version (currently `1`) |
-| type | integer | State transition type (`1` for document batch) |
+| type | integer | State transition type (`1` for batch) |
 | ownerId | array | [Identity](../protocol-ref/identity.md) submitting the document(s) (32 bytes) |
 | transitions | array of transition objects | Document `create`, `replace`, or `delete` transitions (up to 10 objects) |
 | signaturePublicKeyId | number | The `id` of the [identity public key](../protocol-ref/identity.md#identity-publickeys) that signed the state transition |
 | signature | array | Signature of state transition data (65 or 96 bytes) |
 
-Each document batch state transition must comply with this JSON-Schema definition established in [rs-dpp](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/document/stateTransition/documentsBatch.json):
+Each batch state transition must comply with this JSON-Schema definition established in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/schema/document/v0/stateTransition/documentsBatch.json):
 
 ```json
 {
@@ -72,7 +72,7 @@ Each document batch state transition must comply with this JSON-Schema definitio
 
 ### Document Base Transition
 
-All document transitions in a document batch state transition are built on the base schema and include the following fields:
+All document transitions in a batch state transition are built on the base schema and include the following fields:
 
 | Field | Type | Description|
 | - | - | - |
@@ -81,7 +81,7 @@ All document transitions in a document batch state transition are built on the b
 | $action | array of integers | [Action](#document-transition-action) the platform should take for the associated document |
 | $dataContractId | array | Data contract ID [generated](../protocol-ref/data-contract.md#data-contract-id) from the data contract's `ownerId` and `entropy` (32 bytes) |
 
-Each document transition must comply with the document transition [base schema](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/document/stateTransition/documentTransition/base.json):
+Each document transition must comply with the document transition [base schema](https://github.com/dashpay/platform/blob/v1.8.0/packages/rs-dpp/src/schema/document/v0/stateTransition/documentTransition/base.json):
 
 ```json
 {

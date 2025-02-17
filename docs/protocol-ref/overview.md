@@ -42,7 +42,7 @@ Release notes for past versions are located on the [dashpay/platform GitHub rele
 - Types
   - [Identity Create ST](../protocol-ref/identity.md#identity-creation)
   - [Data Contract ST](../protocol-ref/data-contract.md#data-contract-creation)
-  - [Document Batch ST](../protocol-ref/document.md)
+  - [Batch ST](../protocol-ref/document.md)
     - Document Transitions
       - [Document Transition Base](../protocol-ref/document.md#document-base-transition)
       - [Document Create Transition](../protocol-ref/document.md#document-create-transition)
