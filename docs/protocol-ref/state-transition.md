@@ -13,11 +13,11 @@
 
 ### Fees
 
-State transition fees are paid via the credits established when an identity is created. Credits are created at a rate of [1000 credits/satoshi](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/identity/credits_converter.rs#L3). Fees for actions vary based on parameters related to storage and computational effort that are defined in [rs-dpp](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/state_transition/fee/constants.rs).
+State transition fees are paid via the credits established when an identity is created. Credits are created at a rate of [1000 credits/satoshi](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/balances/credits.rs#L40). Fees for actions vary based on parameters related to storage and computational effort that are defined in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/fee/default_costs/constants.rs).
 
 ### Size
 
-All serialized data (including state transitions) is limited to a maximum size of [16 KB](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/util/serializer.rs#L8).
+All serialized data (including state transitions) is limited to a maximum size of [16 KB](http://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/util/cbor_serializer.rs#L8).
 
 ### Common Fields
 
