@@ -37,6 +37,8 @@ Additionally, all state transitions except the identity create and topup state t
 
 ## State Transition Types
 
+Dash Platform Protocol defines the [six state transition types](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transition_types.rs#L21-L32) that perform identity, contract, document, and token operations. See the subsections below for details on each state transition type.
+
 ### Data Contract Create
 
 | Field           | Type           | Description |
@@ -48,7 +50,7 @@ More detailed information about the `dataContract` object can be found in the [d
 
 #### Entropy Generation
 
-Entropy is included in [Data Contracts](../protocol-ref/data-contract.md#data-contract-creation) and [Documents](../protocol-ref/document.md#document-create-transition).
+Entropy is included in [Data Contracts](../protocol-ref/data-contract.md#data-contract-creation) and [Documents](../protocol-ref/document.md#document-create-transition). Dash Platform using the following entropy generator found in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/util/entropy_generator.rs#L12-L16):
 
 ```rust
 // From the Rust reference implementation (rs-dpp)
