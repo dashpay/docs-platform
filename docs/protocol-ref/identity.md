@@ -18,7 +18,7 @@ Identities consist of three components that are described in further detail in t
 | balance         | integer        | Credit balance associated with the identity |
 | revision        | integer        | Identity update revision                    |
 
-Each identity must comply with this JSON-Schema definition established in [rs-dpp](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/identity/identity.json):
+Each identity must comply with this JSON-Schema definition established in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/schema/identity/v0/identity.json):
 
 ```json
 {
@@ -27,6 +27,7 @@ Each identity must comply with this JSON-Schema definition established in [rs-dp
   "properties": {
     "protocolVersion": {
       "type": "integer",
+      "minimum": 0,
       "$comment": "Maximum is the latest protocol version"
     },
     "id": {
@@ -89,13 +90,17 @@ The identity `id` is calculated by Base58 encoding the double sha256 hash of the
 
 `id = base58(sha256(sha256(<identity create funding output>)))`
 
-**Note:** The identity `id` uses the Dash Platform specific `application/x.dash.dpp.identifier` content media type. For additional information, please refer to the [js-dpp PR 252](https://github.com/dashevo/js-dpp/pull/252) that introduced it and [identifier.rs](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-platform-value/src/types/identifier.rs).
+:::{note}
+The identity `id` uses the Dash Platform specific `application/x.dash.dpp.identifier` content media type. For additional information, please refer to the [js-dpp PR 252](https://github.com/dashevo/js-dpp/pull/252) that introduced it and [identifier.rs](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-platform-value/src/types/identifier.rs).
+:::
 
 ### Identity publicKeys
 
 The identity `publicKeys` array stores information regarding each public key associated with the identity. Multiple identities may use the same public key.
 
-**Note:** Since v0.23, each identity must have at least two public keys: a primary key (security level `0`) that is only used when updating the identity and an additional one (security level `2`) used to sign state transitions.
+:::{note}
+Each identity must have at least two public keys: a primary key (security level `0`) that is only used when updating the identity and an additional one (security level `2`) used to sign state transitions.
+:::
 
 Each item in the `publicKeys` array consists of an object containing:
 
@@ -104,21 +109,21 @@ Each item in the `publicKeys` array consists of an object containing:
 | id            | integer        | The key id (all public keys must be unique) |
 | type          | integer        | Type of key (default: 0 - ECDSA) |
 | data          | array of bytes | Public key (0 - ECDSA: 33 bytes, 1 - BLS: 48 bytes, 2 - ECDSA Hash160: 20 bytes, 3 - [BIP13](https://github.com/bitcoin/bips/blob/master/bip-0013.mediawiki) Hash160: 20 bytes) |
-| purpose       | integer        | Public key purpose (0 - Authentication, 1 - Encryption, 2 - Decryption, 3 - Withdraw) |
+| purpose       | integer        | Public key purpose (0 - Authentication, 1 - Encryption, 2 - Decryption, 3 - Transfer) |
 | securityLevel | integer        | Public key security level (0 - Master, 1 - Critical, 2 - High, 3 - Medium) |
 | readonly      | boolean        | Identity public key can't be modified with `readOnly` set to `true`. This can’t be changed after adding a key. |
 | disabledAt    | integer        | Timestamp indicating that the key was disabled at a specified time |
 
-Keys for some purposes must meet certain [security level criteria](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/identity/identity_public_key/security_level.rs#L62-L77) as detailed below:
+Keys for some purposes must meet certain [security level criteria](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/public_key_in_creation/methods/validate_identity_public_keys_structure/v0/mod.rs#L22-L36) as detailed below:
 
 | Key Purpose    | Allowed Security Level(s) |
 | -------------- | ------------------------- |
 | Authentication | Any security level        |
 | Encryption     | Medium                    |
 | Decryption     | Medium                    |
-| Withdraw       | Critical                  |
+| Transfer       | Critical                  |
 
-Each identity public key must comply with this JSON-Schema definition established in [rs-dpp](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/identity/publicKey.json):
+Each identity public key must comply with this JSON-Schema definition established in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/schema/identity/v0/publicKey.json):
 
 ```json
 {
@@ -301,7 +306,7 @@ The `purpose` field describes which operations are supported by the key. Please 
 |   0  | Authentication |
 |   1  | Encryption     |
 |   2  | Decryption     |
-|   3  | Withdraw       |
+|   3  | Transfer       |
 
 #### Public Key `securityLevel`
 
@@ -316,7 +321,7 @@ The `securityLevel` field indicates how securely the key should be stored by cli
 
 #### Public Key `readOnly`
 
-The `readOnly` field indicates that the public key can't be modified if it is set to `true`. The  
+The `readOnly` field indicates that the public key can't be modified if it is set to `true`. The
 value of this field cannot be changed after adding the key.
 
 #### Public Key `disabledAt`
@@ -325,7 +330,7 @@ The `disabledAt` field indicates that the key has been disabled. Its value equal
 
 ### Identity balance
 
-Each identity has a balance of credits established by value locked via a layer 1 lock transaction. This credit balance is used to pay the fees associated with state transitions.
+Each identity has a balance of credits established by an [asset lock transaction](inv:user:std#ref-txs-assetlocktx) on the Core chain. This credit balance is used to pay the fees associated with state transitions.
 
 ## Identity State Transition Details
 
