@@ -12,16 +12,16 @@ Platform error codes are organized into four categories. Each category may be fu
 
 | Category                       |  Code range | Description |
 | ------------------------------ | :---------: | ----------- |
-| [Basic](#basic)                | 10000 - 10999 | Errors encountered while validating structure and data |
+| [Basic](#basic-errors)                | 10000 - 10999 | Errors encountered while validating structure and data |
 | [Signature](#signature-errors) | 20000 - 20999 | Errors encountered while validating identity existence and state transition signature |
 | [Fee](#fee-errors)             | 30000 - 30999 | Errors encountered while validating an identity's balance is sufficient to pay fees |
-| [State](#state)                | 40000 - 40999 | Errors encounter while validating state transitions against the platform state |
+| [State](#state-errors)         | 40000 - 40999 | Errors encounter while validating state transitions against the platform state |
 
-## Basic
+## Basic Errors
 
 Basic errors occupy the codes ranging from 10000 to 10999. This range is divided into several categories for clarity.
 
-### Versioning Errors
+### Versioning
 
 Code range:  10000-10099
 
@@ -35,7 +35,7 @@ Code range:  10000-10099
 | 10005 | VersionError                     |         |
 | 10006 | UnsupportedFeatureError          |         |
 
-### Structure Errors
+### Structure
 
 Code range:  10100-10199
 
@@ -46,68 +46,68 @@ Code range:  10100-10199
 | 10102 | InvalidIdentifierError        |         |
 | 10103 | ValueError                    |         |
 
-### Data Contract Errors
+### Data Contract
 
 Code range:  10200-10399
 
-| Code   | Error Description                               | Comment |
-| ------ | ----------------------------------------------- | ------- |
-| 10200  | DataContractMaxDepthExceedError                 |         |
-| 10201  | DuplicateIndexError                             |         |
-| 10202  | IncompatibleRe2PatternError                     |         |
-| 10203  | InvalidCompoundIndexError                       |         |
-| 10204  | InvalidDataContractIdError                      |         |
-| 10205  | InvalidIndexedPropertyConstraintError           |         |
-| 10206  | InvalidIndexPropertyTypeError                   |         |
-| 10207  | InvalidJsonSchemaRefError                       |         |
-| 10208  | SystemPropertyIndexAlreadyPresentError          |         |
-| 10209  | UndefinedIndexPropertyError                     |         |
-| 10210  | UniqueIndicesLimitReachedError                  |         |
-| 10211  | DuplicateIndexNameError                         |         |
-| 10212  | InvalidDataContractVersionError                 |         |
-| 10213  | IncompatibleDataContractSchemaError             |         |
-| 10214  | DocumentTypesAreMissingError                    |         |
-| 10215  | DataContractImmutablePropertiesUpdateError      |         |
-| 10216  | DataContractUniqueIndicesChangedError           |         |
-| 10217  | DataContractInvalidIndexDefinitionUpdateError   |         |
-| 10218  | DataContractHaveNewUniqueIndexError             |         |
-| 10219  | InvalidDocumentTypeRequiredSecurityLevelError   |         |
-| 10220  | UnknownSecurityLevelError                       |         |
-| 10221  | UnknownStorageKeyRequirementsError              |         |
-| 10222  | DecodingContractError                           |         |
-| 10223  | DecodingDocumentError                           |         |
-| 10224  | InvalidDocumentTypeError                        |         |
-| 10225  | MissingRequiredKey                              |         |
-| 10226  | FieldRequirementUnmet                           |         |
-| 10227  | KeyWrongType                                    |         |
-| 10228  | ValueWrongType                                  |         |
-| 10229  | ValueDecodingError                              |         |
-| 10230  | EncodingDataStructureNotSupported               |         |
-| 10231  | InvalidContractStructure                        |         |
-| 10232  | DocumentTypeNotFound                            |         |
-| 10233  | DocumentTypeFieldNotFound                       |         |
-| 10234  | ReferenceDefinitionNotFound                     |         |
-| 10235  | DocumentOwnerIdMissing                          |         |
-| 10236  | DocumentIdMissing                               |         |
-| 10237  | Unsupported                                     |         |
-| 10238  | CorruptedSerialization                          |         |
-| 10239  | JsonSchema                                      |         |
-| 10240  | InvalidURI                                      |         |
-| 10241  | KeyWrongBounds                                  |         |
-| 10242  | KeyValueMustExist                               |         |
-| 10243  | UnknownTransferableTypeError                    |         |
-| 10244  | UnknownTradeModeError                           |         |
-| 10245  | UnknownDocumentCreationRestrictionModeError     |         |
-| 10246  | IncompatibleDocumentTypeSchemaError             |         |
-| 10247  | RegexError                                      |         |
-| 10248  | ContestedUniqueIndexOnMutableDocumentTypeError  |         |
-| 10249  | ContestedUniqueIndexWithUniqueIndexError        |         |
-| 10250  | DataContractTokenConfigurationUpdateError       |         |
-| 10251  | InvalidTokenBaseSupplyError                     |         |
-| 10252  | NonContiguousContractGroupPositionsError        |         |
-| 10253  | NonContiguousContractTokenPositionsError        |         |
+| Code  | Error Description                               | Comment |
+| :---: | ----------------------------------------------- | ------- |
+| 10200 | DataContractMaxDepthExceedError                 |         |
+| 10201 | DuplicateIndexError                             |         |
+| 10202 | IncompatibleRe2PatternError                     |         |
+| 10203 | InvalidCompoundIndexError                       |         |
+| 10204 | InvalidDataContractIdError                      |         |
+| 10205 | InvalidIndexedPropertyConstraintError           |         |
+| 10206 | InvalidIndexPropertyTypeError                   |         |
+| 10207 | InvalidJsonSchemaRefError                       |         |
+| 10208 | SystemPropertyIndexAlreadyPresentError          |         |
+| 10209 | UndefinedIndexPropertyError                     |         |
+| 10210 | UniqueIndicesLimitReachedError                  |         |
+| 10211 | DuplicateIndexNameError                         |         |
+| 10212 | InvalidDataContractVersionError                 |         |
+| 10213 | IncompatibleDataContractSchemaError             |         |
+| 10214 | DocumentTypesAreMissingError                    |         |
+| 10215 | DataContractImmutablePropertiesUpdateError      |         |
+| 10216 | DataContractUniqueIndicesChangedError           |         |
+| 10217 | DataContractInvalidIndexDefinitionUpdateError   |         |
+| 10218 | DataContractHaveNewUniqueIndexError             |         |
+| 10219 | InvalidDocumentTypeRequiredSecurityLevelError   |         |
+| 10220 | UnknownSecurityLevelError                       |         |
+| 10221 | UnknownStorageKeyRequirementsError              |         |
+| 10222 | DecodingContractError                           |         |
+| 10223 | DecodingDocumentError                           |         |
+| 10224 | InvalidDocumentTypeError                        |         |
+| 10225 | MissingRequiredKey                              |         |
+| 10226 | FieldRequirementUnmet                           |         |
+| 10227 | KeyWrongType                                    |         |
+| 10228 | ValueWrongType                                  |         |
+| 10229 | ValueDecodingError                              |         |
+| 10230 | EncodingDataStructureNotSupported               |         |
+| 10231 | InvalidContractStructure                        |         |
+| 10232 | DocumentTypeNotFound                            |         |
+| 10233 | DocumentTypeFieldNotFound                       |         |
+| 10234 | ReferenceDefinitionNotFound                     |         |
+| 10235 | DocumentOwnerIdMissing                          |         |
+| 10236 | DocumentIdMissing                               |         |
+| 10237 | Unsupported                                     |         |
+| 10238 | CorruptedSerialization                          |         |
+| 10239 | JsonSchema                                      |         |
+| 10240 | InvalidURI                                      |         |
+| 10241 | KeyWrongBounds                                  |         |
+| 10242 | KeyValueMustExist                               |         |
+| 10243 | UnknownTransferableTypeError                    |         |
+| 10244 | UnknownTradeModeError                           |         |
+| 10245 | UnknownDocumentCreationRestrictionModeError     |         |
+| 10246 | IncompatibleDocumentTypeSchemaError             |         |
+| 10247 | RegexError                                      |         |
+| 10248 | ContestedUniqueIndexOnMutableDocumentTypeError  |         |
+| 10249 | ContestedUniqueIndexWithUniqueIndexError        |         |
+| 10250 | DataContractTokenConfigurationUpdateError       |         |
+| 10251 | InvalidTokenBaseSupplyError                     |         |
+| 10252 | NonContiguousContractGroupPositionsError        |         |
+| 10253 | NonContiguousContractTokenPositionsError        |         |
 
-### Group Errors
+### Group
 
 Code range:  10350-10399
 
@@ -121,12 +121,12 @@ Code range:  10350-10399
 | 10355 |GroupMemberHasPowerOfZeroError                             |         |
 | 10356 |GroupMemberHasPowerOverLimitError                          |         |
 
-### Document Errors
+### Document
 
 Code range:  10400-10449
 
 | Code  | Error Description                                    | Comment |
-| ----- | ---------------------------------------------------- | ------- |
+| :---: | ---------------------------------------------------- | ------- |
 | 10400 | DataContractNotPresentError                          |         |
 | 10401 | DuplicateDocumentTransitionsWithIdsError             |         |
 | 10402 | DuplicateDocumentTransitionsWithIndicesError         |         |
@@ -147,7 +147,7 @@ Code range:  10400-10449
 | 10417 | DocumentFieldMaxSizeExceededError                    |         |
 | 10418 | ContestedDocumentsTemporarilyNotAllowedError         |         |
 
-### Token Errors
+### Token
 
 Code range: 10450-10499
 
@@ -161,7 +161,7 @@ Code range: 10450-10499
 | 10455 | ChoosingTokenMintRecipientNotAllowedError              |         |
 | 10456 | TokenTransferToOurselfError                            |         |
 
-### Identity Errors
+### Identity
 
 Code range:  10500-10599
 
@@ -201,7 +201,7 @@ Code range:  10500-10599
 | 10531 | IdentityAssetLockStateTransitionReplayError                   |         |
 | 10532 | WithdrawalOutputScriptNotAllowedWhenSigningWithOwnerKeyError  |         |
 
-### State Transition Errors
+### State Transition
 
 Code range:  10600-10699
 
@@ -211,7 +211,7 @@ Code range:  10600-10699
 | 10601 | MissingStateTransitionTypeError     |         |
 | 10602 | StateTransitionMaxSizeExceededError |         |
 
-### General Errors
+### General
 
 Code range:  10700-10799
 
