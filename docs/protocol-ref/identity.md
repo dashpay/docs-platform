@@ -99,15 +99,15 @@ The identity `publicKeys` array stores information regarding each public key ass
 
 Each item in the `publicKeys` array consists of an object containing:
 
-| Field         | Type           | Description                                                                                                                                                                     |
-| ------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| id            | integer        | The key id (all public keys must be unique)                                                                                                                                     |
-| type          | integer        | Type of key (default: 0 - ECDSA)                                                                                                                                                |
+| Field         | Type           | Description |
+| ------------- | -------------- | ----------- |
+| id            | integer        | The key id (all public keys must be unique) |
+| type          | integer        | Type of key (default: 0 - ECDSA) |
 | data          | array of bytes | Public key (0 - ECDSA: 33 bytes, 1 - BLS: 48 bytes, 2 - ECDSA Hash160: 20 bytes, 3 - [BIP13](https://github.com/bitcoin/bips/blob/master/bip-0013.mediawiki) Hash160: 20 bytes) |
-| purpose       | integer        | Public key purpose (0 - Authentication, 1 - Encryption, 2 - Decryption, 3 - Withdraw)                                                                                           |
-| securityLevel | integer        | Public key security level (0 - Master, 1 - Critical, 2 - High, 3 - Medium)                                                                                                      |
-| readonly      | boolean        | Identity public key can't be modified with `readOnly` set to `true`. This can’t be changed after adding a key.                                                                  |
-| disabledAt    | integer        | Timestamp indicating that the key was disabled at a specified time                                                                                                              |
+| purpose       | integer        | Public key purpose (0 - Authentication, 1 - Encryption, 2 - Decryption, 3 - Withdraw) |
+| securityLevel | integer        | Public key security level (0 - Master, 1 - Critical, 2 - High, 3 - Medium) |
+| readonly      | boolean        | Identity public key can't be modified with `readOnly` set to `true`. This can’t be changed after adding a key. |
+| disabledAt    | integer        | Timestamp indicating that the key was disabled at a specified time |
 
 Keys for some purposes must meet certain [security level criteria](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/identity/identity_public_key/security_level.rs#L62-L77) as detailed below:
 
@@ -281,11 +281,11 @@ Each public key in an identity's `publicKeys` array must be assigned a unique in
 
 The `type` field indicates the algorithm used to derive the key.
 
-| Type | Description                                                                                           |
-| :--: | ----------------------------------------------------------------------------------------------------- |
-|   0  | ECDSA Secp256k1 (default)                                                                             |
-|   1  | BLS 12-381                                                                                            |
-|   2  | ECDSA Secp256k1 Hash160                                                                               |
+| Type | Description |
+| :--: | ----------- |
+|   0  | ECDSA Secp256k1 (default) |
+|   1  | BLS 12-381 |
+|   2  | ECDSA Secp256k1 Hash160 |
 |   3  | [BIP13](https://github.com/bitcoin/bips/blob/master/bip-0013.mediawiki) pay-to-script-hash public key |
 
 #### Public Key `data`
@@ -307,12 +307,12 @@ The `purpose` field describes which operations are supported by the key. Please 
 
 The `securityLevel` field indicates how securely the key should be stored by clients. Please refer to [DIP11 - Identities](https://github.com/dashpay/dips/blob/master/dip-0011.md#keys) for additional information regarding this.
 
-| Level | Description | Security Practice                                                                                                                                                                       |
-| :---: | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-|   0   | Master      | Should always require a user to authenticate when signing a transition. Can only be used to update an identity.                                                                         |
-|   1   | Critical    | Should always require a user to authenticate when signing a transition                                                                                                                  |
+| Level | Description | Security Practice |
+| :---: | ----------- | ----------------- |
+|   0   | Master      | Should always require a user to authenticate when signing a transition. Can only be used to update an identity. |
+|   1   | Critical    | Should always require a user to authenticate when signing a transition |
 |   2   | High        | Should be available as long as the user has authenticated at least once during a session. Typically used to sign state transitions, but cannot be used for identity update transitions. |
-|   3   | Medium      | Should not require user authentication but must require access to the client device                                                                                                     |
+|   3   | Medium      | Should not require user authentication but must require access to the client device |
 
 #### Public Key `readOnly`
 
