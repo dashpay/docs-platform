@@ -203,6 +203,8 @@ Code range:  10500-10599
 
 ### State Transition Errors
 
+Code range:  10600-10699
+
 | Code  | Error Description                   | Comment |
 | :---: | ----------------------------------- | ------- |
 | 10600 | InvalidStateTransitionTypeError     |         |
@@ -211,74 +213,153 @@ Code range:  10500-10599
 
 ### General Errors
 
+Code range:  10700-10799
+
 | Code  | Error Description   | Comment |
 | ----- | ------------------- | ------- |
 | 10700 | OverflowError       |         |
 
 ## Signature Errors
 
-Signature errors occupy the codes ranging from 2000 to 2999.
-
-| Code | Error Description                           | Comment        |
-| :--: | ------------------------------------------- | -------------- |
-| 2000 | IdentityNotFoundError                       |                |
-| 2001 | InvalidIdentityPublicKeyTypeError           |                |
-| 2002 | InvalidStateTransitionSignatureError        |                |
-| 2003 | MissingPublicKeyError                       |                |
-| 2004 | InvalidSignaturePublicKeySecurityLevelError | Added in v0.23 |
-| 2005 | WrongPublicKeyPurposeError                  | Added in v0.23 |
-| 2006 | PublicKeyIsDisabledError                    | Added in v0.23 |
-| 2007 | PublicKeySecurityLevelNotMetError           | Added in v0.23 |
+| Code  | Error Description                           | Comment        |
+| :---: | ------------------------------------------- | -------------- |
+| 20000 | IdentityNotFoundError                       |                |
+| 20001 | InvalidIdentityPublicKeyTypeError           |                |
+| 20002 | InvalidStateTransitionSignatureError        |                |
+| 20003 | MissingPublicKeyError                       |                |
+| 20004 | InvalidSignaturePublicKeySecurityLevelError |                |
+| 20005 | WrongPublicKeyPurposeError                  |                |
+| 20006 | PublicKeyIsDisabledError                    |                |
+| 20007 | PublicKeySecurityLevelNotMetError           |                |
+| 20008 | SignatureShouldNotBePresentError            |                |
+| 20009 | BasicECDSAError                             |                |
+| 20010 | BasicBLSError                               |                |
+| 20011 | InvalidSignaturePublicKeyPurposeError       |                |
 
 ## Fee Errors
 
-Fee errors occupy the codes ranging from 3000 to 3999.
+| Code  | Error Description       | Comment                                            |
+| :---: | ----------------------- | -------------------------------------------------- |
+| 30000 | BalanceIsNotEnoughError | Current credits balance is insufficient to pay fee |
 
-| Code | Error Description       | Comment                                            |
-| :--: | ----------------------- | -------------------------------------------------- |
-| 3000 | BalanceIsNotEnoughError | Current credits balance is insufficient to pay fee |
+## State Errors
 
-## State
+### Data Contract State
 
-State errors occupy the codes ranging from 4000 to 4999. This range is divided into several categories for clarity.
+Code range:  40000-40099
 
-### Data Contract Errors
+| Code  | Error Description                       | Comment |
+| :---: | --------------------------------------- | ------- |
+| 40000 | DataContractAlreadyPresentError         |         |
+| 40001 | DataContractIsReadonlyError             |         |
+| 40002 | DataContractConfigUpdateError           |         |
+| 40003 | DataContractUpdatePermissionError       |         |
+| 40004 | DataContractUpdateActionNotAllowedError |         |
 
-| Code | Error Description               | Comment |
-| :--: | ------------------------------- | ------- |
-| 4000 | DataContractAlreadyPresentError |         |
+### Document State
 
-### Document Errors
+Code range:  40100-40149
 
-| Code | Error Description                     | Comment |
-| :--: | :------------------------------------ | :------ |
-| 4004 | DocumentAlreadyPresentError           |         |
-| 4005 | DocumentNotFoundError                 |         |
-| 4006 | DocumentOwnerIdMismatchError          |         |
-| 4007 | DocumentTimestampsMismatchError       |         |
-| 4008 | DocumentTimestampWindowViolationError |         |
-| 4009 | DuplicateUniqueIndexError             |         |
-| 4010 | InvalidDocumentRevisionError          |         |
+| Code  | Error Description                                      | Comment |
+| :---: | ------------------------------------------------------ | ------- |
+| 40100 | DocumentAlreadyPresentError                            |         |
+| 40101 | DocumentNotFoundError                                  |         |
+| 40102 | DocumentOwnerIdMismatchError                           |         |
+| 40103 | DocumentTimestampsMismatchError                        |         |
+| 40104 | DocumentTimestampWindowViolationError                  |         |
+| 40105 | DuplicateUniqueIndexError                              |         |
+| 40106 | InvalidDocumentRevisionError                           |         |
+| 40107 | DocumentTimestampsAreEqualError                        |         |
+| 40108 | DocumentNotForSaleError                                |         |
+| 40109 | DocumentIncorrectPurchasePriceError                    |         |
+| 40110 | DocumentContestCurrentlyLockedError                    |         |
+| 40111 | DocumentContestNotJoinableError                        |         |
+| 40112 | DocumentContestIdentityAlreadyContestantError          |         |
+| 40113 | DocumentContestDocumentWithSameIdAlreadyPresentError   |         |
+| 40114 | DocumentContestNotPaidForError                         |         |
 
-### Identity Errors
+### Token State
 
-| Code | Error Description                               | Comment            |
-| :--: | ----------------------------------------------- | ------------------ |
-| 4011 | IdentityAlreadyExistsError                      |                    |
-| 4012 | IdentityPublicKeyDisabledAtWindowViolationError | Added in v0.23     |
-| 4017 | IdentityPublicKeyIsReadOnlyError                | Added in v0.23     |
-| 4018 | InvalidIdentityPublicKeyIdError                 | Added in v0.23     |
-| 4019 | InvalidIdentityRevisionError                    | Added in v0.23     |
-| 4020 | StateMaxIdentityPublicKeyLimitReachedError      | Added in v0.23     |
-| 4021 | DuplicatedIdentityPublicKeyStateError           | Added in v0.23     |
-| 4022 | DuplicatedIdentityPublicKeyIdStateError         | Added in v0.23     |
-| 4023 | IdentityPublicKeyIsDisabledError                | Added in v0.23     |
-| 4024 | IdentityInsufficientBalanceError                | **Added in v0.24** |
+Code range: 40150-40199
 
-### Data Trigger Errors
+| Code  | Error Description                                 | Comment |
+| :---: | ------------------------------------------------- | ------- |
+| 40150 | IdentityDoesNotHaveEnoughTokenBalanceError        |         |
+| 40151 | UnauthorizedTokenActionError                      |         |
+| 40152 | IdentityTokenAccountFrozenError                   |         |
+| 40153 | IdentityTokenAccountNotFrozenError                |         |
+| 40154 | TokenSettingMaxSupplyToLessThanCurrentSupplyError |         |
+| 40155 | TokenMintPastMaxSupplyError                       |         |
+| 40156 | NewTokensDestinationIdentityDoesNotExistError     |         |
+| 40157 | NewAuthorizedActionTakerIdentityDoesNotExistError |         |
+| 40158 | NewAuthorizedActionTakerGroupDoesNotExistError    |         |
+| 40159 | NewAuthorizedActionTakerMainGroupNotSetError      |         |
+| 40160 | InvalidGroupPositionError                         |         |
+| 40161 | TokenIsPausedError                                |         |
 
-| Code | Error Description             | Comment |
-| :--: | ----------------------------- | ------- |
-| 4001 | DataTriggerConditionError     |         |
-| 4002 | DataTriggerExecutionError     |         |
-| 4003 | DataTriggerInvalidResultError |         |
+### Identity State
+
+Code range:  40200-40299
+
+| Code  | Error Description                                          | Comment |
+| :---: | ---------------------------------------------------------- | ------- |
+| 40200 | IdentityAlreadyExistsError                                 |         |
+| 40201 | IdentityPublicKeyIsReadOnlyError                           |         |
+| 40202 | InvalidIdentityPublicKeyIdError                            |         |
+| 40203 | InvalidIdentityRevisionError                               |         |
+| 40204 | InvalidIdentityNonceError                                  |         |
+| 40205 | MaxIdentityPublicKeyLimitReachedError                      |         |
+| 40206 | DuplicatedIdentityPublicKeyStateError                      |         |
+| 40207 | DuplicatedIdentityPublicKeyIdStateError                    |         |
+| 40208 | IdentityPublicKeyIsDisabledError                           |         |
+| 40209 | MissingIdentityPublicKeyIdsError                           |         |
+| 40210 | IdentityInsufficientBalanceError                           |         |
+| 40211 | IdentityPublicKeyAlreadyExistsForUniqueContractBoundsError |         |
+| 40212 | DocumentTypeUpdateError                                    |         |
+| 40214 | MissingTransferKeyError                                    |         |
+| 40215 | NoTransferKeyForCoreWithdrawalAvailableError               |         |
+| 40216 | RecipientIdentityDoesNotExistError                         |         |
+
+### Voting State
+
+Code range:  40300-40399
+
+| Code  | Error Description                       | Comment |
+| :---: | --------------------------------------- | ------- |
+| 40300 | MasternodeNotFoundError                 |         |
+| 40301 | VotePollNotFoundError                   |         |
+| 40302 | VotePollNotAvailableForVotingError      |         |
+| 40303 | MasternodeVotedTooManyTimesError        |         |
+| 40304 | MasternodeVoteAlreadyPresentError       |         |
+| 40305 | MasternodeIncorrectVotingAddressError   |         |
+| 40306 | MasternodeIncorrectVoterIdentityIdError |         |
+
+### Prefunded Specialized Balances State
+
+Code range: 40400-40499
+
+| Code  | Error Description                            | Comment |
+| :---: | -------------------------------------------- | ------- |
+| 40400 | PrefundedSpecializedBalanceInsufficientError |         |
+| 40401 | PrefundedSpecializedBalanceNotFoundError     |         |
+
+### Data Trigger State
+
+Code range: 40500-40799
+
+| Code  | Error Description             | Comment |
+| :---: | ----------------------------- | ------- |
+| 40500 | DataTriggerConditionError     |         |
+| 40501 | DataTriggerExecutionError     |         |
+| 40502 | DataTriggerInvalidResultError |         |
+
+### Group State
+
+Code range: 40800-40899
+
+| Code  | Error Description                       | Comment |
+| :---: | --------------------------------------- | ------- |
+| 40800 | IdentityNotMemberOfGroupError           |         |
+| 40801 | GroupActionDoesNotExistError            |         |
+| 40802 | GroupActionAlreadyCompletedError        |         |
+| 40803 | GroupActionAlreadySignedByIdentityError |         |
