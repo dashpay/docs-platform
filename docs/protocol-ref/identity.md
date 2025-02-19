@@ -335,13 +335,13 @@ There are three identity-related state transitions: [identity create](#identity-
 
 Identities are created on the platform by submitting the identity information in an identity create state transition.
 
-| Field           | Type           | Description                                                                                         |
-| --------------- | -------------- | --------------------------------------------------------------------------------------------------- |
-| protocolVersion | integer        | The protocol version (currently `1`)                                                                |
-| type            | integer        | State transition type (`2` for identity create)                                                     |
+| Field           | Type           | Description |
+| --------------- | -------------- | ----------- |
+| protocolVersion | integer        | The protocol version (currently `1`) |
+| type            | integer        | State transition type (`2` for identity create) |
 | assetLockProof  | object         | [Asset lock proof object](#asset-lock) proving the layer 1 locking transaction exists and is locked |
-| publicKeys      | array of keys  | [Public key(s)](#identity-publickeys) associated with the identity                                  |
-| signature       | array of bytes | Signature of state transition data by the single-use key from the asset lock (65 bytes)             |
+| publicKeys      | array of keys  | [Public key(s)](#identity-publickeys) associated with the identity |
+| signature       | array of bytes | Signature of state transition data by the single-use key from the asset lock (65 bytes) |
 
 Each identity must comply with this JSON-Schema definition established in [rs-dpp](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/identity/stateTransition/identityCreate.json):
 
@@ -416,13 +416,13 @@ Each identity must comply with this JSON-Schema definition established in [rs-dp
 
 Identity credit balances are increased by submitting the topup information in an identity topup state transition.
 
-| Field           | Type           | Description                                                                                          |
-| --------------- | -------------- | ---------------------------------------------------------------------------------------------------- |
-| protocolVersion | integer        | The protocol version (currently `1`)                                                                 |
-| type            | integer        | State transition type (`3` for identity topup)                                                       |
+| Field           | Type           | Description |
+| --------------- | -------------- | ----------- |
+| protocolVersion | integer        | The protocol version (currently `1`) |
+| type            | integer        | State transition type (`3` for identity topup) |
 | assetLockProof  | object         | [Asset lock proof object](#asset-lock) proving the layer 1 locking transaction exists and is locked  |
 | identityId      | array of bytes | An [Identity ID](#identity-id) for the identity receiving the topup (can be any identity) (32 bytes) |
-| signature       | array of bytes | Signature of state transition data by the single-use key from the asset lock (65 bytes)              |
+| signature       | array of bytes | Signature of state transition data by the single-use key from the asset lock (65 bytes) |
 
 Each identity must comply with this JSON-Schema definition established in [rs-dpp](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/identity/stateTransition/identityTopUp.json):
 
@@ -489,17 +489,17 @@ Each identity must comply with this JSON-Schema definition established in [rs-dp
 
 Identities are updated on the platform by submitting the identity information in an identity update state transition. This state transition requires either a set of one or more new public keys to add to the identity or a list of existing keys to disable.
 
-| Field                | Type                 | Description                                                                                                              |
-| -------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| protocolVersion      | integer              | The protocol version (currently `1`)                                                                                     |
-| type                 | integer              | State transition type (`5` for identity update)                                                                          |
-| identityId           | array of bytes       | The identity id (32 bytes)                                                                                               |
-| signature            | array of bytes       | Signature of state transition data (65 bytes)                                                                            |
-| revision             | integer              | Identity update revision                                                                                                 |
-| publicKeysDisabledAt | integer              | (Optional) Timestamp when keys were disabled. Required if `disablePublicKeys` is present.                                |
-| addPublicKeys        | array of public keys | (Optional) Array of up to 10 new public keys to add to the identity. Required if adding keys.                            |
+| Field                | Type                 | Description |
+| -------------------- | -------------------- | ----------- |
+| protocolVersion      | integer              | The protocol version (currently `1`) |
+| type                 | integer              | State transition type (`5` for identity update) |
+| identityId           | array of bytes       | The identity id (32 bytes) |
+| signature            | array of bytes       | Signature of state transition data (65 bytes) |
+| revision             | integer              | Identity update revision |
+| publicKeysDisabledAt | integer              | (Optional) Timestamp when keys were disabled. Required if `disablePublicKeys` is present. |
+| addPublicKeys        | array of public keys | (Optional) Array of up to 10 new public keys to add to the identity. Required if adding keys. |
 | disablePublicKeys    | array of integers    | (Optional) Array of up to 10 existing identity public key ID(s) to disable for the identity. Required if disabling keys. |
-| signaturePublicKeyId | integer              | The ID of public key used to sign the state transition                                                                   |
+| signaturePublicKeyId | integer              | The ID of public key used to sign the state transition |
 
 Each identity must comply with this JSON-Schema definition established in [rs-dpp](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/identity/stateTransition/identityUpdate.json):
 
@@ -601,12 +601,12 @@ Currently there are two types of asset lock proofs: InstantSend and ChainLock. T
 
 The InstantSend asset lock proof is used for transactions that have received an InstantSend lock.
 
-| Field       | Type           | Description                                                                                                                                  |
-| ----------- | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| type        | integer        | The asset lock proof type (`0` for InstantSend locks)                                                                                        |
+| Field       | Type           | Description |
+| ----------- | -------------- | ----------- |
+| type        | integer        | The asset lock proof type (`0` for InstantSend locks) |
 | instantLock | array of bytes | The InstantSend lock ([`islock`](https://docs.dash.org/projects/core/en/stable/docs/reference/p2p-network-instantsend-messages.html#islock)) |
-| transaction | array of bytes | The asset lock transaction                                                                                                                   |
-| outputIndex | integer        | Index of the transaction output to be used                                                                                                   |
+| transaction | array of bytes | The asset lock transaction |
+| outputIndex | integer        | Index of the transaction output to be used |
 
 Asset locks using an InstantSend lock as proof must comply with this JSON-Schema definition established in [rs-dpp](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/identity/stateTransition/assetLockProof/instantAssetLockProof.json):
 
@@ -650,10 +650,10 @@ Asset locks using an InstantSend lock as proof must comply with this JSON-Schema
 
 The ChainLock asset lock proof is used for transactions that have note received an InstantSend lock, but have been included in a block that has received a ChainLock.
 
-| Field                 | Type           | Description                                                                                                                       |
-| --------------------- | -------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| type                  | array of bytes | The type of asset lock proof (`1` for ChainLocks)                                                                                 |
-| coreChainLockedHeight | integer        | Height of the ChainLocked Core block containing the transaction                                                                   |
+| Field                 | Type           | Description |
+| --------------------- | -------------- | ----------- |
+| type                  | array of bytes | The type of asset lock proof (`1` for ChainLocks) |
+| coreChainLockedHeight | integer        | Height of the ChainLocked Core block containing the transaction |
 | outPoint              | object         | The  [outpoint](https://docs.dash.org/projects/core/en/stable/docs/resources/glossary.html#outpoint) being used as the asset lock |
 
 Asset locks using a ChainLock as proof must comply with this JSON-Schema definition established in [rs-dpp](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/identity/stateTransition/assetLockProof/chainAssetLockProof.json):
