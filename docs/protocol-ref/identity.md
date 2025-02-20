@@ -8,60 +8,17 @@
 
 Identities are a low-level construct that provide the foundation for user-facing functionality on the platform. An identity is a public key (or set of public keys) recorded on the platform chain that can be used to prove ownership of data. Please see the [Identity DIP](https://github.com/dashpay/dips/blob/master/dip-0011.md) for additional information.
 
-Identities consist of three components that are described in further detail in the following sections:
+Identities consist of multiple objects that are described in the following sections and listed in this summary table:
 
 | Field           | Type           | Description                                 |
 | --------------- | -------------- | ------------------------------------------- |
-| protocolVersion | integer        | The protocol version                        |
-| id              | array of bytes | The identity id (32 bytes)                  |
-| publicKeys      | array of keys  | Public key(s) associated with the identity  |
-| balance         | integer        | Credit balance associated with the identity |
+| $version        | integer        | The protocol version                        |
+| id              | array of bytes | The [identity id](#identity-id) (32 bytes)  |
+| publicKeys      | array of keys  | [Public key(s)](#identity-publickeys) associated with the identity |
+| balance         | integer        | Credit [balance](#identity-balance) associated with the identity |
 | revision        | integer        | Identity update revision                    |
 
-Each identity must comply with this JSON-Schema definition established in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/schema/identity/v0/identity.json):
-
-```json
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "type": "object",
-  "properties": {
-    "protocolVersion": {
-      "type": "integer",
-      "minimum": 0,
-      "$comment": "Maximum is the latest protocol version"
-    },
-    "id": {
-      "type": "array",
-      "byteArray": true,
-      "minItems": 32,
-      "maxItems": 32,
-      "contentMediaType": "application/x.dash.dpp.identifier"
-    },
-    "publicKeys": {
-      "type": "array",
-      "minItems": 1,
-      "maxItems": 32,
-      "uniqueItems": true
-    },
-    "balance": {
-      "type": "integer",
-      "minimum": 0
-    },
-    "revision": {
-      "type": "integer",
-      "minimum": 0,
-      "description": "Identity update revision"
-  }
-},
-  "required": [
-    "protocolVersion",
-    "id",
-    "publicKeys",
-    "balance",
-    "revision"
-  ]
-}
-```
+See the [identity implementation in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/identity/v0/mod.rs#L34-L43) for more details.
 
 **Example Identity**
 
@@ -86,197 +43,37 @@ Each identity must comply with this JSON-Schema definition established in [rs-dp
 
 ### Identity id
 
-The identity `id` is calculated by Base58 encoding the double sha256 hash of the [outpoint](https://docs.dash.org/projects/core/en/stable/docs/resources/glossary.html#outpoint) used to fund the identity creation.
+The identity `id` is a unique identifier created from the double sha256 hash of the [outpoint](https://docs.dash.org/projects/core/en/stable/docs/resources/glossary.html#outpoint) funding the identity creation. Typically it is displayed using Base58 encoding.
 
-`id = base58(sha256(sha256(<identity create funding output>)))`
+`id = base58(sha256(sha256(<identity create funding outpoint>)))`
 
 :::{note}
 The identity `id` uses the Dash Platform specific `application/x.dash.dpp.identifier` content media type. For additional information, please refer to the [js-dpp PR 252](https://github.com/dashevo/js-dpp/pull/252) that introduced it and [identifier.rs](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-platform-value/src/types/identifier.rs).
 :::
+
+See rs-dpp for examples of using [InstantSend](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/identity/state_transition/asset_lock_proof/instant/instant_asset_lock_proof.rs#L129-L139) or [ChainLocks](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/identity/state_transition/asset_lock_proof/chain/chain_asset_lock_proof.rs#L45-L51) to create the identity id.
 
 ### Identity publicKeys
 
 The identity `publicKeys` array stores information regarding each public key associated with the identity. Multiple identities may use the same public key.
 
 :::{note}
-Each identity must have at least two public keys: a primary key (security level `0`) that is only used when updating the identity and an additional one (security level `2`) used to sign state transitions.
+Each identity must have at least two public keys: a primary key ([security level](#public-key-securitylevel) `0`) that is only used when updating the identity and an additional one ([security level](#public-key-securitylevel) `2`) used to sign state transitions. The maximum number of keys is 15000 as [defined by rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/identity/fields.rs#L7).
 :::
 
 Each item in the `publicKeys` array consists of an object containing:
 
 | Field         | Type           | Description |
 | ------------- | -------------- | ----------- |
-| id            | integer        | The key id (all public keys must be unique) |
-| type          | integer        | Type of key (default: 0 - ECDSA) |
-| data          | array of bytes | Public key (0 - ECDSA: 33 bytes, 1 - BLS: 48 bytes, 2 - ECDSA Hash160: 20 bytes, 3 - [BIP13](https://github.com/bitcoin/bips/blob/master/bip-0013.mediawiki) Hash160: 20 bytes) |
-| purpose       | integer        | Public key purpose (0 - Authentication, 1 - Encryption, 2 - Decryption, 3 - Transfer) |
-| securityLevel | integer        | Public key security level (0 - Master, 1 - Critical, 2 - High, 3 - Medium) |
-| readonly      | boolean        | Identity public key can't be modified with `readOnly` set to `true`. This can’t be changed after adding a key. |
-| disabledAt    | integer        | Timestamp indicating that the key was disabled at a specified time |
+| [id](#public-key-id) | integer        | The key id (all public keys must be unique) |
+| [type](#public-key-type) | integer        | Type of key (default: `0` - ECDSA) |
+| [data](#public-key-data)          | array of bytes | Public key (`0` - ECDSA: 33 bytes, `1` - BLS: 48 bytes, `2` - ECDSA Hash160: 20 bytes, `3` - [BIP13](https://github.com/bitcoin/bips/blob/master/bip-0013.mediawiki) Hash160: 20 bytes, `4` - EDDSA_25519_HASH160: 20 bytes) |
+| [purpose](#public-key-purpose) | integer        | Public key purpose (`0` - Authentication, `1` - Encryption, `2` - Decryption, `3` - Transfer) |
+| [securityLevel](#public-key-securitylevel) | integer        | Public key security level (`0` - Master, `1` - Critical, `2` - High, `3` - Medium) |
+| [readonly](#public-key-readonly) | boolean        | Identity public key can't be modified with `readOnly` set to `true`. This can’t be changed after adding a key. |
+| [disabledAt](#public-key-disabledat) | integer        | Timestamp indicating that the key was disabled at a specified time |
 
-Keys for some purposes must meet certain [security level criteria](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/public_key_in_creation/methods/validate_identity_public_keys_structure/v0/mod.rs#L22-L36) as detailed below:
-
-| Key Purpose    | Allowed Security Level(s) |
-| -------------- | ------------------------- |
-| Authentication | Any security level        |
-| Encryption     | Medium                    |
-| Decryption     | Medium                    |
-| Transfer       | Critical                  |
-
-Each identity public key must comply with this JSON-Schema definition established in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/schema/identity/v0/publicKey.json):
-
-```json
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "type": "object",
-  "properties": {
-    "id": {
-      "type": "integer",
-      "minimum": 0,
-      "description": "Public key ID",
-      "$comment": "Must be unique for the identity. It can’t be changed after adding a key. Included when signing state transitions to indicate which identity key was used to sign."
-    },
-    "type": {
-      "type": "integer",
-      "enum": [
-        0,
-        1,
-        2,
-        3
-      ],
-      "description": "Public key type. 0 - ECDSA Secp256k1, 1 - BLS 12-381, 2 - ECDSA Secp256k1 Hash160, 3 - BIP 13 Hash160",
-      "$comment": "It can't be changed after adding a key"
-    },
-    "purpose": {
-      "type": "integer",
-      "enum": [
-        0,
-        1,
-        2,
-        3
-      ],
-      "description": "Public key purpose. 0 - Authentication, 1 - Encryption, 2 - Decryption, 3 - Withdraw",
-      "$comment": "It can't be changed after adding a key"
-    },
-    "securityLevel": {
-      "type": "integer",
-      "enum": [
-        0,
-        1,
-        2,
-        3
-      ],
-      "description": "Public key security level. 0 - Master, 1 - Critical, 2 - High, 3 - Medium",
-      "$comment": "It can't be changed after adding a key"
-    },
-    "data": true,
-    "readOnly": {
-      "type": "boolean",
-      "description": "Read only",
-      "$comment": "Identity public key can't be modified with readOnly set to true. It can’t be changed after adding a key"
-    },
-    "disabledAt": {
-      "type": "integer",
-      "description": "Timestamp indicating that the key was disabled at a specified time",
-      "minimum": 0
-    }
-  },
-  "allOf": [
-    {
-      "if": {
-        "properties": {
-          "type": {
-            "const": 0
-          }
-        }
-      },
-      "then": {
-        "properties": {
-          "data": {
-            "type": "array",
-            "byteArray": true,
-            "minItems": 33,
-            "maxItems": 33,
-            "description": "Raw ECDSA public key",
-            "$comment": "It must be a valid key of the specified type and unique for the identity. It can’t be changed after adding a key"
-          }
-        }
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "type": {
-            "const": 1
-          }
-        }
-      },
-      "then": {
-        "properties": {
-          "data": {
-            "type": "array",
-            "byteArray": true,
-            "minItems": 48,
-            "maxItems": 48,
-            "description": "Raw BLS public key",
-            "$comment": "It must be a valid key of the specified type and unique for the identity. It can’t be changed after adding a key"
-          }
-        }
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "type": {
-            "const": 2
-          }
-        }
-      },
-      "then": {
-        "properties": {
-          "data": {
-            "type": "array",
-            "byteArray": true,
-            "minItems": 20,
-            "maxItems": 20,
-            "description": "ECDSA Secp256k1 public key Hash160",
-            "$comment": "It must be a valid key hash of the specified type and unique for the identity. It can’t be changed after adding a key"
-          }
-        }
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "type": {
-            "const": 3
-          }
-        }
-      },
-      "then": {
-        "properties": {
-          "data": {
-            "type": "array",
-            "byteArray": true,
-            "minItems": 20,
-            "maxItems": 20,
-            "description": "BIP13 script public key",
-            "$comment": "It must be a valid script hash of the specified type and unique for the identity"
-          }
-        }
-      }
-    }
-  ],
-  "required": [
-    "id",
-    "type",
-    "data",
-    "purpose",
-    "securityLevel"
-  ],
-  "additionalProperties": false
-}
-```
+See the [public key implementation in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/identity/identity_public_key/v0/mod.rs#L39-L50) for more details.
 
 #### Public Key `id`
 
@@ -284,14 +81,15 @@ Each public key in an identity's `publicKeys` array must be assigned a unique in
 
 #### Public Key `type`
 
-The `type` field indicates the algorithm used to derive the key.
+The `type` field indicates the algorithm used to derive the key. Available key types [defined in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/identity/identity_public_key/key_type.rs#L56-L62) include:
 
-| Type | Description |
-| :--: | ----------- |
-|   0  | ECDSA Secp256k1 (default) |
-|   1  | BLS 12-381 |
-|   2  | ECDSA Secp256k1 Hash160 |
-|   3  | [BIP13](https://github.com/bitcoin/bips/blob/master/bip-0013.mediawiki) pay-to-script-hash public key |
+| Type | Size (bytes) | Description |
+| :--: | :----------: | ----------- |
+| `0`  | 33           | ECDSA Secp256k1 (default) |
+| `1`  | 48           | BLS 12-381 |
+| `2`  | 20           | ECDSA Secp256k1 Hash160 |
+| `3`  | 20           | [BIP13](https://github.com/bitcoin/bips/blob/master/bip-0013.mediawiki) pay-to-script-hash public key |
+| `4`  | 20           | EDDSA 25519 Hash160 |
 
 #### Public Key `data`
 
@@ -299,14 +97,14 @@ The `data` field contains the compressed public key.
 
 #### Public Key `purpose`
 
-The `purpose` field describes which operations are supported by the key. Please refer to [DIP11 - Identities](https://github.com/dashpay/dips/blob/master/dip-0011.md#keys) for additional information regarding this.
+The `purpose` field describes which operations are supported by the key. Please refer to [DIP11 - Identities](https://github.com/dashpay/dips/blob/master/dip-0011.md#keys) for additional information regarding this. Keys for some purposes must meet certain the security level criteria [defined by rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/public_key_in_creation/methods/validate_identity_public_keys_structure/v0/mod.rs#L22-L36) as detailed below:
 
-| Type | Description    |
-| :--: | -------------- |
-|   0  | Authentication |
-|   1  | Encryption     |
-|   2  | Decryption     |
-|   3  | Transfer       |
+| Type | Description    | Allowed Security Level(s) |
+| :--: | -------------- | ------------------------- |
+| `0`  | Authentication | Any security level        |
+| `1`  | Encryption     | Medium                    |
+| `2`  | Decryption     | Medium                    |
+| `3`  | Transfer       | Critical                  |
 
 #### Public Key `securityLevel`
 
