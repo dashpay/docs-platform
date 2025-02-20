@@ -348,7 +348,7 @@ Identities are created on the platform by submitting the identity information in
 | publicKeys      | array of keys  | [Public key(s)](#identity-publickeys) associated with the identity |
 | signature       | array of bytes | Signature of state transition data by the single-use key from the asset lock (65 bytes) |
 
-Each identity must comply with this JSON-Schema definition established in [rs-dpp](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/identity/stateTransition/identityCreate.json):
+Each identity must comply with this JSON-Schema definition established in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/schema/identity/v0/stateTransition/identityCreate.json):
 
 ```json
 {
@@ -429,7 +429,7 @@ Identity credit balances are increased by submitting the topup information in an
 | identityId      | array of bytes | An [Identity ID](#identity-id) for the identity receiving the topup (can be any identity) (32 bytes) |
 | signature       | array of bytes | Signature of state transition data by the single-use key from the asset lock (65 bytes) |
 
-Each identity must comply with this JSON-Schema definition established in [rs-dpp](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/identity/stateTransition/identityTopUp.json):
+Each identity must comply with this JSON-Schema definition established in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/schema/identity/v0/stateTransition/identityTopUp.json):
 
 ```json
 {
@@ -506,7 +506,7 @@ Identities are updated on the platform by submitting the identity information in
 | disablePublicKeys    | array of integers    | (Optional) Array of up to 10 existing identity public key ID(s) to disable for the identity. Required if disabling keys. |
 | signaturePublicKeyId | integer              | The ID of public key used to sign the state transition |
 
-Each identity must comply with this JSON-Schema definition established in [rs-dpp](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/identity/stateTransition/identityUpdate.json):
+Each identity must comply with this JSON-Schema definition established in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/schema/identity/v0/stateTransition/identityUpdate.json):
 
 ```json
 {
@@ -539,10 +539,6 @@ Each identity must comply with this JSON-Schema definition established in [rs-dp
       "minimum": 0,
       "description": "Identity update revision"
     },
-    "publicKeysDisabledAt": {
-      "type": "integer",
-      "minimum": 0
-    },
     "addPublicKeys": {
       "type": "array",
       "minItems": 1,
@@ -564,21 +560,21 @@ Each identity must comply with this JSON-Schema definition established in [rs-dp
       "minimum": 0
     }
   },
-  "dependentRequired" : {
-    "disablePublicKeys": ["publicKeysDisabledAt"],
-    "publicKeysDisabledAt": ["disablePublicKeys"]
-  },
   "anyOf": [
     {
       "type": "object",
-      "required": ["addPublicKeys"],
+      "required": [
+        "addPublicKeys"
+      ],
       "properties": {
         "addPublicKeys": true
       }
     },
     {
       "type": "object",
-      "required": ["disablePublicKeys"],
+      "required": [
+        "disablePublicKeys"
+      ],
       "properties": {
         "disablePublicKeys": true
       }
@@ -613,7 +609,7 @@ The InstantSend asset lock proof is used for transactions that have received an 
 | transaction | array of bytes | The asset lock transaction |
 | outputIndex | integer        | Index of the transaction output to be used |
 
-Asset locks using an InstantSend lock as proof must comply with this JSON-Schema definition established in [rs-dpp](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/identity/stateTransition/assetLockProof/instantAssetLockProof.json):
+Asset locks using an InstantSend lock as proof must comply with this JSON-Schema definition established in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/schema/identity/v0/stateTransition/assetLockProof/instantAssetLockProof.json):
 
 ```json
 {
@@ -661,7 +657,7 @@ The ChainLock asset lock proof is used for transactions that have note received 
 | coreChainLockedHeight | integer        | Height of the ChainLocked Core block containing the transaction |
 | outPoint              | object         | The  [outpoint](https://docs.dash.org/projects/core/en/stable/docs/resources/glossary.html#outpoint) being used as the asset lock |
 
-Asset locks using a ChainLock as proof must comply with this JSON-Schema definition established in [rs-dpp](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/identity/stateTransition/assetLockProof/chainAssetLockProof.json):
+Asset locks using a ChainLock as proof must comply with this JSON-Schema definition established in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/schema/identity/v0/stateTransition/assetLockProof/chainAssetLockProof.json):
 
 ```json
 {
