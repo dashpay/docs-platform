@@ -132,7 +132,7 @@ Each identity has a balance of credits established by an [asset lock transaction
 
 ## Identity State Transition Details
 
-There are three identity-related state transitions: [identity create](#identity-creation), [identity topup](#identity-topup), and [identity update](#identity-update). Details are provided in this section including information about [asset locking](#asset-lock) and [signing](#identity-state-transition-signing) required for these state transitions.
+There are five identity-related state transitions: [identity create](#identity-creation), [identity topup](#identity-topup), [identity update](#identity-update), [identity credit transfer](#identity-credit-transfer), and [identity credit withdrawal](#identity-credit-withdrawal). Details are provided in this section including information about [asset locking](#asset-lock) and [signing](#identity-state-transition-signing) required for these state transitions.
 
 ### Identity Creation
 
@@ -146,7 +146,7 @@ Identities are created on the platform by submitting the identity information in
 | assetLockProof  | [proof object](#asset-lock) | Asset lock proof object proving the [asset lock transaction](inv:user:std#ref-txs-assetlocktx) exists on the Core chain and is locked |
 | userFeeIncrease | integer        | Extra fee to prioritize processing if the mempool is full. Typically set to zero. |
 | signature       | array of bytes | Signature of state transition data by the single-use key from the asset lock (65 bytes) |
-| identityId      | array of bytes | An [Identity ID](#identity-id) for the identity being created (32 bytes) |
+| identityId      | array of bytes | An [identity id](#identity-id) for the identity being created (32 bytes) |
 
 See the [identity create implementation in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_create_transition/v0/mod.rs#L44-L55) for more details.
 
@@ -159,7 +159,7 @@ Identity credit balances are increased by submitting the topup information in an
 | $version        | integer        | The protocol version (currently `1`) |
 | type            | integer        | State transition type (`3` for identity topup) |
 | assetLockProof  | [proof object](#asset-lock) | Asset lock proof object proving the layer 1 locking transaction exists and is locked  |
-| identityId      | array of bytes | An [Identity ID](#identity-id) for the identity receiving the topup (can be any identity) (32 bytes) |
+| identityId      | array of bytes | An [identity id](#identity-id) for the identity receiving the topup (can be any identity) (32 bytes) |
 | userFeeIncrease | integer        | Extra fee to prioritize processing if the mempool is full. Typically set to zero. |
 | signature       | array of bytes | Signature of state transition data by the single-use key from the asset lock (65 bytes) |
 
@@ -173,7 +173,7 @@ Identities are updated on the platform by submitting the identity information in
 | -------------------- | -------------------- | ----------- |
 | $version             | integer              | The protocol version (currently `1`) |
 | type                 | integer              | State transition type (`5` for identity update) |
-| identityId           | array of bytes       | The identity id (32 bytes) |
+| identityId           | array of bytes       | The [identity id](#identity-id) (32 bytes) |
 | revision             | integer              | Identity update revision |
 | nonce                | integer              | Identity nonce for this transition to prevent replay attacks |
 | addPublicKeys        | array of public [keys](#identity-publickeys) | (Optional) Array of up to 10 new public keys to add to the identity. Required if adding keys. |
@@ -183,6 +183,44 @@ Identities are updated on the platform by submitting the identity information in
 | signature            | array of bytes       | Signature of state transition data (65 bytes) |
 
 See the [identity update implementation in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_update_transition/v0/mod.rs#L40-L69) for more details.
+
+### Identity Credit Transfer
+
+Identities can transfer credits on the platform by submitting an identity credit transfer state transition. This state transition requires specifying the sender identity, recipient identity, transfer amount, and a signature for verification.
+
+| Field                | Type           | Description |
+| -------------------- | -------------- | ----------- |
+| $version             | integer        | The protocol version (currently `1`) |
+| type                 | integer        | State transition type (`6` for identity credit transfer) |
+| identityId           | array of bytes | The [identity id](#identity-id) of the sender (32 bytes) |
+| recipientId          | array of bytes | The [identity id](#identity-id) of the recipient (32 bytes) |
+| amount               | integer        | The credit amount to transfer |
+| nonce                | integer        | Identity nonce for this transition to prevent replay attacks |
+| userFeeIncrease      | integer        | Extra fee to prioritize processing if the mempool is full. Typically set to zero. |
+| signaturePublicKeyId | integer        | The ID of public key used to sign the state transition |
+| signature            | array of bytes | Signature of state transition data (65 bytes) |
+
+See the [identity credit transfer implementation in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_credit_transfer_transition/v0/mod.rs#L39-L50) for more details.
+
+### Identity Credit Withdrawal
+
+Credits can be withdrawn from an identity to an external Core wallet using an identity credit withdrawal state transition. This transition allows specifying the withdrawal amount, output script, and signing details.
+
+| Field                | Type           | Description |
+| -------------------- | -------------- | ----------- |
+| $version             | integer        | The protocol version (currently `1`) |
+| type                 | integer        | State transition type (`7` for identity credit withdrawal) |
+| identityId           | array of bytes | An [identity id](#identity-id) (32 bytes) |
+| amount               | integer        | The amount of credits to withdraw (64 bits) |
+| coreFeePerByte       | integer        | Fee per byte for the transaction on Core (32 bits) |
+| pooling              | integer        | Pooling mode for transaction batching |
+| outputScript         | array of bytes | (Optional) The output script for receiving the withdrawal (if not set, defaults to Core address) |
+| nonce                | integer        | Identity nonce for this transition to prevent replay attacks |
+| userFeeIncrease      | integer        | Extra fee to prioritize processing if the mempool is full. Typically set to zero. |
+| signaturePublicKeyId | integer        | The ID of public key used to sign the state transition |
+| signature            | array of bytes | Signature of state transition data (65 bytes) |
+
+See the [identity credit withdrawal implementation in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_credit_withdrawal_transition/v1/mod.rs#L32-L45) for more details.
 
 ### Asset Lock
 
