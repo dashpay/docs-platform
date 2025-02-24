@@ -190,6 +190,8 @@ The [identity create](#identity-creation) and [identity topup](#identity-topup) 
 
 Currently there are two types of asset lock proofs: InstantSend and ChainLock. Transactions almost always receive InstantSend locks, so the InstantSend asset lock proof is the predominate type.
 
+See rs-dpp for examples of using [InstantSend](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/identity/state_transition/asset_lock_proof/instant/instant_asset_lock_proof.rs) or [ChainLocks](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/identity/state_transition/asset_lock_proof/chain/chain_asset_lock_proof.rs) as the asset lock proof.
+
 #### InstantSend Asset Lock Proof
 
 The InstantSend asset lock proof is used for transactions that have received an InstantSend lock.
