@@ -13,9 +13,9 @@ Identities consist of multiple objects that are described in the following secti
 | Field           | Type           | Description                                 |
 | --------------- | -------------- | ------------------------------------------- |
 | $version        | integer        | The protocol version                        |
-| id              | array of bytes | The [identity id](#identity-id) (32 bytes)  |
-| publicKeys      | array of keys  | [Public key(s)](#identity-publickeys) associated with the identity |
-| balance         | integer        | Credit [balance](#identity-balance) associated with the identity |
+| [id](#identity-id) | array of bytes | The identity id (32 bytes)  |
+| [publicKeys](#identity-publickeys) | array of keys  | Public key(s) associated with the identity |
+| [balance](#identity-balance) | integer        | Credit balance associated with the identity |
 | revision        | integer        | Identity update revision                    |
 
 See the [identity implementation in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/identity/v0/mod.rs#L34-L43) for more details.
@@ -392,7 +392,7 @@ Each identity must comply with this JSON-Schema definition established in [rs-dp
 
 ### Asset Lock
 
-The [identity create](#identity-creation) and [identity topup](#identity-topup) state transitions both include an asset lock proof object. This object references the layer 1 lock transaction and includes proof that the transaction is locked.
+The [identity create](#identity-creation) and [identity topup](#identity-topup) state transitions both include an asset lock proof object. This object references the Core chain [asset lock transaction](inv:user:std#ref-txs-assetlocktx) and includes proof that the transaction is locked.
 
 Currently there are two types of asset lock proofs: InstantSend and ChainLock. Transactions almost always receive InstantSend locks, so the InstantSend asset lock proof is the predominate type.
 
@@ -489,7 +489,9 @@ Asset locks using a ChainLock as proof must comply with this JSON-Schema definit
 
 ### Identity State Transition Signing
 
-**Note:** The identity create and topup state transition signatures are unique in that they must be signed by the private key used in the layer 1 locking transaction. All other state transitions will be signed by a private key of the identity submitting them.
+:::{note}
+The identity create and topup state transition signatures are unique in that they must be signed by the private key used in the layer 1 locking transaction. All other state transitions will be signed by a private key of the identity submitting them.
+:::
 
 The process to sign an identity create state transition consists of the following steps:
 
