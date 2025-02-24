@@ -226,13 +226,11 @@ See the [identity credit withdrawal implementation in rs-dpp](https://github.com
 
 The [identity create](#identity-creation) and [identity topup](#identity-topup) state transitions both include an asset lock proof object. This object references the Core chain [asset lock transaction](inv:user:std#ref-txs-assetlocktx) and includes proof that the transaction is locked.
 
-Currently there are two types of asset lock proofs: InstantSend and ChainLock. Transactions almost always receive InstantSend locks, so the InstantSend asset lock proof is the predominate type.
-
-See rs-dpp for examples of using [InstantSend](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/identity/state_transition/asset_lock_proof/instant/instant_asset_lock_proof.rs) or [ChainLocks](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/identity/state_transition/asset_lock_proof/chain/chain_asset_lock_proof.rs) as the asset lock proof.
+Currently there are two types of asset lock proofs [defined by rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/identity/state_transition/asset_lock_proof/mod.rs#L129-L132): InstantSend and ChainLock. Transactions almost always receive InstantSend locks, so the InstantSend asset lock proof is the predominate type. See rs-dpp for examples of using [InstantSend](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/identity/state_transition/asset_lock_proof/instant/instant_asset_lock_proof.rs) or [ChainLocks](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/identity/state_transition/asset_lock_proof/chain/chain_asset_lock_proof.rs) as the asset lock proof.
 
 #### InstantSend Asset Lock Proof
 
-The InstantSend asset lock proof is used for transactions that have received an InstantSend lock.
+The InstantSend asset lock proof is used for transactions that have received an InstantSend lock. Asset locks using an InstantSend lock as proof must comply with this structure established in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/identity/state_transition/asset_lock_proof/instant/instant_asset_lock_proof.rs#L29-L36).
 
 | Field       | Type           | Description |
 | ----------- | -------------- | ----------- |
@@ -241,85 +239,15 @@ The InstantSend asset lock proof is used for transactions that have received an 
 | transaction | array of bytes | The asset lock transaction |
 | outputIndex | integer        | Index of the transaction output to be used |
 
-Asset locks using an InstantSend lock as proof must comply with this JSON-Schema definition established in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/schema/identity/v0/stateTransition/assetLockProof/instantAssetLockProof.json):
-
-```json
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "type": "object",
-  "properties": {
-    "type": {
-      "type": "integer",
-      "const": 0
-    },
-    "instantLock": {
-      "type": "array",
-      "byteArray": true,
-      "minItems": 165,
-      "maxItems": 100000
-    },
-    "transaction": {
-      "type": "array",
-      "byteArray": true,
-      "minItems": 1,
-      "maxItems": 100000
-    },
-    "outputIndex": {
-      "type": "integer",
-      "minimum": 0
-    }
-  },
-  "additionalProperties": false,
-  "required": [
-    "type",
-    "instantLock",
-    "transaction",
-    "outputIndex"
-  ]
-}
-```
-
 #### ChainLock Asset Lock Proof
 
-The ChainLock asset lock proof is used for transactions that have note received an InstantSend lock, but have been included in a block that has received a ChainLock.
+The ChainLock asset lock proof is used for transactions that have note received an InstantSend lock, but have been included in a block that has received a ChainLock. Asset locks using a ChainLock as proof must comply with this structure established in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/identity/state_transition/asset_lock_proof/chain/chain_asset_lock_proof.rs#L15-L20).
 
 | Field                 | Type           | Description |
 | --------------------- | -------------- | ----------- |
 | type                  | array of bytes | The type of asset lock proof (`1` for ChainLocks) |
 | coreChainLockedHeight | integer        | Height of the ChainLocked Core block containing the transaction |
 | outPoint              | object         | The  [outpoint](https://docs.dash.org/projects/core/en/stable/docs/resources/glossary.html#outpoint) being used as the asset lock |
-
-Asset locks using a ChainLock as proof must comply with this JSON-Schema definition established in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/schema/identity/v0/stateTransition/assetLockProof/chainAssetLockProof.json):
-
-```json
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "type": "object",
-  "properties": {
-    "type": {
-      "type": "integer",
-      "const": 1
-    },
-    "coreChainLockedHeight":  {
-      "type": "integer",
-      "minimum": 1,
-      "maximum": 4294967295
-    },
-    "outPoint": {
-      "type": "array",
-      "byteArray": true,
-      "minItems": 36,
-      "maxItems": 36
-    }
-  },
-  "additionalProperties": false,
-  "required": [
-    "type",
-    "coreChainLockedHeight",
-    "outPoint"
-  ]
-}
-```
 
 ### Identity State Transition Signing
 
