@@ -140,80 +140,15 @@ Identities are created on the platform by submitting the identity information in
 
 | Field           | Type           | Description |
 | --------------- | -------------- | ----------- |
-| protocolVersion | integer        | The protocol version (currently `1`) |
+| $version        | integer        | The protocol version (currently `1`) |
 | type            | integer        | State transition type (`2` for identity create) |
-| assetLockProof  | object         | [Asset lock proof object](#asset-lock) proving the layer 1 locking transaction exists and is locked |
-| publicKeys      | array of keys  | [Public key(s)](#identity-publickeys) associated with the identity |
+| publicKeys | array of [keys](#identity-publickeys) | Public key(s) associated with the identity |
+| assetLockProof  | [proof object](#asset-lock) | Asset lock proof object proving the [asset lock transaction](inv:user:std#ref-txs-assetlocktx) exists on the Core chain and is locked |
+| userFeeIncrease | integer        | Extra fee to prioritize processing if the mempool is full. Typically set to zero. |
 | signature       | array of bytes | Signature of state transition data by the single-use key from the asset lock (65 bytes) |
+| identityId      | array of bytes | An [Identity ID](#identity-id) for the identity being created (32 bytes) |
 
-Each identity must comply with this JSON-Schema definition established in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/schema/identity/v0/stateTransition/identityCreate.json):
-
-```json
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "type": "object",
-  "properties": {
-    "protocolVersion": {
-      "type": "integer",
-      "$comment": "Maximum is the latest protocol version"
-    },
-    "type": {
-      "type": "integer",
-      "const": 2
-    },
-    "assetLockProof": {
-      "type": "object"
-    },
-    "publicKeys": {
-      "type": "array",
-      "minItems": 1,
-      "maxItems": 10,
-      "uniqueItems": true
-    },
-    "signature": {
-      "type": "array",
-      "byteArray": true,
-      "minItems": 65,
-      "maxItems": 65,
-      "description": "Signature made by AssetLock one time ECDSA key"
-    }
-  },
-  "additionalProperties": false,
-  "required": [
-    "protocolVersion",
-    "type",
-    "assetLockProof",
-    "publicKeys",
-    "signature"
-  ]
-}
-```
-
-**Example State Transition**
-
-```json
-{
-  "protocolVersion":1,
-  "type":2,
-  "signature":"IBTTgge+/VDa/9+n2q3pb4tAqZYI48AX8X3H/uedRLH5dN8Ekh/sxRRQQS9LaOPwZSCVED6XIYD+vravF2dhYOE=",
-  "assetLockProof":{
-    "type":0,
-    "instantLock":"AQHDHQdekbFZJOQFEe1FnRjoDemL/oPF/v9IME/qphjt5gEAAAB/OlZB9p8vPzPE55MlegR7nwhXRpZC4d5sYnOIypNgzfdDRsW01v8UtlRoORokjoDJ9hA/XFMK65iYTrQ8AAAAGI4q8GxtK9LHOT1JipnIfwiiv8zW+C/sbokbMhi/BsEl51dpoeBQEUAYWT7KRiJ4Atx49zIrqsKvmU1mJQza0Y1YbBSS/b/IPO8StX04bItPpDuTp6zlh/G7YOGzlEoe",
-    "transaction":"0300000001c31d075e91b15924e40511ed459d18e80de98bfe83c5feff48304feaa618ede6010000006b483045022100dd0e4a6c25b1c7ed9aec2c93133f6de27b4c695a062f21f0aed1a2999fccf01c0220384aaf84cd5fd1c741fd1739f5c026a492abbfc18cfde296c6d90e98304f2f76012102fb9e87840f7e0a9b01f955d8eb4d1d2a52b32c9c43c751d7a348482c514ad222ffffffff021027000000000000166a14ea15af58c614b050a3b2e6bcc131fe0e7de37b9801710815000000001976a9140ccc680f945e964f7665f57c0108cba5ca77ed1388ac00000000",
-    "outputIndex":0
-  },
-  "publicKeys":[
-    {
-      "id":0,
-      "type":0,
-      "purpose":0,
-      "securityLevel":0,
-      "data":"AkWRfl3DJiyyy6YPUDQnNx5KERRnR8CoTiFUvfdaYSDS",
-      "readOnly":false
-    }
-  ]
-}
-```
+See the [identity create implementation in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_create_transition/v0/mod.rs#L44-L55) for more details.
 
 ### Identity TopUp
 
@@ -221,72 +156,14 @@ Identity credit balances are increased by submitting the topup information in an
 
 | Field           | Type           | Description |
 | --------------- | -------------- | ----------- |
-| protocolVersion | integer        | The protocol version (currently `1`) |
+| $version        | integer        | The protocol version (currently `1`) |
 | type            | integer        | State transition type (`3` for identity topup) |
-| assetLockProof  | object         | [Asset lock proof object](#asset-lock) proving the layer 1 locking transaction exists and is locked  |
+| assetLockProof  | [proof object](#asset-lock) | Asset lock proof object proving the layer 1 locking transaction exists and is locked  |
 | identityId      | array of bytes | An [Identity ID](#identity-id) for the identity receiving the topup (can be any identity) (32 bytes) |
+| userFeeIncrease | integer        | Extra fee to prioritize processing if the mempool is full. Typically set to zero. |
 | signature       | array of bytes | Signature of state transition data by the single-use key from the asset lock (65 bytes) |
 
-Each identity must comply with this JSON-Schema definition established in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/schema/identity/v0/stateTransition/identityTopUp.json):
-
-```json
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "type": "object",
-  "properties": {
-    "protocolVersion": {
-      "type": "integer",
-      "$comment": "Maximum is the latest protocol version"
-    },
-    "type": {
-      "type": "integer",
-      "const": 3
-    },
-    "assetLockProof": {
-      "type": "object"
-    },
-    "identityId": {
-      "type": "array",
-      "byteArray": true,
-      "minItems": 32,
-      "maxItems": 32,
-      "contentMediaType": "application/x.dash.dpp.identifier"
-    },
-    "signature": {
-      "type": "array",
-      "byteArray": true,
-      "minItems": 65,
-      "maxItems": 65,
-      "description": "Signature made by AssetLock one time ECDSA key"
-    }
-  },
-  "additionalProperties": false,
-  "required": [
-    "protocolVersion",
-    "type",
-    "assetLockProof",
-    "identityId",
-    "signature"
-  ]
-}
-```
-
-**Example State Transition**
-
-```json
-{
-  "protocolVersion":1,
-  "type":3,
-  "signature":"IEqOV4DsbVa+nPipva0UrT0z0ZwubwgP9UdlpwBwXbFSWb7Mxkwqzv1HoEDICJ8GtmUSVjp4Hr2x0cVWe7+yUGc=",
-  "identityId":"6YfP6tT9AK8HPVXMK7CQrhpc8VMg7frjEnXinSPvUmZC",
-  "assetLockProof":{
-    "type":0,
-    "instantLock":"AQF/OlZB9p8vPzPE55MlegR7nwhXRpZC4d5sYnOIypNgzQEAAAAm8edm9p8URNEE9PBo0lEzZ2s9nf4u1SV0MaZyB0JTRasiXu8QtTmfqZWjI3qVtOpUhGPu6r/2fV+0Ffi3AAAAhA77E0aScf+5PTYzgV5WR6VJ/EnjvXyAMmAcu222JyvA7M+5OoCzVF/IQs2IWaPOFsRl1n5C+dMxdvrxhpVLT8QfZJSl19wzybWrHbGRaHDw4iWHvfYdwyXN+vP8UwDz",
-    "transaction":"03000000017f3a5641f69f2f3f33c4e793257a047b9f0857469642e1de6c627388ca9360cd010000006b483045022100d8c383b15a3738d13b029605d242f041bea874cb4d0def1303ca7cdf76092bf102201b1d401ae9e8cdc5efc061249d2a967960dadce53c66e34d249c42049b48b26701210335b684aa510a9b54a3a4f79283e64482a323190045c239fae5ecb0450c78f965ffffffff02e803000000000000166a14f5383f51784bc4a27e2040bdd6cd9aae7fe6814d31690815000000001976a9144a0511ec3362b35983d0a101f0572dd26abce2ee88ac00000000",
-    "outputIndex":0
-  }
-}
-```
+See the [identity topup implementation in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_topup_transition/v0/mod.rs#L40-L47) for more details.
 
 ### Identity Update
 
@@ -294,101 +171,18 @@ Identities are updated on the platform by submitting the identity information in
 
 | Field                | Type                 | Description |
 | -------------------- | -------------------- | ----------- |
-| protocolVersion      | integer              | The protocol version (currently `1`) |
+| $version             | integer              | The protocol version (currently `1`) |
 | type                 | integer              | State transition type (`5` for identity update) |
 | identityId           | array of bytes       | The identity id (32 bytes) |
-| signature            | array of bytes       | Signature of state transition data (65 bytes) |
 | revision             | integer              | Identity update revision |
-| publicKeysDisabledAt | integer              | (Optional) Timestamp when keys were disabled. Required if `disablePublicKeys` is present. |
-| addPublicKeys        | array of public keys | (Optional) Array of up to 10 new public keys to add to the identity. Required if adding keys. |
+| nonce                | integer              | Identity nonce for this transition to prevent replay attacks |
+| addPublicKeys        | array of public [keys](#identity-publickeys) | (Optional) Array of up to 10 new public keys to add to the identity. Required if adding keys. |
 | disablePublicKeys    | array of integers    | (Optional) Array of up to 10 existing identity public key ID(s) to disable for the identity. Required if disabling keys. |
+| userFeeIncrease | integer        | Extra fee to prioritize processing if the mempool is full. Typically set to zero. |
 | signaturePublicKeyId | integer              | The ID of public key used to sign the state transition |
+| signature            | array of bytes       | Signature of state transition data (65 bytes) |
 
-Each identity must comply with this JSON-Schema definition established in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/schema/identity/v0/stateTransition/identityUpdate.json):
-
-```json
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "type": "object",
-  "properties": {
-    "protocolVersion": {
-      "type": "integer",
-      "$comment": "Maximum is the latest protocol version"
-    },
-    "type": {
-      "type": "integer",
-      "const": 5
-    },
-    "identityId": {
-      "type": "array",
-      "byteArray": true,
-      "minItems": 32,
-      "maxItems": 32,
-      "contentMediaType": "application/x.dash.dpp.identifier"
-    },
-    "signature": {
-      "type": "array",
-      "byteArray": true,
-      "minItems": 65,
-      "maxItems": 96
-    },
-    "revision": {
-      "type": "integer",
-      "minimum": 0,
-      "description": "Identity update revision"
-    },
-    "addPublicKeys": {
-      "type": "array",
-      "minItems": 1,
-      "maxItems": 10,
-      "uniqueItems": true
-    },
-    "disablePublicKeys": {
-      "type": "array",
-      "minItems": 1,
-      "maxItems": 10,
-      "uniqueItems": true,
-      "items": {
-        "type": "integer",
-        "minimum": 0
-      }
-    },
-    "signaturePublicKeyId": {
-      "type": "integer",
-      "minimum": 0
-    }
-  },
-  "anyOf": [
-    {
-      "type": "object",
-      "required": [
-        "addPublicKeys"
-      ],
-      "properties": {
-        "addPublicKeys": true
-      }
-    },
-    {
-      "type": "object",
-      "required": [
-        "disablePublicKeys"
-      ],
-      "properties": {
-        "disablePublicKeys": true
-      }
-    }
-  ],
-  "additionalProperties": false,
-  "required": [
-    "protocolVersion",
-    "type",
-    "identityId",
-    "signature",
-    "revision",
-    "signaturePublicKeyId"
-  ]
-}
-```
+See the [identity update implementation in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_update_transition/v0/mod.rs#L40-L69) for more details.
 
 ### Asset Lock
 
