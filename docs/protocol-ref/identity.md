@@ -72,6 +72,7 @@ Each item in the `publicKeys` array consists of an object containing:
 | [securityLevel](#public-key-securitylevel) | integer        | Public key security level (`0` - Master, `1` - Critical, `2` - High, `3` - Medium) |
 | [readonly](#public-key-readonly) | boolean        | Identity public key can't be modified with `readOnly` set to `true`. This can’t be changed after adding a key. |
 | [disabledAt](#public-key-disabledat) | integer        | Timestamp indicating that the key was disabled at a specified time |
+| signature     | array of bytes | Signature of the signable identity create or topup state transition by the private key associated with this public key |
 
 See the [public key implementation in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/identity/identity_public_key/v0/mod.rs#L39-L50) for more details.
 
@@ -257,64 +258,11 @@ The identity create and topup state transition signatures are unique in that the
 
 The process to sign an identity create state transition consists of the following steps:
 
-1. Canonical CBOR encode the state transition data - this include all ST fields except the `signature`
-2. Sign the encoded data with private key associated with a lock transaction public key
-3. Set the state transition `signature` to the value of the signature created in the previous step
-
-#### Code snipits related to signing
-
-```rust
-/// From rs-dpp
-/// abstract_state_transition.rs
-/// Signs data with the private key
-fn sign_by_private_key(
-    &mut self,
-    private_key: &[u8],
-    key_type: KeyType,
-    bls: &impl BlsModule,
-) -> Result<(), ProtocolError> {
-    let data = self.to_buffer(true)?;
-    match key_type {
-        KeyType::BLS12_381 => self.set_signature(bls.sign(&data, private_key)?.into()),
-
-        // https://github.com/dashpay/platform/blob/9c8e6a3b6afbc330a6ab551a689de8ccd63f9120/packages/js-dpp/lib/stateTransition/AbstractStateTransition.js#L169
-        KeyType::ECDSA_SECP256K1 | KeyType::ECDSA_HASH160 => {
-            let signature = signer::sign(&data, private_key)?;
-            self.set_signature(signature.to_vec().into());
-        }
-
-        // the default behavior from
-        // https://github.com/dashpay/platform/blob/6b02b26e5cd3a7c877c5fdfe40c4a4385a8dda15/packages/js-dpp/lib/stateTransition/AbstractStateTransition.js#L187
-        // is to return the error for the BIP13_SCRIPT_HASH
-        KeyType::BIP13_SCRIPT_HASH => {
-            return Err(ProtocolError::InvalidIdentityPublicKeyTypeError(
-                InvalidIdentityPublicKeyTypeError::new(key_type),
-            ))
-        }
-    };
-    Ok(())
-}
-
-
-/// From rust-dashcore
-/// signer.rs
-/// sign and get the ECDSA signature
-pub fn sign(data: &[u8], private_key: &[u8]) -> Result<[u8; 65], anyhow::Error> {
-    let data_hash = double_sha(data);
-    sign_hash(&data_hash, private_key)
-}
-
-/// signs the hash of data and get the ECDSA signature
-pub fn sign_hash(data_hash: &[u8], private_key: &[u8]) -> Result<[u8; 65], anyhow::Error> {
-    let pk = SecretKey::from_slice(private_key)
-        .map_err(|e| anyhow!("Invalid ECDSA private key: {}", e))?;
-
-    let secp = Secp256k1::new();
-    let msg = Message::from_slice(data_hash).map_err(anyhow::Error::msg)?;
-
-    let signature = secp
-        .sign_ecdsa_recoverable(&msg, &pk)
-        .to_compact_signature(true);
-    Ok(signature)
-}
-```
+1. Create a canonical, signable version of the state transition encoded with [Bincode](https://github.com/bincode-org/bincode). The signable state transition excludes the following fields:
+   - `identityId`
+   - `signature` for all [public keys](#identity-publickeys)
+   - `signature` for the overall state transition
+2. Calculate the double SHA-256 hash of the encoded signable state transition
+3. Sign the hash from the previous step using the private key associated with the asset lock transaction, then add the result to the state transition's `signature` field
+4. For each public key being added to the identity, sign the hash from step 2 using the respective private key and add the result to the public key's `signature` field
+5. Use Bincode to re-encode the state transition with all signatures and the identity id included
