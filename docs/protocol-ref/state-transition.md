@@ -108,4 +108,37 @@ More detailed information about the `publicKeys` object can be found in the [ide
 
 ## State Transition Signing
 
-State transitions must be signed by a private key associated with the identity creating the state transition. Each identity must have at least two keys: a primary key ([security level](./identity.md#public-key-securitylevel) `0`) that is only used when signing identity update state transitions and an additional key ([security level](./identity.md#public-key-securitylevel) `2`) that is used to sign all other state transitions.
+State transitions must be signed by a private key associated with the identity creating the state transition. Each identity must have at least two keys: a primary key ([security level](./identity.md#public-key-securitylevel) `0`) that is only used when signing [identity update](identity.md#identity-update) state transitions and an additional key ([security level](./identity.md#public-key-securitylevel) `2`) that is used to sign all other state transitions.
+
+:::{note}
+The identity create and topup state transition signatures are unique in that they must be signed by
+the private key used in the Core chain asset lock transaction funding the identity. All other state
+transitions will be signed by a private key of the identity submitting them.
+:::
+
+The process to sign state transition consists of the following steps:
+
+1. Create a canonical, signable version of the state transition encoded with [Bincode](https://github.com/bincode-org/bincode).
+   - The signable state transition excludes one or more fields. See the [non-signable fields table](#non-signable-fields) below for a list of which fields must be excluded from signing.
+2. Calculate the double SHA-256 hash of the encoded signable state transition.
+3. Sign the hash from the previous step
+   - For identity create and identity topup state transitions, sign using the private key associated with the asset lock transaction.
+   - For all other state transitions, sign using the identity's private key.
+4. Add the result to the state transition's `signature` field
+6. Use Bincode to re-encode the state transition with all signatures and the identity id included.
+
+### Non-signable Fields
+
+This table shows the fields that must be excluded when creating state transition signatures. All transitions exclude the signature field. Some transitions contain other fields that must be excluded also. Click the state transition name to see the rs-dpp implementation for additional context.
+
+| State transition | Signature | Signature public key ID | Identity ID | Identity public key signature(s) |
+| - | :-: | :-: | :-: | :-: |
+| [Contract create](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/contract/data_contract_create_transition/v0/mod.rs#L41-L44) | x | x | - | - |
+| [Batch](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/v1/mod.rs#L33-L36) | x | x | - | - |
+| [Identity create](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_create_transition/v0/mod.rs#L50-L54) | x | - | x | [x](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/public_key_in_creation/v0/mod.rs#L47-L48) |
+| [Identity topup](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_topup_transition/v0/mod.rs#L45-L46)  | x | - | - | - |
+| [Contract update](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/contract/data_contract_update_transition/v0/mod.rs#L41-L44) | x | x | - | - |
+| [Identity update](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_update_transition/v0/mod.rs#L63-L68) | x | x | - | [Exclude for any keys being added by the state transition](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/public_key_in_creation/v0/mod.rs#L47-L48) |
+| [Identity credit transfer](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_credit_transfer_transition/v0/mod.rs#L46-L49) | x | x | - | - |
+| [Contract credit withdrawal](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_credit_withdrawal_transition/v1/mod.rs#L41-L44) | x | x | - | - |
+| [Masternode vote](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/masternode_vote_transition/v0/mod.rs#L46-L49) | x | x | - | - |
