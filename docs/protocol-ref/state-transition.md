@@ -106,6 +106,29 @@ More detailed information about the `publicKeys` object can be found in the [ide
 | addPublicKeys   | array of public keys | Varies | (Optional) Array of up to 10 new public keys to add to the identity. Required if adding keys. |
 | disablePublicKeys | array of integers  | Varies | (Optional) Array of up to 10 existing identity public key ID(s) to disable for the identity. Required if disabling keys. |
 
+### Identity Credit Transfer
+
+| Field           | Type           | Size | Description |
+| --------------- | -------------- | ---- | ----------- |
+| identityId      | array of bytes | 32 bytes | An [Identity ID](../protocol-ref/identity.md#identity-id) for the identity sending the credits |
+| recipientId     | array of bytes | 32 bytes | An [Identity ID](../protocol-ref/identity.md#identity-id) for the identity receiving the credits |
+| amount          | unsigned integer | 64 bits | Number of credits being transferred |
+| nonce           | unsigned integer | 64 bits | Identity nonce for this transition to prevent replay attacks |
+
+See the implementation in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_credit_transfer_transition/v0/mod.rs#L39-L50).
+
+### Identity Credit Withdrawal
+
+| Field           | Type           | Size | Description |
+| --------------- | -------------- | ---- | ----------- |
+| identityId      | array of bytes | 32 bytes | An [Identity ID](../protocol-ref/identity.md#identity-id) for the identity sending the credits |
+| amount          | unsigned integer | 64 bits | Number of credits being transferred |
+| coreFeePerByte  | unsigned integer | 32 bytes |  |
+| pooling         | unsigned integer | 8 bytes | 0 = Never, 1 = If Available, 2 = Standard |
+| outputScript    | script | Varies | If None, the withdrawal is sent to the address set by Core |
+| nonce           | unsigned integer | 64 bits | Identity nonce for this transition to prevent replay attacks |
+
+See the implementation in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_credit_withdrawal_transition/v1/mod.rs#L32-L45).
 
 ## State Transition Signing
 
