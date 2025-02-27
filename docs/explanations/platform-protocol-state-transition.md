@@ -38,7 +38,7 @@ The following table contains a list of currently defined payload types:
 | - | - |
 | [Data Contract Create](../protocol-ref/data-contract.md#data-contract-creation) (`0`) | [Database schema](../explanations/platform-protocol-data-contract.md) for a single application |
 | [Batch](../protocol-ref/document.md#document-submission) (`1`) | An array of 1 or more [document](../explanations/platform-protocol-document.md) or token transition objects |
-| [Identity Create](../protocol-ref/identity.md#identity-creation) (`2`) | Information including the public keys required to create a new [Identity](../explanations/identity.md) |
+| [Identity Create](../protocol-ref/identity.md#identity-create) (`2`) | Information including the public keys required to create a new [Identity](../explanations/identity.md) |
 | [Identity Topup](../protocol-ref/identity.md#identity-topup) (`3`) | Information including proof of a transaction containing an amount to add to the provided identity's balance |
 | [Data Contract Update](../protocol-ref/data-contract.md#data-contract-update) (`4`) | An updated [database schema](../explanations/platform-protocol-data-contract.md) to modify an existing application |
 | [Identity Update](../protocol-ref/identity.md#identity-update) (`5`) | A set of one or more new public keys to add to the [identity](../explanations/identity.md) or a list of existing keys to disable |

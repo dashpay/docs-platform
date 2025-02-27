@@ -9,7 +9,7 @@
  State transitions are the means for submitting data that creates, updates, or deletes platform data and results in a change to a new state. Each one must contain:
 
 - [Common fields](#common-fields) present in all state transitions
-- Additional fields specific to the type of action the state transition provides (e.g. [creating an identity](../protocol-ref/identity.md#identity-creation))
+- Additional fields specific to the type of action the state transition provides (e.g. [creating an identity](../protocol-ref/identity.md#identity-create))
 
 ### Fees
 
@@ -26,7 +26,7 @@ All state transitions include the following fields:
 | Field           | Type           | Description |
 | --------------- | -------------- | ----------- |
 | $version        | integer        | The platform protocol version (currently `1`) |
-| type            | integer        | State transition type:<br>`0` - [data contract create](../protocol-ref/data-contract.md#data-contract-creation)<br>`1` - [batch](#batch)<br>`2` - [identity create](../protocol-ref/identity.md#identity-creation)<br>`3` - [identity topup](identity.md#identity-topup)<br>`4` - [data contract update](data-contract.md#data-contract-update)<br>`5` - [identity update](identity.md#identity-update)<br>`6` - [identity credit transfer](identity.md#identity-credit-transfer)<br>`7` - [identity credit withdrawal](identity.md#identity-credit-withdrawal) |
+| type            | integer        | State transition type:<br>`0` - [data contract create](../protocol-ref/data-contract.md#data-contract-creation)<br>`1` - [batch](#batch)<br>`2` - [identity create](../protocol-ref/identity.md#identity-create)<br>`3` - [identity topup](identity.md#identity-topup)<br>`4` - [data contract update](data-contract.md#data-contract-update)<br>`5` - [identity update](identity.md#identity-update)<br>`6` - [identity credit transfer](identity.md#identity-credit-transfer)<br>`7` - [identity credit withdrawal](identity.md#identity-credit-withdrawal) |
 | userFeeIncrease | integer        | Extra fee to prioritize processing if the mempool is full. Typically set to zero. |
 | signature       | array of bytes | Signature of state transition data (65 bytes) |
 

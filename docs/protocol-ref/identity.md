@@ -133,9 +133,9 @@ Each identity has a balance of credits established by an [asset lock transaction
 
 ## Identity State Transition Details
 
-There are five identity-related state transitions: [identity create](#identity-creation), [identity topup](#identity-topup), [identity update](#identity-update), [identity credit transfer](#identity-credit-transfer), and [identity credit withdrawal](#identity-credit-withdrawal). Details are provided in this section including information about [asset locking](#asset-lock) and [signing](#identity-state-transition-signing) required for these state transitions.
+There are five identity-related state transitions: [identity create](#identity-create), [identity topup](#identity-topup), [identity update](#identity-update), [identity credit transfer](#identity-credit-transfer), and [identity credit withdrawal](#identity-credit-withdrawal). Details are provided in this section including information about [asset locking](#asset-lock) and [signing](#identity-state-transition-signing) required for these state transitions.
 
-### Identity Creation
+### Identity Create
 
 Identities are created on the platform by submitting the identity information in an identity create state transition.
 
@@ -225,7 +225,7 @@ See the [identity credit withdrawal implementation in rs-dpp](https://github.com
 
 ### Asset Lock
 
-The [identity create](#identity-creation) and [identity topup](#identity-topup) state transitions both include an asset lock proof object. This object references the Core chain [asset lock transaction](inv:user:std#ref-txs-assetlocktx) and includes proof that the transaction is locked.
+The [identity create](#identity-create) and [identity topup](#identity-topup) state transitions both include an asset lock proof object. This object references the Core chain [asset lock transaction](inv:user:std#ref-txs-assetlocktx) and includes proof that the transaction is locked.
 
 Currently there are two types of asset lock proofs [defined by rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/identity/state_transition/asset_lock_proof/mod.rs#L129-L132): InstantSend and ChainLock. Transactions almost always receive InstantSend locks, so the InstantSend asset lock proof is the predominate type. See rs-dpp for examples of using [InstantSend](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/identity/state_transition/asset_lock_proof/instant/instant_asset_lock_proof.rs) or [ChainLocks](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/identity/state_transition/asset_lock_proof/chain/chain_asset_lock_proof.rs) as the asset lock proof.
 
