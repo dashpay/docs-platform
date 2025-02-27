@@ -118,14 +118,17 @@ transitions will be signed by a private key of the identity submitting them.
 
 The process to sign state transition consists of the following steps:
 
-1. Create a canonical, signable version of the state transition encoded with [Bincode](https://github.com/bincode-org/bincode).
-   - The signable state transition excludes one or more fields. See the [non-signable fields table](#non-signable-fields) below for a list of which fields must be excluded from signing.
-2. Calculate the double SHA-256 hash of the encoded signable state transition.
-3. Sign the hash from the previous step
-   - For identity create and identity topup state transitions, sign using the private key associated with the asset lock transaction.
-   - For all other state transitions, sign using the identity's private key.
-4. Add the result to the state transition's `signature` field
-6. Use Bincode to re-encode the state transition with all signatures and the identity id included.
+1. **Create a canonical, signable state transition** encoded using [Bincode](https://github.com/bincode-org/bincode).
+   - Certain fields must excluded before signing. See the [non-signable fields table](#non-signable-fields) for details.
+2. **Calculate the double SHA-256 hash** of the encoded signable state transition.
+3. **Sign the computed hash** using the relevant private key:
+   - For identity create and identity topup state transitions, use the private key associated with the asset lock transaction.
+   - For all other state transitions, use the identity's private key.
+4. **Store the signature** in the state transition's `signature` field
+5. **Sign each new public key** for identity create and update state transitions:
+   - Use the private key used to derive the public key to sign the hash computed in step 2.
+   - Store the result in the public key's `signature` field.
+6. **Finalize the state transition** by re-encoding it with Bincode, including all previously excluded fields such as `signature`.
 
 ### Non-signable Fields
 
