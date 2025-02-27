@@ -26,7 +26,7 @@ The list of common fields used by multiple state transitions is defined in [rs-d
 | Field           | Type           | Size | Description |
 | --------------- | -------------- | ---- | ----------- |
 | $version        | unsigned integer | 32 bits | The platform protocol version (currently `1`) |
-| type            | unsigned integer | 8 bits  | State transition type:<br>`0` - [data contract create](../protocol-ref/data-contract.md#data-contract-creation)<br>`1` - [batch](#batch)<br>`2` - [identity create](../protocol-ref/identity.md#identity-create)<br>`3` - [identity topup](identity.md#identity-topup)<br>`4` - [data contract update](data-contract.md#data-contract-update)<br>`5` - [identity update](identity.md#identity-update)<br>`6` - [identity credit transfer](identity.md#identity-credit-transfer)<br>`7` - [identity credit withdrawal](identity.md#identity-credit-withdrawal)<br>`8` - masternode vote |
+| type            | unsigned integer | 8 bits  | State transition type:<br>`0` - [data contract create](../protocol-ref/data-contract.md#data-contract-creation)<br>`1` - [batch](#batch)<br>`2` - [identity create](../protocol-ref/identity.md#identity-create)<br>`3` - [identity topup](identity.md#identity-topup)<br>`4` - [data contract update](data-contract.md#data-contract-update)<br>`5` - [identity update](identity.md#identity-update)<br>`6` - [identity credit transfer](identity.md#identity-credit-transfer)<br>`7` - [identity credit withdrawal](identity.md#identity-credit-withdrawal)<br>`8` - [masternode vote](#masternode-vote) |
 | userFeeIncrease | unsigned integer | 16 bits | Extra fee to prioritize processing if the mempool is full. Typically set to zero. |
 | signature       | array of bytes | 65 bytes |Signature of state transition data |
 
@@ -129,6 +129,17 @@ See the implementation in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0
 | nonce           | unsigned integer | 64 bits | Identity nonce for this transition to prevent replay attacks |
 
 See the implementation in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_credit_withdrawal_transition/v1/mod.rs#L32-L45).
+
+### Masternode Vote
+
+| Field           | Type           | Size | Description |
+| --------------- | -------------- | ---- | ----------- |
+| proTxHash       | array of bytes | 32 bytes | An identifier based on a masternode or evonode's [provider registration transaction](inv:user:std#ref-txs-proregtx) hash |
+| voterIdentityId | array of bytes | 32 bytes | The voter's [Identity ID](../protocol-ref/identity.md#identity-id). This will be a masternode identity based on the protx hash. |
+| vote | [Vote](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/voting/votes/mod.rs#L20-L22) | Varies | Vote information
+| nonce           | unsigned integer | 64 bits | Identity nonce for this transition to prevent replay attacks |
+
+See the implementation in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/masternode_vote_transition/v0/mod.rs#L40-L50).
 
 ## State Transition Signing
 
