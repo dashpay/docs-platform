@@ -1,5 +1,4 @@
-# Credit Withdrawal
-
+1550793274
 **Usage**: `await client.platform.identities.creditWithdrawal(identity, amount, to, options)`
 
 **Description**: This method facilitates the withdrawal of platform credits from a specified identity to a Dash address.
