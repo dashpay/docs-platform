@@ -251,101 +251,28 @@ See the [data contract documents](./data-contract-document.md) page for details.
 
 ## Data Contract State Transition Details
 
-There are two data contract-related state transitions: [data contract create](#data-contract-creation) and [data contract update](#data-contract-update). Details are provided in this section.
+There are two data contract-related state transitions: [data contract create](#data-contract-create) and [data contract update](#data-contract-update). Details are provided in this section.
 
-### Data Contract Creation
+### Data Contract Create
 
 Data contracts are created on the platform by submitting the [data contract object](#data-contract-object) in a data contract create state transition consisting of:
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| protocolVersion      | integer        | The platform protocol version ([currently `1`](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/version/mod.rs#L9)) |
-| type                 | integer        | State transition type (`0` for data contract create)  |
-| dataContract         | [data contract object](#data-contract-object) | Object containing the data contract details |
-| entropy              | array of bytes | Entropy used to generate the data contract ID. Generated as [shown here](../protocol-ref/state-transition.md#entropy-generation). (32 bytes) |
-| signaturePublicKeyId | number         | The `id` of the [identity public key](../protocol-ref/identity.md#identity-publickeys) that signed the state transition |
-| signature            | array of bytes | Signature of state transition data (65 or 96 bytes) |
+| Field           | Type           | Size | Description |
+| --------------- | -------------- | ---- | ----------- |
+| $version        | unsigned integer | 32 bits | The platform protocol version (currently `1`) |
+| type            | unsigned integer | 8 bits  | State transition type (`0` for data contract create)  |
+| dataContract    | [data contract object](#data-contract-object) | Varies | Object containing the data contract details |
+| identityNonce   | unsigned integer     | 64 bits | Identity nonce for this transition to prevent replay attacks |
+| entropy         | array of bytes | 32 bytes | Entropy used to generate the data contract ID. Generated as [shown here](../protocol-ref/state-transition.md#entropy-generation). |
+| userFeeIncrease | unsigned integer | 16 bits | Extra fee to prioritize processing if the mempool is full. Typically set to zero. |
+| signaturePublicKeyId | unsigned integer | 32 bits | The `id` of the [identity public key](../protocol-ref/identity.md#identity-publickeys) that signed the state transition (`=> 0`) |
+| signature            | array of bytes | 65 bytes | Signature of state transition data |
 
-Each data contract state transition must comply with this JSON-Schema definition established in [rs-dpp](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/stateTransition/dataContractCreate.json):
-
-```json
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "type": "object",
-  "properties": {
-    "protocolVersion": {
-      "type": "integer",
-      "$comment": "Maximum is the latest protocol version"
-    },
-    "type": {
-      "type": "integer",
-      "const": 0
-    },
-    "dataContract": {
-      "type": "object"
-    },
-    "entropy": {
-      "type": "array",
-      "byteArray": true,
-      "minItems": 32,
-      "maxItems": 32
-    },
-    "signaturePublicKeyId": {
-      "type": "integer",
-      "minimum": 0
-    },
-    "signature": {
-      "type": "array",
-      "byteArray": true,
-      "minItems": 65,
-      "maxItems": 96
-    }
-  },
-  "additionalProperties": false,
-  "required": [
-    "protocolVersion",
-    "type",
-    "dataContract",
-    "entropy",
-    "signaturePublicKeyId",
-    "signature"
-  ]
-}
-```
-
-**Example State Transition**
-
-```json
-{
-  "protocolVersion":1,
-  "type":0,
-  "signature":"IFmEb/OwyYG0yn33U4/kieH4JL63Ft25GAun+XqWOalkbDrpL9z+OH+Sb03xsyMNzoILC2T1Q8yV1q7kCmr0HuQ=",
-  "signaturePublicKeyId":0,
-  "dataContract":{
-    "protocolVersion":1,
-    "$id":"44dvUnSdVtvPPeVy6mS4vRzJ4zfABCt33VvqTWMM8VG6",
-    "$schema":"https://schema.dash.org/dpp-0-4-0/meta/data-contract",
-    "version":1,
-    "ownerId":"6YfP6tT9AK8HPVXMK7CQrhpc8VMg7frjEnXinSPvUmZC",
-    "documents":{
-      "note":{
-        "type":"object",
-        "properties":{
-          "message":{
-            "type":"string"
-          }
-        },
-        "additionalProperties":false
-      }
-    }
-  },
-  "entropy":"J2Sl/Ka9T1paYUv6f2ec5MzaaACs9lcUvOskBU0SMlo="
-}
-```
+See the [data contract create implementation in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/contract/data_contract_create_transition/v0/mod.rs#L37-L45) for more details.
 
 ### Data Contract Update
 
-Existing data contracts can be updated in certain backwards-compatible ways. The following aspects  
+Existing data contracts can be updated in certain backwards-compatible ways. The following aspects
 of a data contract can be updated:
 
 - Adding a new document
@@ -355,86 +282,15 @@ of a data contract can be updated:
 Data contracts are updated on the platform by submitting the modified [data contract  
 object](#data-contract-object) in a data contract update state transition consisting of:
 
-| Field                | Type           | Description |
-| -------------------- | -------------- | ----------- |
-| protocolVersion      | integer        | The platform protocol version ([currently `1`](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/version/mod.rs#L9)) |
-| type                 | integer        | State transition type (`4` for data contract update) |
-| dataContract         | [data contract object](#data-contract-object) | Object containing the updated data contract details<br>**Note:** the data contract's [`version` property](#data-contract-version) must be incremented with each update |
-| signaturePublicKeyId | number         | The `id` of the [identity public key](../protocol-ref/identity.md#identity-publickeys) that signed the state transition |
-| signature            | array of bytes | Signature of state transition data (65 or 96 bytes) |
+| Field           | Type           | Size | Description |
+| --------------- | -------------- | ---- | ----------- |
+| $version        | unsigned integer | 32 bits | The platform protocol version (currently `1`) |
+| type            | unsigned integer | 8 bits  | State transition type (`4` for data contract update)  |
+| dataContract    | [data contract object](#data-contract-object) | Varies | Object containing the updated data contract details<br>**Note:** the data contract's [`version` property](#data-contract-version) must be incremented with each update |
+| signaturePublicKeyId | unsigned integer | 32 bits | The `id` of the [identity public key](../protocol-ref/identity.md#identity-publickeys) that signed the state transition (`=> 0`) |
+| signature            | array of bytes | 65 bytes | Signature of state transition data |
 
-Each data contract state transition must comply with this JSON-Schema definition established in  
-[rs-dpp](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/stateTransition/dataContractUpdate.json):
-
-```json
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "type": "object",
-  "properties": {
-    "protocolVersion": {
-      "type": "integer",
-      "$comment": "Maximum is the latest protocol version"
-    },
-    "type": {
-      "type": "integer",
-      "const": 4
-    },
-    "dataContract": {
-      "type": "object"
-    },
-    "signaturePublicKeyId": {
-      "type": "integer",
-      "minimum": 0
-    },
-    "signature": {
-      "type": "array",
-      "byteArray": true,
-      "minItems": 65,
-      "maxItems": 96
-    }
-  },
-  "additionalProperties": false,
-  "required": [
-    "protocolVersion",
-    "type",
-    "dataContract",
-    "signaturePublicKeyId",
-    "signature"
-  ]
-}
-```
-
-**Example State Transition**
-
-```json
-{
-  "protocolVersion":1,
-  "type":4,
-  "signature":"IBboAbqbGBiWzyJDyhwzs1GujR6Gb4m5Gt/QCugLV2EYcsBaQKTM/Stq7iyIm2YyqkV8VlWqOfGebW2w5Pjnfak=",
-  "signaturePublicKeyId":0,
-  "dataContract":{
-    "protocolVersion":1,
-    "$id":"44dvUnSdVtvPPeVy6mS4vRzJ4zfABCt33VvqTWMM8VG6",
-    "$schema":"https://schema.dash.org/dpp-0-4-0/meta/data-contract",
-    "version":2,
-    "ownerId":"6YfP6tT9AK8HPVXMK7CQrhpc8VMg7frjEnXinSPvUmZC",
-    "documents":{
-      "note":{
-        "type":"object",
-        "properties":{
-          "message":{
-            "type":"string"
-          },
-          "author":{
-            "type":"string"
-          }
-        },
-        "additionalProperties":false
-      }
-    }
-  }
-}
-```
+See the [data contract update implementation in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/contract/data_contract_update_transition/v0/mod.rs#L33-L45) for more details.
 
 ### Data Contract State Transition Signing
 
