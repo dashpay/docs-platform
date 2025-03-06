@@ -40,6 +40,15 @@ Additionally, all state transitions except the identity create and topup state t
 
 Dash Platform Protocol defines the [state transition types](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transition_types.rs#L21-L32) that perform identity, contract, document, and token operations. See the subsections below for details on each state transition type.
 
+### Batch
+
+| Field       | Type           | Size | Description |
+| ----------- | -------------- | ---- | ----------- |
+| ownerId     | array of bytes | 32 bytes | [Identity](../protocol-ref/identity.md) submitting the document(s) |
+| transitions | array of transition objects | Varies | A  batch of [document](../protocol-ref/document.md#document-submission) or token actions (up to 10 objects) |
+
+More detailed information about the `transitions` array can be found in the [document section](../protocol-ref/document.md).
+
 ### Data Contract Create
 
 | Field           | Type           | Size | Description |
@@ -70,15 +79,6 @@ fn generate(&self) -> anyhow::Result<[u8; 32]> {
 | dataContract | [data contract object](../protocol-ref/data-contract.md#data-contract-object) | Object containing valid [data contract](../protocol-ref/data-contract.md) details |
 
 More detailed information about the `dataContract` object can be found in the [data contract section](../protocol-ref/data-contract.md).
-
-### Batch
-
-| Field       | Type           | Size | Description |
-| ----------- | -------------- | ---- | ----------- |
-| ownerId     | array of bytes | 32 bytes | [Identity](../protocol-ref/identity.md) submitting the document(s) |
-| transitions | array of transition objects | Varies | A  batch of [document](../protocol-ref/document.md#document-submission) or token actions (up to 10 objects) |
-
-More detailed information about the `transitions` array can be found in the [document section](../protocol-ref/document.md).
 
 ### Identity Create
 
