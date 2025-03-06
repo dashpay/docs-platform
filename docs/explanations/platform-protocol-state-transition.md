@@ -44,6 +44,7 @@ The following table contains a list of currently defined payload types:
 | [Identity Update](../protocol-ref/identity.md#identity-update) (`5`) | A set of one or more new public keys to add to the [identity](../explanations/identity.md) or a list of existing keys to disable |
 | [Identity Credit Withdrawal](../protocol-ref/identity.md) (`6`) | Information required to withdraw credits from Dash Platform |
 | [Identity Credit Transfer](../protocol-ref/identity.md) (`7`) | Information required to transfer credits |
+| Masternode Vote (`8`) | Contested resource vote details (e.g., [DPNS premium name vote](../explanations/dpns.md#conflict-resolution)) |
 
 ### Application Usage
 
