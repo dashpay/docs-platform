@@ -34,9 +34,9 @@ There are a variety of constraints currently defined for performance and securit
 
 | Parameter | Size |
 | - | - |
-| Maximum serialized data contract size | [16384 bytes (16 KB)](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-platform-version/src/version/system_limits/v1.rs#L4) |
-| Maximum field value size | [5120 bytes (5 KB)](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-platform-version/src/version/system_limits/v1.rs#L5) |
-| Maximum state transition size | [20480 bytes (20 KB)](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-platform-version/src/version/system_limits/v1.rs#L6) |
+| Maximum serialized data contract size | [16384 bytes (16 KB)](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-platform-version/src/version/system_limits/v1.rs#L4) |
+| Maximum field value size | [5120 bytes (5 KB)](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-platform-version/src/version/system_limits/v1.rs#L5) |
+| Maximum state transition size | [20480 bytes (20 KB)](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-platform-version/src/version/system_limits/v1.rs#L6) |
 
 A document cannot exceed the maximum state transition size in any case. For example, although it is
 possible to define a data contract with 10 fields that each support the maximum field size (5120),
@@ -60,7 +60,7 @@ The data contract object consists of the following fields as defined in the Java
 
 | Property        | Type           | Required | Description |
 | --------------- | -------------- | -------- | ----------- |
-| protocolVersion | integer        | Yes      | The platform protocol version ([currently `7`](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-platform-version/src/version/mod.rs#L25)) |
+| protocolVersion | integer        | Yes      | The platform protocol version ([currently `8`](https://github.com/dashpay/platform/blob/v1.8.0/packages/rs-platform-version/src/version/mod.rs#L26)) |
 | [$schema](#data-contract-schema) | string         | Yes      | A valid URL (default: <https://schema.dash.org/dpp-0-4-0/meta/data-contract>) |
 | [$id](#data-contract-id)         | array of bytes | Yes      | Contract ID generated from `ownerId` and entropy ([32 bytes; content media type: `application/x.dash.dpp.identifier`](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L378-L384)) |
 | [version](#data-contract-version) | integer        | Yes      | The data contract version |
@@ -223,7 +223,7 @@ Details regarding the data contract object may be found in the [rs-dpp data cont
 
 ### Data Contract id
 
-The data contract `$id` is a hash of the `ownerId` and entropy as shown [here](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-dpp/src/data_contract/generate_data_contract.rs).
+The data contract `$id` is a hash of the `ownerId` and entropy as shown [here](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/generate_data_contract.rs).
 
 ```rust
 // From the Rust reference implementation (rs-dpp)
