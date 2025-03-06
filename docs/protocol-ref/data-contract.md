@@ -8,7 +8,7 @@
 
 Data contracts define the schema (structure) of data an application will store on Dash Platform. Contracts are described using [JSON Schema](https://json-schema.org/understanding-json-schema/) which allows the platform to validate the contract-related data submitted to it.
 
-The following sections provide details that developers need to construct valid contracts. All data contracts must define one or more [documents](#data-contract-documents), whereas definitions are optional and may not be used for simple contracts.
+The following sections provide details that developers need to construct valid contracts. All data contracts must define one or more [documents](#data-contract-documents) or tokens, whereas definitions are optional and may not be used for simple contracts.
 
 ### General Constraints
 
@@ -61,11 +61,12 @@ The data contract object consists of the following fields as defined in the Java
 | Property        | Type           | Required | Description |
 | --------------- | -------------- | -------- | ----------- |
 | protocolVersion | integer        | Yes      | The platform protocol version ([currently `7`](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-platform-version/src/version/mod.rs#L25)) |
-| $schema         | string         | Yes      | A valid URL (default: <https://schema.dash.org/dpp-0-4-0/meta/data-contract>) |
-| $id             | array of bytes | Yes      | Contract ID generated from `ownerId` and entropy ([32 bytes; content media type: `application/x.dash.dpp.identifier`](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L378-L384)) |
-| version         | integer        | Yes      | The data contract version |
+| [$schema](#data-contract-schema) | string         | Yes      | A valid URL (default: <https://schema.dash.org/dpp-0-4-0/meta/data-contract>) |
+| [$id](#data-contract-id)         | array of bytes | Yes      | Contract ID generated from `ownerId` and entropy ([32 bytes; content media type: `application/x.dash.dpp.identifier`](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L378-L384)) |
+| [version](#data-contract-version) | integer        | Yes      | The data contract version |
 | ownerId         | array of bytes | Yes      | [Identity](../protocol-ref/identity.md) that registered the data contract defining the document ([32 bytes; content media type: `application/x.dash.dpp.identifier`](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L389-L395) |
-| documents       | object         | Yes      | Document definitions (see [Documents](#data-contract-documents) for details) |
+| [documents](./data-contract-document.md) | object         | No       | Document definitions (see [Contract Documents](./data-contract-document.md) for details) |
+| tokens | object         | No       | Token definitions |
 | $defs           | object         | No       | Definitions for `$ref` references used in the `documents` object (if present, must be a non-empty object with \<= 100 valid properties) |
 
 ### Data Contract Schema
