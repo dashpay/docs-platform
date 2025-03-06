@@ -294,14 +294,7 @@ See the [data contract update implementation in rs-dpp](https://github.com/dashp
 
 ### Data Contract State Transition Signing
 
-Data contract state transitions must be signed by a private key associated with the contract owner's identity.
-
-The process to sign a data contract state transition consists of the following steps:
-
-1. Canonical CBOR encode the state transition data - this include all ST fields except the `signature` and `signaturePublicKeyId`
-2. Sign the encoded data with a private key associated with the `ownerId`
-3. Set the state transition `signature` to the value of the signature created in the previous step
-4. Set the state transition`signaturePublicKeyId` to the [public key `id`](../protocol-ref/identity.md#public-key-id) corresponding to the key used to sign
+Data contract state transitions must be signed by a private key associated with the contract owner's identity. See the [state transition signing](./state-transition.md#state-transition-signing) page for full signing details.
 
 ```{toctree}
 :maxdepth: 2
