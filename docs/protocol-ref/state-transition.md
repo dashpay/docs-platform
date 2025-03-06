@@ -143,27 +143,57 @@ See the implementation in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0
 
 ## State Transition Signing
 
-State transitions must be signed by a private key associated with the identity creating the state transition. Each identity must have at least two keys: a primary key ([security level](./identity.md#public-key-securitylevel) `0`) that is only used when signing [identity update](identity.md#identity-update) state transitions and an additional key ([security level](./identity.md#public-key-securitylevel) `2`) that is used to sign all other state transitions.
+State transitions must be cryptographically signed to prove that an authorized party submitted them.
+There are two ways to sign state transitions, with the difference being the source of the private
+key used for signing. The following table specifies which signing method is used by each state
+transition type:
 
-:::{note}
+| Signing Method | State Transitions |
+| -------------- | ----------------- |
+| [Identity](#signing-with-identity)     | Batch, Contract create, Contract update, Identity update, Identity credit transfer, Identity credit withdrawal, Masternode vote |
+| [Asset lock](#signing-with-asset-lock) | Identity create, Identity topup                                                                       |
+
+### Signing with Asset Lock
+
 The identity create and topup state transition signatures are unique in that they must be signed by
-the private key used in the Core chain asset lock transaction funding the identity. All other state
-transitions will be signed by a private key of the identity submitting them.
-:::
+the private key used in the Core chain asset lock transaction funding the identity. The signing
+process consists of the following steps:
 
-The process to sign state transition consists of the following steps:
+1. **Create a canonical, signable state transition** encoded using [Bincode](https://github.com/bincode-org/bincode).
+   - Exclude the `signature` field and any other non-signable fields indicated in the [table below](#non-signable-fields).
+2. **Calculate the double SHA-256 hash** of the encoded signable state transition.
+3. **Sign the computed hash** using the private key associated with the asset lock transaction.
+4. **Store the signature** in the state transition's `signature` field.
+5. **For _identity create_ only, sign any public keys** as described in the [signing public keys](#signing-public-keys) section.
+6. **Finalize the state transition** by re-encoding it with Bincode, including all previously excluded fields such as `signature`.
+
+### Signing with Identity
+
+Most state transitions must be signed by a private key associated with the identity creating the
+state transition. Each identity must have at least two keys: a primary key ([security
+level](./identity.md#public-key-securitylevel) `0`) that is only used when signing [identity
+update](identity.md#identity-update) state transitions and an additional key ([security
+level](./identity.md#public-key-securitylevel) `2`) that is used to sign all other state
+transitions.
+
+The process to sign state transitions using an identity consists of the following steps:
 
 1. **Create a canonical, signable state transition** encoded using [Bincode](https://github.com/bincode-org/bincode).
    - Certain fields must excluded before signing. See the [non-signable fields table](#non-signable-fields) for details.
 2. **Calculate the double SHA-256 hash** of the encoded signable state transition.
-3. **Sign the computed hash** using the relevant private key:
-   - For identity create and identity topup state transitions, use the private key associated with the asset lock transaction.
-   - For all other state transitions, use the identity's private key.
+3. **Sign the computed hash** using the identity's relevant private key.
 4. **Store the signature** in the state transition's `signature` field
-5. **Sign each new public key** for identity create and update state transitions:
-   - Use the private key used to derive the public key to sign the hash computed in step 2.
-   - Store the result in the public key's `signature` field.
+5. **For _identity update_ only, sign any added public keys** as described in the [signing public keys](#signing-public-keys) section.
 6. **Finalize the state transition** by re-encoding it with Bincode, including all previously excluded fields such as `signature`.
+
+### Signing public keys
+
+Public keys can be added to an identity by the identity create or identity update state transitions. Any new public keys must include a signature to prove that the associated private key is accessible. To sign new public keys:
+
+1. **Get the double SHA-256 hash** of the encoded signable state transition from step 2 of the [signing with asset lock](#signing-with-asset-lock) or [signing with identity](#signing-with-identity) section.
+2. **Sign each new public key**:
+   - Use the private key that derived the public key to sign the hash.
+   - Store the result in the public key's `signature` field.
 
 ### Non-signable Fields
 
