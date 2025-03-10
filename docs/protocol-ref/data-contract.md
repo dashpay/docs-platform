@@ -39,10 +39,10 @@ There are a variety of constraints currently defined for performance and securit
 | Maximum state transition size | [20480 bytes (20 KB)](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-platform-version/src/version/system_limits/v1.rs#L6) |
 
 A document cannot exceed the maximum state transition size in any case. For example, although it is
-possible to define a data contract with 10 fields that each support the maximum field size (5120),
-it is not possible to create a document where all 10 fields contain the full 5120 bytes. This is
-because the overall document and state transition containing it would be too large (5120 * 10 =
-51200 bytes).
+possible to define a data contract with 10 document fields that each support the maximum field size
+(5120), it is not possible to create a document where all 10 fields contain the full 5120 bytes.
+This is because the overall document and state transition containing it would be too large (5120 *
+10 = 51200 bytes).
 
 #### Additional Properties
 
@@ -56,16 +56,18 @@ Include the following at the same level as the `properties` keyword to ensure pr
 
 ## Data Contract Object
 
-The data contract object consists of the following fields as defined in the JavaScript reference client ([rs-dpp](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json)):
+The data contract object consists of the following fields as defined in the Rust reference client ([rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/v1/data_contract.rs#L46-L75)):
 
 | Property        | Type           | Required | Description |
 | --------------- | -------------- | -------- | ----------- |
-| protocolVersion | integer        | Yes      | The platform protocol version ([currently `8`](https://github.com/dashpay/platform/blob/v1.8.0/packages/rs-platform-version/src/version/mod.rs#L26)) |
+| $version | integer        | Yes      | The platform protocol version ([currently `8`](https://github.com/dashpay/platform/blob/v1.8.0/packages/rs-platform-version/src/version/mod.rs#L26)) |
 | [$schema](#data-contract-schema) | string         | Yes      | A valid URL (default: <https://schema.dash.org/dpp-0-4-0/meta/data-contract>) |
-| [$id](#data-contract-id)         | array of bytes | Yes      | Contract ID generated from `ownerId` and entropy ([32 bytes; content media type: `application/x.dash.dpp.identifier`](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L378-L384)) |
+| [id](#data-contract-id)         | array of bytes | Yes      | Contract ID generated from `ownerId` and entropy ([32 bytes; content media type: `application/x.dash.dpp.identifier`](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L378-L384)) |
 | [version](#data-contract-version) | integer        | Yes      | The data contract version |
 | ownerId         | array of bytes | Yes      | [Identity](../protocol-ref/identity.md) that registered the data contract defining the document ([32 bytes; content media type: `application/x.dash.dpp.identifier`](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L389-L395) |
 | [documents](./data-contract-document.md) | object         | No       | Document definitions (see [Contract Documents](./data-contract-document.md) for details) |
+| config | DataContractConfig | No | Internal configuration for the contract |
+| groups | Group | No | Groups that allow for specific multiparty actions on the contract |
 | tokens | object         | No       | Token definitions |
 | $defs           | object         | No       | Definitions for `$ref` references used in the `documents` object (if present, must be a non-empty object with \<= 100 valid properties) |
 
