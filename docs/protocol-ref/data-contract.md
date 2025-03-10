@@ -50,7 +50,7 @@ The data contract object consists of the following fields as defined in the Rust
 | [version](#data-contract-version) | unsigned integer        | Yes      | The data contract version |
 | ownerId         | array of bytes | 32 bytes      | [Identity](../protocol-ref/identity.md) that registered the data contract defining the document (content media type: `application/x.dash.dpp.identifier`) |
 | [documents](./data-contract-document.md) | object         | Varies    | (Optional \*) Document definitions (see [Contract Documents](./data-contract-document.md) for details) |
-| config | DataContractConfig | Varies | (Optional) Internal configuration for the contract |
+| [config](#data-contract-config) | DataContractConfig | Varies | (Optional) Internal configuration for the contract |
 | $defs           | object         | Varies       | (Optional) Definitions for `$ref` references used in the `documents` object (if present, must be a non-empty object with \<= 100 valid properties) |
 | [groups](#data-contract-groups) | Group | Varies | (Optional) Groups that allow for specific multiparty actions on the contract. |
 | [tokens](./data-contract-token.md) | object         | Varies    | (Optional \*) Token definitions (see [Contract Tokens](./data-contract-token.md) for details) |
@@ -622,7 +622,49 @@ property must be incremented if the contract is updated.
 
 See the [data contract documents](./data-contract-document.md) page for details.
 
-### Data Contract Groups
+### Data Contract config
+
+The data contract config defines configuration options for data contracts, controlling their lifecycle, mutability, history management, and encryption requirements. Data contracts support three categories of configuration options to provide flexibility in contract design. It is only necessary to include them in a data contract when non-default values are used. The default values for these configuration options are defined in the [Rust DPP implementation](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/config/fields.rs).
+
+| Contract option                         | Default | Description |
+|-----------------------------------------|---------|-------------|
+| `canBeDeleted`                          | `false` | Determines if the contract can be deleted |
+| `readonly`                              | `false` | Determines if the contract is read-only. Read-only contracts cannot be updated. |
+| `keepsHistory`                          | `false` | Determines if changes to the contract itself are tracked, maintaining a historical record of contract modifications. |
+
+| Document default option                 | Default | Description |
+|-----------------------------------------|---------|-------------|
+| `documentsKeepHistory`<br>`ContractDefault`   | `false` | Sets the default behavior for tracking historical changes of documents within the contract |
+| `documentsMutable`<br>`ContractDefault`       | `true`  | Sets the default mutability of documents within the contract, indicating if documents can be edited. |
+| `documentsCanBeDeleted`<br>`ContractDefault`  | `true`  | Sets the default behavior for whether documents within the contract can be deleted |
+
+#### Key Management
+
+Dash Platform provides an advanced level of security and control by enabling the isolation of encryption and decryption keys on a contract-specific or document-specific basis. This granular approach to key management enables developers to configure their applications for whatever level of security they require.
+
+| Security option                         | Description |
+|-----------------------------------------|-------------|
+| `requiresIdentity`<br>`EncryptionBoundedKey`  | Indicates the contract requires a contract-specific identity encryption key. Key options:<br>`0` - Unique non-replaceable<br>`1` - Multiple<br>`2` - Multiple with reference to latest  |
+| `requiresIdentity`<br>`DecryptionBoundedKey`  | Indicates the contract requires a contract-specific identity decryption key. Key options:<br>`0` - Unique non-replaceable<br>`1` - Multiple<br>`2` - Multiple with reference to latest |
+
+:::{tip}
+These security options can be set at the root level of the data contract or the root level of specific documents within the contract depending on requirements.
+:::
+
+**Example**
+
+The following example (from the [DashPay contract's `contactRequest` document](https://github.com/dashpay/platform/blob/master/packages/dashpay-contract/schema/v1/dashpay.schema.json#L142-L146)) demonstrates the use of both key-related options at the document level:
+
+``` json
+"contactRequest": {
+  "requiresIdentityEncryptionBoundedKey": 2,
+  "requiresIdentityDecryptionBoundedKey": 2,
+}
+```
+
+See the data contract [config implementation in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/config/v0/mod.rs#L17-L42) for more details.
+
+### Data Contract groups
 
 Groups can be used to distribute contract configuration and update authorization across multiple identities. They are particularly useful for contracts where multiple parties are involved in controlling or managing contract-specific features. Each group defines a set of member identities, the voting power of each member, and the required power threshold to authorize an action.
 
