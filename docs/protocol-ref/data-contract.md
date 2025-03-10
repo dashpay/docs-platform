@@ -618,7 +618,7 @@ pub fn generate_data_contract_id_v0(
 The data contract `version` is an integer representing the current version of the contract. This  
 property must be incremented if the contract is updated.
 
-### Data Contract Documents
+### Data Contract documents
 
 See the [data contract documents](./data-contract-document.md) page for details.
 
@@ -676,7 +676,7 @@ Groups can be used to distribute contract configuration and update authorization
 
 See the [groups implementation in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/group/v0/mod.rs#L31-L34) for more details.
 
-### Data Contract Tokens
+### Data Contract tokens
 
 - Tokens provide token-related functionality within the contract, such as base supply, maximum supply, and manual minting/burning rules.  
 - Token configurations include change control rules, ensuring proper governance for modifying supply limits and token-related settings.
