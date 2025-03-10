@@ -8,7 +8,7 @@
 
 Data contracts define the schema (structure) of data an application will store on Dash Platform. Contracts are described using [JSON Schema](https://json-schema.org/understanding-json-schema/) which allows the platform to validate the contract-related data submitted to it.
 
-The following sections provide details that developers need to construct valid contracts. All data contracts must define one or more [documents](#data-contract-documents) or tokens, whereas definitions are optional and may not be used for simple contracts.
+The following sections provide details that developers need to construct valid contracts. All data contracts must define one or more [documents](#data-contract-documents) or [tokens](#data-contract-tokens), whereas definitions are optional and may not be used for simple contracts.
 
 ### General Constraints
 
