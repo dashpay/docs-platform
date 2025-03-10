@@ -42,24 +42,561 @@ Include the following at the same level as the `properties` keyword to ensure pr
 
 The data contract object consists of the following fields as defined in the Rust reference client ([rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/v1/data_contract.rs#L46-L75)):
 
-| Property        | Type           | Required | Description |
-| --------------- | -------------- | -------- | ----------- |
-| $version | integer        | Yes      | The platform protocol version ([currently `8`](https://github.com/dashpay/platform/blob/v1.8.0/packages/rs-platform-version/src/version/mod.rs#L26)) |
-| [$schema](#data-contract-schema) | string         | Yes      | A valid URL (default: <https://schema.dash.org/dpp-0-4-0/meta/data-contract>) |
-| [id](#data-contract-id)         | array of bytes | Yes      | Contract ID generated from `ownerId` and entropy ([32 bytes; content media type: `application/x.dash.dpp.identifier`](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L378-L384)) |
-| [version](#data-contract-version) | integer        | Yes      | The data contract version |
-| ownerId         | array of bytes | Yes      | [Identity](../protocol-ref/identity.md) that registered the data contract defining the document ([32 bytes; content media type: `application/x.dash.dpp.identifier`](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/data_contract/dataContractMeta.json#L389-L395) |
-| [documents](./data-contract-document.md) | object         | No \*    | Document definitions (see [Contract Documents](./data-contract-document.md) for details) |
-| config | DataContractConfig | No | Internal configuration for the contract |
-| $defs           | object         | No       | Definitions for `$ref` references used in the `documents` object (if present, must be a non-empty object with \<= 100 valid properties) |
-| groups | Group | No | Groups that allow for specific multiparty actions on the contract |
-| [tokens](./data-contract-token.md) | object         | No \*    | Token definitions (see [Contract Tokens](./data-contract-token.md) for details) |
+| Property        | Type           | Size | Description |
+| --------------- | -------------- | ---- | ----------- |
+| $version | unsigned integer      | 32 bits | The platform protocol version ([currently `8`](https://github.com/dashpay/platform/blob/v1.8.0/packages/rs-platform-version/src/version/mod.rs#L26)) |
+| [$schema](#data-contract-schema) | string         | Varies      | A valid URL |
+| [id](#data-contract-id)         | array of bytes | 32 bytes      | Contract ID generated from `ownerId` and entropy (content media type: `application/x.dash.dpp.identifier`) |
+| [version](#data-contract-version) | unsigned integer        | Yes      | The data contract version |
+| ownerId         | array of bytes | 32 bytes      | [Identity](../protocol-ref/identity.md) that registered the data contract defining the document (content media type: `application/x.dash.dpp.identifier`) |
+| [documents](./data-contract-document.md) | object         | Varies    | (Optional \*) Document definitions (see [Contract Documents](./data-contract-document.md) for details) |
+| config | DataContractConfig | Varies | (Optional) Internal configuration for the contract |
+| $defs           | object         | Varies       | (Optional) Definitions for `$ref` references used in the `documents` object (if present, must be a non-empty object with \<= 100 valid properties) |
+| [groups](#data-contract-groups) | Group | Varies | (Optional) Groups that allow for specific multiparty actions on the contract. |
+| [tokens](./data-contract-token.md) | object         | Varies    | (Optional \*) Token definitions (see [Contract Tokens](./data-contract-token.md) for details) |
 
 \* The data contract object must define documents or tokens. It may include both documents and tokens.
 
+### Data Contract schema
+
+The full schema is [defined is rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/document_type/schema/enrich_with_base_schema/v0/mod.rs#L6-L7), hosted on [GitHub](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json), and can be viewed by expanding this dropdown:
+
+::: {dropdown} Full schema
+
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/dashpay/platform/blob/master/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json",
+  "type": "object",
+  "$defs": {
+    "documentProperties": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-zA-Z0-9-_]{1,64}$": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/$defs/documentSchema"
+            }
+          ],
+          "unevaluatedProperties": false
+        }
+      },
+      "propertyNames": {
+        "pattern": "^[a-zA-Z0-9-_]{1,64}$"
+      },
+      "minProperties": 1,
+      "maxProperties": 100
+    },
+    "documentSchemaArray": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/$defs/documentSchema"
+          }
+        ],
+        "unevaluatedProperties": false
+      }
+    },
+    "documentSchema": {
+      "type": "object",
+      "properties": {
+        "$id": {
+          "type": "string",
+          "pattern": "^#",
+          "minLength": 1
+        },
+        "$ref": {
+          "type": "string",
+          "pattern": "^#",
+          "minLength": 1
+        },
+        "$comment": {
+          "$ref": "https://json-schema.org/draft/2020-12/meta/core#/properties/$comment"
+        },
+        "description": {
+          "$ref": "https://json-schema.org/draft/2020-12/meta/meta-data#/properties/description"
+        },
+        "examples": {
+          "$ref": "https://json-schema.org/draft/2020-12/meta/meta-data#/properties/examples"
+        },
+        "multipleOf": {
+          "$ref": "https://json-schema.org/draft/2020-12/meta/validation#/properties/multipleOf"
+        },
+        "maximum": {
+          "$ref": "https://json-schema.org/draft/2020-12/meta/validation#/properties/maximum"
+        },
+        "exclusiveMaximum": {
+          "$ref": "https://json-schema.org/draft/2020-12/meta/validation#/properties/exclusiveMaximum"
+        },
+        "minimum": {
+          "$ref": "https://json-schema.org/draft/2020-12/meta/validation#/properties/minimum"
+        },
+        "exclusiveMinimum": {
+          "$ref": "https://json-schema.org/draft/2020-12/meta/validation#/properties/exclusiveMinimum"
+        },
+        "maxLength": {
+          "$ref": "https://json-schema.org/draft/2020-12/meta/validation#/properties/maxLength"
+        },
+        "minLength": {
+          "$ref": "https://json-schema.org/draft/2020-12/meta/validation#/properties/minLength"
+        },
+        "pattern": {
+          "$ref": "https://json-schema.org/draft/2020-12/meta/validation#/properties/pattern"
+        },
+        "maxItems": {
+          "$ref": "https://json-schema.org/draft/2020-12/meta/validation#/properties/maxItems"
+        },
+        "minItems": {
+          "$ref": "https://json-schema.org/draft/2020-12/meta/validation#/properties/minItems"
+        },
+        "uniqueItems": {
+          "$ref": "https://json-schema.org/draft/2020-12/meta/validation#/properties/uniqueItems"
+        },
+        "contains": {
+          "$ref": "https://json-schema.org/draft/2020-12/meta/applicator#/properties/contains"
+        },
+        "maxProperties": {
+          "$ref": "https://json-schema.org/draft/2020-12/meta/validation#/properties/maxProperties"
+        },
+        "minProperties": {
+          "$ref": "https://json-schema.org/draft/2020-12/meta/validation#/properties/minProperties"
+        },
+        "required": {
+          "$ref": "https://json-schema.org/draft/2020-12/meta/validation#/properties/required"
+        },
+        "additionalProperties": {
+          "type": "boolean",
+          "const": false
+        },
+        "properties": {
+          "$ref": "#/$defs/documentProperties"
+        },
+        "dependentRequired": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "$ref": "https://json-schema.org/draft/2020-12/meta/validation#/$defs/stringArray"
+          }
+        },
+        "const": true,
+        "enum": {
+          "type": "array",
+          "items": true,
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "type": {
+          "$ref": "https://json-schema.org/draft/2020-12/meta/validation#/properties/type"
+        },
+        "format": {
+          "$ref": "https://json-schema.org/draft/2020-12/meta/format-annotation#/properties/format"
+        },
+        "contentMediaType": {
+          "$ref": "https://json-schema.org/draft/2020-12/meta/content#/properties/contentMediaType"
+        },
+        "byteArray": {
+          "type": "boolean",
+          "const": true
+        },
+        "position": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "dependentSchemas": {
+        "byteArray": {
+          "description": "should be used only with array type",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "array"
+            }
+          }
+        },
+        "contentMediaType": {
+          "if": {
+            "properties": {
+              "contentMediaType": {
+                "const": "application/x.dash.dpp.identifier"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "byteArray": {
+                "const": true
+              },
+              "minItems": {
+                "const": 32
+              },
+              "maxItems": {
+                "const": 32
+              }
+            },
+            "required": [
+              "byteArray",
+              "minItems",
+              "maxItems"
+            ]
+          }
+        },
+        "pattern": {
+          "description": "prevent slow pattern matching of large strings",
+          "properties": {
+            "maxLength": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 50000
+            }
+          },
+          "required": [
+            "maxLength"
+          ]
+        },
+        "format": {
+          "description": "prevent slow format validation of large strings",
+          "properties": {
+            "maxLength": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 50000
+            }
+          },
+          "required": [
+            "maxLength"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "$comment": "require index for object properties",
+          "if": {
+            "properties": {
+              "type": {
+                "const": "object"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "properties": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "object",
+                  "properties": {
+                    "position": true
+                  },
+                  "required": ["position"]
+                }
+              }
+            }
+          }
+        },
+        {
+          "$comment": "allow only byte arrays",
+          "if": {
+            "properties": {
+              "type": {
+                "const": "array"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "byteArray": true
+            },
+            "required": [
+              "byteArray"
+            ]
+          }
+        },
+        {
+          "$comment": "all object properties must be defined",
+          "if": {
+            "properties": {
+              "type": {
+                "const": "object"
+              }
+            },
+            "not": {
+              "properties": {
+                "$ref": true
+              },
+              "required": [
+                "$ref"
+              ]
+            }
+          },
+          "then": {
+            "properties": {
+              "properties": {
+                "$ref": "#/$defs/documentProperties"
+              },
+              "additionalProperties": {
+                "$ref": "#/$defs/documentSchema/properties/additionalProperties"
+              }
+            },
+            "required": [
+              "properties",
+              "additionalProperties"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "properties": {
+    "type": {
+      "type": "string",
+      "const": "object"
+    },
+    "$schema": {
+      "type": "string",
+      "const": "https://github.com/dashpay/platform/blob/master/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json"
+    },
+    "$defs": {
+      "$ref": "#/$defs/documentProperties"
+    },
+    "indices": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 32
+          },
+          "properties": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "propertyNames": {
+                "maxLength": 256
+              },
+              "additionalProperties": {
+                "type": "string",
+                "enum": [
+                  "asc"
+                ]
+              },
+              "minProperties": 1,
+              "maxProperties": 1
+            },
+            "minItems": 1,
+            "maxItems": 10
+          },
+          "unique": {
+            "type": "boolean"
+          },
+          "nullSearchable": {
+            "type": "boolean"
+          },
+          "contested": {
+            "type": "object",
+            "properties": {
+              "fieldMatches": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "field": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 256
+                    },
+                    "regexPattern": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 256
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "field",
+                    "regexPattern"
+                  ]
+                },
+                "minItems": 1
+              },
+              "resolution": {
+                "type": "integer",
+                "enum": [
+                  0
+                ],
+                "description": "Resolution. 0 - Masternode Vote"
+              },
+              "description": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              }
+            },
+            "required": ["resolution"],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "properties",
+          "name"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 10
+    },
+    "signatureSecurityLevelRequirement": {
+      "type": "integer",
+      "enum": [
+        1,
+        2,
+        3
+      ],
+      "description": "Public key security level. 1 - Critical, 2 - High, 3 - Medium. If none specified, High level is used"
+    },
+    "documentsKeepHistory": {
+      "type": "boolean",
+      "description": "True if the documents keep all their history, default is false"
+    },
+    "documentsMutable": {
+      "type": "boolean",
+      "description": "True if the documents are mutable, default is true"
+    },
+    "canBeDeleted": {
+      "type": "boolean",
+      "description": "True if the documents can be deleted, default is true"
+    },
+    "transferable": {
+      "type": "integer",
+      "enum": [
+        0,
+        1
+      ],
+      "description": "Transferable without a marketplace sell. 0 - Never, 1 - Always"
+    },
+    "tradeMode": {
+      "type": "integer",
+      "enum": [
+        0,
+        1
+      ],
+      "description": "Built in marketplace system. 0 - None, 1 - Direct purchase (The user can buy the item without the need for an approval)"
+    },
+    "creationRestrictionMode": {
+      "type": "integer",
+      "enum": [
+        0,
+        1,
+        2
+      ],
+      "description": "Restrictions of document creation. 0 - No restrictions, 1 - Owner only, 2 - No creation (System Only)"
+    },
+    "requiresIdentityEncryptionBoundedKey": {
+      "type": "integer",
+      "enum": [
+        0,
+        1,
+        2
+      ],
+      "description": "Key requirements. 0 - Unique Non Replaceable, 1 - Multiple, 2 - Multiple with reference to latest key."
+    },
+    "requiresIdentityDecryptionBoundedKey": {
+      "type": "integer",
+      "enum": [
+        0,
+        1,
+        2
+      ],
+      "description": "Key requirements. 0 - Unique Non Replaceable, 1 - Multiple, 2 - Multiple with reference to latest key."
+    },
+    "properties": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/$defs/documentSchema"
+          }
+        ],
+        "unevaluatedProperties": false
+      },
+      "properties": {
+        "$id": true,
+        "$ownerId": true,
+        "$revision": true,
+        "$createdAt": true,
+        "$updatedAt": true,
+        "$transferredAt": true,
+        "$createdAtBlockHeight": true,
+        "$updatedAtBlockHeight": true,
+        "$transferredAtBlockHeight": true,
+        "$createdAtCoreBlockHeight": true,
+        "$updatedAtCoreBlockHeight": true,
+        "$transferredAtCoreBlockHeight": true
+      },
+      "propertyNames": {
+        "oneOf": [
+          {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9-_]{1,64}$"
+          },
+          {
+            "type": "string",
+            "enum": [
+              "$id",
+              "$ownerId",
+              "$revision",
+              "$createdAt",
+              "$updatedAt",
+              "$transferredAt",
+              "$createdAtBlockHeight",
+              "$updatedAtBlockHeight",
+              "$transferredAtBlockHeight",
+              "$createdAtCoreBlockHeight",
+              "$updatedAtCoreBlockHeight",
+              "$transferredAtCoreBlockHeight"
+            ]
+          }
+        ]
+      },
+      "minProperties": 1,
+      "maxProperties": 100
+    },
+    "transient": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "additionalProperties": {
+      "type": "boolean",
+      "const": false
+    }
+  },
+  "required": [
+    "$schema",
+    "type",
+    "properties",
+    "additionalProperties"
+  ]
+}
+```
+
+:::
+
 ### Data Contract id
 
-The data contract `$id` is a hash of the `ownerId` and entropy as shown [here](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/generate_data_contract.rs).
+The data contract `id` is a hash of the `ownerId` and entropy as shown [here](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/generate_data_contract.rs).
 
 ```rust
 // From the Rust reference implementation (rs-dpp)
@@ -84,6 +621,24 @@ property must be incremented if the contract is updated.
 ### Data Contract Documents
 
 See the [data contract documents](./data-contract-document.md) page for details.
+
+### Data Contract Groups
+
+Groups can be used to distribute contract configuration and update authorization across multiple identities. They are particularly useful for contracts where multiple parties are involved in controlling or managing contract-specific features. Each group defines a set of member identities, the voting power of each member, and the required power threshold to authorize an action.
+
+- Each member is assigned an integer power.
+- The group itself has a required power threshold to authorize an action.
+- Groups can have up to 256 members, each with a maximum power of 2^16 - 1.
+- Changes to a token (e.g., mint, burn, freeze) can be configured so they require group authorization.
+  - Example: "2-of-3 multisig” among three admins, each with certain voting power.
+
+See the [groups implementation in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/group/v0/mod.rs#L31-L34) for more details.
+
+### Data Contract Tokens
+
+- Tokens provide token-related functionality within the contract, such as base supply, maximum supply, and manual minting/burning rules.  
+- Token configurations include change control rules, ensuring proper governance for modifying supply limits and token-related settings.
+- This enables contracts to define and manage tokens while ensuring compliance with governance rules (e.g., who can mint or burn tokens).
 
 ## Data Contract State Transition Details
 
