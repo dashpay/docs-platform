@@ -52,6 +52,27 @@ const contractDocuments = {
 
 **Note:** A full explanation of the capabilities of JSON Schema is beyond the scope of this document. For more information regarding its data types and the constraints that can be applied, please refer to the [JSON Schema reference](https://json-schema.org/understanding-json-schema/reference/index.html) documentation.
 
+## Keyword Constraints
+
+There are a variety of constraints currently defined for performance and security reasons. The
+following constraints are applicable to document definitions. Unless otherwise noted, these
+constraints are defined in the platform's JSON Schema rules (e.g. [rs-dpp document meta
+schema](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json)).
+
+| Keyword | Constraint |
+| ------- | ---------- |
+| `default`                   | Restricted - cannot be used (defined in DPP logic)  |
+| `propertyNames`             | Restricted - cannot be used (defined in DPP logic) |
+| `uniqueItems: true`         | `maxItems` must be defined (maximum: 100000) |
+| `pattern: <something>`      | `maxLength` must be defined (maximum: 50000) |
+| `format: <something>`       | `maxLength` must be defined (maximum: 50000) |
+| `$ref: <something>`         | **Disabled**<br>`$ref` can only reference `$defs` - <br> remote references not supported |
+| `if`, `then`, `else`, `allOf`, `anyOf`, `oneOf`, `not` | Disabled for data contracts |
+| `dependencies`              | Not supported. Use `dependentRequired` and `dependentSchema` instead |
+| `additionalItems`           | Not supported. Use `items: false` and `prefixItems` instead |
+| `patternProperties`         | Restricted - cannot be used for data contracts |
+| `pattern`                   | Accept only [RE2](https://github.com/google/re2/wiki/Syntax) compatible regular expressions (defined in DPP logic) |
+
 ### Property Constraints
 
 There are a variety of constraints currently defined for performance and security reasons.
