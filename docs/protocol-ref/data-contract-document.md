@@ -1,5 +1,7 @@
 # Contract Documents
 
+## Contract Document Overview
+
 The `documents` object defines each type of document in the data contract. At a minimum, a document must consist of 1 or more properties. Documents may also define [indices](#document-indices) and a list of [required properties](#required-properties-optional). The `additionalProperties` properties keyword must be included as described in the [constraints](./data-contract.md#additional-properties) section.
 
 The following example shows a minimal `documents` object defining a single document (`note`) that has one property (`message`).
@@ -19,46 +21,14 @@ The following example shows a minimal `documents` object defining a single docum
 }
 ```
 
-## Document Properties
-
-The `properties` object defines each field that will be used by a document. Each field consists of an object that, at a minimum, must define its data `type` (`string`, `number`, `integer`, `boolean`, `array`, `object`). Fields may also apply a variety of optional JSON Schema constraints related to the format, range, length, etc. of the data.
-
-**Note:** The `object` type is required to have properties defined. For example, the body property shown below is an object containing a single string property (objectProperty):
-
-```javascript
-const contractDocuments = {
-  message: {
-    type: "object",
-    properties: {
-      body: {
-        type: "object",
-        position: 0,
-        properties: {
-          objectProperty: {
-            type: "string",
-            position: 0
-          },
-        },
-        additionalProperties: false,
-      },
-      header: {
-        type: "string",
-        position: 1
-      }
-    },
-    additionalProperties: false
-  }
-};
-```
-
-**Note:** A full explanation of the capabilities of JSON Schema is beyond the scope of this document. For more information regarding its data types and the constraints that can be applied, please refer to the [JSON Schema reference](https://json-schema.org/understanding-json-schema/reference/index.html) documentation.
-
-## Keyword Constraints
+## Constraints
 
 There are a variety of constraints currently defined for performance and security reasons. The
 following constraints are applicable to document definitions. Unless otherwise noted, these
 constraints are defined in the platform's JSON Schema rules (e.g. [rs-dpp document meta
 schema](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json)).
+
+### Keyword Constraints
 
 | Keyword | Constraint |
 | ------- | ---------- |
@@ -114,7 +84,100 @@ The following example (excerpt from the DPNS contract's `domain` document) demon
 ]
 ```
 
-## Document Indices
+## Document properties
+
+The `properties` object defines each field that will be used by a document. Each field consists of an object that, at a minimum, must define its data `type` (`string`, `number`, `integer`, `boolean`, `array`, `object`). Fields may also apply a variety of optional JSON Schema constraints related to the format, range, length, etc. of the data.
+
+**Note:** The `object` type is required to have properties defined. For example, the body property shown below is an object containing a single string property (objectProperty):
+
+```javascript
+const contractDocuments = {
+  message: {
+    type: "object",
+    properties: {
+      body: {
+        type: "object",
+        position: 0,
+        properties: {
+          objectProperty: {
+            type: "string",
+            position: 0
+          },
+        },
+        additionalProperties: false,
+      },
+      header: {
+        type: "string",
+        position: 1
+      }
+    },
+    additionalProperties: false
+  }
+};
+```
+
+**Note:** A full explanation of the capabilities of JSON Schema is beyond the scope of this document. For more information regarding its data types and the constraints that can be applied, please refer to the [JSON Schema reference](https://json-schema.org/understanding-json-schema/reference/index.html) documentation.
+
+## Document Configuration
+
+Documents support the following configuration options to provide flexibility in contract design. It is only necessary to include them in a data contract when non-default values are used.
+
+| Document option | Type | Description |
+|-----------------|------|-------------|
+| `documentsKeepHistory`               | boolean  | If true, documents keep a history of all changes. Default: false. |
+| `documentsMutable`                   | boolean  | If true, documents are mutable. Default: true. |
+| `canBeDeleted`                       | boolean  | If true, documents can be deleted. Default: true. |
+| `transferable`                       | integer  | Transferable without a marketplace sell:<br>`0` - Never<br>`1` - Always<br>See the [NFT page](../explanations/nft.md#transfer-and-trade) for more details |
+| `tradeMode`                          | integer  | Built-in marketplace system:<br>`0` - None<br>`1` - Direct purchase (the purchaser can buy the item without requiring approval)<br>See the [NFT page](../explanations/nft.md#transfer-and-trade) for more details |
+| `creationRestrictionMode`            | integer  | Restriction of document creation:<br>`0` - No restrictions<br>`1` - Contract owner only<br>`2` - No creation (System Only)<br>See the [NFT page](../explanations/nft.md#creation-restrictions) for more details |
+
+| Security option | Type | Description |
+|-----------------|------|-------------|
+| [`requiresIdentity`<br>`EncryptionBoundedKey`](#key-management) | integer  | Key requirements for identity encryption:<br>`0` - Unique non-replaceable<br>`1` - Multiple<br>`2` - Multiple with reference to latest key |
+| [`requiresIdentity`<br>`DecryptionBoundedKey`](#key-management) | integer  | Key requirements for identity decryption:<br>`0` - Unique non-replaceable<br>`1` - Multiple<br>`2` - Multiple with reference to latest key |
+| `signatureSecurity`<br>`LevelRequirement`  | integer  | Public key security level:<br>`1` - Critical<br>`2` - High<br>`3` - Medium. Default is High if none specified. |
+
+:::{dropdown} List of all usable document properties
+
+  This list of properties is defined in the [Rust DPP implementation](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/src/data_contract/document_type/mod.rs#L31) and the [document meta-schema](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json).
+
+  | Property Name | Type | Description |
+  |---------------|------|-------------|
+  | `type`                               | string   | Specifies the type of the document, constrained to "object". |
+  | `$schema`                            | string   | The schema URL reference for the document. |
+  | `$defs`                              | object   | References the `documentProperties` definition. |
+  | [`indices`](#document-indices)       | array    | Defines indices for the document with properties like `name`, `unique`, `nullSearchable`, and `contested`. |
+  | `signatureSecurity`<br>`LevelRequirement`  | integer  | Public key security level:<br>`1` - Critical<br>`2` - High<br>`3` - Medium. Default is High if none specified. |
+  | `documentsKeepHistory`               | boolean  | If true, documents keep a history of all changes. Default: false. |
+  | `documentsMutable`                   | boolean  | If true, documents are mutable. Default: true. |
+  | `canBeDeleted`                       | boolean  | If true, documents can be deleted. Default: true. |
+  | `transferable`                       | integer  | Transferable without a marketplace sell:<br>`0` - Never<br>`1` - Always |
+  | `tradeMode`                          | integer  | Built-in marketplace system:<br>`0` - None<br>`1` - Direct purchase (the purchaser can buy the item without requiring approval) |
+  | `creationRestrictionMode`            | integer  | Restriction of document creation:<br>`0` - No restrictions<br>`1` - Contract owner only<br>`2` - No creation (System Only). |
+  | [`requiresIdentity`<br>`EncryptionBoundedKey`](#key-management) | integer  | Key requirements for identity encryption:<br>`0` - Unique non-replaceable<br>`1` - Multiple<br>`2` - Multiple with reference to latest key |
+  | [`requiresIdentity`<br>`DecryptionBoundedKey`](#key-management) | integer  | Key requirements for identity decryption:<br>`0` - Unique non-replaceable<br>`1` - Multiple<br>`2` - Multiple with reference to latest key |
+  | [`properties`](#document-properties) | object   | Defines the properties of the document. |
+  | [`transient`](#transient-properties) | array    | An array of strings specifying transient properties that are validated by Platform but not stored. |
+  | [`additionalProperties`](#additional-properties) | boolean  | Specifies whether additional properties are allowed. Must be set to false, meaning no additional properties are allowed beyond those defined. |
+:::
+
+**Example**
+
+The following example (from the [DPNS contract's `domain` document](https://github.com/dashpay/platform/blob/master/packages/dpns-contract/schema/v1/dpns-contract-documents.json)) demonstrates the use of several configuration options:
+
+```json
+{
+  "domain": {
+    "documentsMutable": false,
+    "canBeDeleted": true,
+    "transferable": 1,
+    "tradeMode": 1,
+    "..."
+  }
+}
+```
+
+## Document indices
 
 Document indices may be defined if indexing on document fields is required.
 
