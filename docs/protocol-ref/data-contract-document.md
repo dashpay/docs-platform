@@ -2,7 +2,7 @@
 
 ## Contract Document Overview
 
-The `documents` object defines each type of document in the data contract. At a minimum, a document must consist of 1 or more properties. Documents may also define [indices](#document-indices) and a list of [required properties](#required-properties-optional). The `additionalProperties` properties keyword must be included as described in the [constraints](./data-contract.md#additional-properties) section.
+The `documents` object defines each type of document in the data contract. At a minimum, a document must consist of 1 or more properties. Documents may also define [indices](#document-indices) and a list of [required properties](#required-properties). The `additionalProperties` properties keyword must be included as described in the [constraints](./data-contract.md#additional-properties) section.
 
 The following example shows a minimal `documents` object defining a single document (`note`) that has one property (`message`).
 
@@ -44,6 +44,12 @@ schema](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/schema
 | `patternProperties`         | Restricted - cannot be used for data contracts |
 | `pattern`                   | Accept only [RE2](https://github.com/google/re2/wiki/Syntax) compatible regular expressions (defined in DPP logic) |
 
+## Document properties
+
+The `properties` object defines each field that will be used by a document. Each field consists of an object that, at a minimum, must define its data `type` (`string`, `number`, `integer`, `boolean`, `array`, `object`). 
+
+Fields may also apply a variety of optional JSON Schema constraints related to the format, range, length, etc. of the data. A full explanation of the capabilities of JSON Schema is beyond the scope of this document. For more information regarding its data types and the constraints that can be applied, please refer to the [JSON Schema reference](https://json-schema.org/understanding-json-schema/reference/index.html) documentation.
+
 ### Property Constraints
 
 There are a variety of constraints currently defined for performance and security reasons.
@@ -56,7 +62,41 @@ There are a variety of constraints currently defined for performance and securit
 | Maximum property name length | [64](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L20) |
 | Property name characters     | Alphanumeric (`A-Z`, `a-z`, `0-9`)<br>Hyphen (`-`) <br>Underscore (`_`) |
 
-### Required Properties (Optional)
+### Assigning property `position`
+
+Each property in a level must be assigned a unique `position` value, with ordering starting at zero and incrementing with each property. When using nested objects, position counting resets to zero for each level. This structure supports backward compatibility in data contracts by [ensuring consistent ordering](https://github.com/dashpay/platform/pull/1594) for serialization and deserialization processes.
+
+### Special requirements for `object` properties
+
+The `object` type cannot be an empty object but must have one or more defined properties. For example, the `body` property shown below is an object containing a single string property (`objectProperty`):
+
+```javascript
+const contractDocuments = {
+  message: {
+    type: "object",
+    properties: {
+      body: {
+        type: "object",
+        position: 0,
+        properties: {
+          objectProperty: {
+            type: "string",
+            "position": 0
+          },
+        },
+        additionalProperties: false,
+      },
+      header: {
+        type: "string",
+        "position": 1
+      }
+    },
+    additionalProperties: false
+  }
+};
+```
+
+### Required Properties
 
 Each document may have some fields that are required for the document to be valid and other fields that are optional. Required fields are defined via the `required` array which consists of a list of the field names from the document that must be present. The `required` object should be excluded for documents without any required properties.
 
@@ -84,39 +124,19 @@ The following example (excerpt from the DPNS contract's `domain` document) demon
 ]
 ```
 
-## Document properties
+### Transient Properties
 
-The `properties` object defines each field that will be used by a document. Each field consists of an object that, at a minimum, must define its data `type` (`string`, `number`, `integer`, `boolean`, `array`, `object`). Fields may also apply a variety of optional JSON Schema constraints related to the format, range, length, etc. of the data.
+Each document may have transient fields that require validation but do not need to be stored by the system once validated. Transient fields are defined in the `transient` array. The `transient` object should only be included for documents with at least one transient property.
 
-**Note:** The `object` type is required to have properties defined. For example, the body property shown below is an object containing a single string property (objectProperty):
+**Example**  
 
-```javascript
-const contractDocuments = {
-  message: {
-    type: "object",
-    properties: {
-      body: {
-        type: "object",
-        position: 0,
-        properties: {
-          objectProperty: {
-            type: "string",
-            position: 0
-          },
-        },
-        additionalProperties: false,
-      },
-      header: {
-        type: "string",
-        position: 1
-      }
-    },
-    additionalProperties: false
-  }
-};
+The following example (from the [DPNS contract's `domain` document](https://github.com/dashpay/platform/blob/master/packages/dpns-contract/schema/v1/dpns-contract-documents.json)) demonstrates a document that has 1 transient field:
+
+```json
+    "transient": [
+      "preorderSalt"
+    ]
 ```
-
-**Note:** A full explanation of the capabilities of JSON Schema is beyond the scope of this document. For more information regarding its data types and the constraints that can be applied, please refer to the [JSON Schema reference](https://json-schema.org/understanding-json-schema/reference/index.html) documentation.
 
 ## Document Configuration
 
