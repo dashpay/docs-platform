@@ -108,6 +108,16 @@ A data entry, similar to a  document in a document-oriented database. Represente
 
 Layer 2 platform storage
 
+## Epoch
+
+An epoch is a fixed time period used to organize and manage blockchain operations. Dash Platform epochs are exactly 9.125 days (219 hours), resulting in 40 epochs (one [era](#era)) per year. Evonode reward payouts happen at the end of each epoch based on an evonode's validator set participation. The first epoch began at the genesis of Dash Platform.
+
+**Note:** Epochs are not determined by a certain number of blocks, but by a certain unix timestamp.
+
+## Era
+
+An era consists of 40 [epochs](#epoch) and equals approximately one year. At the end of an era, Dash Platform may optionally do additional accounting or reconfiguration.
+
 ## Layer (1, 2, 3)  
 
 - Layer 1: Core blockchain and [Dash Core](#dash-core)
