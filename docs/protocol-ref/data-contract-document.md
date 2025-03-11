@@ -29,7 +29,6 @@ The `properties` object defines each field that will be used by a document. Each
 const contractDocuments = {
   message: {
     type: "object",
-    position: 0,
     properties: {
       body: {
         type: "object",
