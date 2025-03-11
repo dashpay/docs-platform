@@ -79,10 +79,10 @@ There are a variety of constraints currently defined for performance and securit
 
 | Description | Value |
 | ----------- | ----- |
-| Minimum number of properties | [1](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L22) |
-| Maximum number of properties | [100](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L23) |
-| Minimum property name length | [1](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L20) |
-| Maximum property name length | [64](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L20) |
+| Minimum number of properties | [1](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L22) |
+| Maximum number of properties | [100](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L23) |
+| Minimum property name length | [1](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L20) |
+| Maximum property name length | [64](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L20) |
 | Property name characters     | Alphanumeric (`A-Z`, `a-z`, `0-9`)<br>Hyphen (`-`) <br>Underscore (`_`) |
 
 ### Required Properties (Optional)
@@ -151,15 +151,16 @@ For performance and security reasons, indices have the following constraints. Th
 
 | Description | Value |
 | ----------- | ----- |
-| Minimum/maximum length of index `name` | [1](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L311) / [32](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L312) |
-| Maximum number of indices | [10](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L390) |
-| Maximum number of unique indices | [10](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-platform-version/src/version/dpp_versions/dpp_validation_versions/v2.rs#L24) |
-| Maximum number of properties in a single index | [10](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L331) |
-| Maximum length of indexed string property | [63](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/v0/mod.rs#L72) |
-| Maximum number of contested indices | [1](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-platform-version/src/version/dpp_versions/dpp_validation_versions/v2.rs#L22) |
+| Minimum/maximum length of index `name` | [1](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L311) / [32](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L312) |
+| Maximum number of indices | [10](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L390) |
+| Maximum number of unique indices | [10](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-platform-version/src/version/dpp_versions/dpp_validation_versions/v2.rs#L26) |
+| Maximum number of contested indices | [1](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-platform-version/src/version/dpp_versions/dpp_validation_versions/v2.rs#L25)
+| Maximum number of properties in a single index | [10](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L331) |
+| Maximum length of indexed string property | [63](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/v0/mod.rs#L72) |
+| Maximum number of contested indices | [1](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-platform-version/src/version/dpp_versions/dpp_validation_versions/v2.rs#L25) |
 | Usage of `$id` in an index [disallowed](https://github.com/dashpay/platform/pull/178) | N/A |
-| **Note: Dash Platform v0.22+ [does not allow indices for arrays](https://github.com/dashpay/platform/pull/225).**<br>Maximum length of indexed byte array property | [255](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/v0/mod.rs#L73) |
-| **Note: Dash Platform v0.22+ [does not allow indices for arrays](https://github.com/dashpay/platform/pull/225).**<br>Maximum number of indexed array items         | [1024](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/v0/mod.rs#L74) |
+| **Note: Dash Platform [does not allow indices for arrays](https://github.com/dashpay/platform/pull/225).**<br>Maximum length of indexed byte array property | [255](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/v0/mod.rs#L73) |
+| **Note: Dash Platform [does not allow indices for arrays](https://github.com/dashpay/platform/pull/225).**<br>Maximum number of indexed array items         | [1024](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/v0/mod.rs#L74) |
 
 **Example**  
 The following example (excerpt from the DPNS contract's `preorder` document) creates an index named `saltedHash` on the `saltedDomainHash` property that also enforces uniqueness across all documents of that type:
@@ -231,4 +232,4 @@ This example syntax shows the structure of a documents object that defines two d
 
 ## Document Schema
 
-Full document schema details may be found in the [rs-dpp document meta schema](https://github.com/dashpay/platform/blob/v1.7.1/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json).
+Full document schema details may be found in the [rs-dpp document meta schema](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json).
