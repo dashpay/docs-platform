@@ -1,6 +1,6 @@
 # Contract Documents
 
-The `documents` object defines each type of document required by the data contract. At a minimum, a document must consist of 1 or more properties. Documents may also define [indices](#document-indices) and a list of [required properties](#required-properties-optional). The `additionalProperties` properties keyword must be included as described in the [constraints](./data-contract.md#additional-properties) section.
+The `documents` object defines each type of document in the data contract. At a minimum, a document must consist of 1 or more properties. Documents may also define [indices](#document-indices) and a list of [required properties](#required-properties-optional). The `additionalProperties` properties keyword must be included as described in the [constraints](./data-contract.md#additional-properties) section.
 
 The following example shows a minimal `documents` object defining a single document (`note`) that has one property (`message`).
 
@@ -28,10 +28,12 @@ The `properties` object defines each field that will be used by a document. Each
 ```javascript
 const contractDocuments = {
   message: {
-    "type": "object",
+    type: "object",
+    position: 0,
     properties: {
       body: {
         type: "object",
+        position: 0,
         properties: {
           objectProperty: {
             type: "string",
@@ -97,10 +99,13 @@ Each document may have some fields that are required for the document to be vali
 ```
 
 **Example**  
-The following example (excerpt from the DPNS contract's `domain` document) demonstrates a document that has 6 required fields:
+The following example (excerpt from the DPNS contract's `domain` document) demonstrates a document with required fields:
 
 ```json
 "required": [
+  "$createdAt",
+  "$updatedAt",
+  "$transferredAt",
   "label",
   "normalizedLabel",
   "normalizedParentDomainName",
@@ -118,7 +123,7 @@ The `indices` array consists of:
 
 - One or more objects that each contain:
   - A unique `name` for the index
-  - A `properties` array composed of a `<field name: sort order>` object for each document field that is part of the index (sort order: `asc` only for Dash Platform v0.23)
+  - A `properties` array composed of a `<field name: sort order>` object for each document field that is part of the index (sort order: `asc` only)
   - An (optional) `unique` element that determines if duplicate values are allowed for the document type
 
 **Note:**
