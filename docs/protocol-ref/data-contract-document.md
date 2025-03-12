@@ -148,37 +148,80 @@ There are a variety of constraints currently defined for performance and securit
 
 ## Document indices
 
-Document indices may be defined if indexing on document fields is required.
+Document indices may be defined if indexing on document fields is required. The `indices` object should only be included for documents with at least one index.
 
-The `indices` array consists of:
+The `indices` array consists of one or more objects that each contain:
 
-- One or more objects that each contain:
-  - A unique `name` for the index
-  - A `properties` array composed of a `<field name: sort order>` object for each document field that is part of the index (sort order: `asc` only)
-  - An (optional) `unique` element that determines if duplicate values are allowed for the document type
-
-**Note:**
-
-- Exclude the `indices` object for documents that do not require indices.
-- When defining an index with multiple properties (i.e, a compound index), the order in which the properties are listed is important. Refer to the [mongoDB documentation](https://docs.mongodb.com/manual/core/index-compound/#prefixes) for details regarding the significance of the order as it relates to querying capabilities. Dash uses [GroveDB](https://github.com/dashpay/grovedb), which works similarly but does require listing _all_ the index's fields in query order by statements.
+* A unique `name` for the index
+* A `properties` array composed of a `<field name: sort order>` object for each document field that is part of the index
+  
+  :::{admonition} Compound Indices
+  :class: attention
+  When defining an index with multiple properties, the ordering of properties is important. Refer to the [mongoDB documentation](https://docs.mongodb.com/manual/core/index-compound/#prefixes) for details. Dash uses [GroveDB](https://github.com/dashpay/grovedb), which works similarly but requires listing all the index's fields in query order by statements.
+  :::
+* An optional `unique` element that determines if duplicate values are allowed for the document
+* An optional `nullSearchable` element that indicates whether the index allows searching for NULL values. If nullSearchable is false (default: true) and all properties of the index are null then no reference is added.
+* An optional `contested` element that determines if duplicate values are allowed for the document
 
 ```json
 "indices": [
   {
-    "name": "Index1",
+    "name": "<index name a>",
     "properties": [
-      { "<field name a>": "asc" },
-      { "<field name b>": "asc" }
+      { "<field name a>": "<asc"|"desc>" },
+      { "<field name b>": "<asc"|"desc>" }
     ],
-    "unique": true|false
+    "unique": true|false,
+    "nullSearchable": true|false,
+    "contested": {
+      "fieldMatches": [
+        {
+          "field": "<field name a>",
+          "regexPattern": "<regex>"
+        }
+      ],
+      "resolution": 0
+    }
   },
   {
-    "name": "Index2",
+    "name": "<index name b>",
     "properties": [
-      { "<field name c>": "asc" },
+      { "<field name c>": "<asc"|"desc>" },
     ],
   }
 ]
+```
+
+### Contested indices
+
+Contested unique indices provide a way for multiple identities to compete for ownership when a new document field matches a predefined pattern. This system enables fair distribution of valuable documents through community-driven decision-making.
+
+A two week contest begins when a match occurs. For the first week, additional contenders can join by paying a fee of 0.2 Dash. During this period, masternodes and evonodes vote on the outcome. The contest can result in the awarding of the document to the winner, a locked vote where no document is awarded, or potentially a restart of the contest if specific conditions are met.
+
+The table below describes the properties used to configure a contested index:
+
+| Property Name | Type | Description |
+|-|-|-|
+| fieldMatches | array | Array containing conditions to check |
+| fieldMatches.field | string | Name of the field to check for matches |
+| fieldMatches.regexPattern | string | Regex used to check for matches |
+| resolution | integer | Method to resolve the contest:<br>`0` - masternode voting |
+
+**Example**
+
+This example (from the [DPNS contract's `domain` document](https://github.com/dashpay/platform/blob/master/packages/dpns-contract/schema/v1/dpns-contract-documents.json)) demonstrates the use of a contested index:
+
+``` json
+"contested": {
+  "fieldMatches": [
+    {
+      "field": "normalizedLabel",
+      "regexPattern": "^[a-zA-Z01-]{3,19}$"
+    }
+  ],
+  "resolution": 0,
+  "description": "If the normalized label part of this index is less than 20 characters (all alphabet a-z, A-Z, 0, 1, and -) then a masternode vote contest takes place to give out the name"
+}
 ```
 
 ### Index Constraints
