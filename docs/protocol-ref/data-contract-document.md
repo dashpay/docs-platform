@@ -4,7 +4,7 @@
 
 The `documents` object defines each type of document in the data contract. At a minimum, a document must consist of 1 or more properties. Documents may also define [indices](#document-indices) and a list of [required properties](#required-properties). The `additionalProperties` properties keyword must be included as described in the [constraints](./data-contract.md#additional-properties) section.
 
-The following example shows a minimal `documents` object defining a single document (`note`) that has one property (`message`).
+The following example shows a minimal `documents` object defining a single document (`note`) with one property (`message`).
 
 ```json
 {
@@ -24,8 +24,8 @@ The following example shows a minimal `documents` object defining a single docum
 ## Constraints
 
 There are a variety of constraints currently defined for performance and security reasons. The
-following constraints are applicable to document definitions. Unless otherwise noted, these
-constraints are defined in the platform's JSON Schema rules (e.g. [rs-dpp document meta
+following constraints apply to document definitions. Unless otherwise noted, these
+constraints are defined in the platform's JSON Schema rules (e.g., [rs-dpp document meta
 schema](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json)).
 
 ### Keyword Constraints
@@ -46,9 +46,9 @@ schema](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/schema
 
 ## Document properties
 
-The `properties` object defines each field that will be used by a document. Each field consists of an object that, at a minimum, must define its data `type` (`string`, `number`, `integer`, `boolean`, `array`, `object`).
+The `properties` object defines each field that a document will use. Each field consists of an object that, at a minimum, must define its data `type` (`string`, `number`, `integer`, `boolean`, `array`, `object`).
 
-Fields may also apply a variety of optional JSON Schema constraints related to the format, range, length, etc. of the data. A full explanation of the capabilities of JSON Schema is beyond the scope of this document. For more information regarding its data types and the constraints that can be applied, please refer to the [JSON Schema reference](https://json-schema.org/understanding-json-schema/reference/index.html) documentation.
+Fields may also apply a variety of optional JSON Schema constraints related to the format, range, length, etc. of the data. A full explanation of JSON Schema capabilities is beyond the scope of this document. For more information regarding its data types and the constraints that can be applied, please refer to the [JSON Schema reference](https://json-schema.org/understanding-json-schema/reference/index.html) documentation.
 
 ### Property Constraints
 
@@ -98,7 +98,7 @@ const contractDocuments = {
 
 ### Required Properties
 
-Each document may have some fields that are required for the document to be valid and other fields that are optional. Required fields are defined via the `required` array which consists of a list of the field names from the document that must be present. The `required` object should be excluded for documents without any required properties.
+Each document may have some fields that are required for the document to be valid and other fields that are optional. Required fields are defined via the `required` array, which consists of a list of the field names from the document that must be present. Exclude the `required` object for documents without required properties.
 
 ```json
 "required": [
@@ -126,7 +126,7 @@ The following example (excerpt from the DPNS contract's `domain` document) demon
 
 ### Transient Properties
 
-Each document may have transient fields that require validation but do not need to be stored by the system once validated. Transient fields are defined in the `transient` array. The `transient` object should only be included for documents with at least one transient property.
+Each document may have transient fields that require validation but do not need to be stored by the system once validated. Transient fields are defined in the `transient` array. Only include the `transient` object for documents with at least one transient property.
 
 **Example**  
 
@@ -140,7 +140,7 @@ The following example (from the [DPNS contract's `domain` document](https://gith
 
 ## Document Configuration
 
-Documents support the following configuration options to provide flexibility in contract design. It is only necessary to include them in a data contract when non-default values are used.
+Documents support the following configuration options to provide flexibility in contract design. Only include configuration options in a data contract when using non-default values.
 
 | Document option | Type | Description |
 |-----------------|------|-------------|
@@ -211,8 +211,8 @@ The `indices` array consists of:
 
 **Note:**
 
-- The `indices` object should be excluded for documents that do not require indices.
-- When defining an index with multiple properties (i.e a compound index), the order in which the properties are listed is important. Refer to the [mongoDB documentation](https://docs.mongodb.com/manual/core/index-compound/#prefixes) for details regarding the significance of the order as it relates to querying capabilities. Dash uses [GroveDB](https://github.com/dashpay/grovedb) which works similarly but does requiring listing _all_ the index's fields in query order by statements.
+- Exclude the `indices` object for documents that do not require indices.
+- When defining an index with multiple properties (i.e, a compound index), the order in which the properties are listed is important. Refer to the [mongoDB documentation](https://docs.mongodb.com/manual/core/index-compound/#prefixes) for details regarding the significance of the order as it relates to querying capabilities. Dash uses [GroveDB](https://github.com/dashpay/grovedb), which works similarly but does require listing _all_ the index's fields in query order by statements.
 
 ```json
 "indices": [
@@ -319,4 +319,4 @@ This example syntax shows the structure of a documents object that defines two d
 
 ## Document Schema
 
-Full document schema details may be found in the [rs-dpp document meta schema](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json).
+See full document schema details in the [rs-dpp document meta schema](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json).
