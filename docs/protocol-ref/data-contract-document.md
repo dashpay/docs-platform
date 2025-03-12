@@ -45,24 +45,24 @@ schema](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/schema
 | `uniqueItems: true`         | `maxItems` must be defined (maximum: 100000) |
 | `pattern: <something>`      | `maxLength` must be defined (maximum: 50000) |
 | `format: <something>`       | `maxLength` must be defined (maximum: 50000) |
-| `$ref: <something>`         | **Disabled**<br>`$ref` can only reference `$defs` - <br> remote references not supported |
+| `$ref: <something>`         | **Disabled**<br>`$ref` can only reference `$defs`. Remote references not supported. |
 | `if`, `then`, `else`, `allOf`, `anyOf`, `oneOf`, `not` | Disabled for data contracts |
 | `dependencies`              | Not supported. Use `dependentRequired` and `dependentSchema` instead |
 | `additionalItems`           | Not supported. Use `items: false` and `prefixItems` instead |
 | `patternProperties`         | Restricted - cannot be used for data contracts |
 | `pattern`                   | Accept only [RE2](https://github.com/google/re2/wiki/Syntax) compatible regular expressions (defined in DPP logic) |
 
-## Document properties
+## Document Properties
 
 The `properties` object defines each field that a document will use. Each field consists of an object that, at a minimum, must define its data `type` (`string`, `number`, `integer`, `boolean`, `array`, `object`).
 
 Fields may also apply a variety of optional JSON Schema constraints related to the format, range, length, etc. of the data. A full explanation of JSON Schema capabilities is beyond the scope of this document. For more information regarding its data types and the constraints that can be applied, please refer to the [JSON Schema reference](https://json-schema.org/understanding-json-schema/reference/index.html) documentation.
 
-### Assigning position
+### Assigning Position
 
 Each property in a level must be assigned a unique `position` value, with ordering starting at zero and incrementing with each property. When using nested objects, position counting resets to zero for each level. This structure supports backward compatibility in data contracts by [ensuring consistent ordering](https://github.com/dashpay/platform/pull/1594) for serialization and deserialization processes.
 
-### Object properties
+### Object Properties
 
 The `object` type cannot be an empty object but must have one or more defined properties. For example, the `body` property shown below is an object containing a single string property (`objectProperty`):
 
@@ -146,7 +146,7 @@ There are a variety of constraints currently defined for performance and securit
 | Maximum property name length | [64](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L20) |
 | Property name characters     | Alphanumeric (`A-Z`, `a-z`, `0-9`)<br>Hyphen (`-`) <br>Underscore (`_`) |
 
-## Document indices
+## Document Indices
 
 Document indices may be defined if indexing on document fields is required. The `indices` object should only be included for documents with at least one index.
 
@@ -192,9 +192,9 @@ The `indices` array consists of one or more objects that each contain:
 ]
 ```
 
-### Contested indices
+### Contested Indices
 
-Contested unique indices provide a way for multiple identities to compete for ownership when a new document field matches a predefined pattern. This system enables fair distribution of valuable documents through community-driven decision-making.
+Contested unique indices provide a way for multiple identities to compete for ownership when a new document field matches a predefined pattern. This system enables fair distribution of valuable documents, such as [premium DPNS names](../explanations/dpns.md#conflict-resolution), through community-driven decision-making.
 
 A two week contest begins when a match occurs. For the first week, additional contenders can join by paying a fee of 0.2 Dash. During this period, masternodes and evonodes vote on the outcome. The contest can result in the awarding of the document to the winner, a locked vote where no document is awarded, or potentially a restart of the contest if specific conditions are met.
 
