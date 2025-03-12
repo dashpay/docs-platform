@@ -33,7 +33,7 @@ Dash Platform 0.25.16 included a [breaking change that added versioning](https:/
 
 [Masternode identities](../explanations/identity.md#masternode-identities) are created automatically
 by the system based on the [Core masternode registration transaction (protx)
-hash](inv:core:std#ref-txs-proregtx). Masternode identity IDs are created by converting the protx
+hash](inv:user:std#ref-txs-proregtx). Masternode identity IDs are created by converting the protx
 hash to base58. This can be done using an [online base58
 encoder](https://appdevtools.com/base58-encoder-decoder) or through JavaScript using the [bs58
 package](https://www.npmjs.com/package/bs58) as shown below. For gRPCurl, convert the protx hash to

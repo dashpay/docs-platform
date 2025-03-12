@@ -391,7 +391,7 @@ Note: The gRPCurl response `transaction` and `blockHash` data are Base64 encoded
 
 ### subscribeToBlockHeadersWithChainLocks
 
-This endpoint helps support simplified payment verification ([SPV](https://docs.dash.org/projects/core/en/stable/docs/guide/operating-modes-simplified-payment-verification-spv.html)) via DAPI by providing access to block headers which can then be used to verify transactions and simplified masternode lists.
+This endpoint helps support simplified payment verification ([SPV](https://docs.dash.org/en/stable/docs/core/guide/operating-modes-simplified-payment-verification-spv.html)) via DAPI by providing access to block headers which can then be used to verify transactions and simplified masternode lists.
 
 **Returns**: streams the requested block header information  
 **Parameters**:

@@ -43,7 +43,7 @@ See the [identity implementation in rs-dpp](https://github.com/dashpay/platform/
 
 ### Identity id
 
-The identity `id` is a unique identifier created from the double sha256 hash of the [outpoint](https://docs.dash.org/projects/core/en/stable/docs/resources/glossary.html#outpoint) funding the identity creation. Typically it is displayed using Base58 encoding.
+The identity `id` is a unique identifier created from the double sha256 hash of the [outpoint](https://docs.dash.org/en/stable/docs/core/resources/glossary.html#outpoint) funding the identity creation. Typically it is displayed using Base58 encoding.
 
 `id = base58(sha256(sha256(<identity create funding outpoint>)))`
 
@@ -236,7 +236,7 @@ The InstantSend asset lock proof is used for transactions that have received an 
 | Field       | Type           | Description |
 | ----------- | -------------- | ----------- |
 | type        | integer        | The asset lock proof type (`0` for InstantSend locks) |
-| instantLock | array of bytes | The InstantSend lock ([`islock`](https://docs.dash.org/projects/core/en/stable/docs/reference/p2p-network-instantsend-messages.html#islock)) |
+| instantLock | array of bytes | The InstantSend lock ([`islock`](https://docs.dash.org/en/stable/docs/core/reference/p2p-network-instantsend-messages.html#islock)) |
 | transaction | array of bytes | The asset lock transaction |
 | outputIndex | integer        | Index of the transaction output to be used |
 
@@ -248,7 +248,7 @@ The ChainLock asset lock proof is used for transactions that have note received 
 | --------------------- | -------------- | ----------- |
 | type                  | array of bytes | The type of asset lock proof (`1` for ChainLocks) |
 | coreChainLockedHeight | integer        | Height of the ChainLocked Core block containing the transaction |
-| outPoint              | object         | The  [outpoint](https://docs.dash.org/projects/core/en/stable/docs/resources/glossary.html#outpoint) being used as the asset lock |
+| outPoint              | object         | The  [outpoint](https://docs.dash.org/en/stable/docs/core/resources/glossary.html#outpoint) being used as the asset lock |
 
 ### Identity State Transition Signing
 

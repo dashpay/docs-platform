@@ -84,7 +84,7 @@ More detailed information about the `dataContract` object can be found in the [d
 
 | Field           | Type           | Size | Description |
 | --------------- | -------------- | ---- | ----------- |
-| assetLockProof | array of bytes | 36 bytes | Lock [outpoint](https://docs.dash.org/projects/core/en/stable/docs/resources/glossary.html#outpoint) from the layer 1 locking transaction (36 bytes) |
+| assetLockProof | array of bytes | 36 bytes | Lock [outpoint](https://docs.dash.org/en/stable/docs/core/resources/glossary.html#outpoint) from the layer 1 locking transaction (36 bytes) |
 | publicKeys     | array of keys  | Varies | [Public key(s)](../protocol-ref/identity.md#identity-publickeys) associated with the identity (maximum number of keys: `10`) |
 
 More detailed information about the `publicKeys` object can be found in the [identity section](../protocol-ref/identity.md).
@@ -93,7 +93,7 @@ More detailed information about the `publicKeys` object can be found in the [ide
 
 | Field           | Type           | Size | Description |
 | --------------- | -------------- | ---- | ----------- |
-| assetLockProof | array of bytes | 36 bytes | Lock [outpoint](https://docs.dash.org/projects/core/en/stable/docs/resources/glossary.html#outpoint) from the layer 1 locking transaction (36 bytes) |
+| assetLockProof | array of bytes | 36 bytes | Lock [outpoint](https://docs.dash.org/en/stable/docs/core/resources/glossary.html#outpoint) from the layer 1 locking transaction (36 bytes) |
 | identityId     | array of bytes | 32 bytes | An [Identity ID](../protocol-ref/identity.md#identity-id) for the identity receiving the topup (can be any identity) (32 bytes) |
 
 ### Identity Update

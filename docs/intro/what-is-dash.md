@@ -36,7 +36,7 @@ However, the Dash network has a second layer of network participants that provid
 
 ### Long-Living Masternode Quorums
 
-Dash's [long-living masternode quorums](https://docs.dash.org/projects/core/en/stable/docs/guide/dash-features-masternode-quorums.html) (LLMQs) are used to facilitate the operation of masternode-provided features in a decentralized, deterministic way. These LLMQs are deterministic subsets of the overall masternode list that are formed via a [distributed key generation](../reference/glossary.md#distributed-key-generation-dkg) protocol and remain active for long periods of time (e.g. hours to days). The main task of LLMQs is to perform threshold signing of consensus-related messages for features like InstantSend and ChainLocks.
+Dash's [long-living masternode quorums](https://docs.dash.org/en/stable/docs/core/guide/dash-features-masternode-quorums.html) (LLMQs) are used to facilitate the operation of masternode-provided features in a decentralized, deterministic way. These LLMQs are deterministic subsets of the overall masternode list that are formed via a [distributed key generation](../reference/glossary.md#distributed-key-generation-dkg) protocol and remain active for long periods of time (e.g. hours to days). The main task of LLMQs is to perform threshold signing of consensus-related messages for features like InstantSend and ChainLocks.
 
 ### InstantSend
 

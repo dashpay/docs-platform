@@ -1,10 +1,10 @@
 # Core concepts
 
-The [Dash Core Developer Guide](https://docs.dash.org/projects/core/en/stable/docs/guide/introduction.html) will answer most of questions about the fundamentals of Dash. However, some elements provided by the SDK need to be grasped, so we will quickly cover some of those.
+The [Dash Core Developer Guide](https://docs.dash.org/en/stable/docs/core/guide/introduction.html) will answer most of questions about the fundamentals of Dash. However, some elements provided by the SDK need to be grasped, so we will quickly cover some of those.
 
 ## Wallet
 
-At the core of Dash is the Payment Chain. In order to be able to transact on it, one needs to have a set of [UTXOs](https://docs.dash.org/projects/core/en/stable/docs/guide/block-chain-transaction-data.html) that are controlled by a Wallet instance.
+At the core of Dash is the Payment Chain. In order to be able to transact on it, one needs to have a set of [UTXOs](https://docs.dash.org/en/stable/docs/core/guide/block-chain-transaction-data.html) that are controlled by a Wallet instance.
 
 In order to access your UTXO, you will have to provide a valid mnemonic that will unlock the Wallet and automatically fetch the associated UTXOs.
 
