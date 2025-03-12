@@ -29,29 +29,6 @@ Documents may also define [indices](#document-indices), a list of [required](#re
 | [Properties](#document-properties) | Definitions and constraints for each field within a document  |
 | [Indices](#document-indices)       | Definitions for indexing document fields to support efficient querying |
 
-## Constraints
-
-There are a variety of constraints currently defined for performance and security reasons. The
-following constraints apply to document definitions. Unless otherwise noted, these
-constraints are defined in the platform's JSON Schema rules (e.g., [rs-dpp document meta
-schema](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json)).
-
-### Keyword Constraints
-
-| Keyword | Constraint |
-| ------- | ---------- |
-| `default`                   | Restricted - cannot be used (defined in DPP logic)  |
-| `propertyNames`             | Restricted - cannot be used (defined in DPP logic) |
-| `uniqueItems: true`         | `maxItems` must be defined (maximum: 100000) |
-| `pattern: <something>`      | `maxLength` must be defined (maximum: 50000) |
-| `format: <something>`       | `maxLength` must be defined (maximum: 50000) |
-| `$ref: <something>`         | **Disabled**<br>`$ref` can only reference `$defs`. Remote references not supported. |
-| `if`, `then`, `else`, `allOf`, `anyOf`, `oneOf`, `not` | Disabled for data contracts |
-| `dependencies`              | Not supported. Use `dependentRequired` and `dependentSchema` instead |
-| `additionalItems`           | Not supported. Use `items: false` and `prefixItems` instead |
-| `patternProperties`         | Restricted - cannot be used for data contracts |
-| `pattern`                   | Accept only [RE2](https://github.com/google/re2/wiki/Syntax) compatible regular expressions (defined in DPP logic) |
-
 ## Document Properties
 
 The `properties` object defines each field that a document will use. Each field consists of an object that, at a minimum, must define its data `type` (`string`, `number`, `integer`, `boolean`, `array`, `object`).
@@ -316,6 +293,27 @@ The following example (from the [DPNS contract's `domain` document](https://gith
   }
 }
 ```
+
+## Keyword Constraints
+
+There are a variety of keyword constraints currently defined for performance and security reasons. The
+following constraints apply to document definitions. Unless otherwise noted, these
+constraints are defined in the platform's JSON Schema rules (e.g., [rs-dpp document meta
+schema](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json)).
+
+| Keyword | Constraint |
+| ------- | ---------- |
+| `default`                   | Restricted - cannot be used (defined in DPP logic)  |
+| `propertyNames`             | Restricted - cannot be used (defined in DPP logic) |
+| `uniqueItems: true`         | `maxItems` must be defined (maximum: 100000) |
+| `pattern: <something>`      | `maxLength` must be defined (maximum: 50000) |
+| `format: <something>`       | `maxLength` must be defined (maximum: 50000) |
+| `$ref: <something>`         | **Disabled**<br>`$ref` can only reference `$defs`. Remote references not supported. |
+| `if`, `then`, `else`, `allOf`, `anyOf`, `oneOf`, `not` | Disabled for data contracts |
+| `dependencies`              | Not supported. Use `dependentRequired` and `dependentSchema` instead |
+| `additionalItems`           | Not supported. Use `items: false` and `prefixItems` instead |
+| `patternProperties`         | Restricted - cannot be used for data contracts |
+| `pattern`                   | Accept only [RE2](https://github.com/google/re2/wiki/Syntax) compatible regular expressions (defined in DPP logic) |
 
 ## Example Syntax
 
