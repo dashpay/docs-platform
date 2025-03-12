@@ -9,7 +9,7 @@
  State transitions are the means for submitting data that creates, updates, or deletes platform data and results in a change to a new state. Each one must contain:
 
 - [Common fields](#common-fields) present in all state transitions
-- Additional fields specific to the type of action the state transition provides (e.g. [creating an identity](../protocol-ref/identity.md#identity-create))
+- Additional fields specific to the type of action the state transition provides (e.g., [creating an identity](../protocol-ref/identity.md#identity-create))
 
 ### Fees
 
@@ -60,7 +60,7 @@ More detailed information about the `dataContract` object can be found in the [d
 
 #### Entropy Generation
 
-Entropy is included in [Data Contracts](../protocol-ref/data-contract.md#data-contract-creation) and [Documents](../protocol-ref/document.md#document-create-transition). Dash Platform using the following entropy generator found in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/util/entropy_generator.rs#L12-L16):
+Entropy is included in [Data Contracts](../protocol-ref/data-contract.md#data-contract-create) and [Documents](../protocol-ref/document.md#document-create-transition). Dash Platform using the following entropy generator found in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/util/entropy_generator.rs#L12-L16):
 
 ```rust
 // From the Rust reference implementation (rs-dpp)
