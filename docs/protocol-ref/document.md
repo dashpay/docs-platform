@@ -144,78 +144,25 @@ The document delete transition only requires the fields found in the [base docum
 
 ## Document Object
 
-The document object represents the data provided by the platform in response to a query. Responses consist of an array of these objects containing the following fields as defined in the Rust reference client ([rs-dpp](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/schema/document/documentExtended.json)):
+The document object represents the data provided by the platform in response to a query. Responses consist of an array of these objects containing the following fields as defined in the Rust reference client ([rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/document/v0/mod.rs#L35-L105)):
 
 | Property | Type | Required | Description |
 | - | - | - | - |
 | protocolVersion | integer | Yes | The platform protocol version (currently `1`) |
 | $id | array | Yes | The [document ID](#document-id) (32 bytes)|
 | $type | string | Yes  | Document type defined in the referenced contract (1-64 characters) |
-| $revision | integer | No | Document revision (=>1) |
+| $revision | unsigned integer (64 bits) | No | Document revision (=>1) if the document is mutable |
 | $dataContractId | array | Yes | Data contract ID [generated](../protocol-ref/data-contract.md#data-contract-id) from the data contract's `ownerId` and `entropy` (32 bytes) |
 | $ownerId | array | Yes | [Identity](../protocol-ref/identity.md) of the user submitting the document (32 bytes) |
-| $createdAt | integer | (Optional)  | Time (in milliseconds) the document was created |
-| $updatedAt | integer | (Optional)  | Time (in milliseconds) the document was last updated |
-
-Each document object must comply with this JSON-Schema definition established in [rs-dpp](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/schema/document/documentExtended.json):
-
-```json
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "type": "object",
-  "properties": {
-    "$protocolVersion": {
-      "type": "integer",
-      "$comment": "Maximum is the latest protocol version"
-    },
-    "$id": {
-      "type": "array",
-      "byteArray": true,
-      "minItems": 32,
-      "maxItems": 32,
-      "contentMediaType": "application/x.dash.dpp.identifier"
-    },
-    "$type": {
-      "type": "string"
-    },
-    "$revision": {
-      "type": "integer",
-      "minimum": 1
-    },
-    "$dataContractId": {
-      "type": "array",
-      "byteArray": true,
-      "minItems": 32,
-      "maxItems": 32,
-      "contentMediaType": "application/x.dash.dpp.identifier"
-    },
-    "$ownerId": {
-      "type": "array",
-      "byteArray": true,
-      "minItems": 32,
-      "maxItems": 32,
-      "contentMediaType": "application/x.dash.dpp.identifier"
-    },
-    "$createdAt": {
-      "type": "integer",
-      "minimum": 0
-    },
-    "$updatedAt": {
-      "type": "integer",
-      "minimum": 0
-    }
-  },
-  "required": [
-    "$protocolVersion",
-    "$id",
-    "$type",
-    "$revision",
-    "$dataContractId",
-    "$ownerId"
-  ],
-  "additionalProperties": false
-}
-```
+| $createdAt | unsigned integer (64 bits) | No | Time (in milliseconds) at document creation, if required by the document type schema |
+| $updatedAt | unsigned integer (64 bits) | No | Last document update time in milliseconds, if required by the document type schema |
+|$transferredAt | unsigned integer (64 bits) | No | Last transferred time in milliseconds, if required by the document type schema |
+| $createdAt<br>BlockHeight | unsigned integer (64 bits) |  No | Block height at document creation, if required by the schema |
+| $updatedAt<br>BlockHeight | unsigned integer (64 bits) | No | Block height at the document's last update, if required by the schema |
+| $transferredAt<br>BlockHeight | unsigned integer (64 bits) | No | Block height when document was last transferred, if required by the schema |
+| $createdAt<br>CoreBlockHeight | unsigned integer (64 bits) | No | Core block height at document creation, if required by the schema |
+| $updatedAt<br>CoreBlockHeight | unsigned integer (64 bits) | No |Core block height at the document's last update, if required by the schema |
+| $transferredAt<br>CoreBlockHeight | unsigned integer (64 bits) | No |Core block height when document was last transferred, if required by the schema |
 
 ### Example Document Object
 
