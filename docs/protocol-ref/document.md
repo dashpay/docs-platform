@@ -67,7 +67,7 @@ Document transition actions indicate what operation platform should perform with
 
 The document create transition extends the [base transition](#document-base-transition) to include the following additional fields:
 
-| Field | Type | Size | Description|
+| Field | Type | Size | Description |
 | - | - | - | - |
 | $entropy | array | 32 bytes | Entropy used in creating the [document ID](#document-id). Generated as [shown here](../protocol-ref/state-transition.md#entropy-generation). |
 | data | | Varies | Document data being submitted. |
@@ -103,37 +103,18 @@ The following example document create transition and subsequent table demonstrat
 
 ### Document Replace Transition
 
-The document replace transition extends the base schema to include the following additional fields:
+The document replace transition extends the transition base to include the following additional fields:
 
-| Field | Type | Description|
-| - | - | - |
-| $revision | integer | Document revision (=> 1) |
-| $updatedAt | integer | (Optional)  | Time (in milliseconds) the document was last updated |
+| Field | Type | Size | Description |
+| - | - | - | - |
+| $revision | unsigned integer | 64 bits | Document revision (=> 1) |
+| data | | Varies | Document data being updated |
 
-Each document replace transition must comply with this JSON-Schema definition established in [rs-dpp](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/document/stateTransition/documentTransition/replace.json) (in addition to the document transition [base schema](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/document/stateTransition/documentTransition/base.json)) that is required for all document transitions):
+Each document replace transition must comply with the structure defined in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_replace_transition/v0/mod.rs#L35-L45) (in addition to the [document base transition](#document-base-transition) that is required for all document transitions).
 
-```json
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "type": "object",
-  "properties": {
-    "$revision": {
-      "type": "integer",
-      "minimum": 1
-    },
-    "$updatedAt": {
-      "type": "integer",
-      "minimum": 0
-    }
-  },
-  "required": [
-    "$revision"
-  ],
-  "additionalProperties": false
-}
-```
-
-**Note:** The document create transition must also include all required properties of the document as defined in the data contract.
+::: {note}
+The document replace transition data field must include all [required document properties](./data-contract-document.md#required-properties) specified in the data contract.
+:::
 
 The following example document create transition and subsequent table demonstrate how the document transition base, document create transition, and data contract document definitions are assembled into a complete transition for inclusion in a [state transition](#document-overview):
 
