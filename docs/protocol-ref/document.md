@@ -27,25 +27,25 @@ Each document transition must comply with the [document base transition defined 
 
 #### Document id
 
-The document `$id` is created by hashing the document's `dataContractId`, `ownerId`, `type`, and `entropy` as shown in [rs-dpp](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/document/generate_document_id.rs).
+The document `$id` is created by double sha256 hashing the document's `dataContractId`, `ownerId`, `type`, and `entropy` as shown in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/document/generate_document_id.rs).
 
 ```rust
 // From the Rust reference implementation (rs-dpp)
 // generate_document_id.rs
-pub fn generate_document_id(
+pub fn generate_document_id_v0(
     contract_id: &Identifier,
     owner_id: &Identifier,
-    document_type: &str,
+    document_type_name: &str,
     entropy: &[u8],
 ) -> Identifier {
     let mut buf: Vec<u8> = vec![];
 
     buf.extend_from_slice(&contract_id.to_buffer());
     buf.extend_from_slice(&owner_id.to_buffer());
-    buf.extend_from_slice(document_type.as_bytes());
+    buf.extend_from_slice(document_type_name.as_bytes());
     buf.extend_from_slice(entropy);
 
-    Identifier::from_bytes(&hash(&buf)).unwrap()
+    Identifier::from_bytes(&hash_double_to_vec(&buf)).unwrap()
 }
 ```
 
