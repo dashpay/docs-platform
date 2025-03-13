@@ -19,6 +19,7 @@ The following fields are included in all document transitions:
 | Field | Type | Size | Description|
 | ----- | ---- | ---- | ---------- |
 | $id | array | 32 bytes | The [document ID](#document-id) |
+| $action | array of integers | Varies | [Action](#document-transition-action) the platform should take for the associated document |
 | $identityContractNonce | unsigned integer | 64 bits  | Identity contract nonce |
 | $type | string | 1-64 characters | Name of a document type found in the data contract associated with the `dataContractId`|
 | $dataContractId | array | 32 bytes | Data contract ID [generated](../protocol-ref/data-contract.md#data-contract-id) from the data contract's `ownerId` and `entropy` |
@@ -50,6 +51,8 @@ pub fn generate_document_id_v0(
 ```
 
 #### Document Transition Action
+
+Document transition actions indicate what operation platform should perform with the provided transition data. Documents provide CRUD functionality, ownership transfer, and NFT features as [defined in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_transition_action_type.rs#L6-L14).
 
 | Action | Name | Description |
 | :-: | - | - |
