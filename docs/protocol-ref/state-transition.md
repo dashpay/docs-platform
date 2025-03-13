@@ -45,9 +45,9 @@ Dash Platform Protocol defines the [state transition types](https://github.com/d
 | Field       | Type           | Size | Description |
 | ----------- | -------------- | ---- | ----------- |
 | ownerId     | array of bytes | 32 bytes | [Identity](../protocol-ref/identity.md) submitting the document(s) |
-| transitions | array of transition objects | Varies | A  batch of [document](../protocol-ref/document.md#document-submission) or token actions (up to 10 objects) |
+| transitions | array of transition objects | Varies | A  batch of [document](../protocol-ref/document.md#document-overview) or token actions (up to 10 objects) |
 
-More detailed information about the `transitions` array can be found in the [document section](../protocol-ref/document.md).
+More detailed information about the `transitions` array can be found in the [document section](../protocol-ref/document.md). See the implementation in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_credit_transfer_transition/v0/mod.rs#L39-L50).
 
 ### Data Contract Create
 

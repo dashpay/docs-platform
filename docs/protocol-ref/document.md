@@ -101,7 +101,7 @@ Each document create transition must comply with this JSON-Schema definition est
 
 **Note:** The document create transition must also include all required properties of the document as defined in the data contract.
 
-The following example document create transition and subsequent table demonstrate how the document transition base, document create transition, and data contract document definitions are assembled into a complete transition for inclusion in a [state transition](#document-submission):
+The following example document create transition and subsequent table demonstrate how the document transition base, document create transition, and data contract document definitions are assembled into a complete transition for inclusion in a [state transition](#document-overview):
 
 ```json
 {
@@ -157,7 +157,7 @@ Each document replace transition must comply with this JSON-Schema definition es
 
 **Note:** The document create transition must also include all required properties of the document as defined in the data contract.
 
-The following example document create transition and subsequent table demonstrate how the document transition base, document create transition, and data contract document definitions are assembled into a complete transition for inclusion in a [state transition](#document-submission):
+The following example document create transition and subsequent table demonstrate how the document transition base, document create transition, and data contract document definitions are assembled into a complete transition for inclusion in a [state transition](#document-overview):
 
 ```json
 {
