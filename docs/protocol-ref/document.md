@@ -65,44 +65,19 @@ Document transition actions indicate what operation platform should perform with
 
 ### Document Create Transition
 
-The document create transition extends the base schema to include the following additional fields:
+The document create transition extends the [base transition](#document-base-transition) to include the following additional fields:
 
-| Field | Type | Description|
-| - | - | - |
-| $entropy | array | Entropy used in creating the [document ID](#document-id). Generated as [shown here](../protocol-ref/state-transition.md#entropy-generation). (32 bytes) |
-| $createdAt | integer | (Optional)  | Time (in milliseconds) the document was created |
-| $updatedAt | integer | (Optional)  | Time (in milliseconds) the document was last updated |
+| Field | Type | Size | Description|
+| - | - | - | - |
+| $entropy | array | 32 bytes | Entropy used in creating the [document ID](#document-id). Generated as [shown here](../protocol-ref/state-transition.md#entropy-generation). |
+| data | | Varies | Document data being submitted. |
+| $prefundedVotingBalance | | Varies | (Optional) Prefunded amount of credits reserved for unique index conflict resolution voting (e.g., [premium DPNS name](../explanations/dpns.md#conflict-resolution)).|
 
-Each document create transition must comply with this JSON-Schema definition established in [rs-dpp](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/document/stateTransition/documentTransition/create.json) (in addition to the document transition [base schema](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/schema/document/stateTransition/documentTransition/base.json)) that is required for all document transitions):
+Each document create transition must comply with the structure defined in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_create_transition/v0/mod.rs#L56-L80) (in addition to the [document base transition](#document-base-transition) that is required for all document transitions).
 
-```json
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "type": "object",
-  "properties": {
-    "$entropy": {
-      "type": "array",
-      "byteArray": true,
-      "minItems": 32,
-      "maxItems": 32
-    },
-    "$createdAt": {
-      "type": "integer",
-      "minimum": 0
-    },
-    "$updatedAt": {
-      "type": "integer",
-      "minimum": 0
-    }
-  },
-  "required": [
-    "$entropy"
-  ],
-  "additionalProperties": false
-}
-```
-
-**Note:** The document create transition must also include all required properties of the document as defined in the data contract.
+::: {note}
+The document create transition data field must include all [required document properties](./data-contract-document.md#required-properties) specified in the data contract.
+:::
 
 The following example document create transition and subsequent table demonstrate how the document transition base, document create transition, and data contract document definitions are assembled into a complete transition for inclusion in a [state transition](#document-overview):
 
