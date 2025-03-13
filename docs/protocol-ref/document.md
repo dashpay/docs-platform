@@ -4,121 +4,26 @@
 
 # Document
 
-## Document Submission
+## Document Overview
 
-Documents are sent to the platform by submitting the them in a batch state transition consisting of:
+Once a [data contract](./data-contract.md) has been created, data can be stored by submitting documents that comply with the document structure specified in the contract. Each document consists of one or more fields and the indices necessary to support querying. Documents are [created](#document-create-transition), [updated](#document-replace-transition), or [deleted](#document-delete-transition) by sending by submitting them to the platform in a [batch state transition](./state-transition.md#batch).
 
-| Field | Type | Description|
-| - | - | - |
-| protocolVersion | integer | The platform protocol version (currently `1`) |
-| type | integer | State transition type (`1` for batch) |
-| ownerId | array | [Identity](../protocol-ref/identity.md) submitting the document(s) (32 bytes) |
-| transitions | array of transition objects | Document `create`, `replace`, or `delete` transitions (up to 10 objects) |
-| signaturePublicKeyId | number | The `id` of the [identity public key](../protocol-ref/identity.md#identity-publickeys) that signed the state transition |
-| signature | array | Signature of state transition data (65 or 96 bytes) |
+## Document State Transition Details
 
-Each batch state transition must comply with this JSON-Schema definition established in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/schema/document/v0/stateTransition/documentsBatch.json):
-
-```json
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "type": "object",
-  "properties": {
-    "protocolVersion": {
-      "type": "integer",
-      "$comment": "Maximum is the latest protocol version"
-    },
-    "type": {
-      "type": "integer",
-      "const": 1
-    },
-    "ownerId": {
-      "type": "array",
-      "byteArray": true,
-      "minItems": 32,
-      "maxItems": 32,
-      "contentMediaType": "application/x.dash.dpp.identifier"
-    },
-    "transitions": {
-      "type": "array",
-      "items": {
-        "type": "object"
-      },
-      "minItems": 1,
-      "maxItems": 10
-    },
-    "signaturePublicKeyId": {
-      "type": "integer",
-      "minimum": 0
-    },
-    "signature": {
-      "type": "array",
-      "byteArray": true,
-      "minItems": 65,
-      "maxItems": 96
-    }
-  },
-  "additionalProperties": false,
-  "required": [
-    "protocolVersion",
-    "type",
-    "ownerId",
-    "transitions",
-    "signaturePublicKeyId",
-    "signature"
-  ]
-}
-```
+All document transitions include the [document base transition fields](#document-base-transition). Some document transitions (.e.g., [document create](#document-create-transition)) require additional fields to provide their functionality.
 
 ### Document Base Transition
 
-All document transitions in a batch state transition are built on the base schema and include the following fields:
+The following fields are included in all document transitions:
 
-| Field | Type | Description|
-| - | - | - |
-| $id | array | The [document ID](#document-id) (32 bytes)|
-| $type | string | Name of a document type found in the data contract associated with the `dataContractId` (1-64 characters) |
-| $action | array of integers | [Action](#document-transition-action) the platform should take for the associated document |
-| $dataContractId | array | Data contract ID [generated](../protocol-ref/data-contract.md#data-contract-id) from the data contract's `ownerId` and `entropy` (32 bytes) |
+| Field | Type | Size | Description|
+| ----- | ---- | ---- | ---------- |
+| $id | array | 32 bytes | The [document ID](#document-id) |
+| $identityContractNonce | unsigned integer | 64 bits  | Identity contract nonce |
+| $type | string | 1-64 characters | Name of a document type found in the data contract associated with the `dataContractId`|
+| $dataContractId | array | 32 bytes | Data contract ID [generated](../protocol-ref/data-contract.md#data-contract-id) from the data contract's `ownerId` and `entropy` |
 
-Each document transition must comply with the document transition [base schema](https://github.com/dashpay/platform/blob/v1.8.0/packages/rs-dpp/src/schema/document/v0/stateTransition/documentTransition/base.json):
-
-```json
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "type": "object",
-  "properties": {
-    "$id": {
-      "type": "array",
-      "byteArray": true,
-      "minItems": 32,
-      "maxItems": 32,
-      "contentMediaType": "application/x.dash.dpp.identifier"
-    },
-    "$type": {
-      "type": "string"
-    },
-    "$action": {
-      "type": "integer",
-      "enum": [0, 1, 3]
-    },
-    "$dataContractId": {
-      "type": "array",
-      "byteArray": true,
-      "minItems": 32,
-      "maxItems": 32,
-      "contentMediaType": "application/x.dash.dpp.identifier"
-    }
-  },
-  "required": [
-    "$id",
-    "$type",
-    "$action",
-    "$dataContractId"
-  ],
-  "additionalProperties": false
-}
-```
+Each document transition must comply with the [document base transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_base_transition/v0/mod.rs#L43-L61).
 
 #### Document id
 
