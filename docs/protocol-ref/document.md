@@ -184,29 +184,7 @@ The following example document create transition and subsequent table demonstrat
 
 ### Document Delete Transition
 
-The document delete transition only requires the fields found in the [base document transition](#document-base-transition).
-
-### Example Document Batch State Transition
-
-```json
-{
-  "protocolVersion": 1,
-  "type": 1,
-  "signature": "ICu/H7MoqxNUzznP9P2aTVEo91VVy0T8M3QWCH/7dg2UVokG98TbD4DQB4E8SD4GzHoRrBMycJ75SbT2AaF9hFc=",
-  "signaturePublicKeyId": 0,
-  "ownerId": "4ZJsE1Yg8AosmC4hAeo3GJgso4N9pCoa6eCTDeXsvdhn",
-  "transitions": [
-    {
-      "$id": "8jm8iHsYE6ENENvFVeFVFMCwfgEqo5P1iR2q4KAYgpbS",
-      "$type": "note",
-      "$action": 1,
-      "$dataContractId": "AnmBaYH13RyiuvBkBD6qkdc36H5DKt6ToMrkqgUnnywz",
-      "message": "Updated document @ Mon, 26 Oct 2020 14:58:31 GMT",
-      "$revision": 2
-    }
-  ]
-}
-```
+The document delete transition only requires the fields found in the [base document transition](#document-base-transition). See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_delete_transition/v0/mod.rs#L21-L24) for details.
 
 ## Document Object
 
