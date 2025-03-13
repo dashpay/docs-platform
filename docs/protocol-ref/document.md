@@ -60,8 +60,8 @@ Document transition actions indicate what operation platform should perform with
 | 1 | [Replace](#document-replace-transition) | Replace an existing document with the provided data |
 | 2 | [Delete](#document-delete-transition) | Delete the referenced document |
 | 3 | [Transfer](#document-transfer-transition) | Transfer the referenced document to a new owner |
-| 4 | Purchase | Purchase the referenced document |
-| 5 | Update price | Update the price for the document |
+| 4 | [Purchase](#document-purchase-transition) | Purchase the referenced document |
+| 5 | [Update price](#document-update-price-transition) | Update the price for the document |
 
 ### Document Create Transition
 
@@ -144,14 +144,36 @@ The document delete transition only requires the fields found in the [base docum
 
 ### Document Transfer Transition
 
-The document transfer transition extends the [base transition](#document-base-transition) to include the following additional fields:
+The document transfer transition allows a document owner to transfer document ownership directly to another identity without making it available for purchase. This transition extends the [base transition](#document-base-transition) to include the following additional fields:
 
 | Field | Type | Size | Description |
 | - | - | - | - |
 | $revision | unsigned integer | 64 bits | Document revision (=> 1) |
-| recipientOwnerId | array of bytes | 32 bytes | Identifier of the recipient owner |
+| recipientOwnerId | array of bytes | 32 bytes | Identifier of the recipient (new owner). See the [NFT page](../explanations/nft.md#transfer-and-trade) for more details. |
 
 Each document transfer transition must comply with the structure defined in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_transfer_transition/v0/mod.rs#L33-L46) (in addition to the [document base transition](#document-base-transition) that is required for all document transitions).
+
+### Document Purchase Transition
+
+The document purchase transition allows an identity to purchase a document previously made available for sale by the current document owner. This transition extends the [document base transition](#document-base-transition) to include the following additional fields:
+
+| Field | Type | Size | Description |
+| - | - | - | - |
+| $revision | unsigned integer | 64 bits | Document revision (=> 1) |
+| price | unsigned integer | 64 bits | Number of credits being offered for the purchase. See the [NFT page](../explanations/nft.md#transfer-and-trade) for more details. |
+
+Each document purchase transition must comply with the structure defined in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_purchase_transition/v0/mod.rs#L23-L33) (in addition to the [document base transition](#document-base-transition) that is required for all document transitions).
+
+### Document Update Price Transition
+
+The document update price transition allows a document owner to set or update the minimum price they will accept in exchange for transferring document ownership to another party. This transition extends the [document base transition](#document-base-transition) to include the following additional fields:
+
+| Field | Type | Size | Description |
+| - | - | - | - |
+| $revision | unsigned integer | 64 bits | Document revision (=> 1) |
+| $price | unsigned integer | 64 bits | Updated price for the document. Can only be set by the current document owner. See the [NFT page](../explanations/nft.md#transfer-and-trade) for more details. |
+
+Each document update price transition must comply with the structure defined in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_update_price_transition/v0/mod.rs#L27-L40) (in addition to the [document base transition](#document-base-transition) that is required for all document transitions).
 
 ## Document Object
 
