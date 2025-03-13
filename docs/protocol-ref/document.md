@@ -18,8 +18,8 @@ The following fields are included in all document transitions:
 
 | Field | Type | Size | Description|
 | ----- | ---- | ---- | ---------- |
-| $id | array | 32 bytes | The [document ID](#document-id) |
-| $action | array of integers | Varies | [Action](#document-transition-action) the platform should take for the associated document |
+| [$id](#document-id) | array | 32 bytes | The [document ID](#document-id) |
+| [$action](#document-transition-action) | array of integers | Varies | [Action](#document-transition-action) the platform should take for the associated document |
 | $identityContractNonce | unsigned integer | 64 bits  | Identity contract nonce |
 | $type | string | 1-64 characters | Name of a document type found in the data contract associated with the `dataContractId`|
 | $dataContractId | array | 32 bytes | Data contract ID [generated](../protocol-ref/data-contract.md#data-contract-id) from the data contract's `ownerId` and `entropy` |
@@ -56,9 +56,9 @@ Document transition actions indicate what operation platform should perform with
 
 | Action | Name | Description |
 | :-: | - | - |
-| 0 | Create | Create a new document with the provided data |
-| 1 | Replace | Replace an existing document with the provided data |
-| 2 | Delete | Delete the referenced document |
+| 0 | [Create](#document-create-transition) | Create a new document with the provided data |
+| 1 | [Replace](#document-replace-transition) | Replace an existing document with the provided data |
+| 2 | [Delete](#document-delete-transition) | Delete the referenced document |
 | 3 | Transfer | Transfer the referenced document to a new owner |
 | 4 | Purchase | Purchase the referenced document |
 | 5 | Update price | Update the price for the document |
