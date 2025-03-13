@@ -136,7 +136,7 @@ See the implementation in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0
 | --------------- | -------------- | ---- | ----------- |
 | proTxHash       | array of bytes | 32 bytes | An identifier based on a masternode or evonode's [provider registration transaction](inv:user:std#ref-txs-proregtx) hash |
 | voterIdentityId | array of bytes | 32 bytes | The voter's [Identity ID](../protocol-ref/identity.md#identity-id). This will be a masternode identity based on the protx hash. |
-| vote | [Vote](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/voting/votes/mod.rs#L20-L22) | Varies | Vote information
+| vote | [Vote](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/voting/votes/mod.rs#L20-L22) | Varies | Vote information |
 | nonce           | unsigned integer | 64 bits | Identity nonce for this transition to prevent replay attacks |
 
 See the implementation in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/masternode_vote_transition/v0/mod.rs#L40-L50).
