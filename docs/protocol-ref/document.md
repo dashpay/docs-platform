@@ -59,7 +59,7 @@ Document transition actions indicate what operation platform should perform with
 | 0 | [Create](#document-create-transition) | Create a new document with the provided data |
 | 1 | [Replace](#document-replace-transition) | Replace an existing document with the provided data |
 | 2 | [Delete](#document-delete-transition) | Delete the referenced document |
-| 3 | Transfer | Transfer the referenced document to a new owner |
+| 3 | [Transfer](#document-transfer-transition) | Transfer the referenced document to a new owner |
 | 4 | Purchase | Purchase the referenced document |
 | 5 | Update price | Update the price for the document |
 
@@ -103,7 +103,7 @@ The following example document create transition and subsequent table demonstrat
 
 ### Document Replace Transition
 
-The document replace transition extends the transition base to include the following additional fields:
+The document replace transition extends the [base transition](#document-base-transition) to include the following additional fields:
 
 | Field | Type | Size | Description |
 | - | - | - | - |
@@ -141,6 +141,17 @@ The following example document create transition and subsequent table demonstrat
 ### Document Delete Transition
 
 The document delete transition only requires the fields found in the [base document transition](#document-base-transition). See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_delete_transition/v0/mod.rs#L21-L24) for details.
+
+### Document Transfer Transition
+
+The document transfer transition extends the [base transition](#document-base-transition) to include the following additional fields:
+
+| Field | Type | Size | Description |
+| - | - | - | - |
+| $revision | unsigned integer | 64 bits | Document revision (=> 1) |
+| recipientOwnerId | array of bytes | 32 bytes | Identifier of the recipient owner |
+
+Each document transfer transition must comply with the structure defined in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_transfer_transition/v0/mod.rs#L33-L46) (in addition to the [document base transition](#document-base-transition) that is required for all document transitions).
 
 ## Document Object
 
