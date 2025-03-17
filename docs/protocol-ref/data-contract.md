@@ -735,4 +735,5 @@ Data contract state transitions must be signed by a private key associated with 
 :hidden:
 
 data-contract-document
+data-contract-token
 ```
