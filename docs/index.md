@@ -161,6 +161,7 @@ protocol-ref/identity
 protocol-ref/data-contract
 protocol-ref/state-transition
 protocol-ref/document
+protocol-ref/token
 protocol-ref/data-trigger
 protocol-ref/errors
 ```
