@@ -73,114 +73,68 @@ The token transfer transition extends the [base transition](#token-base-transiti
 
 Each token transfer transition must comply with the [token transfer transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_transfer_transition/v0/mod.rs#L30-L61).
 
-### Token Claim Transition
-
-https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_claim_transition/v0/mod.rs#L18-L26
-
-```rs
-pub struct TokenClaimTransitionV0 {
-    /// Document Base Transition
-    #[cfg_attr(feature = "state-transition-serde-conversion", serde(flatten))]
-    pub base: TokenBaseTransition,
-    /// The type of distribution we are targeting
-    pub distribution_type: TokenDistributionType,
-    /// A public note, this will only get saved to the state if we are using a historical contract
-    pub public_note: Option<String>,
-}
-```
-
-### Token Config Update Transition
-
-https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_config_update_transition/v0/mod.rs#L19-L27
-
-```rs
-pub struct TokenConfigUpdateTransitionV0 {
-    /// Document Base Transition
-    #[cfg_attr(feature = "state-transition-serde-conversion", serde(flatten))]
-    pub base: TokenBaseTransition,
-    /// Updated token configuration item
-    pub update_token_configuration_item: TokenConfigurationChangeItem,
-    /// The public note
-    pub public_note: Option<String>,
-}
-```
-
-### Token Destroy Frozen Funds Transition
-
-https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_destroy_frozen_funds_transition/v0/mod.rs#L17-L25
-
-```rs
-pub struct TokenDestroyFrozenFundsTransitionV0 {
-    /// Document Base Transition
-    #[cfg_attr(feature = "state-transition-serde-conversion", serde(flatten))]
-    pub base: TokenBaseTransition,
-    /// The identity id of the account whose balance should be destroyed
-    pub frozen_identity_id: Identifier,
-    /// The public note
-    pub public_note: Option<String>,
-}
-```
-
-### Token Emergency Action Transition
-
-https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_emergency_action_transition/v0/mod.rs#L16-L24
-
-```rs
-pub struct TokenEmergencyActionTransitionV0 {
-    /// Document Base Transition
-    #[cfg_attr(feature = "state-transition-serde-conversion", serde(flatten))]
-    pub base: TokenBaseTransition,
-    /// The emergency action
-    pub emergency_action: TokenEmergencyAction,
-    /// The public note
-    pub public_note: Option<String>,
-}
-```
-
 ### Token Freeze Transition
 
-https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_freeze_transition/v0/mod.rs#L19-L35
+The token freeze transition extends the [base transition](#token-base-transition) to include the following additional fields:
 
-```rs
-pub struct TokenFreezeTransitionV0 {
-    /// Document Base Transition
-    #[cfg_attr(feature = "state-transition-serde-conversion", serde(flatten))]
-    pub base: TokenBaseTransition,
-    /// The identity that we are freezing
-    #[cfg_attr(
-        feature = "state-transition-serde-conversion",
-        serde(rename = "frozenIdentityId")
-    )]
-    pub identity_to_freeze_id: Identifier,
-    /// The public note
-    #[cfg_attr(
-        feature = "state-transition-serde-conversion",
-        serde(rename = "publicNote")
-    )]
-    pub public_note: Option<String>,
-}
-```
+| Field | Type | Size | Description |
+| ----- | ---- | ---- | ----------- |
+| frozenIdentityId | array | 32 bytes | Identity ID of the account to be frozen |
+| publicNote | string | Varies | Optional public note |
+
+Each token freeze transition must comply with the [token freeze transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_freeze_transition/v0/mod.rs#L19-L35).
 
 ### Token Unfreeze Transition
 
-https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_unfreeze_transition/v0/mod.rs#L19-L35
+The token unfreeze transition extends the [base transition](#token-base-transition) to include the following additional fields:
 
-```rs
-pub struct TokenUnfreezeTransitionV0 {
-    /// Document Base Transition
-    #[cfg_attr(feature = "state-transition-serde-conversion", serde(flatten))]
-    pub base: TokenBaseTransition,
-    /// The identity that we are freezing
-    #[cfg_attr(
-        feature = "state-transition-serde-conversion",
-        serde(rename = "frozenIdentityId")
-    )]
-    pub frozen_identity_id: Identifier,
-    /// The public note
-    #[cfg_attr(
-        feature = "state-transition-serde-conversion",
-        serde(rename = "publicNote")
-    )]
-    pub public_note: Option<String>,
-}
-```
+| Field | Type | Size | Description |
+| ----- | ---- | ---- | ----------- |
+| frozenIdentityId | array | 32 bytes | Identity ID of the account to be unfrozen |
+| publicNote | string | Varies | Optional public note |
+
+Each token unfreeze transition must comply with the [token unfreeze transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_unfreeze_transition/v0/mod.rs#L19-L35).
+
+### Token Destroy Frozen Funds Transition
+
+The token destroy frozen funds transition extends the [base transition](#token-base-transition) to include the following additional fields:
+
+| Field | Type | Size | Description |
+| ----- | ---- | ---- | ----------- |
+| frozenIdentityId | array | 32 bytes | Identity ID of the account whose frozen balance should be destroyed |
+| publicNote | string | Varies | Optional public note |
+
+Each token destroy frozen funds transition must comply with the [token destroy frozen funds transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_destroy_frozen_funds_transition/v0/mod.rs#L17-L25).
+
+### Token Claim Transition
+
+The token claim transition extends the [base transition](#token-base-transition) to include the following additional fields:
+
+| Field | Type | Size | Description |
+| ----- | ---- | ---- | ----------- |
+| distributionType | [TokenDistributionType enum](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/associated_token/token_distribution_key.rs#L18-L25) | Varies | Type of [token distribution](../explanations/tokens.md#distribution-rules) targeted |
+| publicNote | string | Varies | Optional public note (only saved for historical contracts) |
+
+Each token claim transition must comply with the [token claim transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_claim_transition/v0/mod.rs#L18-L26).
+
+### Token Emergency Action Transition
+
+The token emergency action transition extends the [base transition](#token-base-transition) to include the following additional fields:
+
+| Field | Type | Size | Description |
+| ----- | ---- | ---- | ----------- |
+| emergencyAction | [TokenEmergencyAction enum](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/tokens/emergency_action.rs#L14-L18) | Varies | The emergency action to be executed |
+| publicNote | string | Varies | Optional public note |
+
+Each token emergency action transition must comply with the [token emergency action transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_emergency_action_transition/v0/mod.rs#L16-L24).
+
+### Token Config Update Transition
+
+The token config update transition extends the [base transition](#token-base-transition) to include the following additional fields:
+
+| Field | Type | Size | Description |
+| ----- | ---- | ---- | ----------- |
+| updateTokenConfigurationItem | [TokenConfigurationChangeItem object](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/associated_token/token_configuration_item.rs#L32-L63) | Varies | Updated token configuration item |
+| publicNote | string | Varies | Optional public note |
+
+Each token configuration update transition must comply with the [token config update transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_config_update_transition/v0/mod.rs#L19-L27).
