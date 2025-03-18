@@ -38,27 +38,40 @@ The token transition actions [defined in rs-dpp](https://github.com/dashpay/plat
 
 ### Token Burn Transition
 
-https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_burn_transition/v0/mod.rs#L22-L38
+The token burn transition extends the [base transition](#token-base-transition) to include the following additional fields:
 
-```rs
-pub struct TokenBurnTransitionV0 {
-    /// Document Base Transition
-    #[cfg_attr(feature = "state-transition-serde-conversion", serde(flatten))]
-    pub base: TokenBaseTransition,
-    #[cfg_attr(
-        feature = "state-transition-serde-conversion",
-        serde(rename = "burnAmount")
-    )]
-    /// How much should we burn
-    pub burn_amount: u64,
-    /// The public note
-    #[cfg_attr(
-        feature = "state-transition-serde-conversion",
-        serde(rename = "publicNote")
-    )]
-    pub public_note: Option<String>,
-}
-```
+| Field | Type | Size | Description |
+| ----- | ---- | ---- | ----------- |
+| burnAmount | unsigned integer | 64 bits | Amount of tokens to be burned |
+| publicNote | string | Varies | Optional public note |
+
+Each token burn transition must comply with the [token burn transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_burn_transition/v0/mod.rs#L22-L38).
+
+### Token Mint Transition
+
+The token mint transition extends the [base transition](#token-base-transition) to include the following additional fields:
+
+| Field | Type | Size | Description |
+| ----- | ---- | ---- | ----------- |
+| issuedToIdentityId | array | 32 bytes | Optional identity ID receiving the minted tokens. If this is not set then we issue to the identity set in contract settings. |
+| amount | unsigned integer | 64 bits | Amount of tokens to mint |
+| publicNote | string | Varies | Optional public note |
+
+Each token mint transition must comply with the [token mint transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_mint_transition/v0/mod.rs#L23-L43).
+
+### Token Transfer Transition
+
+The token transfer transition extends the [base transition](#token-base-transition) to include the following additional fields:
+
+| Field | Type | Size | Description |
+| ----- | ---- | ---- | ----------- |
+| amount | unsigned integer | 64 bits | Number of tokens to transfer |
+| recipientId | array | 32 bytes | Identity ID of the recipient |
+| publicNote | string | Varies | Optional public note |
+| sharedEncryptedNote | [SharedEncryptedNote object](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/tokens/mod.rs#L15) | Varies | Optional shared encrypted note |
+| privateEncryptedNote | [PrivateEncryptedNote object](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/tokens/mod.rs#L16-L20) | Varies | Optional private encrypted note |
+
+Each token transfer transition must comply with the [token transfer transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_transfer_transition/v0/mod.rs#L30-L61).
 
 ### Token Claim Transition
 
@@ -145,73 +158,6 @@ pub struct TokenFreezeTransitionV0 {
         serde(rename = "publicNote")
     )]
     pub public_note: Option<String>,
-}
-```
-
-### Token Mint Transition
-
-https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_mint_transition/v0/mod.rs#L23-L43
-
-```rs
-pub struct TokenMintTransitionV0 {
-    /// Document Base Transition
-    #[cfg_attr(feature = "state-transition-serde-conversion", serde(flatten))]
-    pub base: TokenBaseTransition,
-    #[cfg_attr(
-        feature = "state-transition-serde-conversion",
-        serde(rename = "issuedToIdentityId")
-    )]
-    /// Who should we issue the token to? If this is not set then we issue to the identity set in
-    /// contract settings. If such an operation is allowed.
-    pub issued_to_identity_id: Option<Identifier>,
-
-    /// How much should we issue
-    pub amount: u64,
-    /// The public note
-    #[cfg_attr(
-        feature = "state-transition-serde-conversion",
-        serde(rename = "publicNote")
-    )]
-    pub public_note: Option<String>,
-}
-```
-
-### Token Transfer Transition
-
-https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_transfer_transition/v0/mod.rs#L30-L61
-
-```rs
-pub struct TokenTransferTransitionV0 {
-    #[cfg_attr(feature = "state-transition-serde-conversion", serde(flatten))]
-    pub base: TokenBaseTransition,
-    #[cfg_attr(
-        feature = "state-transition-serde-conversion",
-        serde(rename = "$amount")
-    )]
-    pub amount: u64,
-    #[cfg_attr(
-        feature = "state-transition-serde-conversion",
-        serde(rename = "recipientId")
-    )]
-    pub recipient_id: Identifier,
-    /// The public note
-    #[cfg_attr(
-        feature = "state-transition-serde-conversion",
-        serde(rename = "publicNote")
-    )]
-    pub public_note: Option<String>,
-    /// An optional shared encrypted note
-    #[cfg_attr(
-        feature = "state-transition-serde-conversion",
-        serde(rename = "sharedEncryptedNote")
-    )]
-    pub shared_encrypted_note: Option<SharedEncryptedNote>,
-    /// An optional private encrypted note
-    #[cfg_attr(
-        feature = "state-transition-serde-conversion",
-        serde(rename = "privateEncryptedNote")
-    )]
-    pub private_encrypted_note: Option<PrivateEncryptedNote>,
 }
 ```
 
