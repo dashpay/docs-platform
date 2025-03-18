@@ -20,6 +20,22 @@ The following fields are included in all token transitions:
 
 Each token transition must comply with the [token base transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_base_transition/v0/mod.rs#L45-L72).
 
+#### Token Transition Action
+
+The token transition actions [defined in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_transition_action_type.rs#L7-L17) indicate what operation platform should perform with the provided transition data.
+
+| Action | Name | Description |
+| :-: | - | - |
+| 0 | [Burn](#token-burn-transition) | Permanently remove a specified amount of tokens from circulation |
+| 1 | [Mint](#token-mint-transition) | Create new tokens |
+| 2 | [Transfer](#token-transfer-transition) | Send tokens from one identity to another |
+| 3 | [Freeze](#token-freeze-transition) | Restrict an identity’s ability to transfer or use tokens |
+| 4 | [Unfreeze](#token-unfreeze-transition) | Lift a freeze restriction on an identity's tokens |
+| 5 | [Destroy Frozen Funds](#token-destroy-frozen-funds-transition) | Remove frozen tokens from an identity's balance |
+| 6 | [Claim](#token-claim-transition) | Retrieve tokens based on a specified distribution method |
+| 7 | [Emergency Action](#token-emergency-action-transition) | Execute an emergency protocol affecting tokens |
+| 8 | [Config Update](#token-config-update-transition) | Modify the configuration settings of a token |
+
 ### Token Burn Transition
 
 https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_burn_transition/v0/mod.rs#L22-L38
