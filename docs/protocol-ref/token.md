@@ -8,38 +8,17 @@ All token transitions include the [token base transition fields](#token-base-tra
 
 ### Token Base Transition
 
-https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_base_transition/v0/mod.rs#L45-L72
+The following fields are included in all token transitions:
 
-```rs
-pub struct TokenBaseTransitionV0 {
-    #[cfg_attr(
-        feature = "state-transition-serde-conversion",
-        serde(rename = "$identity-contract-nonce")
-    )]
-    pub identity_contract_nonce: IdentityNonce,
-    /// ID of the token within the contract
-    #[cfg_attr(
-        feature = "state-transition-serde-conversion",
-        serde(rename = "$tokenContractPosition")
-    )]
-    pub token_contract_position: u16,
-    /// Data contract ID generated from the data contract's `owner_id` and `entropy`
-    #[cfg_attr(
-        feature = "state-transition-serde-conversion",
-        serde(rename = "$dataContractId")
-    )]
-    pub data_contract_id: Identifier,
-    /// Token ID generated from the data contract ID and the token position
-    #[cfg_attr(
-        feature = "state-transition-serde-conversion",
-        serde(rename = "$tokenId")
-    )]
-    pub token_id: Identifier,
-    /// Using group multi party rules for authentication
-    #[cfg_attr(feature = "state-transition-serde-conversion", serde(flatten))]
-    pub using_group_info: Option<GroupStateTransitionInfo>,
-}
-```
+| Field | Type | Size | Description |
+| ----- | ---- | ---- | ----------- |
+| $identityContractNonce | unsigned integer | 64 bits | Identity contract nonce |
+| $tokenContractPosition | unsigned integer | 16 bits | Position of the token within the contract |
+| $dataContractId | array | 32 bytes | Data contract ID [generated](../protocol-ref/data-contract.md#data-contract-id) from the data contract's `ownerId` and `entropy` |
+| $tokenId | array | 32 bytes | Token ID generated from the data contract ID and the token position |
+| usingGroupInfo | [GroupStateTransitionInfo object](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/group/mod.rs#L42-L59) | Varies | Optional field indicating group multi-party authentication rules |
+
+Each token transition must comply with the [token base transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_base_transition/v0/mod.rs#L45-L72).
 
 ### Token Burn Transition
 
