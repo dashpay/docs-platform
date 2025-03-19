@@ -15,10 +15,25 @@ The following fields are included in all token transitions:
 | $identityContractNonce | unsigned integer | 64 bits | Identity contract nonce |
 | $tokenContractPosition | unsigned integer | 16 bits | Position of the token within the contract |
 | $dataContractId | array | 32 bytes | Data contract ID [generated](../protocol-ref/data-contract.md#data-contract-id) from the data contract's `ownerId` and `entropy` |
-| $tokenId | array | 32 bytes | Token ID generated from the data contract ID and the token position |
+| [$tokenId](#token-id) | array | 32 bytes | Token ID generated from the data contract ID and the token position |
 | usingGroupInfo | [GroupStateTransitionInfo object](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/group/mod.rs#L42-L59) | Varies | Optional field indicating group multi-party authentication rules |
 
 Each token transition must comply with the [token base transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_base_transition/v0/mod.rs#L45-L72).
+
+#### Token id
+
+The `$tokenId` is created by double sha256 hashing the token `$dataContractId` and `$tokenContractPosition` with a byte vector of the string "dash_token" as shown in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/tokens/mod.rs#L22-L27).
+
+```rust
+// From the Rust reference implementation (rs-dpp)
+// tokens/mod.rs
+pub fn calculate_token_id(contract_id: &[u8; 32], token_pos: TokenContractPosition) -> [u8; 32] {
+    let mut bytes = b"dash_token".to_vec();
+    bytes.extend_from_slice(contract_id);
+    bytes.extend_from_slice(&token_pos.to_be_bytes());
+    hash_double(bytes)
+}
+```
 
 #### Token Transition Action
 
@@ -36,14 +51,18 @@ The token transition actions [defined in rs-dpp](https://github.com/dashpay/plat
 | 7 | [Emergency Action](#token-emergency-action-transition) | Execute an emergency protocol affecting tokens |
 | 8 | [Config Update](#token-config-update-transition) | Modify the configuration settings of a token |
 
+### Token Notes
+
+Some token transitions include optional notes fields. The maximum note length for these fields is [2048 characters](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/tokens/mod.rs#L14).
+
 ### Token Burn Transition
 
 The token burn transition extends the [base transition](#token-base-transition) to include the following additional fields:
 
 | Field | Type | Size | Description |
 | ----- | ---- | ---- | ----------- |
-| burnAmount | unsigned integer | 64 bits | Amount of tokens to be burned |
-| publicNote | string | Varies | Optional public note |
+| burnAmount | unsigned integer | 64 bits | Number of tokens to be burned |
+| publicNote | string | [<= 2048 characters](#token-notes) | Optional public note |
 
 Each token burn transition must comply with the [token burn transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_burn_transition/v0/mod.rs#L22-L38).
 
@@ -54,8 +73,8 @@ The token mint transition extends the [base transition](#token-base-transition) 
 | Field | Type | Size | Description |
 | ----- | ---- | ---- | ----------- |
 | issuedToIdentityId | array | 32 bytes | Optional identity ID receiving the minted tokens. If this is not set then we issue to the identity set in contract settings. |
-| amount | unsigned integer | 64 bits | Amount of tokens to mint |
-| publicNote | string | Varies | Optional public note |
+| amount | unsigned integer | 64 bits | Number of tokens to mint |
+| publicNote | string | [<= 2048 characters](#token-notes) | Optional public note |
 
 Each token mint transition must comply with the [token mint transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_mint_transition/v0/mod.rs#L23-L43).
 
@@ -67,9 +86,9 @@ The token transfer transition extends the [base transition](#token-base-transiti
 | ----- | ---- | ---- | ----------- |
 | amount | unsigned integer | 64 bits | Number of tokens to transfer |
 | recipientId | array | 32 bytes | Identity ID of the recipient |
-| publicNote | string | Varies | Optional public note |
-| sharedEncryptedNote | [SharedEncryptedNote object](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/tokens/mod.rs#L15) | Varies | Optional shared encrypted note |
-| privateEncryptedNote | [PrivateEncryptedNote object](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/tokens/mod.rs#L16-L20) | Varies | Optional private encrypted note |
+| publicNote | string | [<= 2048 characters](#token-notes) | Optional public note |
+| sharedEncryptedNote | [SharedEncryptedNote object](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/tokens/mod.rs#L15) | [<= 2048 characters](#token-notes) | Optional shared encrypted note |
+| privateEncryptedNote | [PrivateEncryptedNote object](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/tokens/mod.rs#L16-L20) | [<= 2048 characters](#token-notes) | Optional private encrypted note |
 
 Each token transfer transition must comply with the [token transfer transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_transfer_transition/v0/mod.rs#L30-L61).
 
@@ -80,7 +99,7 @@ The token freeze transition extends the [base transition](#token-base-transition
 | Field | Type | Size | Description |
 | ----- | ---- | ---- | ----------- |
 | frozenIdentityId | array | 32 bytes | Identity ID of the account to be frozen |
-| publicNote | string | Varies | Optional public note |
+| publicNote | string | [<= 2048 characters](#token-notes) | Optional public note |
 
 Each token freeze transition must comply with the [token freeze transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_freeze_transition/v0/mod.rs#L19-L35).
 
@@ -91,7 +110,7 @@ The token unfreeze transition extends the [base transition](#token-base-transiti
 | Field | Type | Size | Description |
 | ----- | ---- | ---- | ----------- |
 | frozenIdentityId | array | 32 bytes | Identity ID of the account to be unfrozen |
-| publicNote | string | Varies | Optional public note |
+| publicNote | string | [<= 2048 characters](#token-notes) | Optional public note |
 
 Each token unfreeze transition must comply with the [token unfreeze transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_unfreeze_transition/v0/mod.rs#L19-L35).
 
@@ -102,7 +121,7 @@ The token destroy frozen funds transition extends the [base transition](#token-b
 | Field | Type | Size | Description |
 | ----- | ---- | ---- | ----------- |
 | frozenIdentityId | array | 32 bytes | Identity ID of the account whose frozen balance should be destroyed |
-| publicNote | string | Varies | Optional public note |
+| publicNote | string | [<= 2048 characters](#token-notes) | Optional public note |
 
 Each token destroy frozen funds transition must comply with the [token destroy frozen funds transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_destroy_frozen_funds_transition/v0/mod.rs#L17-L25).
 
@@ -113,7 +132,7 @@ The token claim transition extends the [base transition](#token-base-transition)
 | Field | Type | Size | Description |
 | ----- | ---- | ---- | ----------- |
 | distributionType | [TokenDistributionType enum](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/associated_token/token_distribution_key.rs#L18-L25) | Varies | Type of [token distribution](../explanations/tokens.md#distribution-rules) targeted |
-| publicNote | string | Varies | Optional public note (only saved for historical contracts) |
+| publicNote | string | [<= 2048 characters](#token-notes) | Optional public note (only saved for historical contracts) |
 
 Each token claim transition must comply with the [token claim transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_claim_transition/v0/mod.rs#L18-L26).
 
@@ -124,7 +143,7 @@ The token emergency action transition extends the [base transition](#token-base-
 | Field | Type | Size | Description |
 | ----- | ---- | ---- | ----------- |
 | emergencyAction | [TokenEmergencyAction enum](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/tokens/emergency_action.rs#L14-L18) | Varies | The emergency action to be executed |
-| publicNote | string | Varies | Optional public note |
+| publicNote | string | [<= 2048 characters](#token-notes) | Optional public note |
 
 Each token emergency action transition must comply with the [token emergency action transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_emergency_action_transition/v0/mod.rs#L16-L24).
 
@@ -135,6 +154,6 @@ The token config update transition extends the [base transition](#token-base-tra
 | Field | Type | Size | Description |
 | ----- | ---- | ---- | ----------- |
 | updateTokenConfigurationItem | [TokenConfigurationChangeItem object](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/associated_token/token_configuration_item.rs#L32-L63) | Varies | Updated token configuration item |
-| publicNote | string | Varies | Optional public note |
+| publicNote | string | [<= 2048 characters](#token-notes) | Optional public note |
 
 Each token configuration update transition must comply with the [token config update transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_config_update_transition/v0/mod.rs#L19-L27).
