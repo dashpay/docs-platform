@@ -2,6 +2,8 @@
 
 ## Token Overview
 
+Dash Platform lets developers create and manage tokens (similar to ERC-20 style assets) without writing smart contracts. Tokens leverage [data contracts](./data-contract.md), [state transitions](./state-transition.md), and built-in access control (via data contract groups) to enable flexible token management.
+
 ## Token State Transition Details
 
 All token transitions include the [token base transition fields](#token-base-transition). Most token transitions (.e.g., [token mint](#token-mint-transition)) require additional fields to provide their functionality.
