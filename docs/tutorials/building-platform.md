@@ -112,3 +112,38 @@ cd platform/
 corepack enable
 yarn setup
 ```
+
+# Running Dash Platform
+
+Run the following command to start Platform. Occasionally, this command will fail on first run. If it fails, run the command again as needed. If the command consistently fails on the same step, further debugging may be required.
+
+``` shell
+yarn start
+```
+
+## Check endpoint availability
+
+Endpoints can be checked using [gRPCurl](https://github.com/fullstorydev/grpcurl). Install it by running:
+
+``` shell
+wget https://github.com/fullstorydev/grpcurl/releases/download/v1.9.3/grpcurl_1.9.3_linux_amd64.deb
+sudo apt install ./grpcurl_1.9.3_linux_amd64.deb
+```
+
+Core endpoint:
+
+``` shell
+grpcurl -insecure -proto packages/dapi-grpc/protos/core/v0/core.proto   127.0.0.1:2443   org.dash.platform.dapi.v0.Core/getBestBlockHeight
+```
+
+Platform endpoint:
+
+``` shell
+grpcurl -insecure -proto packages/dapi-grpc/protos/platform/v0/platform.proto   -d '{ "v0": {}  }'   127.0.0.1:2443   org.dash.platform.dapi.v0.Platform/getStatus
+```
+
+## Stopping Dash Platform
+
+``` shell
+yarn stop
+```
