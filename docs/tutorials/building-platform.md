@@ -8,7 +8,13 @@ The following instructions explain how to prepare Ubuntu to build Dash Platform.
 
 ## Install prerequisites
 
+:::{note}
+Building and running Dash Platform in a local development mode requires significant storage. A minimum of 30 GB is recommended.
+:::
+
 ### Linux packages
+
+Install these required build and utility packages:
 
 ``` shell
 sudo apt install -y build-essential libssl-dev pkg-config clang cmake llvm unzip jq
@@ -16,12 +22,21 @@ sudo apt install -y build-essential libssl-dev pkg-config clang cmake llvm unzip
 
 ### NodeJS
 
+Install the [Node Version Manager](https://github.com/nvm-sh/nvm) and use it to install NodeJS:
+
 ``` shell
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
-nvm install 20
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+nvm install 20.18
 ```
 
 ### Docker
+
+:::{warning}
+Only complete the following steps if you do not already have Docker installed. Otherwise, just make sure you have a version that meets the requirements in the [Platform repository README](https://github.com/dashpay/platform?tab=readme-ov-file#how-to-build-and-set-up-a-node-from-the-code-in-this-repo).
+:::
 
 ``` shell
 # Remove distribution-provided Docker
@@ -42,6 +57,8 @@ Execute the following script to install Rust. Use the default options during the
 
 ``` shell
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+. "$HOME/.cargo/env"
+rustup default 1.85.0
 ```
 
 ### Protocol buffers
@@ -54,7 +71,7 @@ sudo unzip protoc-*-linux-x86_64.zip -d /usr/local
 ### WASM CLI
 
 ``` shell
-cargo install wasm-bindgen-cli@0.2.99
+cargo install wasm-bindgen-cli@0.2.100
 ```
 
 ### Check versions
@@ -64,11 +81,14 @@ Run the following commands to see what version of each package is installed:
 ``` shell
 node --version
 docker --version
+docker compose version
 protoc --version
 rustc --version
 ```
 
 ## Build Platform
+
+Run the following commands to clone the repository, build it, and complete the initial setup:
 
 ``` shell
 git clone https://github.com/dashpay/platform.git
