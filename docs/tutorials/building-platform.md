@@ -86,6 +86,22 @@ protoc --version
 rustc --version
 ```
 
+## Configure firewall
+
+If you have the UFW firewall enabled, add rules to allow the required ports:
+
+``` shell
+# Core p2p ports
+sudo ufw allow 20001
+sudo ufw allow 20101
+sudo ufw allow 20201
+sudo ufw allow 20301
+# Platform (Tenderdash) ports
+sudo ufw allow 46656
+sudo ufw allow 46756
+sudo ufw allow 46856
+```
+
 ## Build Platform
 
 Run the following commands to clone the repository, build it, and complete the initial setup:
