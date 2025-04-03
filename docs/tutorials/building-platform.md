@@ -4,7 +4,7 @@
 
 # Building Dash Platform
 
-The following instructions explain how to prepare Ubuntu to build Dash Platform.
+The following instructions explain how to create and run a development build of Dash Platform on Ubuntu. The instructions have been tested on Ubuntu 22.04 and 24.04.
 
 ## Install prerequisites
 
@@ -51,6 +51,13 @@ sudo usermod -aG docker $USER
 newgrp docker
 ```
 
+### Protocol buffers
+
+``` shell
+wget https://github.com/protocolbuffers/protobuf/releases/download/v27.3/protoc-27.3-linux-x86_64.zip
+sudo unzip protoc-*-linux-x86_64.zip -d /usr/local
+```
+
 ### Rust
 
 Execute the following script to install Rust. Use the default options during the setup process.
@@ -59,13 +66,6 @@ Execute the following script to install Rust. Use the default options during the
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 . "$HOME/.cargo/env"
 rustup default 1.85.0
-```
-
-### Protocol buffers
-
-``` shell
-wget https://github.com/protocolbuffers/protobuf/releases/download/v27.3/protoc-27.3-linux-x86_64.zip
-sudo unzip protoc-*-linux-x86_64.zip -d /usr/local
 ```
 
 ### WASM CLI
@@ -100,6 +100,12 @@ sudo ufw allow 20301
 sudo ufw allow 46656
 sudo ufw allow 46756
 sudo ufw allow 46856
+```
+
+Reload UFW to apply the firewall changes:
+
+``` shell
+sudo ufw reload
 ```
 
 ## Build Platform
