@@ -133,13 +133,13 @@ sudo apt install ./grpcurl_1.9.3_linux_amd64.deb
 Core endpoint:
 
 ``` shell
-grpcurl -insecure -proto packages/dapi-grpc/protos/core/v0/core.proto   127.0.0.1:2443   org.dash.platform.dapi.v0.Core/getBestBlockHeight
+grpcurl -insecure -proto packages/dapi-grpc/protos/core/v0/core.proto 127.0.0.1:2443 org.dash.platform.dapi.v0.Core/getBestBlockHeight
 ```
 
 Platform endpoint:
 
 ``` shell
-grpcurl -insecure -proto packages/dapi-grpc/protos/platform/v0/platform.proto   -d '{ "v0": {}  }'   127.0.0.1:2443   org.dash.platform.dapi.v0.Platform/getStatus
+grpcurl -insecure -proto packages/dapi-grpc/protos/platform/v0/platform.proto -d '{ "v0": {} }' 127.0.0.1:2443 org.dash.platform.dapi.v0.Platform/getStatus
 ```
 
 ## Stopping Dash Platform
