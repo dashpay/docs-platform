@@ -110,11 +110,16 @@ sudo ufw reload
 
 ## Build Platform
 
-Run the following commands to clone the repository, build it, and complete the initial setup:
+Run the following command to clone the repository:
 
 ``` shell
 git clone https://github.com/dashpay/platform.git
 cd platform/
+```
+
+Next, build and complete the initial setup:
+
+``` shell
 corepack enable
 yarn setup
 ```
