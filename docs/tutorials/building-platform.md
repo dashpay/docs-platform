@@ -153,3 +153,20 @@ grpcurl -insecure -proto packages/dapi-grpc/protos/platform/v0/platform.proto -d
 ``` shell
 yarn stop
 ```
+
+# Executing tests
+
+Install Firefox and Chrome:
+
+``` shell
+sudo apt install firefox 
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+sudo apt update
+sudo apt install ./google-chrome-stable_current_amd64.deb
+```
+
+Run tests with the following command:
+
+``` shell
+yarn test
+```
