@@ -154,6 +154,12 @@ grpcurl -insecure -proto packages/dapi-grpc/protos/platform/v0/platform.proto -d
 yarn stop
 ```
 
+If the node is actively participating in a distributed key generation (DKG) session, it will not stop. To force it to stop, run:
+
+``` shell
+yarn stop --force
+```
+
 # Executing tests
 
 Install Firefox and Chrome:
@@ -169,4 +175,29 @@ Run tests with the following command:
 
 ``` shell
 yarn test
+```
+
+# Developer Utilities
+
+## Get Core RPC password
+
+To connect to the Dash Core RPC server (e.g., using the [Dash Evo Tool](inv:user:std#evo-tool)), get the Core RPC password for the `dashmate` user from the dashmate config:
+
+``` shell
+yarn dashmate config get core.rpc.users.dashmate --config=local_seed
+```
+
+## Remove broken build
+
+:::{warning}
+Only use these commands if you are certain your system is not running other Dashmate nodes or Docker services. The commands delete the dashmate configuration and all unused Docker containers, networks, and volumes.
+:::
+
+For broken builds that cannot be repaired using `yarn reset`, the following commands will remove Docker and Dashmate data and may allow you to start over with `yarn setup`:
+
+``` shell
+docker kill $(docker ps -q) # Stop all running containers
+docker volume prune -a      # Removes all unused volumes
+docker system prune         # Removes unused Docker data
+rm -rf ~/.dashmate          # Deletes the Dashmate configuration
 ```
