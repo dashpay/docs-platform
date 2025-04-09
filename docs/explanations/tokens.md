@@ -201,7 +201,7 @@ A wide variety of emission patterns are provided to cover most common scenarios.
 | - | - |
 | [Fixed Amount](#fixed-amount) | Emits a constant number of tokens per period |
 | [Random](#random) | Emits a random amount between `min` and `max`, using a PRF |
-| [Step Decreasing Amount](#step-decreasing-amount) | Emits a random amount between `min` and `max`, using a PRF |
+| [Step Decreasing Amount](#step-decreasing-amount) | Emits tokens that decrease in discrete steps at fixed intervals |
 | [Linear](#linear) | Linear growth/decay with integer or fractional precision |
 | [Polynomial](#polynomial) | Polynomial with integer or fractional exponents or coefficients |
 | [Exponential](#exponential) | Emits tokens following an exponential function |
