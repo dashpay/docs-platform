@@ -202,8 +202,7 @@ A wide variety of emission patterns are provided to cover most common scenarios.
 | [Fixed Amount](#fixed-amount) | Emits a constant number of tokens per period |
 | [Random](#random) | Emits a random amount between `min` and `max`, using a PRF |
 | [Step Decreasing Amount](#step-decreasing-amount) | Emits a random amount between `min` and `max`, using a PRF |
-| [Linear Integer](#linear-integer) | Linear growth/decay with integer precision |
-| [Linear Float](#linear-float) | Linear growth/decay with fractional precision |
+| [Linear](#linear) | Linear growth/decay with integer or fractional precision |
 | [Polynomial Integer](#polynomial-integer) | Integer polynomial (e.g., quadratic, cubic) |
 | [Polynomial Float](#polynomial-float) | Polynomial with fractional exponents or coefficients |
 | [Logarithmic](#logarithmic) | Slows emission over time |
@@ -268,29 +267,33 @@ Emits tokens that decrease in discrete steps at fixed intervals.
   - Bitcoin: 50% reduction every 210,000 blocks  
   - Dash: ~7% reduction every 210,240 blocks
 
-###### Linear Integer
+###### Linear
 
-A linear function using integer precision.
+Emits tokens following a linear function that can increase or decrease over time with fractional precision.
 
-- **Formula:** `f(x) = a * x + b`
-- **Description:**  
-  - `a` > 0 -> tokens increase over time
-  - `a` < 0 -> tokens decrease over time
-  - `b` is the initial value
-- **Use Case:** Incentivize early or match ecosystem growth
-- **Example:** f(x) = 10x + 50
+- **Formula:** `f(x) = (a * (x - s) / d) + b`
 
-###### Linear Float
+- **Description:** Supports both integer and fractional slopes via `a / d` ratio. Enables precise reward schedules without floating-point rounding errors.  
+  - Parameters
+    - `a`: slope numerator (positive = increase, negative = decrease)
+    - `d`: slope divisor (enables fractional precision)
+    - `s`: optional start period offset (defaults to contract creation)
+    - `b`: starting emission amount
+    - `min_value` / `max_value`: optional emission bounds
+  - Behavior
+    - If `a > 0`, emissions increase linearly over time
+    - If `a < 0`, emissions decrease linearly over time
+    - If `a = 0`, emissions remain constant at `b`
 
-A linear function with fractional (floating-point) rates.
+- **Use Case:** Predictable inflation or deflation, gradual reward scaling, clamped emission schedules
 
-- **Formula:** `f(x) = a * x + b`
-- **Description:** Similar to [Linear Integer](#linear-integer), but with fractional slope
-- **Use Case:** Gradual fractional increases/decreases over time
-- **Example:** f(x) = 0.5x + 50
+- **Example:**
+  - Increasing Linear Emission: `f(x) = (1 * (x - 0) / 1) + 10`
+  - Decreasing Linear Emission: `f(x) = (-2 * (x - 0) / 1) + 100`
+  - Delayed Start: `f(x) = (5 * (x - 10) / 1) + 50`
+  - Clamping Emissions: `f(x) = (2 * (x - 0) / 1) + 50`
 
-###### Polynomial Integer
-
+###### Polynomial
 A polynomial function (e.g. quadratic, cubic) using integer precision.
 
 - **Formula:** `f(x) = a * x^n + b`
