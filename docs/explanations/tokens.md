@@ -193,6 +193,126 @@ Dash Platform also supports three options to control the destination for newly m
 | **Fixed Destination**  | Newly minted tokens are always directed to one predetermined (fixed) identity. | - Ensures a strict, predictable allocation.<br>- No choice at the time of minting once configured. |
 | **Combination / Exclusive** | These two approaches can be used exclusively (only one rule active) or combined for more granular control. | - In a combined setup, some mints could go to a fixed address while others go to a chosen address. |
 
+##### Perpetual Distribution Options
+
+A wide variety of emission patterns are provided to cover most common scenarios.
+
+###### Fixed Amount
+
+Emits a constant (fixed) number of tokens for every period.
+
+- **Formula:** `f(x) = n`
+- **Use Case:**
+
+  - When a predictable, unchanging reward is desired.
+  - Simplicity and stable emissions.
+
+- **Example:** If `n = 5` tokens per block, then after 3 blocks the total emission is 15 tokens.
+
+###### Step Decreasing Amount
+
+Emits a random number of tokens within a specified range.
+
+- **Formula**: `f(x) ∈ [min, max]`
+  - Constraints:
+
+    - `min` must be ≤ `max`, otherwise the function is invalid.
+    - If `min == max`, this behaves like a [Fixed Amount](#fixed-amount) function with a constant emission.
+- **Description**
+
+  - This function selects a **random** token emission amount between `min` and `max`.
+  - The value is drawn **uniformly** between the bounds.
+  - The randomness uses a Pseudo Random Function (PRF) from x.
+
+- **Use Case**
+
+  - **Stochastic Rewards**: Introduces randomness into rewards to incentivize unpredictability.
+  - **Lottery-Based Systems**: Used for randomized emissions, such as block rewards with probabilistic payouts.
+
+- **Example**
+
+  Suppose a system emits **between 10 and 100 tokens per period**.
+
+  ```text
+  Random { min: 10, max: 100 }
+  ```
+
+  | Period (x) | Emitted Tokens (Random) |
+  |------------|------------------------|
+  | 1          | 27                     |
+  | 2          | 94                     |
+  | 3          | 63                     |
+  | 4          | 12                     |
+
+  - Each period, the function emits a **random number of tokens** between `min = 10` and `max = 100`.
+  - Over time, the **average reward trends toward the midpoint** `(min + max) / 2`.
+
+###### Linear Integer
+
+A linear function using integer precision.
+
+- **Formula:** `f(x) = a * x + b`
+- **Description:**  
+  - `a` > 0 -> tokens increase over time
+  - `a` < 0 -> tokens decrease over time
+  - `b` is the initial value
+- **Use Case:** Incentivize early or match ecosystem growth
+- **Example:** f(x) = 10x + 50
+
+###### Linear Float
+
+A linear function with fractional (floating-point) rates.
+
+- **Formula:** `f(x) = a * x + b`
+- **Description:** Similar to [Linear Integer](#linear-integer), but with fractional slope
+- **Use Case:** Gradual fractional increases/decreases over time
+- **Example:** f(x) = 0.5x + 50
+
+###### Polynomial Integer
+
+A polynomial function (e.g. quadratic, cubic) using integer precision.
+
+- **Formula:** `f(x) = a * x^n + b`
+- **Description:** Flexible curves (growth/decay) beyond simple linear
+- **Use Case:** Diminishing or accelerating returns as time progresses
+- **Example:** f(x) = 2x^2 + 20
+
+###### Polynomial Float
+
+A polynomial function supporting fractional exponents or coefficients.
+
+- **Formula:** `f(x) = a * x^n + b`
+- **Description:** Similar to [Polynomial Integer](#polynomial-integer), but with floats
+- **Example:** f(x) = 0.5x^3 + 20
+
+###### Exponential
+
+Exponential growth or decay of tokens.
+
+- **Formula:** `f(x) = a * e^(b * x) + c`
+- **Description:**
+  - `b` > 0 -> rapid growth
+  - `b` < 0 -> rapid decay
+- **Use Case:** Early contributor boosts or quick emission tapering
+- **Example:** f(x) = 100 * e^(-0.693 * x) + 5
+
+###### Logarithmic
+
+Logarithmic growth of token emissions.
+
+- **Formula:** `f(x) = a * log_b(x) + c`
+- **Description:** Growth slows as `x` increases
+- **Use Case:** Sustainable long-term emission tapering
+- **Example:** f(x) = 20 * log_2(x) + 5
+
+###### Stepwise
+
+Emits tokens in fixed amounts for specific intervals.
+
+- **Description:** Emissions remain constant within each step
+- **Use Case:** Adjust rewards at specific milestones
+- **Example:** 100 tokens per block for first 1000 blocks, then 50 tokens thereafter
+
 ### Groups
 
 Groups can be used to distribute token configuration and update authorization across multiple identities. Each group defines a set of member identities, the voting power of each member, and the required power threshold to authorize an action.
