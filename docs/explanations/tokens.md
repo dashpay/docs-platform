@@ -200,6 +200,7 @@ A wide variety of emission patterns are provided to cover most common scenarios.
 | Name | Description |
 | - | - |
 | [Fixed Amount](#fixed-amount) | Emits a constant number of tokens per period |
+| [Random](#random) | Emits a random amount between `min` and `max`, using a PRF |
 | [Step Decreasing Amount](#step-decreasing-amount) | Emits a random amount between `min` and `max`, using a PRF |
 | [Linear Integer](#linear-integer) | Linear growth/decay with integer precision |
 | [Linear Float](#linear-float) | Linear growth/decay with fractional precision |
@@ -220,7 +221,7 @@ Emits a constant (fixed) number of tokens for every period.
 
 - **Example:** If `n = 5` tokens per block, then after 3 blocks the total emission is 15 tokens.
 
-###### Step Decreasing Amount
+###### Random
 
 Emits a random number of tokens within a specified range.
 
