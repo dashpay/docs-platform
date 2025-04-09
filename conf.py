@@ -54,7 +54,7 @@ hoverxref_role_types = {
 
 # -- Myst parser configuration -----------------------------------------------
 # Auto-generate header anchors for md headings
-myst_heading_anchors = 5
+myst_heading_anchors = 6
 
 # Enable colon_fence for better markdown compatibility
 # https://myst.tools/docs/mystjs/syntax-overview#directives
