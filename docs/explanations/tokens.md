@@ -204,7 +204,9 @@ A wide variety of emission patterns are provided to cover most common scenarios.
 | [Step Decreasing Amount](#step-decreasing-amount) | Emits a random amount between `min` and `max`, using a PRF |
 | [Linear](#linear) | Linear growth/decay with integer or fractional precision |
 | [Polynomial](#polynomial) | Polynomial with integer or fractional exponents or coefficients |
+| [Exponential](#exponential) | Emits tokens following an exponential function |
 | [Logarithmic](#logarithmic) | Slows emission over time |
+| [Inverted Logarithmic](#inverted-logarithmic) | Slows emission over time |
 | [Stepwise](#stepwise) | Emits constant values within predefined steps |
 
 ###### Fixed Amount
@@ -324,7 +326,7 @@ A polynomial function using fixed-point arithmetic for fractional or integer exp
 
 ###### Exponential
 
-Exponential growth or decay of tokens.
+Emits tokens following an exponential function.
 
 - **Formula:** `f(x) = a * e^(b * x) + c`
 - **Description:**
