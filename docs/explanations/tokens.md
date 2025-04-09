@@ -215,10 +215,8 @@ Emits a constant (fixed) number of tokens for every period.
 
 - **Formula:** `f(x) = n`
 - **Use Case:**
-
   - When a predictable, unchanging reward is desired.
   - Simplicity and stable emissions.
-
 - **Example:** If `n = 5` tokens per block, then after 3 blocks the total emission is 15 tokens.
 
 ###### Random
@@ -227,20 +225,15 @@ Emits a random number of tokens within a specified range.
 
 - **Formula**: `f(x) ∈ [min, max]`
   - Constraints:
-
     - `min` must be ≤ `max`, otherwise the function is invalid.
     - If `min == max`, this behaves like a [Fixed Amount](#fixed-amount) function with a constant emission.
 - **Description**
-
   - This function selects a **random** token emission amount between `min` and `max`.
   - The value is drawn **uniformly** between the bounds.
   - The randomness uses a Pseudo Random Function (PRF) from x.
-
 - **Use Case**
-
   - **Stochastic Rewards**: Introduces randomness into rewards to incentivize unpredictability.
   - **Lottery-Based Systems**: Used for randomized emissions, such as block rewards with probabilistic payouts.
-
 - **Example**
 
   Suppose a system emits **between 10 and 100 tokens per period**.
