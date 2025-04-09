@@ -258,6 +258,22 @@ Emits a random number of tokens within a specified range.
   - Each period, the function emits a **random number of tokens** between `min = 10` and `max = 100`.
   - Over time, the **average reward trends toward the midpoint** `(min + max) / 2`.
 
+###### Step Decreasing Amount
+
+Emits tokens that decrease in discrete steps at fixed intervals.
+
+- **Formula:** `f(x) = n * (1 - (numerator / denominator))^((x - s) / step_count)`
+- **Description:** Reduces token emissions by a fixed percentage at regular intervals. Includes optional start offset and minimum emission floor.
+  - `step_count`: number of periods between each step
+  - `numerator` and `denominator`: the reduction factor per step
+  - `s`: optional start period offset (e.g., start block or time). If not provided, the contract creation start is used.
+  - `n`: initial token emission amount
+  - `min_value`: optional minimum emission value
+- **Use Case:** Reward systems with predictable decay—ideal for Bitcoin-style halvings or Dash-style gradual reductions
+- **Example:**
+  - Bitcoin: 50% reduction every 210,000 blocks  
+  - Dash: ~7% reduction every 210,240 blocks
+
 ###### Linear Integer
 
 A linear function using integer precision.
