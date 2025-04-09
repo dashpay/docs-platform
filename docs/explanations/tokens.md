@@ -326,6 +326,44 @@ Logarithmic growth of token emissions.
 - **Use Case:** Sustainable long-term emission tapering
 - **Example:** f(x) = 20 * log_2(x) + 5
 
+###### Inverted Logarithmic
+
+Emits tokens following an inverted logarithmic decay curve.
+
+- **Formula:**  
+  `f(x) = (a * log(n / (m * (x - s + o)))) / d + b`
+
+- **Description:**  
+  Emits a high number of tokens initially, with emissions decreasing rapidly at first, then slowing over time. Useful when early adoption or front-loaded incentives are desired.  
+  Parameters:
+  - `a`: scaling factor for the log term
+  - `d`: divisor to scale the final result
+  - `m` and `n`: Control the logarithmic inversion
+  - `o`: offset applied inside the logarithm
+  - `s`: optional start period offset (defaults to contract creation time if not provided)
+  - `b`: offset added after scaling
+  - `min_value` / `max_value`: optional bounds to constrain emissions
+
+- **Use Case:**  
+  - **Gradual Decay of Rewards**: Prioritize early users with higher emissions that reduce over time  
+  - **Resource Draining / Controlled Burn**: Designed for token models where supply tapers gradually  
+  - **Airdrops & Grants**: Rewards diminish for late claimants, encouraging early participation
+
+- **Example:**
+  - `f(x) = (1000 * log(5000 / (5 * (x - 1000)))) / 10 + 10`
+  - Sample outputs:
+
+    | Period (x) | Emission (f(x)) |
+    |------------|----------------|
+    | 1000       | 500 tokens     |
+    | 1500       | 230 tokens     |
+    | 2000       | 150 tokens     |
+    | 5000       | 50 tokens      |
+    | 10,000     | 20 tokens      |
+    | 50,000     | 10 tokens      |
+
+  - Starts high and decays gradually without hitting zero too fast
+
 ###### Stepwise
 
 Emits tokens in fixed amounts for specific intervals.
