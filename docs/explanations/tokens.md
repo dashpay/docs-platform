@@ -195,7 +195,18 @@ Dash Platform also supports three options to control the destination for newly m
 
 ##### Perpetual Distribution Options
 
-A wide variety of emission patterns are provided to cover most common scenarios.
+A wide variety of emission patterns are provided to cover most common scenarios. The following table summarizes the options and links to further details.
+
+| Name | Description |
+| - | - |
+| [Fixed Amount](#fixed-amount) | Emits a constant number of tokens per period |
+| [Step Decreasing Amount](#step-decreasing-amount) | Emits a random amount between `min` and `max`, using a PRF |
+| [Linear Integer](#linear-integer) | Linear growth/decay with integer precision |
+| [Linear Float](#linear-float) | Linear growth/decay with fractional precision |
+| [Polynomial Integer](#polynomial-integer) | Integer polynomial (e.g., quadratic, cubic) |
+| [Polynomial Float](#polynomial-float) | Polynomial with fractional exponents or coefficients |
+| [Logarithmic](#logarithmic) | Slows emission over time |
+| [Stepwise](#stepwise) | Emits constant values within predefined steps |
 
 ###### Fixed Amount
 
