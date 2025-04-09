@@ -203,8 +203,7 @@ A wide variety of emission patterns are provided to cover most common scenarios.
 | [Random](#random) | Emits a random amount between `min` and `max`, using a PRF |
 | [Step Decreasing Amount](#step-decreasing-amount) | Emits a random amount between `min` and `max`, using a PRF |
 | [Linear](#linear) | Linear growth/decay with integer or fractional precision |
-| [Polynomial Integer](#polynomial-integer) | Integer polynomial (e.g., quadratic, cubic) |
-| [Polynomial Float](#polynomial-float) | Polynomial with fractional exponents or coefficients |
+| [Polynomial](#polynomial) | Polynomial with integer or fractional exponents or coefficients |
 | [Logarithmic](#logarithmic) | Slows emission over time |
 | [Stepwise](#stepwise) | Emits constant values within predefined steps |
 
@@ -294,20 +293,34 @@ Emits tokens following a linear function that can increase or decrease over time
   - Clamping Emissions: `f(x) = (2 * (x - 0) / 1) + 50`
 
 ###### Polynomial
-A polynomial function (e.g. quadratic, cubic) using integer precision.
 
-- **Formula:** `f(x) = a * x^n + b`
-- **Description:** Flexible curves (growth/decay) beyond simple linear
-- **Use Case:** Diminishing or accelerating returns as time progresses
-- **Example:** f(x) = 2x^2 + 20
+A polynomial function using fixed-point arithmetic for fractional or integer exponents.
 
-###### Polynomial Float
+- **Formula:**  
+  `f(x) = (a * (x - s + o)^(m / n)) / d + b`
 
-A polynomial function supporting fractional exponents or coefficients.
+- **Description:**  
+  Emits tokens based on a polynomial curve, where the exponent is defined as a fraction (`m / n`). This enables a wide range of growth or decay behaviors—linear, quadratic, root-based, and more—using precise fixed-point logic.  
+  Parameters:
+  - `a`: coefficient scaling the curve (positive for growth, negative for decay)  
+  - `m` and `n`: exponent numerator and denominator, allowing fractional powers (e.g., `m = 1`, `n = 2` → square root)
+  - `d`: divisor to scale the result
+  - `s`: optional start period offset
+  - `o`: offset inside the exponent input
+  - `b`: amount added after the curve is computed
+  - `min_value` / `max_value`: optional boundaries to clamp emissions
 
-- **Formula:** `f(x) = a * x^n + b`
-- **Description:** Similar to [Polynomial Integer](#polynomial-integer), but with floats
-- **Example:** f(x) = 0.5x^3 + 20
+- **Use Case:**  
+  - **Accelerating Growth:** Use `a > 0` and `m > 1` for quadratic/cubic growth  
+  - **Diminishing Emissions:** Use `a < 0` and fractional exponents for decaying curves  
+  - **Root-based Models:** Use `m = 1`, `n > 1` to slow down early growth  
+  - **Flexibility:** Fine-tune emission behavior with high control over shape
+
+- **Example:**
+  - Increasing Polynomial Growth: `f(x) = (2 * (x - s + o)^2) / d + 10`
+  - Decreasing Polynomial Decay: `f(x) = (5 * (x - s + o)^(-1)) / d + 10`
+  - Inverted Growth → Decreasing Over Time: `f(x) = (-3 * (x - s + o)^2) / d + 50`
+  - Inverted Decay → Slowing Increase: `f(x) = (-10 * (x - s + o)^(-2)) / d + 50`
 
 ###### Exponential
 
