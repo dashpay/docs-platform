@@ -557,9 +557,9 @@ const DAPIClient = require('@dashevo/dapi-client');
     }
   });
 
-  stream.on('error', (err) => console.error('❌ Stream error:', err));
-  stream.on('end', () => console.log('🛑 Stream ended'));
-  stream.on('close', () => console.log('🔒 Stream closed'));
+  stream.on('error', (err) => console.error('Stream error:', err));
+  stream.on('end', () => console.log('Stream ended'));
+  stream.on('close', () => console.log('Stream closed'));
 })();
 ```
 :::
