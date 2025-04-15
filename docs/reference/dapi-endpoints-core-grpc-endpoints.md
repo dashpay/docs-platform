@@ -497,10 +497,14 @@ the update messages following a new block.
 | `from_block_hash`            | Bytes   | No       | Return records beginning with the block hash provided                                                    |
 | `from_block_height`          | Integer | No       | Return records beginning with the block height provided                                                  |
 | ----------                   |         |          |                                                                                                          |
-| `count`                      | Integer | No       | Number of blocks to sync. If set to 0 syncing is continuously sends new data as well (default: 0)        |
+| `count`                      | Integer | No       | Number of blocks to sync. If set to 0, syncing continuously sends new data as well (default: 0)        |
 | `send_transaction_hashes` \* | Boolean | No       |                                                                                                          |
 
 **Example Request and Response**
+
+:::{note}
+Set `count` to 0 to continuously stream new data.
+:::
 
 ::::{tab-set}
 :::{tab-item} JavaScript (dapi-client)
