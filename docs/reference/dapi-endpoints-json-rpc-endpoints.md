@@ -225,7 +225,7 @@ puts response.read_body
 ## Deprecated Endpoints
 
 The following endpoints were recently deprecated. See the [previous version of this
-documentation](https://docs.dash.org/projects/platform/en/0.25.0/docs/reference/dapi-endpoints-json-rpc-endpoints.html)
+documentation](https://docs.dash.org/projects/platform/en/1.0.0/docs/reference/dapi-endpoints-json-rpc-endpoints.html)
 for older references.
 
 ### getMnListDiff

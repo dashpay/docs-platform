@@ -180,7 +180,7 @@ Testnet Block Explorer <https://insight.testnet.networks.dash.org/insight/>
 Testnet Faucet <https://faucet.testnet.networks.dash.org/>
 JavaScript SDK <https://github.com/dashpay/platform/tree/master/packages/js-dash-sdk#readme>
 resources/source-code
-Previous Version of Docs <https://docs.dash.org/projects/platform/en/0.25.0/docs/>
+Previous Version of Docs <https://docs.dash.org/projects/platform/en/1.0.0/docs/>
 ```
 
 ```{toctree}

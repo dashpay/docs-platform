@@ -824,7 +824,7 @@ Note: The gRPCurl response `proTxHash` data is Base64 encoded.
 
 ## Deprecated Endpoints
 
-The following endpoints were recently deprecated. See the [previous version of documentation](https://docs.dash.org/projects/platform/en/0.25.0/docs/reference/dapi-endpoints-core-grpc-endpoints.html) for additional information on these endpoints.
+The following endpoints were recently deprecated. See the [previous version of documentation](https://docs.dash.org/projects/platform/en/1.0.0/docs/reference/dapi-endpoints-core-grpc-endpoints.html) for additional information on these endpoints.
 
 ### getStatus
 
