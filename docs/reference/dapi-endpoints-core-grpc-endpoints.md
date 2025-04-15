@@ -503,12 +503,69 @@ the update messages following a new block.
 **Example Request and Response**
 
 ::::{tab-set}
+:::{tab-item} JavaScript (dapi-client)
+:sync: js-dapi-client
+```javascript
+const DAPIClient = require('@dashevo/dapi-client');
+
+(async () => {
+  const client = new DAPIClient({
+    network: 'testnet',
+    seeds: [{
+      host: 'seed-1.testnet.networks.dash.org',
+      port: 1443,
+    }],
+  });
+
+  const bloomFilter = {
+    vData: [0xff],
+    nHashFuncs: 1,
+    nTweak: 0,
+    nFlags: 0,
+  };
+
+  const stream = await client.core.subscribeToTransactionsWithProofs(
+    bloomFilter,
+    {
+      fromBlockHeight: 1232900,
+      count: 0, // 0 = continuosly stream new data too
+    },
+  );
+
+  stream.on('data', (response) => {
+    // If it's a protobufjs object, convert it
+    if (typeof response.toObject === 'function') {
+      response = response.toObject();
+    }
+
+    if (response.rawTransactions) {
+      const rawTxs = response.rawTransactions.transactionsList || [];
+      console.log(`Received ${rawTxs.length} raw transaction(s)`);
+      rawTxs.forEach((tx, i) => console.log(`\tTX #${i + 1}:`, Buffer.from(tx, 'base64').toString('hex')));
+    } else if (response.rawMerkleBlock) {
+      console.log(' Received Merkle block:', Buffer.from(response.rawMerkleBlock, 'base64').toString('hex'));
+    } else if (response.instantSendLockMessages) {
+      const locks = response.instantSendLockMessages.messagesList || [];
+      console.log(`Received ${locks.length} InstantSend lock message(s)`);
+      locks.forEach((msg, i) => console.log(`\tInstantSend Lock #${i + 1}:`, Buffer.from(msg, 'base64').toString('hex')));
+    } else {
+      console.log('Warning: unknown or empty response message:', response);
+    }
+  });
+
+  stream.on('error', (err) => console.error('❌ Stream error:', err));
+  stream.on('end', () => console.log('🛑 Stream ended'));
+  stream.on('close', () => console.log('🔒 Stream closed'));
+})();
+```
+:::
 :::{tab-item} Request (gRPCurl)
+:sync: grpcurl
 ```shell
 grpcurl -proto protos/core/v0/core.proto \
   -d '{
-  "from_block_height": 1,
-  "count": 1,
+  "from_block_height": 1232900,
+  "count": 0,
   "bloom_filter": {
     "n_hash_funcs": 11,
     "v_data": "",
@@ -523,6 +580,16 @@ grpcurl -proto protos/core/v0/core.proto \
 ::::
 
 ::::{tab-set}
+:::{tab-item} Response (JavaScript)
+:sync: js-dapi-client
+```text
+Received Merkle block: 00000020384e6d494ba7ac426fe3f2bc990b1a1d46102ac0fc24e86a462653f32e0000002b848697ba771189baf8031fe52a4ef9b69d4259599104744271f53c4b3b3403895cfe67f4bb011ee0200f000200000002c0f0c91ad505b883996cc351e63976a7b0234d13547a8f7ace3c5776d051091f1a8e035c7f667bc21ad277ff50e25c11a99fc5e71a6f6ef5e96e720c4c9f47c40107
+Received 1 raw transaction(s)
+        TX #1: 020000000202b72745ae5d7a8a2ef7b02f37e921d479cf3a27a899bc9fefbdc4a9558db344000000006a4730440220732d3a959630dc7b21bbf5c54d2968f0d72db922ad3556a004d63da064e68bf3022026423cabb47bb2a90cee7667f3d2bc53d2bbed56c8ac4001fc542ce4e77cee5a01210299b5e857403e74ef789dcfec66db750212f97d3282005df161a4f77370bc9a41feffffff345fbdad892f72f9a03d0bca6999d3dd9b310cf029816c19968d0ec59ae90caa000000006a47304402207bef35c51926e2a8f6c04ac3db701973f5188f1a9bfcacecac97d5a9c368804102206e9a30f4bb78581ec453ce9a3dbfe6dbd2286a9d80111873138d2391b764cbf001210315c295b58ade2af42ba53e17bfc0224e855f3f6d71c80b698d18a6084f74da25feffffff0240420f00000000001976a9146c503d4a6c85d349153f354a03bc77b50910ed6688ac710c2c00000000001976a914e7bd063a8420b439f4131dd90c305fbe20b5f80388ac52d01200
+Received 1 InstantSend lock message(s)
+        InstantSend Lock #1: 010202b72745ae5d7a8a2ef7b02f37e921d479cf3a27a899bc9fefbdc4a9558db34400000000345fbdad892f72f9a03d0bca6999d3dd9b310cf029816c19968d0ec59ae90caa00000000ca0921f521075ca588738264440890ee3734246ee73c32990a6b9ca41c53ff9941e8984fdf68edb10a39140e045580bc19a871d6c62c624588fad31f1c0000008028345007268bcd091b39c6da8609e60817beb137b5a5a4335ace2b86661a570ee9cfb9a400c35c2ce5471a8edc33ae04d822dccb59d40135c975dbf0246261fcf2def2aa10d73d32592cb0f320edf06e66d012fe5b96335766bfb4e203fbbd
+```
+:::
 :::{tab-item} Response (gRPCurl)
 :sync: grpcurl
 
@@ -532,12 +599,13 @@ Note: The gRPCurl response `transactions` and `rawMerkleBlock` data is Base64 en
 {
   "rawTransactions": {
     "transactions": [
-      "AQAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP////8KUQEBBi9QMlNIL/////8BAHQ7pAsAAAAjIQIBMfOK4+sHFFMdv8P0VJG0Ex0SEeN3cXdjY4i7WnTD5KwAAAAA"
+      "AwAFAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP////8GAybQEgEB/////wN0aR0EAAAAABl2qRTGmgvafaquSBvo3vleXzR6HQCktIisiBWhBAAAAAABatMmtwcAAAAAGXapFMaaC9p9qq5IG+je+V5fNHodAKS0iKwAAAAArwMAJtASAI9++NlWNSgVfoN30b0i6+0MJU6HoUW8um8+Z4wnNN6ryzPggHZKesGiP7BSqWS2GJyNyoDKExUBb8JOo4SnWiwAiS4d6Qfq46Q5P7Ikc5FU1veS1BSOjANjy/TMxSW41lIimTJeC7uTelTgKUQRGuvGBpISS6JTaKe9EAyVssguGF6pkfGIrPXhSmnFYa6zVZOw+FImDqXAWuiA4fbrg++XnRFN+xAMAAA=",
+      "AwAIAAGfo1ucb0QXQcszv3goPfj2HQ7hXy1H/UfV4sJxbRAelwEAAABqRzBEAiBHbuT42FzrisDUwTDWNZOwUzpeVqZD/4d63GqQtfazRAIgQ0D3R7zwdGggf6aV5+zn5Ny++EicUxy9JyTlfcmTWY4BIQL92QF9a831X8s6DQOxwj9gbvIRpKyXueTh+8F0mOo5p/////8CQEIPAAAAAAACagBHZZEHAAAAABl2qRTPU/9NqtGCTtqRtTv4GHut2FoTO4isAAAAACQBAUBCDwAAAAAAGXapFN4Kl0QKTPQeGVBUWowbrllp8NipiKw="
     ]
   }
 }
 {
-  "rawMerkleBlock": "AgAAACy8+DtikT1W9gXA5YGkiHKDlCjJLl63bNetlLyvCwAAfxHczhQHVSDo90zE3fCStOJuvSO42GZaGuW/xBtY/bTDqV5T//8PHvN6AAABAAAAAX8R3M4UB1Ug6PdMxN3wkrTibr0juNhmWhrlv8QbWP20AQE="
+  "rawMerkleBlock": "AAAAIDhObUlLp6xCb+PyvJkLGh1GECrA/CToakYmU/MuAAAAK4SGl7p3EYm6+AMf5SpO+badQllZkQR0QnH1PEs7NAOJXP5n9LsBHuAgDwACAAAAAsDwyRrVBbiDmWzDUeY5dqewI00TVHqPes48V3bQUQkfGo4DXH9me8Ia0nf/UOJcEamfxecab2716W5yDEyfR8QBBw=="
 }
 ```
 :::
