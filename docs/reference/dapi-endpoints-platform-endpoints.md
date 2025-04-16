@@ -3318,6 +3318,106 @@ grpcurl -proto protos/platform/v0/platform.proto \
 :::
 ::::
 
+### getTokenDirectPurchasePrices
+
+Retrieves direct purchase prices defined for the specified token IDs.
+
+This endpoint provides pricing data for tokens that support direct purchases. Each token may have either a fixed price or a tiered pricing schedule that depends on the quantity being purchased.
+
+**Returns**: A list of token price entries or a cryptographic proof containing the requested data.
+
+**Parameters**:
+
+| Name        | Type     | Required | Description |
+|-------------|----------|----------|-------------|
+| `token_ids` | Array    | Yes      | List of 32-byte token IDs to retrieve pricing for. Must be unique and non-empty. |
+| `prove`     | Boolean  | No       | Set to `true` to receive a proof that contains the requested pricing data |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "token_ids": ["2f8d91fe65b3b9f1d473ad729f7861e27159be9a93d5748591ecdbbda5e776c0"],
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getTokenDirectPurchasePrices
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (Fixed Price)
+```json
+{
+  "v0": {
+    "tokenDirectPurchasePrices": {
+      "tokenDirectPurchasePrice": [
+        {
+          "tokenId": "2f8d91fe65b3b9f1d473ad729f7861e27159be9a93d5748591ecdbbda5e776c0",
+          "fixedPrice": "1000"
+        }
+      ]
+    },
+    "metadata": {
+      "height": "2876",
+      "coreChainLockedHeight": 1086885,
+      "epoch": 761,
+      "timeMs": "1724094056585",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-50"
+    }
+  }
+}
+```
+:::
+
+:::{tab-item} Response (Tiered Pricing)
+```json
+{
+  "v0": {
+    "tokenDirectPurchasePrices": {
+      "tokenDirectPurchasePrice": [
+        {
+          "tokenId": "ab1c23d4ef567890fedcba9876543210ab1c23d4ef567890fedcba9876543210",
+          "variablePrice": {
+            "priceForQuantity": [
+              {
+                "quantity": "1",
+                "price": "1000"
+              },
+              {
+                "quantity": "10",
+                "price": "900"
+              },
+              {
+                "quantity": "100",
+                "price": "750"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "metadata": {
+      "height": "2880",
+      "coreChainLockedHeight": 1086890,
+      "epoch": 762,
+      "timeMs": "1724095000000",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-50"
+    }
+  }
+}
+```
+:::
+::::
+
 ### getTokenStatuses
 
 Retrieves the statuses of specified tokens.
