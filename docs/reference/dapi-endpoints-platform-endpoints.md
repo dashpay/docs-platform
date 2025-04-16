@@ -3418,68 +3418,6 @@ grpcurl -proto protos/platform/v0/platform.proto \
 :::
 ::::
 
-### getTokenStatuses
-
-Retrieves the statuses of specified tokens.
-
-**Returns**: A list of token statuses or a cryptographic proof.
-
-**Parameters**:
-
-| Name        | Type     | Required | Description |
-|------------|---------|----------|-------------|
-| `token_ids`  | Array of Bytes | Yes      | A list of token IDs to retrieve statuses for |
-| `prove`      | Boolean | No      | Set to `true` to receive a proof that contains the requested token statuses |
-
-**Example Request and Response**
-
-::::{tab-set}
-:::{tab-item} gRPCurl
-```shell
-grpcurl -proto protos/platform/v0/platform.proto \
-  -d '{
-    "v0": {
-      "token_ids": ["01abcdef", "02abcdef"],
-      "prove": false
-    }
-  }' \
-  seed-1.testnet.networks.dash.org:1443 \
-  org.dash.platform.dapi.v0.Platform/getTokenStatuses
-```
-:::
-::::
-
-::::{tab-set}
-:::{tab-item} Response (gRPCurl)
-```json
-{
-  "v0": {
-    "token_statuses": {
-      "token_statuses": [
-        {
-          "token_id": "01abcdef",
-          "paused": false
-        },
-        {
-          "token_id": "02abcdef",
-          "paused": true
-        }
-      ]
-    },
-    "metadata": {
-      "height": "2876",
-      "coreChainLockedHeight": 1086885,
-      "epoch": 761,
-      "timeMs": "1724094056585",
-      "protocolVersion": 1,
-      "chainId": "dash-testnet-50"
-    }
-  }
-}
-```
-:::
-::::
-
 ### getTokenPreProgrammedDistributions
 
 Retrieves pre-programmed distributions of a specified token.
@@ -3541,6 +3479,68 @@ grpcurl -proto protos/platform/v0/platform.proto \
               "amount": "1000"
             }
           ]
+        }
+      ]
+    },
+    "metadata": {
+      "height": "2876",
+      "coreChainLockedHeight": 1086885,
+      "epoch": 761,
+      "timeMs": "1724094056585",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-50"
+    }
+  }
+}
+```
+:::
+::::
+
+### getTokenStatuses
+
+Retrieves the statuses of specified tokens.
+
+**Returns**: A list of token statuses or a cryptographic proof.
+
+**Parameters**:
+
+| Name        | Type     | Required | Description |
+|------------|---------|----------|-------------|
+| `token_ids`  | Array of Bytes | Yes      | A list of token IDs to retrieve statuses for |
+| `prove`      | Boolean | No      | Set to `true` to receive a proof that contains the requested token statuses |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "token_ids": ["01abcdef", "02abcdef"],
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getTokenStatuses
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "token_statuses": {
+      "token_statuses": [
+        {
+          "token_id": "01abcdef",
+          "paused": false
+        },
+        {
+          "token_id": "02abcdef",
+          "paused": true
         }
       ]
     },

@@ -99,8 +99,8 @@ Security groups provide a way to distribute token configuration and update autho
 | [`getIdentityTokenInfos`](../reference/dapi-endpoints-platform-endpoints.md#getidentitytokeninfos) | Retrieves information about specified tokens for a given identity. |
 | [`getIdentitiesTokenInfos`](../reference/dapi-endpoints-platform-endpoints.md#getidentitiestokeninfos) | Retrieves token information for a list of specified identities. |
 | [`getTokenDirectPurchasePrices`](../reference/dapi-endpoints-platform-endpoints.md#gettokendirectpurchaseprices) | Retrieves direct purchase prices defined for the specified token IDs. |
-| [`getTokenStatuses`](../reference/dapi-endpoints-platform-endpoints.md#gettokenstatuses) | Retrieves the statuses of specified tokens. |
 | [`getTokenPreProgrammedDistributions`](../reference/dapi-endpoints-platform-endpoints.md#gettokenpreprogrammeddistributions) | Retrieves pre-programmed distributions of a specified token. |
+| [`getTokenStatuses`](../reference/dapi-endpoints-platform-endpoints.md#gettokenstatuses) | Retrieves the statuses of specified tokens. |
 | [`getTokenTotalSupply`](../reference/dapi-endpoints-platform-endpoints.md#gettokentotalsupply) | Retrieves the total supply of a specified token, including aggregated user accounts and system-held amounts. |
 
 ```{eval-rst}
