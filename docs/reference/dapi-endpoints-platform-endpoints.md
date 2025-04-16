@@ -59,35 +59,7 @@ console.log(`Masternode identity id (base58): ${base64Protx}`);
 //  Masternode identity id (base64): jspLy7OhJKsoOv1C2tO9sgd7OAlll4ig8dr/zlufAB8=
 :::
 
-## Endpoint Details
-
-### broadcastStateTransition
-
-Broadcasts a [state transition](../explanations/platform-protocol-state-transition.md) to the platform via DAPI to make a change to layer 2 data. The `broadcastStateTransition` call returns once the state transition has been accepted into the mempool.
-
-**Returns**: Nothing or error
-
-:::{note}
-The [`waitForStateTransitionResult` endpoint](#waitforstatetransitionresult) should be used after `broadcastStateTransition` if proof of block confirmation is required.
-:::
-
-**Parameters**:
-
-| Name               | Type           | Required | Description                                                          |
-| ------------------ | -------------- | -------- | -------------------------------------------------------------------- |
-| `state_transition` | Bytes (Base64) | Yes      | A [state transition](../explanations/platform-protocol-state-transition.md) |
-
-```{eval-rst}
-..
-  Commented out info
-  [block:html]
-  {
-    "html": "<!--\nJavaScript (dapi-client) example (old)\nconst DAPIClient = require('@dashevo/dapi-client');\nconst DashPlatformProtocol = require('@dashevo/dpp');\n\nconst client = new DAPIClient({ network: 'testnet' });\nconst dpp = new DashPlatformProtocol();\n\n// Data Contract Create State Transition (JSON)\n// Replace with your own state transition object before running\nconst stateTransitionObject = {\n  protocolVersion: 0,\n  type: 0,\n  signature: 'HxAipUsLWQBE++C1suSRNQiQh91rI1LZbblvQhk2erUaIvRneAagxGYYsXXYNvEeO+lBzlF1a9KHGGTHgnO/8Ts=',\n  signaturePublicKeyId: 0,\n  dataContract: {\n    protocolVersion: 0,\n    '$id': 'CMc7RghKkHeHtFdwfSX5Hzy7CUdpCEJnwsbfHdsbmJ32',\n    '$schema': 'https://schema.dash.org/dpp-0-4-0/meta/data-contract',\n    ownerId: '8Z3ps3tNoGoPEDYerUNCd4yi7zDwgBh2ejgSMExxvkfD',\n    documents: {\n      note: {\n        properties: { message: { type: 'string' } },\n        additionalProperties: false,\n      },\n    },\n  },\n  entropy: '+RqUArypdL8f/gCMAo4b6c3CoQvxHzsQG0BdYrT5QT0=',\n};\n\n// Convert signature and entropy to buffer\nstateTransitionObject.signature = Buffer.from(stateTransitionObject.signature, 'base64');\nstateTransitionObject.entropy = Buffer.from(stateTransitionObject.entropy, 'base64');\n\ndpp.stateTransition.createFromObject(stateTransitionObject, { skipValidation: true })\n  .then((stateTransition) => {\n    client.platform.broadcastStateTransition(stateTransition.toBuffer())\n      .then(() => console.log('State Transition broadcast successfully'));\n  });\n-->\n\n<!--\nJavaScript (dapi-grpc) example (old)\nconst {\n  v0: {\n    PlatformPromiseClient,\n    BroadcastStateTransitionRequest,\n  },\n} = require('@dashevo/dapi-grpc');\nconst DashPlatformProtocol = require('@dashevo/dpp');\n\nconst platformPromiseClient = new PlatformPromiseClient(\n  'https://seed-1.testnet.networks.dash.org:1443',\n);\n\nconst dpp = new DashPlatformProtocol();\n\n// Data Contract Create State Transition (JSON)\n// Replace with your own state transition object before running\nconst stateTransitionObject = {\n  protocolVersion: 0,\n  type: 0,\n  signature: 'HxAipUsLWQBE++C1suSRNQiQh91rI1LZbblvQhk2erUaIvRneAagxGYYsXXYNvEeO+lBzlF1a9KHGGTHgnO/8Ts=',\n  signaturePublicKeyId: 0,\n  dataContract: {\n    protocolVersion: 0,\n    '$id': 'CMc7RghKkHeHtFdwfSX5Hzy7CUdpCEJnwsbfHdsbmJ32',\n    '$schema': 'https://schema.dash.org/dpp-0-4-0/meta/data-contract',\n    ownerId: '8Z3ps3tNoGoPEDYerUNCd4yi7zDwgBh2ejgSMExxvkfD',\n    documents: {\n      note: {\n        properties: { message: { type: 'string' } },\n        additionalProperties: false,\n      },\n    },\n  },\n  entropy: '+RqUArypdL8f/gCMAo4b6c3CoQvxHzsQG0BdYrT5QT0=',\n};\n\n// Convert signature and entropy to buffer\nstateTransitionObject.signature = Buffer.from(stateTransitionObject.signature, 'base64');\nstateTransitionObject.entropy = Buffer.from(stateTransitionObject.entropy, 'base64');\n\nconst broadcastStateTransitionRequest = new BroadcastStateTransitionRequest();\n\ndpp.stateTransition.createFromObject(stateTransitionObject, { skipValidation: true })\n  .then((stateTransition) => {\n    console.log(stateTransition);\n    broadcastStateTransitionRequest.setStateTransition(stateTransition.toBuffer());\n\n    platformPromiseClient.broadcastStateTransition(broadcastStateTransitionRequest)\n      .then(() => console.log('State Transition broadcast successfully'))\n      .catch((e) => {\n        console.error(e);\n        console.error(e.metadata);\n      });\n  })\n  .catch((e) => console.error(e));\n-->\n\n<!--\ngRPCurl example (old)\n# Submit an identity create State Transition\n# `state_transition` must be represented in base64\n# Replace `state_transition` with your own state transition object before running\ngrpcurl -proto protos/platform/v0/platform.proto \\\n  -d '{\n    \"state_transition\":\"pWR0eXBlAmlzaWduYXR1cmV4WEg3TWhFWDQ0Z3JzMVIwTE9XTU5IZjAxWFNpYVFQcUlVZ1JLRXQyMkxHVERsUlUrZ1BwQUlUZk5JUmhXd3IvYTVHd0lzWm1idGdYVVFxcVhjbW9lQWtUOD1qcHVibGljS2V5c4GkYmlkAGRkYXRheCxBdzh2UmYxeFFCTlVLbzNiY2llaHlaR2NhM0hBSThkY0ZvVWJTK3hLb0lITmR0eXBlAGlpc0VuYWJsZWT1bmxvY2tlZE91dFBvaW50eDBLT1VUSHB5YnFPek9DNnhEVUhFWm9uc1lNSVpqcGppTHFZNnkxYmlWNWxRQUFBQUFvcHJvdG9jb2xWZXJzaW9uAA==\"\n\n    }' \\\n  seed-1.testnet.networks.dash.org:1443 \\\n  org.dash.platform.dapi.v0.Platform/broadcastStateTransition\n-->"
-  }
-  [/block]
-```
-
-**Response**: No response except on error
+## Contested Resource Endpoints
 
 ### getContestedResources
 
@@ -349,18 +321,22 @@ Retrieves the state of a vote for a specific contested resource.
   :::
   ::::
 
-### getCurrentQuorumsInfo
+### getVotePollsByEndDate
 
-Retrieves current quorum details, including validator sets and metadata for each quorum.
+Retrieves vote polls that will end within a specified date range.
 
-**Returns**: Information about current quorums, including quorum hashes, validator sets, and
-cryptographic proof.
+**Returns**: A list of vote polls or a cryptographic proof.
 
 **Parameters**:
 
-| Name          | Type   | Required | Description |
-| ------------- | ------ | -------- | ----------- |
-| `version`     | Object | No       | Version object containing request parameters |
+| Name               | Type     | Required | Description |
+| ------------------ | -------- | -------- | ----------- |
+| `start_time_info`  | Object   | No       | Start time information for filtering vote polls |
+| `end_time_info`    | Object   | No       | End time information for filtering vote polls |
+| `limit`            | Integer  | No       | Maximum number of results to return |
+| `offset`           | Integer  | No       | Offset for pagination |
+| `ascending`        | Boolean  | No       | Sort order for results |
+| `prove`            | Boolean  | No       | Set to `true` to receive a proof that contains the requested vote polls |
 
 **Example Request and Response**
 
@@ -369,10 +345,14 @@ cryptographic proof.
 ```shell
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
-    "v0": {}
+    "v0": {
+      "start_time_info": {"start_time_ms": "1701980000000", "start_time_included": true},
+      "end_time_info": {"end_time_ms": "1702000000000", "end_time_included": true},
+      "limit": 10
+    }
   }' \
   seed-1.testnet.networks.dash.org:1443 \
-  org.dash.platform.dapi.v0.Platform/getCurrentQuorumsInfo
+  org.dash.platform.dapi.v0.Platform/getVotePollsByEndDate
 ```
 :::
 ::::
@@ -382,38 +362,306 @@ grpcurl -proto protos/platform/v0/platform.proto \
 ```json
 {
   "v0": {
-    "quorumHashes": [
-      "AAABC9mcu+F3eC33hC9wyZAP20QQNHz4kYnfFQPwa5A="
-    ],
-    "currentQuorumHash": "AAABP7yY5DKt8UlLUR/QJlH8BI108xugKSEIOrR6iAA=",
-    "validatorSets": [
-      {
-        "quorumHash": "AAABC9mcu+F3eC33hC9wyZAP20QQNHz4kYnfFQPwa5A=",
-        "coreHeight": 1131096,
-        "members": [
-          {
-            "proTxHash": "BbaHl4NE+iQzsqqZ1B9kPi2FgaeJzcIwhIic7KUkTqg=",
-            "nodeIp": "52.24.124.162"
-          },
-          {
-            "proTxHash": "iCUb1LEk7+uHU33qvuxU9sj1dfTfgfEM9ejuoHMJK28=",
-            "nodeIp": "52.33.28.47"
-          },
-          {
-            "proTxHash": "FD3Namt2hP3gHoihDl1l3popJExezVhtFKNCZXAl8RM=",
-            "nodeIp": "35.164.23.245"
-          }
-        ],
-        "thresholdPublicKey": "ixciXjkgFnI/cQNXS51yBi4MYgdPZWjRGxsubEsfzItgvTlABUxow9S1eCE7w9+f"
-      }
-    ],
-    "lastBlockProposer": "iCUb1LEk7+uHU33qvuxU9sj1dfTfgfEM9ejuoHMJK28=",
+    "votePollsByTimestamps": {
+      "finishedResults": true
+    },
     "metadata": {
-      "height": "43865",
-      "coreChainLockedHeight": 1131112,
-      "epoch": 2483,
-      "timeMs": "1730295469308",
-      "protocolVersion": 4,
+      "height": "2876",
+      "coreChainLockedHeight": 1086885,
+      "epoch": 761,
+      "timeMs": "1724094056585",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-50"
+    }
+  }
+}
+```
+:::
+::::
+
+## Data Contract Endpoints
+
+### getDataContract
+
+**Returns**: [Data Contract](../explanations/platform-protocol-data-contract.md) information for the requested data contract  
+**Parameters**:
+
+| Name    | Type    | Required | Description                                                                |
+| ------- | ------- | -------- | -------------------------------------------------------------------------- |
+| `id`    | Bytes   | Yes      | A data contract `id`                                                       |
+| `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested data contract. The data requested will be encoded as part of the proof in the response. |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} JavaScript (dapi-client)
+:sync: js-dapi-client
+```javascript
+const DAPIClient = require('@dashevo/dapi-client');
+const {
+  default: loadDpp,
+  DashPlatformProtocol,
+  Identifier,
+} = require('@dashevo/wasm-dpp');
+
+loadDpp();
+const dpp = new DashPlatformProtocol(null);
+const client = new DAPIClient({ network: 'testnet' });
+
+const contractId = Identifier.from('GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec');
+client.platform.getDataContract(contractId).then((response) => {
+  dpp.dataContract.createFromBuffer(response.getDataContract()).then((dataContract) => {
+    console.dir(dataContract.toJSON(), { depth: 10 });
+  });
+});
+```
+:::
+
+:::{tab-item} JavaScript (dapi-grpc)
+:sync: js-dapi-grpc
+```javascript
+const {
+  v0: { PlatformPromiseClient, GetDataContractRequest },
+} = require('@dashevo/dapi-grpc');
+const { default: loadDpp, DashPlatformProtocol, Identifier } = require('@dashevo/wasm-dpp');
+
+const platformPromiseClient = new PlatformPromiseClient(
+  'https://seed-1.testnet.networks.dash.org:1443',
+);
+
+const contractId = Identifier.from('GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec');
+const contractIdBuffer = Buffer.from(contractId);
+const getDataContractRequest = new GetDataContractRequest();
+getDataContractRequest.setId(contractIdBuffer);
+
+platformPromiseClient
+  .getDataContract(getDataContractRequest)
+  .then((response) => {
+    dpp.dataContract.createFromBuffer(response.getDataContract()).then((dataContract) => {
+      console.dir(dataContract.toJSON(), { depth: 10 });
+    });
+  })
+  .catch((e) => console.error(e));
+```
+:::
+
+:::{tab-item} gRPCurl
+:sync: grpcurl
+```shell
+# `id` must be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "id":"5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU="
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getDataContract
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (JavaScript)
+:sync: js-dapi-client
+```json
+{
+  "$format_version":"0",
+  "id":"GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec",
+  "config":{
+    "$format_version":"0",
+    "canBeDeleted":false,
+    "readonly":false,
+    "keepsHistory":false,
+    "documentsKeepHistoryContractDefault":false,
+    "documentsMutableContractDefault":true,
+    "requiresIdentityEncryptionBoundedKey":null,
+    "requiresIdentityDecryptionBoundedKey":null
+  },
+  "version":1,
+  "ownerId":"EuzJmuZdBSJs2eTrxHEp6QqJztbp6FKDNGMeb4W2Ds7h",
+  "schemaDefs":null,
+  "documentSchemas":{
+    "domain":{
+      "type":"object",
+      "indices":[
+        {
+          "name":"parentNameAndLabel",
+          "properties":[
+            {
+              "normalizedParentDomainName":"asc"
+            },
+            {
+              "normalizedLabel":"asc"
+            }
+          ],
+          "unique":true
+        },
+        {
+          "name":"dashIdentityId",
+          "properties":[
+            {
+              "records.dashUniqueIdentityId":"asc"
+            }
+          ],
+          "unique":true
+        },
+        {
+          "name":"dashAlias",
+          "properties":[
+            {
+              "records.dashAliasIdentityId":"asc"
+            }
+          ]
+        }
+      ],
+      "properties":{
+        "label":{
+          "type":"string",
+          "pattern":"^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]$",
+          "minLength":3,
+          "maxLength":63,
+          "position":0,
+          "description":"Domain label. e.g. 'Bob'."
+        },
+        "normalizedLabel":{
+          "type":"string",
+          "pattern":"^[a-hj-km-np-z0-9][a-hj-km-np-z0-9-]{0,61}[a-hj-km-np-z0-9]$",
+          "maxLength":63,
+          "position":1,
+          "description":"`Domain label converted to lowercase for case-insensitive uniqueness validation. \"o\", \"i\" and \"l\" replaced with \"0\" and \"1\" to mitigate homograph attack. e.g. 'b0b'`",
+          "$comment":"Must be equal to the label in lowercase. \"o\", \"i\" and \"l\" must be replaced with \"0\" and \"1\"."
+        },
+        "parentDomainName":{
+          "type":"string",
+          "pattern":"^$|^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]$",
+          "minLength":0,
+          "maxLength":63,
+          "position":2,
+          "description":"A full parent domain name. e.g. 'dash'."
+        },
+        "normalizedParentDomainName":{
+          "type":"string",
+          "pattern":"^$|^[a-hj-km-np-z0-9][a-hj-km-np-z0-9-\\.]{0,61}[a-hj-km-np-z0-9]$",
+          "minLength":0,
+          "maxLength":63,
+          "position":3,
+          "description":"`A parent domain name in lowercase for case-insensitive uniqueness validation. \"o\", \"i\" and \"l\" replaced with \"0\" and \"1\" to mitigate homograph attack. e.g. 'dash'`",
+          "$comment":"Must either be equal to an existing domain or empty to create a top level domain. \"o\", \"i\" and \"l\" must be replaced with \"0\" and \"1\". Only the data contract owner can create top level domains."
+        },
+        "preorderSalt":{
+          "type":"array",
+          "byteArray":true,
+          "minItems":32,
+          "maxItems":32,
+          "position":4,
+          "description":"Salt used in the preorder document"
+        },
+        "records":{
+          "type":"object",
+          "properties":{
+            "dashUniqueIdentityId":{
+              "type":"array",
+              "byteArray":true,
+              "minItems":32,
+              "maxItems":32,
+              "position":0,
+              "contentMediaType":"application/x.dash.dpp.identifier",
+              "description":"Identity ID to be used to create the primary name the Identity",
+              "$comment":"Must be equal to the document owner"
+            },
+            "dashAliasIdentityId":{
+              "type":"array",
+              "byteArray":true,
+              "minItems":32,
+              "maxItems":32,
+              "position":1,
+              "contentMediaType":"application/x.dash.dpp.identifier",
+              "description":"Identity ID to be used to create alias names for the Identity",
+              "$comment":"Must be equal to the document owner"
+            }
+          },
+          "minProperties":1,
+          "maxProperties":1,
+          "position":5,
+          "additionalProperties":false,
+          "$comment":"Constraint with max and min properties ensure that only one identity record is used - either a `dashUniqueIdentityId` or a `dashAliasIdentityId`"
+        },
+        "subdomainRules":{
+          "type":"object",
+          "properties":{
+            "allowSubdomains":{
+              "type":"boolean",
+              "description":"This option defines who can create subdomains: true - anyone; false - only the domain owner",
+              "$comment":"Only the domain owner is allowed to create subdomains for non top-level domains",
+              "position":0
+            }
+          },
+          "position":6,
+          "description":"Subdomain rules allow domain owners to define rules for subdomains",
+          "additionalProperties":false,
+          "required":[
+            "allowSubdomains"
+          ]
+        }
+      },
+      "required":[
+        "label",
+        "normalizedLabel",
+        "normalizedParentDomainName",
+        "preorderSalt",
+        "records",
+        "subdomainRules"
+      ],
+      "additionalProperties":false,
+      "$comment":"In order to register a domain you need to create a preorder. The preorder step is needed to prevent man-in-the-middle attacks. normalizedLabel + '.' + normalizedParentDomain must not be longer than 253 chars length as defined by RFC 1035. Domain documents are immutable: modification and deletion are restricted"
+    },
+    "preorder":{
+      "type":"object",
+      "indices":[
+        {
+          "name":"saltedHash",
+          "properties":[
+            {
+              "saltedDomainHash":"asc"
+            }
+          ],
+          "unique":true
+        }
+      ],
+      "properties":{
+        "saltedDomainHash":{
+          "type":"array",
+          "byteArray":true,
+          "minItems":32,
+          "maxItems":32,
+          "position":0,
+          "description":"Double sha-256 of the concatenation of a 32 byte random salt and a normalized domain name"
+        }
+      },
+      "required":[
+        "saltedDomainHash"
+      ],
+      "additionalProperties":false,
+      "$comment":"Preorder documents are immutable: modification and deletion are restricted"
+    }
+  }
+}
+```
+:::
+
+:::{tab-item} Response (gRPCurl)
+:sync: grpcurl
+```json
+{
+  "v0": {
+    "dataContract": "AOZoxlmvZq7h5ywYbd57W34KHXEqCcQNVyH2Ir9TxTFVAAAAAAABAQAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIGZG9tYWluFgsSEGRvY3VtZW50c011dGFibGUTABIMY2FuQmVEZWxldGVkEwESDHRyYW5zZmVyYWJsZQIBEgl0cmFkZU1vZGUCARIEdHlwZRIGb2JqZWN0EgdpbmRpY2VzFQIWBBIEbmFtZRIScGFyZW50TmFtZUFuZExhYmVsEgpwcm9wZXJ0aWVzFQIWARIabm9ybWFsaXplZFBhcmVudERvbWFpbk5hbWUSA2FzYxYBEg9ub3JtYWxpemVkTGFiZWwSA2FzYxIGdW5pcXVlEwESCWNvbnRlc3RlZBYDEgxmaWVsZE1hdGNoZXMVARYCEgVmaWVsZBIPbm9ybWFsaXplZExhYmVsEgxyZWdleFBhdHRlcm4SE15bYS16QS1aMDEtXXszLDE5fSQSCnJlc29sdXRpb24CABILZGVzY3JpcHRpb24SqklmIHRoZSBub3JtYWxpemVkIGxhYmVsIHBhcnQgb2YgdGhpcyBpbmRleCBpcyBsZXNzIHRoYW4gMjAgY2hhcmFjdGVycyAoYWxsIGFscGhhYmV0IGEteiwgQS1aLCAwLCAxLCBhbmQgLSkgdGhlbiBhIG1hc3Rlcm5vZGUgdm90ZSBjb250ZXN0IHRha2VzIHBsYWNlIHRvIGdpdmUgb3V0IHRoZSBuYW1lFgMSBG5hbWUSCmlkZW50aXR5SWQSDm51bGxTZWFyY2hhYmxlEwASCnByb3BlcnRpZXMVARYBEhByZWNvcmRzLmlkZW50aXR5EgNhc2MSCnByb3BlcnRpZXMWBxIFbGFiZWwWBhIEdHlwZRIGc3RyaW5nEgdwYXR0ZXJuEipeW2EtekEtWjAtOV1bYS16QS1aMC05LV17MCw2MX1bYS16QS1aMC05XSQSCW1pbkxlbmd0aAIDEgltYXhMZW5ndGgCPxIIcG9zaXRpb24CABILZGVzY3JpcHRpb24SGURvbWFpbiBsYWJlbC4gZS5nLiAnQm9iJy4SD25vcm1hbGl6ZWRMYWJlbBYGEgR0eXBlEgZzdHJpbmcSB3BhdHRlcm4SPF5bYS1oai1rbS1ucC16MC05XVthLWhqLWttLW5wLXowLTktXXswLDYxfVthLWhqLWttLW5wLXowLTldJBIJbWF4TGVuZ3RoAj8SCHBvc2l0aW9uAgESC2Rlc2NyaXB0aW9uEqNEb21haW4gbGFiZWwgY29udmVydGVkIHRvIGxvd2VyY2FzZSBmb3IgY2FzZS1pbnNlbnNpdGl2ZSB1bmlxdWVuZXNzIHZhbGlkYXRpb24uICJvIiwgImkiIGFuZCAibCIgcmVwbGFjZWQgd2l0aCAiMCIgYW5kICIxIiB0byBtaXRpZ2F0ZSBob21vZ3JhcGggYXR0YWNrLiBlLmcuICdiMGInEggkY29tbWVudBJcTXVzdCBiZSBlcXVhbCB0byB0aGUgbGFiZWwgaW4gbG93ZXJjYXNlLiAibyIsICJpIiBhbmQgImwiIG11c3QgYmUgcmVwbGFjZWQgd2l0aCAiMCIgYW5kICIxIi4SEHBhcmVudERvbWFpbk5hbWUWBhIEdHlwZRIGc3RyaW5nEgdwYXR0ZXJuEi1eJHxeW2EtekEtWjAtOV1bYS16QS1aMC05LV17MCw2MX1bYS16QS1aMC05XSQSCW1pbkxlbmd0aAIAEgltYXhMZW5ndGgCPxIIcG9zaXRpb24CAhILZGVzY3JpcHRpb24SJ0EgZnVsbCBwYXJlbnQgZG9tYWluIG5hbWUuIGUuZy4gJ2Rhc2gnLhIabm9ybWFsaXplZFBhcmVudERvbWFpbk5hbWUWBxIEdHlwZRIGc3RyaW5nEgdwYXR0ZXJuEkFeJHxeW2EtaGota20tbnAtejAtOV1bYS1oai1rbS1ucC16MC05LVwuXXswLDYxfVthLWhqLWttLW5wLXowLTldJBIJbWluTGVuZ3RoAgASCW1heExlbmd0aAI/Eghwb3NpdGlvbgIDEgtkZXNjcmlwdGlvbhKiQSBwYXJlbnQgZG9tYWluIG5hbWUgaW4gbG93ZXJjYXNlIGZvciBjYXNlLWluc2Vuc2l0aXZlIHVuaXF1ZW5lc3MgdmFsaWRhdGlvbi4gIm8iLCAiaSIgYW5kICJsIiByZXBsYWNlZCB3aXRoICIwIiBhbmQgIjEiIHRvIG1pdGlnYXRlIGhvbW9ncmFwaCBhdHRhY2suIGUuZy4gJ2Rhc2gnEggkY29tbWVudBLATXVzdCBlaXRoZXIgYmUgZXF1YWwgdG8gYW4gZXhpc3RpbmcgZG9tYWluIG9yIGVtcHR5IHRvIGNyZWF0ZSBhIHRvcCBsZXZlbCBkb21haW4uICJvIiwgImkiIGFuZCAibCIgbXVzdCBiZSByZXBsYWNlZCB3aXRoICIwIiBhbmQgIjEiLiBPbmx5IHRoZSBkYXRhIGNvbnRyYWN0IG93bmVyIGNhbiBjcmVhdGUgdG9wIGxldmVsIGRvbWFpbnMuEgxwcmVvcmRlclNhbHQWBhIEdHlwZRIFYXJyYXkSCWJ5dGVBcnJheRMBEghtaW5JdGVtcwIgEghtYXhJdGVtcwIgEghwb3NpdGlvbgIEEgtkZXNjcmlwdGlvbhIiU2FsdCB1c2VkIGluIHRoZSBwcmVvcmRlciBkb2N1bWVudBIHcmVjb3JkcxYFEgR0eXBlEgZvYmplY3QSCnByb3BlcnRpZXMWARIIaWRlbnRpdHkWBxIEdHlwZRIFYXJyYXkSCWJ5dGVBcnJheRMBEghtaW5JdGVtcwIgEghtYXhJdGVtcwIgEghwb3NpdGlvbgIBEhBjb250ZW50TWVkaWFUeXBlEiFhcHBsaWNhdGlvbi94LmRhc2guZHBwLmlkZW50aWZpZXISC2Rlc2NyaXB0aW9uEjFJZGVudGlmaWVyIG5hbWUgcmVjb3JkIHRoYXQgcmVmZXJzIHRvIGFuIElkZW50aXR5Eg1taW5Qcm9wZXJ0aWVzAgESCHBvc2l0aW9uAgUSFGFkZGl0aW9uYWxQcm9wZXJ0aWVzEwASDnN1YmRvbWFpblJ1bGVzFgYSBHR5cGUSBm9iamVjdBIKcHJvcGVydGllcxYBEg9hbGxvd1N1YmRvbWFpbnMWBBIEdHlwZRIHYm9vbGVhbhILZGVzY3JpcHRpb24SW1RoaXMgb3B0aW9uIGRlZmluZXMgd2hvIGNhbiBjcmVhdGUgc3ViZG9tYWluczogdHJ1ZSAtIGFueW9uZTsgZmFsc2UgLSBvbmx5IHRoZSBkb21haW4gb3duZXISCCRjb21tZW50Ek9Pbmx5IHRoZSBkb21haW4gb3duZXIgaXMgYWxsb3dlZCB0byBjcmVhdGUgc3ViZG9tYWlucyBmb3Igbm9uIHRvcC1sZXZlbCBkb21haW5zEghwb3NpdGlvbgIAEghwb3NpdGlvbgIGEgtkZXNjcmlwdGlvbhJCU3ViZG9tYWluIHJ1bGVzIGFsbG93IGRvbWFpbiBvd25lcnMgdG8gZGVmaW5lIHJ1bGVzIGZvciBzdWJkb21haW5zEhRhZGRpdGlvbmFsUHJvcGVydGllcxMAEghyZXF1aXJlZBUBEg9hbGxvd1N1YmRvbWFpbnMSCHJlcXVpcmVkFQkSCiRjcmVhdGVkQXQSCiR1cGRhdGVkQXQSDiR0cmFuc2ZlcnJlZEF0EgVsYWJlbBIPbm9ybWFsaXplZExhYmVsEhpub3JtYWxpemVkUGFyZW50RG9tYWluTmFtZRIMcHJlb3JkZXJTYWx0EgdyZWNvcmRzEg5zdWJkb21haW5SdWxlcxIJdHJhbnNpZW50FQESDHByZW9yZGVyU2FsdBIUYWRkaXRpb25hbFByb3BlcnRpZXMTABIIJGNvbW1lbnQS+wE3SW4gb3JkZXIgdG8gcmVnaXN0ZXIgYSBkb21haW4geW91IG5lZWQgdG8gY3JlYXRlIGEgcHJlb3JkZXIuIFRoZSBwcmVvcmRlciBzdGVwIGlzIG5lZWRlZCB0byBwcmV2ZW50IG1hbi1pbi10aGUtbWlkZGxlIGF0dGFja3MuIG5vcm1hbGl6ZWRMYWJlbCArICcuJyArIG5vcm1hbGl6ZWRQYXJlbnREb21haW4gbXVzdCBub3QgYmUgbG9uZ2VyIHRoYW4gMjUzIGNoYXJzIGxlbmd0aCBhcyBkZWZpbmVkIGJ5IFJGQyAxMDM1LiBEb21haW4gZG9jdW1lbnRzIGFyZSBpbW11dGFibGU6IG1vZGlmaWNhdGlvbiBhbmQgZGVsZXRpb24gYXJlIHJlc3RyaWN0ZWQIcHJlb3JkZXIWCBIQZG9jdW1lbnRzTXV0YWJsZRMAEgxjYW5CZURlbGV0ZWQTARIEdHlwZRIGb2JqZWN0EgdpbmRpY2VzFQEWAxIEbmFtZRIKc2FsdGVkSGFzaBIKcHJvcGVydGllcxUBFgESEHNhbHRlZERvbWFpbkhhc2gSA2FzYxIGdW5pcXVlEwESCnByb3BlcnRpZXMWARIQc2FsdGVkRG9tYWluSGFzaBYGEgR0eXBlEgVhcnJheRIJYnl0ZUFycmF5EwESCG1pbkl0ZW1zAiASCG1heEl0ZW1zAiASCHBvc2l0aW9uAgASC2Rlc2NyaXB0aW9uEllEb3VibGUgc2hhLTI1NiBvZiB0aGUgY29uY2F0ZW5hdGlvbiBvZiBhIDMyIGJ5dGUgcmFuZG9tIHNhbHQgYW5kIGEgbm9ybWFsaXplZCBkb21haW4gbmFtZRIIcmVxdWlyZWQVARIQc2FsdGVkRG9tYWluSGFzaBIUYWRkaXRpb25hbFByb3BlcnRpZXMTABIIJGNvbW1lbnQSSlByZW9yZGVyIGRvY3VtZW50cyBhcmUgaW1tdXRhYmxlOiBtb2RpZmljYXRpb24gYW5kIGRlbGV0aW9uIGFyZSByZXN0cmljdGVk",
+    "metadata": {
+      "height": "5990",
+      "coreChainLockedHeight": 1097384,
+      "epoch": 1170,
+      "timeMs": "1725567663863",
+      "protocolVersion": 1,
       "chainId": "dash-testnet-51"
     }
   }
@@ -422,63 +670,59 @@ grpcurl -proto protos/platform/v0/platform.proto \
 :::
 ::::
 
-### getEvonodesProposedEpochBlocksByIds
+### getDataContracts
 
-Retrieves the number of blocks proposed by the specified evonodes in a certain epoch, based on their IDs.
-
-**Returns**: A list of evonodes and their proposed block counts or a cryptographic proof.
+**Returns**: [Data Contract](../explanations/platform-protocol-data-contract.md) information for the requested data contracts
 
 **Parameters**:
 
-| Name               | Type     | Required | Description |
-| ------------------ | -------- | -------- | ----------- |
-| `epoch`            | Integer  | No       | The epoch to query for. If not set, the current epoch will be used |
-| `ids`              | Array    | Yes    | An array of evonode IDs for which proposed blocks are retrieved IDs<br>Note: masternode IDs are created uniquely as described in the [masternode identity IDs section](#masternode-identity-ids) |
-| `prove`            | Boolean  | No       | Set to `true` to receive a proof that contains the requested data |
+| Name    | Type    | Required | Description                               |
+| ------- | ------- | -------- | ----------------------------------------- |
+| `ids`   | Array   | Yes      | An array of data contract IDs             |
+| `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested data contracts |
 
 **Example Request and Response**
 
 ::::{tab-set}
 :::{tab-item} gRPCurl
+:sync: grpcurl
 ```shell
+# `id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "v0": {
       "ids": [
-        "jspLy7OhJKsoOv1C2tO9sgd7OAlll4ig8dr/zlufAB8=","dUuJ2ujbIPxM7l462wexRtfv5Qimb6Co4QlGdbnao14="
-      ],
-      "prove": false
+        "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU="
+      ]
     }
   }' \
   seed-1.testnet.networks.dash.org:1443 \
-  org.dash.platform.dapi.v0.Platform/getEvonodesProposedEpochBlocksByIds
+  org.dash.platform.dapi.v0.Platform/getDataContracts
 ```
 :::
 ::::
 
 ::::{tab-set}
 :::{tab-item} Response (gRPCurl)
+:sync: grpcurl
 ```json
 {
   "v0": {
-    "evonodesProposedBlockCountsInfo": {
-      "evonodesProposedBlockCounts": [
+    "dataContracts": {
+      "dataContractEntries": [
         {
-          "proTxHash": "dUuJ2ujbIPxM7l462wexRtfv5Qimb6Co4QlGdbnao14="
-        },
-        {
-          "proTxHash": "jspLy7OhJKsoOv1C2tO9sgd7OAlll4ig8dr/zlufAB8=",
-          "count": "13"
+          "identifier": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
+          "dataContract": "AOZoxlmvZq7h5ywYbd57W34KHXEqCcQNVyH2Ir9TxTFVAAAAAAABAAABMBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/awAAgZkb21haW4WBhIEdHlwZRIGb2JqZWN0EgdpbmRpY2VzFQMWAxIEbmFtZRIScGFyZW50TmFtZUFuZExhYmVsEgpwcm9wZXJ0aWVzFQIWARIabm9ybWFsaXplZFBhcmVudERvbWFpbk5hbWUSA2FzYxYBEg9ub3JtYWxpemVkTGFiZWwSA2FzYxIGdW5pcXVlEwEWAxIEbmFtZRIOZGFzaElkZW50aXR5SWQSCnByb3BlcnRpZXMVARYBEhxyZWNvcmRzLmRhc2hVbmlxdWVJZGVudGl0eUlkEgNhc2MSBnVuaXF1ZRMBFgISBG5hbWUSCWRhc2hBbGlhcxIKcHJvcGVydGllcxUBFgESG3JlY29yZHMuZGFzaEFsaWFzSWRlbnRpdHlJZBIDYXNjEgpwcm9wZXJ0aWVzFgcSBWxhYmVsFgYSBHR5cGUSBnN0cmluZxIHcGF0dGVybhIqXlthLXpBLVowLTldW2EtekEtWjAtOS1dezAsNjF9W2EtekEtWjAtOV0kEgltaW5MZW5ndGgCAxIJbWF4TGVuZ3RoAj8SCHBvc2l0aW9uAgASC2Rlc2NyaXB0aW9uEhlEb21haW4gbGFiZWwuIGUuZy4gJ0JvYicuEg9ub3JtYWxpemVkTGFiZWwWBhIEdHlwZRIGc3RyaW5nEgdwYXR0ZXJuEjxeW2EtaGota20tbnAtejAtOV1bYS1oai1rbS1ucC16MC05LV17MCw2MX1bYS1oai1rbS1ucC16MC05XSQSCW1heExlbmd0aAI/Eghwb3NpdGlvbgIBEgtkZXNjcmlwdGlvbhKjRG9tYWluIGxhYmVsIGNvbnZlcnRlZCB0byBsb3dlcmNhc2UgZm9yIGNhc2UtaW5zZW5zaXRpdmUgdW5pcXVlbmVzcyB2YWxpZGF0aW9uLiAibyIsICJpIiBhbmQgImwiIHJlcGxhY2VkIHdpdGggIjAiIGFuZCAiMSIgdG8gbWl0aWdhdGUgaG9tb2dyYXBoIGF0dGFjay4gZS5nLiAnYjBiJxIIJGNvbW1lbnQSXE11c3QgYmUgZXF1YWwgdG8gdGhlIGxhYmVsIGluIGxvd2VyY2FzZS4gIm8iLCAiaSIgYW5kICJsIiBtdXN0IGJlIHJlcGxhY2VkIHdpdGggIjAiIGFuZCAiMSIuEhBwYXJlbnREb21haW5OYW1lFgYSBHR5cGUSBnN0cmluZxIHcGF0dGVybhItXiR8XlthLXpBLVowLTldW2EtekEtWjAtOS1dezAsNjF9W2EtekEtWjAtOV0kEgltaW5MZW5ndGgCABIJbWF4TGVuZ3RoAj8SCHBvc2l0aW9uAgISC2Rlc2NyaXB0aW9uEidBIGZ1bGwgcGFyZW50IGRvbWFpbiBuYW1lLiBlLmcuICdkYXNoJy4SGm5vcm1hbGl6ZWRQYXJlbnREb21haW5OYW1lFgcSBHR5cGUSBnN0cmluZxIHcGF0dGVybhJBXiR8XlthLWhqLWttLW5wLXowLTldW2EtaGota20tbnAtejAtOS1cLl17MCw2MX1bYS1oai1rbS1ucC16MC05XSQSCW1pbkxlbmd0aAIAEgltYXhMZW5ndGgCPxIIcG9zaXRpb24CAxILZGVzY3JpcHRpb24SokEgcGFyZW50IGRvbWFpbiBuYW1lIGluIGxvd2VyY2FzZSBmb3IgY2FzZS1pbnNlbnNpdGl2ZSB1bmlxdWVuZXNzIHZhbGlkYXRpb24uICJvIiwgImkiIGFuZCAibCIgcmVwbGFjZWQgd2l0aCAiMCIgYW5kICIxIiB0byBtaXRpZ2F0ZSBob21vZ3JhcGggYXR0YWNrLiBlLmcuICdkYXNoJxIIJGNvbW1lbnQSwE11c3QgZWl0aGVyIGJlIGVxdWFsIHRvIGFuIGV4aXN0aW5nIGRvbWFpbiBvciBlbXB0eSB0byBjcmVhdGUgYSB0b3AgbGV2ZWwgZG9tYWluLiAibyIsICJpIiBhbmQgImwiIG11c3QgYmUgcmVwbGFjZWQgd2l0aCAiMCIgYW5kICIxIi4gT25seSB0aGUgZGF0YSBjb250cmFjdCBvd25lciBjYW4gY3JlYXRlIHRvcCBsZXZlbCBkb21haW5zLhIMcHJlb3JkZXJTYWx0FgYSBHR5cGUSBWFycmF5EglieXRlQXJyYXkTARIIbWluSXRlbXMCIBIIbWF4SXRlbXMCIBIIcG9zaXRpb24CBBILZGVzY3JpcHRpb24SIlNhbHQgdXNlZCBpbiB0aGUgcHJlb3JkZXIgZG9jdW1lbnQSB3JlY29yZHMWBxIEdHlwZRIGb2JqZWN0Egpwcm9wZXJ0aWVzFgISFGRhc2hVbmlxdWVJZGVudGl0eUlkFggSBHR5cGUSBWFycmF5EglieXRlQXJyYXkTARIIbWluSXRlbXMCIBIIbWF4SXRlbXMCIBIIcG9zaXRpb24CABIQY29udGVudE1lZGlhVHlwZRIhYXBwbGljYXRpb24veC5kYXNoLmRwcC5pZGVudGlmaWVyEgtkZXNjcmlwdGlvbhI+SWRlbnRpdHkgSUQgdG8gYmUgdXNlZCB0byBjcmVhdGUgdGhlIHByaW1hcnkgbmFtZSB0aGUgSWRlbnRpdHkSCCRjb21tZW50EiNNdXN0IGJlIGVxdWFsIHRvIHRoZSBkb2N1bWVudCBvd25lchITZGFzaEFsaWFzSWRlbnRpdHlJZBYIEgR0eXBlEgVhcnJheRIJYnl0ZUFycmF5EwESCG1pbkl0ZW1zAiASCG1heEl0ZW1zAiASCHBvc2l0aW9uAgESEGNvbnRlbnRNZWRpYVR5cGUSIWFwcGxpY2F0aW9uL3guZGFzaC5kcHAuaWRlbnRpZmllchILZGVzY3JpcHRpb24SPUlkZW50aXR5IElEIHRvIGJlIHVzZWQgdG8gY3JlYXRlIGFsaWFzIG5hbWVzIGZvciB0aGUgSWRlbnRpdHkSCCRjb21tZW50EiNNdXN0IGJlIGVxdWFsIHRvIHRoZSBkb2N1bWVudCBvd25lchINbWluUHJvcGVydGllcwIBEg1tYXhQcm9wZXJ0aWVzAgESCHBvc2l0aW9uAgUSFGFkZGl0aW9uYWxQcm9wZXJ0aWVzEwASCCRjb21tZW50EpBDb25zdHJhaW50IHdpdGggbWF4IGFuZCBtaW4gcHJvcGVydGllcyBlbnN1cmUgdGhhdCBvbmx5IG9uZSBpZGVudGl0eSByZWNvcmQgaXMgdXNlZCAtIGVpdGhlciBhIGBkYXNoVW5pcXVlSWRlbnRpdHlJZGAgb3IgYSBgZGFzaEFsaWFzSWRlbnRpdHlJZGASDnN1YmRvbWFpblJ1bGVzFgYSBHR5cGUSBm9iamVjdBIKcHJvcGVydGllcxYBEg9hbGxvd1N1YmRvbWFpbnMWBBIEdHlwZRIHYm9vbGVhbhILZGVzY3JpcHRpb24SW1RoaXMgb3B0aW9uIGRlZmluZXMgd2hvIGNhbiBjcmVhdGUgc3ViZG9tYWluczogdHJ1ZSAtIGFueW9uZTsgZmFsc2UgLSBvbmx5IHRoZSBkb21haW4gb3duZXISCCRjb21tZW50Ek9Pbmx5IHRoZSBkb21haW4gb3duZXIgaXMgYWxsb3dlZCB0byBjcmVhdGUgc3ViZG9tYWlucyBmb3Igbm9uIHRvcC1sZXZlbCBkb21haW5zEghwb3NpdGlvbgIAEghwb3NpdGlvbgIGEgtkZXNjcmlwdGlvbhJCU3ViZG9tYWluIHJ1bGVzIGFsbG93IGRvbWFpbiBvd25lcnMgdG8gZGVmaW5lIHJ1bGVzIGZvciBzdWJkb21haW5zEhRhZGRpdGlvbmFsUHJvcGVydGllcxMAEghyZXF1aXJlZBUBEg9hbGxvd1N1YmRvbWFpbnMSCHJlcXVpcmVkFQYSBWxhYmVsEg9ub3JtYWxpemVkTGFiZWwSGm5vcm1hbGl6ZWRQYXJlbnREb21haW5OYW1lEgxwcmVvcmRlclNhbHQSB3JlY29yZHMSDnN1YmRvbWFpblJ1bGVzEhRhZGRpdGlvbmFsUHJvcGVydGllcxMAEggkY29tbWVudBL7ATdJbiBvcmRlciB0byByZWdpc3RlciBhIGRvbWFpbiB5b3UgbmVlZCB0byBjcmVhdGUgYSBwcmVvcmRlci4gVGhlIHByZW9yZGVyIHN0ZXAgaXMgbmVlZGVkIHRvIHByZXZlbnQgbWFuLWluLXRoZS1taWRkbGUgYXR0YWNrcy4gbm9ybWFsaXplZExhYmVsICsgJy4nICsgbm9ybWFsaXplZFBhcmVudERvbWFpbiBtdXN0IG5vdCBiZSBsb25nZXIgdGhhbiAyNTMgY2hhcnMgbGVuZ3RoIGFzIGRlZmluZWQgYnkgUkZDIDEwMzUuIERvbWFpbiBkb2N1bWVudHMgYXJlIGltbXV0YWJsZTogbW9kaWZpY2F0aW9uIGFuZCBkZWxldGlvbiBhcmUgcmVzdHJpY3RlZAhwcmVvcmRlchYGEgR0eXBlEgZvYmplY3QSB2luZGljZXMVARYDEgRuYW1lEgpzYWx0ZWRIYXNoEgpwcm9wZXJ0aWVzFQEWARIQc2FsdGVkRG9tYWluSGFzaBIDYXNjEgZ1bmlxdWUTARIKcHJvcGVydGllcxYBEhBzYWx0ZWREb21haW5IYXNoFgYSBHR5cGUSBWFycmF5EglieXRlQXJyYXkTARIIbWluSXRlbXMCIBIIbWF4SXRlbXMCIBIIcG9zaXRpb24CABILZGVzY3JpcHRpb24SWURvdWJsZSBzaGEtMjU2IG9mIHRoZSBjb25jYXRlbmF0aW9uIG9mIGEgMzIgYnl0ZSByYW5kb20gc2FsdCBhbmQgYSBub3JtYWxpemVkIGRvbWFpbiBuYW1lEghyZXF1aXJlZBUBEhBzYWx0ZWREb21haW5IYXNoEhRhZGRpdGlvbmFsUHJvcGVydGllcxMAEggkY29tbWVudBJKUHJlb3JkZXIgZG9jdW1lbnRzIGFyZSBpbW11dGFibGU6IG1vZGlmaWNhdGlvbiBhbmQgZGVsZXRpb24gYXJlIHJlc3RyaWN0ZWQ="
         }
       ]
     },
     "metadata": {
-      "height": "13621",
-      "coreChainLockedHeight": 1105397,
-      "epoch": 1482,
-      "timeMs": "1726691577244",
-      "protocolVersion": 3,
-      "chainId": "dash-testnet-51"
+      "height": "6807",
+      "coreChainLockedHeight": 927014,
+      "epoch": 848,
+      "timeMs": "1701973925674",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-37"
     }
   }
 }
@@ -486,60 +730,376 @@ grpcurl -proto protos/platform/v0/platform.proto \
 :::
 ::::
 
-### getEvonodesProposedEpochBlocksByRange
+### getDataContractHistory
 
-Retrieves the number of blocks proposed by evonodes for a specified epoch.
-
-**Returns**: A list of evonodes and their proposed block counts or a cryptographic proof.
-
+**Returns**: [Data Contract](../explanations/platform-protocol-data-contract.md) information for the requested data contract  
 **Parameters**:
 
-| Name               | Type     | Required | Description |
-| ------------------ | -------- | -------- | ----------- |
-| `epoch`            | Integer  | No       | The epoch to query for. If not set, the current epoch will be used |
-| `limit`            | Integer  | No       | Maximum number of evonodes proposed epoch blocks to return |
-| `start_after`      | Bytes    | No       | Retrieve results starting after this document |
-| `start_at`         | Bytes    | No       | Retrieve results starting at this document |
-| `prove`            | Boolean  | No       | Set to `true` to receive a proof that contains the requested data |
+| Name    | Type     | Required | Description                              |
+| ------- | -------- | -------- | ---------------------------------------- |
+| `id`    | Bytes    | Yes      | A data contract `id`                     |
+| `start_at_ms` | Integer | Yes | Request revisions starting at this timestamp |
+| `limit` | Integer  | Yes      | The maximum number of revisions to return |
+| `offset` | Integer | Yes      | The offset of the first revision to return |
+| `prove` | Boolean  | No       | Set to `true` to receive a proof that contains the requested data contract. The data requested will be encoded as part of the proof in the response.|
 
 **Example Request and Response**
 
 ::::{tab-set}
+:::{tab-item} JavaScript (dapi-client)
+:sync: js-dapi-client
+```javascript
+const DAPIClient = require('@dashevo/dapi-client');
+const {
+  default: loadDpp,
+  DashPlatformProtocol,
+  Identifier,
+} = require('@dashevo/wasm-dpp');
+
+loadDpp();
+const dpp = new DashPlatformProtocol(null);
+const client = new DAPIClient({ network: 'testnet' });
+
+const contractId = Identifier.from('23iZPjG4ADx8CYGorW4yM8FUo1gihQL2fZszWLTMFyQf');
+client.platform.getDataContractHistory(contractId, 0, 2, 0).then((response) => {
+  for (const key in response.getDataContractHistory()) {
+    const revision = response.getDataContractHistory()[key];
+    dpp.dataContract.createFromBuffer(revision).then((dataContract) => {
+      console.dir(dataContract.toJSON(), { depth: 10 });
+    });
+  }
+});
+```
+:::
+
 :::{tab-item} gRPCurl
+:sync: grpcurl
 ```shell
+# `id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "v0": {
-      "epoch": 0,
-      "limit": 10,
+      "id":"D43WwBJeadt7AR8wRmcagPiCmi/YvDBHYwheFKzMfyw=",
+      "limit": 2,
+      "offset": 0,
+      "start_at_ms": 0,
       "prove": false
     }
   }' \
   seed-1.testnet.networks.dash.org:1443 \
-  org.dash.platform.dapi.v0.Platform/getEvonodesProposedEpochBlocksByRange
+  org.dash.platform.dapi.v0.Platform/getDataContractHistory
 ```
 :::
 ::::
 
 ::::{tab-set}
+:::{tab-item} Response (JavaScript)
+:sync: js-dapi-client
+```json 
+{
+  "$format_version":"0",
+  "id":"2ciAVGRuzogbR2NNtNfbn6YdW7BkLWntC7jrLNRMZN9n",
+  "config":{
+    "$format_version":"0",
+    "canBeDeleted":false,
+    "readonly":false,
+    "keepsHistory":true,
+    "documentsKeepHistoryContractDefault":false,
+    "documentsMutableContractDefault":true,
+    "requiresIdentityEncryptionBoundedKey":null,
+    "requiresIdentityDecryptionBoundedKey":null
+  },
+  "version":1,
+  "ownerId":"EB9eBUQxLjA7XGj71x3Msdd1uNmehKYZff3b6idhnTyV",
+  "schemaDefs":null,
+  "documentSchemas":{
+    "note":{
+      "type":"object",
+      "properties":{
+        "message":{
+          "type":"string",
+          "position":0
+        }
+      },
+      "additionalProperties":false
+    }
+  }
+},
+{
+  "$format_version":"0",
+  "id":"2ciAVGRuzogbR2NNtNfbn6YdW7BkLWntC7jrLNRMZN9n",
+  "config":{
+    "$format_version":"0",
+    "canBeDeleted":false,
+    "readonly":false,
+    "keepsHistory":true,
+    "documentsKeepHistoryContractDefault":false,
+    "documentsMutableContractDefault":true,
+    "requiresIdentityEncryptionBoundedKey":null,
+    "requiresIdentityDecryptionBoundedKey":null
+  },
+  "version":2,
+  "ownerId":"EB9eBUQxLjA7XGj71x3Msdd1uNmehKYZff3b6idhnTyV",
+  "schemaDefs":null,
+  "documentSchemas":{
+    "note":{
+      "type":"object",
+      "properties":{
+        "message":{
+          "type":"string",
+          "position":0
+        },
+        "author":{
+          "type":"string",
+          "position":1
+        }
+      },
+      "additionalProperties":false
+    }
+  }
+}
+```
+:::
+
 :::{tab-item} Response (gRPCurl)
+:sync: grpcurl
 ```json
 {
   "v0": {
-    "evonodesProposedBlockCountsInfo": {
-      "evonodesProposedBlockCounts": [
+    "dataContractHistory": {
+      "dataContractEntries": [
         {
-          "proTxHash": "BbaHl4NE+iQzsqqZ1B9kPi2FgaeJzcIwhIic7KUkTqg=",
-          "count": "1"
+          "date": "1701271990189",
+          "value": "ABgBjx2sR2xg0L+ti2CDLmGzmmI6g9+l/6SFwA8U3ybxAAAAAQABAAABw8GCMyj2ynyRr4i36i1KKHFYdYuPDVwKmo1jmEgT4zwAAQRub3RlFgMSBHR5cGUSBm9iamVjdBIKcHJvcGVydGllcxYBEgdtZXNzYWdlFgISBHR5cGUSBnN0cmluZxIIcG9zaXRpb24DABIUYWRkaXRpb25hbFByb3BlcnRpZXMTAA=="
+        },
+        {
+          "date": "1701272469813",
+          "value": "ABgBjx2sR2xg0L+ti2CDLmGzmmI6g9+l/6SFwA8U3ybxAAAAAQABAAACw8GCMyj2ynyRr4i36i1KKHFYdYuPDVwKmo1jmEgT4zwAAQRub3RlFgMSBHR5cGUSBm9iamVjdBIKcHJvcGVydGllcxYCEgdtZXNzYWdlFgISBHR5cGUSBnN0cmluZxIIcG9zaXRpb24CABIGYXV0aG9yFgISBHR5cGUSBnN0cmluZxIIcG9zaXRpb24CARIUYWRkaXRpb25hbFByb3BlcnRpZXMTAA=="
         }
       ]
     },
     "metadata": {
-      "height": "20263",
-      "coreChainLockedHeight": 1105827,
-      "epoch": 1499,
-      "timeMs": "1726752270072",
-      "protocolVersion": 3,
+      "height": "6776",
+      "coreChainLockedHeight": 926975,
+      "epoch": 846,
+      "timeMs": "1701968396855",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-37"
+    }
+  }
+}
+```
+:::
+::::
+
+## Document Endpoints
+
+### getDocuments
+
+**Returns**: [Document](../explanations/platform-protocol-document.md) information for the requested document(s)  
+**Parameters**:
+
+:::{note}
+The `where`, `order_by`, `limit`, `start_at`, and `start_after` parameters must comply with the limits defined on the [Query Syntax](../reference/query-syntax.md) page.
+:::
+
+| Name                    | Type    | Required | Description                                                                                      |
+| ----------------------- | ------- | -------- | ------------------------------------------------------------------------------------------------ |
+| `data_contract_id`      | Bytes   | Yes      | A data contract `id`                                                                             |
+| `document_type`         | String  | Yes      | A document type defined by the data contract (e.g. `preorder` or `domain` for the DPNS contract) |
+| `where` \*              | Bytes   | No       | Where clause to filter the results |
+| `order_by` \*           | Bytes   | No       | Sort records by the field(s) provided |
+| `limit`                 | Integer | No       | Maximum number of results to return                                                              |
+| ----------              |         |          |                                                                                                  |
+| _One_ of the following: |         |          |                                                                                                  |
+| `start_at`              | Integer | No       | Return records beginning with the index provided                                                 |
+| `start_after`           | Integer | No       | Return records beginning after the index provided                                                |
+| ----------              |         |          |                                                                                                  |
+| `prove`                 | Boolean | No       | Set to `true` to receive a proof that contains the requested document(s). The data requested will be encoded as part of the proof in the response. |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} JavaScript (dapi-client)
+:sync: js-dapi-client
+```javascript
+const DAPIClient = require('@dashevo/dapi-client');
+const {
+  default: loadDpp,
+  DashPlatformProtocol,
+  Identifier,
+} = require('@dashevo/wasm-dpp');
+
+loadDpp();
+const dpp = new DashPlatformProtocol(null);
+const client = new DAPIClient({ network: 'testnet' });
+
+const contractId = Identifier.from('GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec');
+const type = 'domain';
+const limit = 1;
+client.platform.getDataContract(contractId).then((contractResponse) => {
+  dpp.dataContract
+    .createFromBuffer(contractResponse.getDataContract())
+    .then((contract) => {
+      // Get document(s)
+      client.platform
+        .getDocuments(contractId, type, {
+          limit,
+        })
+        .then((response) => {
+          for (const document of response.documents) {
+            const doc = dpp.document.createExtendedDocumentFromDocumentBuffer(
+              document,
+              type,
+              contract,
+            );
+            console.log(doc.toJSON());
+          }
+        });
+    });
+});
+```
+:::
+
+:::{tab-item} JavaScript (dapi-grpc)
+:sync: js-dapi-grpc
+```javascript
+const {
+  v0: { PlatformPromiseClient, GetDataContractRequest, GetDocumentsRequest },
+} = require('@dashevo/dapi-grpc');
+const { default: loadDpp, DashPlatformProtocol, Identifier } = require('@dashevo/wasm-dpp');
+
+loadDpp();
+const dpp = new DashPlatformProtocol(null);
+const platformPromiseClient = new PlatformPromiseClient(
+  'https://seed-1.testnet.networks.dash.org:1443',
+);
+
+const contractId = Identifier.from('GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec');
+const contractIdBuffer = Buffer.from(contractId);
+const getDataContractRequest = new GetDataContractRequest();
+getDataContractRequest.setId(contractIdBuffer);
+
+platformPromiseClient
+  .getDataContract(getDataContractRequest)
+  .then((contractResponse) => {
+    dpp.dataContract.createFromBuffer(contractResponse.getDataContract()).then((contract) => {
+      // Get documents
+      const getDocumentsRequest = new GetDocumentsRequest();
+      const type = 'domain';
+      const limit = 10;
+
+      getDocumentsRequest.setDataContractId(contractIdBuffer);
+      getDocumentsRequest.setDocumentType(type);
+      // getDocumentsRequest.setWhere(whereSerialized);
+      // getDocumentsRequest.setOrderBy(orderBySerialized);
+      getDocumentsRequest.setLimit(limit);
+      // getDocumentsRequest.setStartAfter(startAfter);
+      // getDocumentsRequest.setStartAt(startAt);
+
+      platformPromiseClient.getDocuments(getDocumentsRequest).then((response) => {
+        for (const document of response.getDocuments().getDocumentsList()) {
+          const documentBuffer = Buffer.from(document);
+          const doc = dpp.document.createExtendedDocumentFromDocumentBuffer(
+            documentBuffer,
+            type,
+            contract,
+          );
+          console.log(doc.toJSON());
+        }
+      });
+    });
+  })
+  .catch((e) => console.error(e));
+```
+:::
+
+:::{tab-item} Request (gRPCurl)
+:sync: grpcurl
+```shell
+# Request documents
+# `id` must be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "data_contract_id":"5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
+      "document_type":"domain",
+      "limit":1
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getDocuments
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (JavaScript)
+:sync: js-dapi-client
+```json
+{
+  "$id":"Do3YtBPJG72zG4tCbN5VE8djJ6rLpvx7yvtMWEy89HC",
+  "$ownerId":"4pk6ZhgDtxn9yN2bbB6kfsYLRmUBH7PKUq275cjyzepT",
+  "label":"Chronic",
+  "normalizedLabel":"chr0n1c",
+  "normalizedParentDomainName":"dash",
+  "parentDomainName":"dash",
+  "preorderSalt":"1P9N5qv1Ww2xkv6/XXpsvymyGYychRsLXMhCqvW79Jo=",
+  "records":{
+    "dashUniqueIdentityId":"OM4WaCQNLedQ0rpbl1UMTZhEbnVeMfL4941ZD08iyFw="
+  },
+  "subdomainRules":{
+    "allowSubdomains":false
+  },
+  "$revision":1,
+  "$createdAt":null,
+  "$updatedAt":null,
+  "$dataContract":{
+    "$format_version":"0",
+    "id":"GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec",
+    "config":{
+      "$format_version":"0",
+      "canBeDeleted":false,
+      "readonly":false,
+      "keepsHistory":false,
+      "documentsKeepHistoryContractDefault":false,
+      "documentsMutableContractDefault":true,
+      "requiresIdentityEncryptionBoundedKey":null,
+      "requiresIdentityDecryptionBoundedKey":null
+    },
+    "version":1,
+    "ownerId":"EuzJmuZdBSJs2eTrxHEp6QqJztbp6FKDNGMeb4W2Ds7h",
+    "schemaDefs":null,
+    "documentSchemas":{
+      "domain":[
+        "Object"
+      ],
+      "preorder":[
+        "Object"
+      ]
+    }
+  },
+  "$type":"domain"
+}
+```
+:::
+
+:::{tab-item} Response (gRPCurl)
+:sync: grpcurl
+```json
+{
+  "v0": {
+    "documents": {
+      "documents": [
+        "AAZ1S7dbhY4VJrSCvjs2Z1DIwa9Qt9MAyjbJdh7gPu6oDsGC/h1Ayf+ZzXp2zLWDF4XB2qMLWZ0brsAKo0r/0sYBAAcAAAGRivixugAAAZGK+LG6AAABkYr4sboAF2F1ZzI1LTEyMzQ1Njc4OTAxMjM0NTY3F2F1ZzI1LTEyMzQ1Njc4OTAxMjM0NTY3AQRkYXNoBGRhc2gAIQEOwYL+HUDJ/5nNenbMtYMXhcHaowtZnRuuwAqjSv/SxgEA"
+      ]
+    },
+    "metadata": {
+      "height": "5991",
+      "coreChainLockedHeight": 1097384,
+      "epoch": 1170,
+      "timeMs": "1725567845055",
+      "protocolVersion": 1,
       "chainId": "dash-testnet-51"
     }
   }
@@ -547,6 +1107,8 @@ grpcurl -proto protos/platform/v0/platform.proto \
 ```
 :::
 ::::
+
+## Identity Endpoints
 
 ### getIdentity
 
@@ -1305,287 +1867,553 @@ grpcurl -proto protos/platform/v0/platform.proto \
 :::
 ::::
 
-### getDataContract
+## Security Group Endpoints
 
-**Returns**: [Data Contract](../explanations/platform-protocol-data-contract.md) information for the requested data contract  
+Security groups provide a way to distribute token configuration and update authorization across multiple identities. Each group defines a set of member identities, the voting power of each member, and the required power threshold to authorize an action. The endpoints in this section are used to retrieve information about groups and the actions they are performing.
+
+### getGroupInfo
+
+Retrieves information about a specific group within a contract, including its members and required power.
+
+**Returns**: Group information containing member details and required power, or a cryptographic proof.
+
 **Parameters**:
 
-| Name    | Type    | Required | Description                                                                |
-| ------- | ------- | -------- | -------------------------------------------------------------------------- |
-| `id`    | Bytes   | Yes      | A data contract `id`                                                       |
-| `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested data contract. The data requested will be encoded as part of the proof in the response. |
+| Name                     | Type     | Required | Description |
+|--------------------------|---------|----------|-------------|
+| `contract_id`            | Bytes   | Yes      | The ID of the contract containing the group |
+| `group_contract_position` | UInt32  | Yes      | The position of the group within the contract |
+| `prove`                  | Boolean | No       | Set to `true` to receive a proof that contains the requested group information |
 
 **Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "contract_id": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
+      "group_contract_position": 1,
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getGroupInfo
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "group_info": {
+      "group_info": {
+        "members": [
+          {
+            "member_id": "01abcdef",
+            "power": 5
+          },
+          {
+            "member_id": "02abcdef",
+            "power": 10
+          }
+        ],
+        "group_required_power": 15
+      }
+    },
+    "metadata": {
+      "height": "2876",
+      "coreChainLockedHeight": 1086885,
+      "epoch": 761,
+      "timeMs": "1724094056585",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-50"
+    }
+  }
+}
+```
+:::
+::::
+
+### getGroupInfos
+
+Retrieves information about multiple groups within a contract, including their members and required power.
+
+**Returns**: A list of group information entries or a cryptographic proof.
+
+**Parameters**:
+
+| Name                                      | Type     | Required | Description |
+|-------------------------------------------|---------|----------|-------------|
+| `contract_id`                             | Bytes   | Yes      | The ID of the contract containing the groups |
+| `start_at_group_contract_position`        | Object  | No       | Filtering options for retrieving groups |
+| `start_at_group_contract_position`<br>`.start_group_contract_position` | UInt32  | No       | The position of the first group to retrieve |
+| `start_at_group_contract_position`<br>`.start_group_contract_position_included` | Boolean | No       | Whether the start position should be included in the results |
+| `count`                                   | UInt32  | No       | The maximum number of groups to retrieve |
+| `prove`                                   | Boolean | No       | Set to `true` to receive a proof that contains the requested group information |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "contract_id": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
+      "start_at_group_contract_position": {
+        "start_group_contract_position": 1,
+        "start_group_contract_position_included": true
+      },
+      "count": 5,
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getGroupInfos
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "group_infos": {
+      "group_infos": [
+        {
+          "group_contract_position": 1,
+          "members": [
+            {
+              "member_id": "01abcdef",
+              "power": 5
+            },
+            {
+              "member_id": "02abcdef",
+              "power": 10
+            }
+          ],
+          "group_required_power": 15
+        },
+        {
+          "group_contract_position": 2,
+          "members": [
+            {
+              "member_id": "03abcdef",
+              "power": 8
+            },
+            {
+              "member_id": "04abcdef",
+              "power": 12
+            }
+          ],
+          "group_required_power": 20
+        }
+      ]
+    },
+    "metadata": {
+      "height": "2876",
+      "coreChainLockedHeight": 1086885,
+      "epoch": 761,
+      "timeMs": "1724094056585",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-50"
+    }
+  }
+}
+```
+:::
+::::
+
+### getGroupActions
+
+Retrieves a list of actions performed by a specific group within a contract.
+
+**Parameters**:
+
+| Name                              | Type     | Required | Description |
+|-----------------------------------|---------|----------|-------------|
+| `contract_id`                     | Bytes   | Yes      | The ID of the contract containing the group |
+| `group_contract_position`         | UInt32  | Yes      | The position of the group within the contract |
+| `status`                          | Enum    | Yes      | The status of the actions to retrieve (`ACTIVE = 0`, `CLOSED = 1`) |
+| `start_at_action_id`              | Object  | No       | Filtering options for retrieving actions |
+| `start_at_action_id.`<br>`start_action_id` | Bytes  | No       | The action ID to start retrieving from |
+| `start_at_action_id.`<br>`start_action_id_included` | Boolean | No | Whether the start action should be included in the results |
+| `count`                           | UInt32  | No       | The maximum number of actions to retrieve |
+| `prove`                           | Boolean | No       | Set to `true` to receive a proof that contains the requested group actions |
+
+**Returns**: A list of group actions or a cryptographic proof. The response message contains details about actions performed by a group, including various event types related to token operations, document updates, contract updates, and emergency actions. The list of possible actions is shown in the table below:
+
+| Event Type        | Subtype                     | Description |
+|-------------------|---------------------------|-------------|
+| **TokenEvent**    | `mint`                     | Mints new tokens to a specified recipient. |
+|                   | `burn`                     | Burns (destroys) a specified amount of tokens. |
+|                   | `freeze`                   | Freezes a specific entity's tokens. |
+|                   | `unfreeze`                 | Unfreezes a specific entity's tokens. |
+|                   | `destroy_frozen_funds`     | Destroys frozen funds for a specified entity. |
+|                   | `transfer`                 | Transfers tokens to another recipient. |
+|                   | `emergency_action`         | Performs emergency actions like pausing or resuming the contract. |
+|                   | `token_config_update`      | Updates token configuration settings. |
+| **DocumentEvent** | `create`                   | Represents the creation of a document. |
+| **ContractEvent** | `update`                   | Represents updates to a contract. |
+
+**Response Object**
+
+| Name                | Type      | Description |
+|---------------------|----------|-------------|
+| `group_actions`    | Object   | Contains a list of group actions |
+| `group_actions.group_actions` | Array of `GroupActionEntry` | A list of actions performed by the group |
+| `group_actions.group_actions[]`<br>`.action_id` | Bytes  | Unique identifier for the action |
+| `group_actions.group_actions[]`<br>`.event` | Object  | The event data associated with the action |
+| `group_actions.group_actions[]`<br>`.event.event_type` | Object  | The specific type of event |
+| `group_actions.group_actions[]`<br>`.event.event_type.token_event` | Object  | Token-related event details (if applicable). See [Token Event details](#token-event-fields) below for complete information. |
+| `group_actions.group_actions[]`<br>`.event.event_type.document_event` | Object  | Document-related event details |
+| `group_actions.group_actions[]`<br>`.event.event_type.document_event`<br>`.create` | Object  | Document creation event details |
+| `group_actions.group_actions[]`<br>`.event.event_type.document_event`<br>`.create.created_document` | Bytes | Created document data |
+| `group_actions.group_actions[]`<br>`.event.event_type.contract_event` | Object  | Contract-related event details |
+| `group_actions.group_actions[]`<br>`.event.event_type.contract_event`<br>`.update` | Object  | Contract update event details |
+| `group_actions.group_actions[]`<br>`.event.event_type.contract_event`<br>`.update.updated_contract` | Bytes | Updated contract data |
+| `metadata` | Object  | Metadata about the blockchain state. See [metadata details](#data-proofs-and-metadata) for complete information |
+
+#### Token Event Fields
+
+| Token Event Type | Field Name | Type | Description |
+|-----------------|------------|------|-------------|
+| `mint`   | `amount` | UInt64 | Amount of tokens to mint. |
+|          | `recipient_id` | Bytes | Identity ID of the recipient. |
+|          | `public_note` | String (Optional) | A public note for the mint event. |
+| `burn`   | `amount` | UInt64 | Amount of tokens to burn. |
+|          | `public_note` | String (Optional) | A public note for the burn event. |
+| `freeze` | `frozen_id` | Bytes | Identifier of the entity being frozen. |
+|          | `public_note` | String (Optional) | A public note for the freeze event. |
+| `unfreeze` | `frozen_id` | Bytes | Identifier of the entity being unfrozen. |
+|          | `public_note` | String (Optional) | A public note for the unfreeze event. |
+| `destroy_frozen_funds` | `frozen_id` | Bytes | Identifier of the frozen entity. |
+|          | `amount` | UInt64 | Amount of frozen funds to destroy. |
+|          | `public_note` | String (Optional) | A public note for the destruction event. |
+| `transfer` | `recipient_id` | Bytes | Identity ID of the recipient. |
+|          | `amount` | UInt64 | Amount of tokens transferred. |
+|          | `public_note` | String (Optional) | A public note for the transfer event. |
+|          | `shared_encrypted_note` | Object (Optional) | Encrypted note shared by sender and recipient. |
+|          | `personal_encrypted_note` | Object (Optional) | Personal encrypted note. |
+| `emergency_action` | `action_type` | Enum (`PAUSE = 0`, `RESUME = 1`) | Type of emergency action performed. |
+|           | `public_note` | String (Optional) | A public note for the emergency action. |
+| `token_config_update` | `token_config_update_item` | Bytes | Configuration update details. |
+|           | `public_note` | String (Optional) | A public note for the configuration update. |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "contract_id": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
+      "group_contract_position": 1,
+      "status": 0,
+      "start_at_action_id": {
+        "start_action_id": "01abcdef",
+        "start_action_id_included": true
+      },
+      "count": 5,
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getGroupActions
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "group_actions": {
+      "group_actions": [
+        {
+          "action_id": "01abcdef",
+          "event": {
+            "event_type": {
+              "token_event": {
+                "mint": {
+                  "amount": "1000",
+                  "recipient_id": "02abcdef",
+                  "public_note": "Minting 1000 tokens"
+                }
+              }
+            }
+          }
+        },
+        {
+          "action_id": "02abcdef",
+          "event": {
+            "event_type": {
+              "token_event": {
+                "burn": {
+                  "amount": "500",
+                  "public_note": "Burning 500 tokens"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "metadata": {
+      "height": "2876",
+      "coreChainLockedHeight": 1086885,
+      "epoch": 761,
+      "timeMs": "1724094056585",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-50"
+    }
+  }
+}
+```
+:::
+::::
+
+### getGroupActionSigners
+
+Retrieves the signers for a specified group action within a contract, along with their assigned power.
+
+**Returns**: A list of group action signers or a cryptographic proof.
+
+**Parameters**
+
+| Name                      | Type     | Required | Description |
+|---------------------------|---------|----------|-------------|
+| `contract_id`             | Bytes   | Yes      | The ID of the contract containing the group action. |
+| `group_contract_position` | UInt32  | Yes      | The position of the group within the contract. |
+| `status`                  | Enum    | Yes      | The status of the action (`ACTIVE = 0`, `CLOSED = 1`). |
+| `action_id`               | Bytes   | Yes      | The unique identifier of the action. |
+| `prove`                   | Boolean | No       | Set to `true` to receive a proof that contains the requested group action signers. |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "contract_id": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
+      "group_contract_position": 1,
+      "status": 0,
+      "action_id": "01abcdef",
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getGroupActionSigners
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "group_action_signers": {
+      "signers": [
+        {
+          "signer_id": "01abcdef",
+          "power": 5
+        },
+        {
+          "signer_id": "02abcdef",
+          "power": 10
+        }
+      ]
+    },
+    "metadata": {
+      "height": "2876",
+      "coreChainLockedHeight": 1086885,
+      "epoch": 761,
+      "timeMs": "1724094056585",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-50"
+    }
+  }
+}
+```
+:::
+::::
+
+## State Transition Endpoints
+
+### broadcastStateTransition
+
+Broadcasts a [state transition](../explanations/platform-protocol-state-transition.md) to the platform via DAPI to make a change to layer 2 data. The `broadcastStateTransition` call returns once the state transition has been accepted into the mempool.
+
+**Returns**: Nothing or error
+
+:::{note}
+The [`waitForStateTransitionResult` endpoint](#waitforstatetransitionresult) should be used after `broadcastStateTransition` if proof of block confirmation is required.
+:::
+
+**Parameters**:
+
+| Name               | Type           | Required | Description                                                          |
+| ------------------ | -------------- | -------- | -------------------------------------------------------------------- |
+| `state_transition` | Bytes (Base64) | Yes      | A [state transition](../explanations/platform-protocol-state-transition.md) |
+
+```{eval-rst}
+..
+  Commented out info
+  [block:html]
+  {
+    "html": "<!--\nJavaScript (dapi-client) example (old)\nconst DAPIClient = require('@dashevo/dapi-client');\nconst DashPlatformProtocol = require('@dashevo/dpp');\n\nconst client = new DAPIClient({ network: 'testnet' });\nconst dpp = new DashPlatformProtocol();\n\n// Data Contract Create State Transition (JSON)\n// Replace with your own state transition object before running\nconst stateTransitionObject = {\n  protocolVersion: 0,\n  type: 0,\n  signature: 'HxAipUsLWQBE++C1suSRNQiQh91rI1LZbblvQhk2erUaIvRneAagxGYYsXXYNvEeO+lBzlF1a9KHGGTHgnO/8Ts=',\n  signaturePublicKeyId: 0,\n  dataContract: {\n    protocolVersion: 0,\n    '$id': 'CMc7RghKkHeHtFdwfSX5Hzy7CUdpCEJnwsbfHdsbmJ32',\n    '$schema': 'https://schema.dash.org/dpp-0-4-0/meta/data-contract',\n    ownerId: '8Z3ps3tNoGoPEDYerUNCd4yi7zDwgBh2ejgSMExxvkfD',\n    documents: {\n      note: {\n        properties: { message: { type: 'string' } },\n        additionalProperties: false,\n      },\n    },\n  },\n  entropy: '+RqUArypdL8f/gCMAo4b6c3CoQvxHzsQG0BdYrT5QT0=',\n};\n\n// Convert signature and entropy to buffer\nstateTransitionObject.signature = Buffer.from(stateTransitionObject.signature, 'base64');\nstateTransitionObject.entropy = Buffer.from(stateTransitionObject.entropy, 'base64');\n\ndpp.stateTransition.createFromObject(stateTransitionObject, { skipValidation: true })\n  .then((stateTransition) => {\n    client.platform.broadcastStateTransition(stateTransition.toBuffer())\n      .then(() => console.log('State Transition broadcast successfully'));\n  });\n-->\n\n<!--\nJavaScript (dapi-grpc) example (old)\nconst {\n  v0: {\n    PlatformPromiseClient,\n    BroadcastStateTransitionRequest,\n  },\n} = require('@dashevo/dapi-grpc');\nconst DashPlatformProtocol = require('@dashevo/dpp');\n\nconst platformPromiseClient = new PlatformPromiseClient(\n  'https://seed-1.testnet.networks.dash.org:1443',\n);\n\nconst dpp = new DashPlatformProtocol();\n\n// Data Contract Create State Transition (JSON)\n// Replace with your own state transition object before running\nconst stateTransitionObject = {\n  protocolVersion: 0,\n  type: 0,\n  signature: 'HxAipUsLWQBE++C1suSRNQiQh91rI1LZbblvQhk2erUaIvRneAagxGYYsXXYNvEeO+lBzlF1a9KHGGTHgnO/8Ts=',\n  signaturePublicKeyId: 0,\n  dataContract: {\n    protocolVersion: 0,\n    '$id': 'CMc7RghKkHeHtFdwfSX5Hzy7CUdpCEJnwsbfHdsbmJ32',\n    '$schema': 'https://schema.dash.org/dpp-0-4-0/meta/data-contract',\n    ownerId: '8Z3ps3tNoGoPEDYerUNCd4yi7zDwgBh2ejgSMExxvkfD',\n    documents: {\n      note: {\n        properties: { message: { type: 'string' } },\n        additionalProperties: false,\n      },\n    },\n  },\n  entropy: '+RqUArypdL8f/gCMAo4b6c3CoQvxHzsQG0BdYrT5QT0=',\n};\n\n// Convert signature and entropy to buffer\nstateTransitionObject.signature = Buffer.from(stateTransitionObject.signature, 'base64');\nstateTransitionObject.entropy = Buffer.from(stateTransitionObject.entropy, 'base64');\n\nconst broadcastStateTransitionRequest = new BroadcastStateTransitionRequest();\n\ndpp.stateTransition.createFromObject(stateTransitionObject, { skipValidation: true })\n  .then((stateTransition) => {\n    console.log(stateTransition);\n    broadcastStateTransitionRequest.setStateTransition(stateTransition.toBuffer());\n\n    platformPromiseClient.broadcastStateTransition(broadcastStateTransitionRequest)\n      .then(() => console.log('State Transition broadcast successfully'))\n      .catch((e) => {\n        console.error(e);\n        console.error(e.metadata);\n      });\n  })\n  .catch((e) => console.error(e));\n-->\n\n<!--\ngRPCurl example (old)\n# Submit an identity create State Transition\n# `state_transition` must be represented in base64\n# Replace `state_transition` with your own state transition object before running\ngrpcurl -proto protos/platform/v0/platform.proto \\\n  -d '{\n    \"state_transition\":\"pWR0eXBlAmlzaWduYXR1cmV4WEg3TWhFWDQ0Z3JzMVIwTE9XTU5IZjAxWFNpYVFQcUlVZ1JLRXQyMkxHVERsUlUrZ1BwQUlUZk5JUmhXd3IvYTVHd0lzWm1idGdYVVFxcVhjbW9lQWtUOD1qcHVibGljS2V5c4GkYmlkAGRkYXRheCxBdzh2UmYxeFFCTlVLbzNiY2llaHlaR2NhM0hBSThkY0ZvVWJTK3hLb0lITmR0eXBlAGlpc0VuYWJsZWT1bmxvY2tlZE91dFBvaW50eDBLT1VUSHB5YnFPek9DNnhEVUhFWm9uc1lNSVpqcGppTHFZNnkxYmlWNWxRQUFBQUFvcHJvdG9jb2xWZXJzaW9uAA==\"\n\n    }' \\\n  seed-1.testnet.networks.dash.org:1443 \\\n  org.dash.platform.dapi.v0.Platform/broadcastStateTransition\n-->"
+  }
+  [/block]
+```
+
+**Response**: No response except on error
+
+### waitForStateTransitionResult
+
+**Returns**: The state transition hash and either a proof that the state transition was confirmed in a block or an error.  
+**Parameters**:
+
+| Name                    | Type    | Required | Description                      |
+| ----------------------- | ------- | -------- | -------------------------------- |
+| `state_transition_hash` | Bytes   | Yes      | Hash of the state transition     |
+| `prove`                 | Boolean | Yes      | Set to `true` to request a proof. The data requested will be encoded as part of the proof in the response. |
+
+**Example Request**
+
+```{eval-rst}
+..
+  Commented out info
+  [block:html]
+  {
+    "html": "<!--\nJavaScript (dapi-client) example (old)\nconst DAPIClient = require('@dashevo/dapi-client');\nconst DashPlatformProtocol = require('@dashevo/dpp');\nconst crypto = require('crypto');\n\nconst client = new DAPIClient({ network: 'testnet' });\nconst dpp = new DashPlatformProtocol();\n\n// Replace with your own state transition object before running\nconst stateTransitionObject = {\n  protocolVersion: 0,\n  type: 0,\n  signature: 'HxAipUsLWQBE++C1suSRNQiQh91rI1LZbblvQhk2erUaIvRneAagxGYYsXXYNvEeO+lBzlF1a9KHGGTHgnO/8Ts=',\n  signaturePublicKeyId: 0,\n  dataContract: {\n    protocolVersion: 0,\n    '$id': 'CMc7RghKkHeHtFdwfSX5Hzy7CUdpCEJnwsbfHdsbmJ32',\n    '$schema': 'https://schema.dash.org/dpp-0-4-0/meta/data-contract',\n    ownerId: '8Z3ps3tNoGoPEDYerUNCd4yi7zDwgBh2ejgSMExxvkfD',\n    documents: {\n      note: {\n        properties: { message: { type: 'string' } },\n        additionalProperties: false,\n      },\n    },\n  },\n  entropy: '+RqUArypdL8f/gCMAo4b6c3CoQvxHzsQG0BdYrT5QT0=',\n};\n\n// Convert signature and entropy to buffer\nstateTransitionObject.signature = Buffer.from(stateTransitionObject.signature, 'base64');\nstateTransitionObject.entropy = Buffer.from(stateTransitionObject.entropy, 'base64');\n\ndpp.stateTransition.createFromObject(stateTransitionObject, { skipValidation: true })\n  .then((stateTransition) => {\n    //  Calculate state transition hash\n    const hash = crypto.createHash('sha256')\n      .update(stateTransition.toBuffer())\n      .digest();\n\n    console.log(`Requesting proof of state transition with hash:\\n\\t${hash.toString('hex')}`);\n\n    client.platform.waitForStateTransitionResult(hash, { prove: true })\n      .then((response) => {\n        console.log(response);\n      });\n  });\n-->\n\n<!--\nJavaScript (dapi-grpc) example (old)\nconst {\n  v0: {\n    PlatformPromiseClient,\n    WaitForStateTransitionResultRequest,\n  },\n} = require('@dashevo/dapi-grpc');\nconst DashPlatformProtocol = require('@dashevo/dpp');\nconst crypto = require('crypto');\n\nconst platformPromiseClient = new PlatformPromiseClient(\n  'https://seed-1.testnet.networks.dash.org:1443',\n);\n\nconst dpp = new DashPlatformProtocol();\n\n// Replace with your own state transition object before running\nconst stateTransitionObject = {\n  protocolVersion: 0,\n  type: 0,\n  signature: 'HxAipUsLWQBE++C1suSRNQiQh91rI1LZbblvQhk2erUaIvRneAagxGYYsXXYNvEeO+lBzlF1a9KHGGTHgnO/8Ts=',\n  signaturePublicKeyId: 0,\n  dataContract: {\n    protocolVersion: 0,\n    '$id': 'CMc7RghKkHeHtFdwfSX5Hzy7CUdpCEJnwsbfHdsbmJ32',\n    '$schema': 'https://schema.dash.org/dpp-0-4-0/meta/data-contract',\n    ownerId: '8Z3ps3tNoGoPEDYerUNCd4yi7zDwgBh2ejgSMExxvkfD',\n    documents: {\n      note: {\n        properties: { message: { type: 'string' } },\n        additionalProperties: false,\n      },\n    },\n  },\n  entropy: '+RqUArypdL8f/gCMAo4b6c3CoQvxHzsQG0BdYrT5QT0=',\n};\n\n// Convert signature and entropy to buffer\nstateTransitionObject.signature = Buffer.from(stateTransitionObject.signature, 'base64');\nstateTransitionObject.entropy = Buffer.from(stateTransitionObject.entropy, 'base64');\n\ndpp.stateTransition.createFromObject(stateTransitionObject, { skipValidation: true })\n  .then((stateTransition) => {\n    //  Calculate state transition hash\n    const hash = crypto.createHash('sha256')\n      .update(stateTransition.toBuffer())\n      .digest();\n\n    const waitForStateTransitionResultRequest = new WaitForStateTransitionResultRequest();\n    waitForStateTransitionResultRequest.setStateTransitionHash(hash);\n    waitForStateTransitionResultRequest.setProve(true);\n\n    console.log(`Requesting proof of state transition with hash:\\n\\t${hash.toString('hex')}`);\n\n    platformPromiseClient.waitForStateTransitionResult(waitForStateTransitionResultRequest)\n      .then((response) => {\n        const rootTreeProof = Buffer.from(response.getProof().getRootTreeProof());\n        const storeTreeProof = Buffer.from(response.getProof().getStoreTreeProof());\n        console.log(`Root tree proof: ${rootTreeProof.toString('hex')}`);\n        console.log(`Store tree proof: ${storeTreeProof.toString('hex')}`);\n      })\n  \t\t.catch((e) => console.error(e));\n  });\n-->\n\n<!--\ngRPCurl example (old)\n# `state_transition_hash` must be represented in base64\n# Replace `state_transition_hash` with your own before running\ngrpcurl -proto protos/platform/v0/platform.proto \\\n  -d '{\n    \"state_transition_hash\":\"wEiwFu9WvAtylrwTph5v0uXQm743N+75C+C9DhmZBkw=\",\n    \"prove\": \"true\"\n    }' \\\n  seed-1.testnet.networks.dash.org:1443 \\\n  org.dash.platform.dapi.v0.Platform/waitForStateTransitionResult\n-->"
+  }
+  [/block]
+```
 
 ::::{tab-set}
 :::{tab-item} JavaScript (dapi-client)
 :sync: js-dapi-client
 ```javascript
 const DAPIClient = require('@dashevo/dapi-client');
-const {
-  default: loadDpp,
-  DashPlatformProtocol,
-  Identifier,
-} = require('@dashevo/wasm-dpp');
 
-loadDpp();
-const dpp = new DashPlatformProtocol(null);
 const client = new DAPIClient({ network: 'testnet' });
 
-const contractId = Identifier.from('GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec');
-client.platform.getDataContract(contractId).then((response) => {
-  dpp.dataContract.createFromBuffer(response.getDataContract()).then((dataContract) => {
-    console.dir(dataContract.toJSON(), { depth: 10 });
-  });
-});
-```
-:::
-
-:::{tab-item} JavaScript (dapi-grpc)
-:sync: js-dapi-grpc
-```javascript
-const {
-  v0: { PlatformPromiseClient, GetDataContractRequest },
-} = require('@dashevo/dapi-grpc');
-const { default: loadDpp, DashPlatformProtocol, Identifier } = require('@dashevo/wasm-dpp');
-
-const platformPromiseClient = new PlatformPromiseClient(
-  'https://seed-1.testnet.networks.dash.org:1443',
-);
-
-const contractId = Identifier.from('GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec');
-const contractIdBuffer = Buffer.from(contractId);
-const getDataContractRequest = new GetDataContractRequest();
-getDataContractRequest.setId(contractIdBuffer);
-
-platformPromiseClient
-  .getDataContract(getDataContractRequest)
+// Replace <YOUR_STATE_TRANSITION_HASH> with your actual hash
+const hash = <YOUR_STATE_TRANSITION_HASH>;
+client.platform.waitForStateTransitionResult(hash, { prove: true })
   .then((response) => {
-    dpp.dataContract.createFromBuffer(response.getDataContract()).then((dataContract) => {
-      console.dir(dataContract.toJSON(), { depth: 10 });
-    });
-  })
-  .catch((e) => console.error(e));
+    console.log(response);
+  });
+
 ```
 :::
 
-:::{tab-item} gRPCurl
+:::{tab-item} Request (gRPCurl)
 :sync: grpcurl
 ```shell
-# `id` must be represented in base64
+# Replace `your_state_transition_hash` with your own before running
+# `your_state_transition_hash` must be represented in base64
+#    Example: wEiwFu9WvAtylrwTph5v0uXQm743N+75C+C9DhmZBkw=
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "v0": {
-      "id":"5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU="
+      "state_transition_hash":your_state_transition_hash,
+      "prove": "true"
     }
   }' \
   seed-1.testnet.networks.dash.org:1443 \
-  org.dash.platform.dapi.v0.Platform/getDataContract
+  org.dash.platform.dapi.v0.Platform/waitForStateTransitionResult
+```
+:::
+::::
+
+```{eval-rst}
+..
+  Commented out info
+  [block:html]
+  {
+    "html": "<!--\ndapi-client\n{\n  proof: {\n    rootTreeProof: <Buffer 01 00 00 00 03 26 e0 35 e0 31 82 7e 7c 27 b0 91 23 41 ed d2 11 bf 3b 90 54 70 11 2c 68 5a 8e 76 8c 68 bb 39 21 3d cf 46 6d 09 d0 7a 28 e3 e9 0b 2b 0e ... 17 more bytes>,\n    storeTreeProof: <Buffer 01 0b ee 31 ce ca 2a bd 44 6a db d4 9f 13 4a 7d 70 25 96 a9 b9 02 6e c4 e1 90 95 f7 a1 b4 c9 de 1f e4 63 e6 ce f7 58 3a 5b c3 10 01 78 9b 4f 98 9a c9 ... 526 more bytes>\n  }\n}\n-->\n<!--\ndapi-grpc\nRequesting proof of state transition with hash:\n        8ae93b89c272455f3ce8d01dba99a3a28c9550262a602c6ba44de08e545d3aa9\nRoot tree proof: 010000000326e035e031827e7c27b0912341edd211bf3b905470112c685a8e768c68bb39213dcf466d09d07a28e3e90b2b0e1d1510dede30214f68e32f8cf498220101\nStore tree proof: 010bee31ceca2abd446adbd49f134a7d702596a9b9026ec4e19095f7a1b4c9de1fe463e6cef7583a5bc31001789b4f989ac9f8f524f1247fed372502d8c54a3c026072d5239f074422621673c250d1c74eadbb304a10013fb54a99ef641b9a7585d6d28dd443875e435a35022d92a0711f56ae23bc13f4a630a1455970451e3f1001fe2b060fca69ce2eb3d784cec28c0f575690f131026df252af068635bdf08f5448ea67c23d9a9a02831001a7df0a9f392682d7d7d0a29bd43d932c16b0d6530320a8b7df4cadb6cdfd5b5d1bb31cbb488d241e91d60cc1341cd686a3fbb6291f19e800a5632469645820a8b7df4cadb6cdfd5b5d1bb31cbb488d241e91d60cc1341cd686a3fbb6291f196724736368656d61783468747470733a2f2f736368656d612e646173682e6f72672f6470702d302d342d302f6d6574612f646174612d636f6e7472616374676f776e657249645820703796bfd3e2bbd54505a8e04929bb05b8aecfb1cd5c013ef8a8b84511770e0c69646f63756d656e7473a1646e6f7465a26a70726f70657274696573a1676d657373616765a1647479706566737472696e67746164646974696f6e616c50726f70657274696573f46f70726f746f636f6c56657273696f6e001001d94cd40044b8485e962d80e57c1992c77a182a1611111102abe7e3f7231ed71b8c4fd7ee09d4a1f970a51cd4100139312feadce145313ef34f720e940892d0ed2405111102245c6aaaf192b51207333be85ab77c9c9393af47100128ef7d4479e4f488373d92280fe8e52a9a48a6621111\n-->\n<!--\ngRPCurl\n{\n  \"proof\": {\n    \"merkleProof\": \"AQAAAAAAAAJHAV8NeFRgf0cWRiCIIVsbJcNs+bALwShVQEkXV2jRCueIAkeoHTKeU60+Jm2oiHbGSkOL8ui06Nj27SLz2raMF29iEAHKnCrDvO67hcJV79tfQwqQSFcxJOek9Fa/x3oYvwQrQQL8lxVOSAkZSC1qhI8LJa6PtR+u8TifMMmRCRY2dXrSUBABihjPBDgD9SM/d9JgWkYyT+sUp4FdgotmwHhZIB1rJVUCkaeftxRkQ/B0FU26ojDJirY/SwZ8RcU1/3pnbJbA+5EQBCBkeRNzJuVLjOKnDOmG48wnSzjHg5lLdlA5JSBD79rQxQAFAgEBAAAYUfu7+1iqqIwjkszndZ6Vm8pli6pjt4XxvvgKCcE3ygI+G8nIsflGKoZQOaWGcFBmXDzAwJqjGlMxSIWNSEgoQBACAQd7xuP4BzKoaf75MNyQQC6Q7e94Vg2IdQe2LFJysA4QAZ2mq+ad/rNJ7n2fPiJgHi4NMT9Wht6Kb5J8qF20hajJEQKz2VnGsgYNwMjY9kadWb63Tjk3nTqFttgjLnoz4PCpQBABpdWVJ9sfU+o+OEcUuFcDOV+y4gYFoao3kVNLZ+Yz7Y4RAuVHBoF21TyNc9DUDHmAfcaJf6K+/VzqIzfnJ7iGqXN+EAGvNlkFsWw+DjFg+MLjzo2MzUaWk7sA63+rG3FQJ7LO2hERERECPImih8uZnpEfew+qLeKrdEig5TR6g5VsfuHI9U2WuvsQAU7qdWenHDisDf3TNzJQytKJYaeyhmy2LEo11zZVwsoREQIAAAAAAAAA/wMBAAD6APcBAAAApGJpZFggZHkTcyblS4zipwzphuPMJ0s4x4OZS3ZQOSUgQ+/a0MVnYmFsYW5jZRo7mmxAaHJldmlzaW9uAGpwdWJsaWNLZXlzgqZiaWQAZGRhdGFYIQLlz7I9IuqDAf1fp2xiyvGiApsvgANo2ldfmrWv6MsfG2R0eXBlAGdwdXJwb3NlAGhyZWFkT25sefRtc2VjdXJpdHlMZXZlbACmYmlkAWRkYXRhWCECrq7odM9OoHGEyM1D19ZAaEPf50OKLwsxL2D4SpnLZllkdHlwZQBncHVycG9zZQBocmVhZE9ubHn0bXNlY3VyaXR5TGV2ZWwCAAEAAAAAAAAA0QQBAAAkAgEgbaBpE46QX8+EXS6Sl5CG4r+JuiXVDhxZeZy/TS8qnQEAUw2uiB7scatAs99mQfB5VfVb0lMSywDMHXpmUgNfONsC4OEPflWGlZAqBSOhaKD0/SfPJHbOOMEfCjTtBV1jjgwQARdKA3tf2c8gP3H7tRKcRMHXfljTH/4L8L63tbZk5FX/EQL+TedZ8kFHQEuNY8e9pfmaLI36Y7rHe1hAjVBSh9U95BABfPfYq74T0N0ygKE4spKvSQkekrnH0Ge8Ot0FEDsq2rcR\",\n    \"signatureLlmqHash\": \"AAAA1h0X9yUNsXpD0/iKlsPvVb+VezkZAIkQIzmGqoc=\",\n    \"signature\": \"jeByZ8qlZvID/C3LVVy/mZGHlRu2QhN3MZO09hCOjAH0gn1tqrAX6BXaJf6qRLw9APv0+nInObRF3JhstvsByPK8QOHCCl9M3NpcgI/HCECpqMMG8S9DPtJYI6HwQO5I\"\n  },\n  \"metadata\": {\n    \"height\": \"1221\",\n    \"coreChainLockedHeight\": 802939\n  }\n}\n-->"
+  }
+  [/block]
+```
+
+## System Info Endpoints
+
+### getCurrentQuorumsInfo
+
+Retrieves current quorum details, including validator sets and metadata for each quorum.
+
+**Returns**: Information about current quorums, including quorum hashes, validator sets, and
+cryptographic proof.
+
+**Parameters**:
+
+| Name          | Type   | Required | Description |
+| ------------- | ------ | -------- | ----------- |
+| `version`     | Object | No       | Version object containing request parameters |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {}
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getCurrentQuorumsInfo
 ```
 :::
 ::::
 
 ::::{tab-set}
-:::{tab-item} Response (JavaScript)
-:sync: js-dapi-client
-```json
-{
-  "$format_version":"0",
-  "id":"GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec",
-  "config":{
-    "$format_version":"0",
-    "canBeDeleted":false,
-    "readonly":false,
-    "keepsHistory":false,
-    "documentsKeepHistoryContractDefault":false,
-    "documentsMutableContractDefault":true,
-    "requiresIdentityEncryptionBoundedKey":null,
-    "requiresIdentityDecryptionBoundedKey":null
-  },
-  "version":1,
-  "ownerId":"EuzJmuZdBSJs2eTrxHEp6QqJztbp6FKDNGMeb4W2Ds7h",
-  "schemaDefs":null,
-  "documentSchemas":{
-    "domain":{
-      "type":"object",
-      "indices":[
-        {
-          "name":"parentNameAndLabel",
-          "properties":[
-            {
-              "normalizedParentDomainName":"asc"
-            },
-            {
-              "normalizedLabel":"asc"
-            }
-          ],
-          "unique":true
-        },
-        {
-          "name":"dashIdentityId",
-          "properties":[
-            {
-              "records.dashUniqueIdentityId":"asc"
-            }
-          ],
-          "unique":true
-        },
-        {
-          "name":"dashAlias",
-          "properties":[
-            {
-              "records.dashAliasIdentityId":"asc"
-            }
-          ]
-        }
-      ],
-      "properties":{
-        "label":{
-          "type":"string",
-          "pattern":"^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]$",
-          "minLength":3,
-          "maxLength":63,
-          "position":0,
-          "description":"Domain label. e.g. 'Bob'."
-        },
-        "normalizedLabel":{
-          "type":"string",
-          "pattern":"^[a-hj-km-np-z0-9][a-hj-km-np-z0-9-]{0,61}[a-hj-km-np-z0-9]$",
-          "maxLength":63,
-          "position":1,
-          "description":"`Domain label converted to lowercase for case-insensitive uniqueness validation. \"o\", \"i\" and \"l\" replaced with \"0\" and \"1\" to mitigate homograph attack. e.g. 'b0b'`",
-          "$comment":"Must be equal to the label in lowercase. \"o\", \"i\" and \"l\" must be replaced with \"0\" and \"1\"."
-        },
-        "parentDomainName":{
-          "type":"string",
-          "pattern":"^$|^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]$",
-          "minLength":0,
-          "maxLength":63,
-          "position":2,
-          "description":"A full parent domain name. e.g. 'dash'."
-        },
-        "normalizedParentDomainName":{
-          "type":"string",
-          "pattern":"^$|^[a-hj-km-np-z0-9][a-hj-km-np-z0-9-\\.]{0,61}[a-hj-km-np-z0-9]$",
-          "minLength":0,
-          "maxLength":63,
-          "position":3,
-          "description":"`A parent domain name in lowercase for case-insensitive uniqueness validation. \"o\", \"i\" and \"l\" replaced with \"0\" and \"1\" to mitigate homograph attack. e.g. 'dash'`",
-          "$comment":"Must either be equal to an existing domain or empty to create a top level domain. \"o\", \"i\" and \"l\" must be replaced with \"0\" and \"1\". Only the data contract owner can create top level domains."
-        },
-        "preorderSalt":{
-          "type":"array",
-          "byteArray":true,
-          "minItems":32,
-          "maxItems":32,
-          "position":4,
-          "description":"Salt used in the preorder document"
-        },
-        "records":{
-          "type":"object",
-          "properties":{
-            "dashUniqueIdentityId":{
-              "type":"array",
-              "byteArray":true,
-              "minItems":32,
-              "maxItems":32,
-              "position":0,
-              "contentMediaType":"application/x.dash.dpp.identifier",
-              "description":"Identity ID to be used to create the primary name the Identity",
-              "$comment":"Must be equal to the document owner"
-            },
-            "dashAliasIdentityId":{
-              "type":"array",
-              "byteArray":true,
-              "minItems":32,
-              "maxItems":32,
-              "position":1,
-              "contentMediaType":"application/x.dash.dpp.identifier",
-              "description":"Identity ID to be used to create alias names for the Identity",
-              "$comment":"Must be equal to the document owner"
-            }
-          },
-          "minProperties":1,
-          "maxProperties":1,
-          "position":5,
-          "additionalProperties":false,
-          "$comment":"Constraint with max and min properties ensure that only one identity record is used - either a `dashUniqueIdentityId` or a `dashAliasIdentityId`"
-        },
-        "subdomainRules":{
-          "type":"object",
-          "properties":{
-            "allowSubdomains":{
-              "type":"boolean",
-              "description":"This option defines who can create subdomains: true - anyone; false - only the domain owner",
-              "$comment":"Only the domain owner is allowed to create subdomains for non top-level domains",
-              "position":0
-            }
-          },
-          "position":6,
-          "description":"Subdomain rules allow domain owners to define rules for subdomains",
-          "additionalProperties":false,
-          "required":[
-            "allowSubdomains"
-          ]
-        }
-      },
-      "required":[
-        "label",
-        "normalizedLabel",
-        "normalizedParentDomainName",
-        "preorderSalt",
-        "records",
-        "subdomainRules"
-      ],
-      "additionalProperties":false,
-      "$comment":"In order to register a domain you need to create a preorder. The preorder step is needed to prevent man-in-the-middle attacks. normalizedLabel + '.' + normalizedParentDomain must not be longer than 253 chars length as defined by RFC 1035. Domain documents are immutable: modification and deletion are restricted"
-    },
-    "preorder":{
-      "type":"object",
-      "indices":[
-        {
-          "name":"saltedHash",
-          "properties":[
-            {
-              "saltedDomainHash":"asc"
-            }
-          ],
-          "unique":true
-        }
-      ],
-      "properties":{
-        "saltedDomainHash":{
-          "type":"array",
-          "byteArray":true,
-          "minItems":32,
-          "maxItems":32,
-          "position":0,
-          "description":"Double sha-256 of the concatenation of a 32 byte random salt and a normalized domain name"
-        }
-      },
-      "required":[
-        "saltedDomainHash"
-      ],
-      "additionalProperties":false,
-      "$comment":"Preorder documents are immutable: modification and deletion are restricted"
-    }
-  }
-}
-```
-:::
-
 :::{tab-item} Response (gRPCurl)
-:sync: grpcurl
 ```json
 {
   "v0": {
-    "dataContract": "AOZoxlmvZq7h5ywYbd57W34KHXEqCcQNVyH2Ir9TxTFVAAAAAAABAQAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIGZG9tYWluFgsSEGRvY3VtZW50c011dGFibGUTABIMY2FuQmVEZWxldGVkEwESDHRyYW5zZmVyYWJsZQIBEgl0cmFkZU1vZGUCARIEdHlwZRIGb2JqZWN0EgdpbmRpY2VzFQIWBBIEbmFtZRIScGFyZW50TmFtZUFuZExhYmVsEgpwcm9wZXJ0aWVzFQIWARIabm9ybWFsaXplZFBhcmVudERvbWFpbk5hbWUSA2FzYxYBEg9ub3JtYWxpemVkTGFiZWwSA2FzYxIGdW5pcXVlEwESCWNvbnRlc3RlZBYDEgxmaWVsZE1hdGNoZXMVARYCEgVmaWVsZBIPbm9ybWFsaXplZExhYmVsEgxyZWdleFBhdHRlcm4SE15bYS16QS1aMDEtXXszLDE5fSQSCnJlc29sdXRpb24CABILZGVzY3JpcHRpb24SqklmIHRoZSBub3JtYWxpemVkIGxhYmVsIHBhcnQgb2YgdGhpcyBpbmRleCBpcyBsZXNzIHRoYW4gMjAgY2hhcmFjdGVycyAoYWxsIGFscGhhYmV0IGEteiwgQS1aLCAwLCAxLCBhbmQgLSkgdGhlbiBhIG1hc3Rlcm5vZGUgdm90ZSBjb250ZXN0IHRha2VzIHBsYWNlIHRvIGdpdmUgb3V0IHRoZSBuYW1lFgMSBG5hbWUSCmlkZW50aXR5SWQSDm51bGxTZWFyY2hhYmxlEwASCnByb3BlcnRpZXMVARYBEhByZWNvcmRzLmlkZW50aXR5EgNhc2MSCnByb3BlcnRpZXMWBxIFbGFiZWwWBhIEdHlwZRIGc3RyaW5nEgdwYXR0ZXJuEipeW2EtekEtWjAtOV1bYS16QS1aMC05LV17MCw2MX1bYS16QS1aMC05XSQSCW1pbkxlbmd0aAIDEgltYXhMZW5ndGgCPxIIcG9zaXRpb24CABILZGVzY3JpcHRpb24SGURvbWFpbiBsYWJlbC4gZS5nLiAnQm9iJy4SD25vcm1hbGl6ZWRMYWJlbBYGEgR0eXBlEgZzdHJpbmcSB3BhdHRlcm4SPF5bYS1oai1rbS1ucC16MC05XVthLWhqLWttLW5wLXowLTktXXswLDYxfVthLWhqLWttLW5wLXowLTldJBIJbWF4TGVuZ3RoAj8SCHBvc2l0aW9uAgESC2Rlc2NyaXB0aW9uEqNEb21haW4gbGFiZWwgY29udmVydGVkIHRvIGxvd2VyY2FzZSBmb3IgY2FzZS1pbnNlbnNpdGl2ZSB1bmlxdWVuZXNzIHZhbGlkYXRpb24uICJvIiwgImkiIGFuZCAibCIgcmVwbGFjZWQgd2l0aCAiMCIgYW5kICIxIiB0byBtaXRpZ2F0ZSBob21vZ3JhcGggYXR0YWNrLiBlLmcuICdiMGInEggkY29tbWVudBJcTXVzdCBiZSBlcXVhbCB0byB0aGUgbGFiZWwgaW4gbG93ZXJjYXNlLiAibyIsICJpIiBhbmQgImwiIG11c3QgYmUgcmVwbGFjZWQgd2l0aCAiMCIgYW5kICIxIi4SEHBhcmVudERvbWFpbk5hbWUWBhIEdHlwZRIGc3RyaW5nEgdwYXR0ZXJuEi1eJHxeW2EtekEtWjAtOV1bYS16QS1aMC05LV17MCw2MX1bYS16QS1aMC05XSQSCW1pbkxlbmd0aAIAEgltYXhMZW5ndGgCPxIIcG9zaXRpb24CAhILZGVzY3JpcHRpb24SJ0EgZnVsbCBwYXJlbnQgZG9tYWluIG5hbWUuIGUuZy4gJ2Rhc2gnLhIabm9ybWFsaXplZFBhcmVudERvbWFpbk5hbWUWBxIEdHlwZRIGc3RyaW5nEgdwYXR0ZXJuEkFeJHxeW2EtaGota20tbnAtejAtOV1bYS1oai1rbS1ucC16MC05LVwuXXswLDYxfVthLWhqLWttLW5wLXowLTldJBIJbWluTGVuZ3RoAgASCW1heExlbmd0aAI/Eghwb3NpdGlvbgIDEgtkZXNjcmlwdGlvbhKiQSBwYXJlbnQgZG9tYWluIG5hbWUgaW4gbG93ZXJjYXNlIGZvciBjYXNlLWluc2Vuc2l0aXZlIHVuaXF1ZW5lc3MgdmFsaWRhdGlvbi4gIm8iLCAiaSIgYW5kICJsIiByZXBsYWNlZCB3aXRoICIwIiBhbmQgIjEiIHRvIG1pdGlnYXRlIGhvbW9ncmFwaCBhdHRhY2suIGUuZy4gJ2Rhc2gnEggkY29tbWVudBLATXVzdCBlaXRoZXIgYmUgZXF1YWwgdG8gYW4gZXhpc3RpbmcgZG9tYWluIG9yIGVtcHR5IHRvIGNyZWF0ZSBhIHRvcCBsZXZlbCBkb21haW4uICJvIiwgImkiIGFuZCAibCIgbXVzdCBiZSByZXBsYWNlZCB3aXRoICIwIiBhbmQgIjEiLiBPbmx5IHRoZSBkYXRhIGNvbnRyYWN0IG93bmVyIGNhbiBjcmVhdGUgdG9wIGxldmVsIGRvbWFpbnMuEgxwcmVvcmRlclNhbHQWBhIEdHlwZRIFYXJyYXkSCWJ5dGVBcnJheRMBEghtaW5JdGVtcwIgEghtYXhJdGVtcwIgEghwb3NpdGlvbgIEEgtkZXNjcmlwdGlvbhIiU2FsdCB1c2VkIGluIHRoZSBwcmVvcmRlciBkb2N1bWVudBIHcmVjb3JkcxYFEgR0eXBlEgZvYmplY3QSCnByb3BlcnRpZXMWARIIaWRlbnRpdHkWBxIEdHlwZRIFYXJyYXkSCWJ5dGVBcnJheRMBEghtaW5JdGVtcwIgEghtYXhJdGVtcwIgEghwb3NpdGlvbgIBEhBjb250ZW50TWVkaWFUeXBlEiFhcHBsaWNhdGlvbi94LmRhc2guZHBwLmlkZW50aWZpZXISC2Rlc2NyaXB0aW9uEjFJZGVudGlmaWVyIG5hbWUgcmVjb3JkIHRoYXQgcmVmZXJzIHRvIGFuIElkZW50aXR5Eg1taW5Qcm9wZXJ0aWVzAgESCHBvc2l0aW9uAgUSFGFkZGl0aW9uYWxQcm9wZXJ0aWVzEwASDnN1YmRvbWFpblJ1bGVzFgYSBHR5cGUSBm9iamVjdBIKcHJvcGVydGllcxYBEg9hbGxvd1N1YmRvbWFpbnMWBBIEdHlwZRIHYm9vbGVhbhILZGVzY3JpcHRpb24SW1RoaXMgb3B0aW9uIGRlZmluZXMgd2hvIGNhbiBjcmVhdGUgc3ViZG9tYWluczogdHJ1ZSAtIGFueW9uZTsgZmFsc2UgLSBvbmx5IHRoZSBkb21haW4gb3duZXISCCRjb21tZW50Ek9Pbmx5IHRoZSBkb21haW4gb3duZXIgaXMgYWxsb3dlZCB0byBjcmVhdGUgc3ViZG9tYWlucyBmb3Igbm9uIHRvcC1sZXZlbCBkb21haW5zEghwb3NpdGlvbgIAEghwb3NpdGlvbgIGEgtkZXNjcmlwdGlvbhJCU3ViZG9tYWluIHJ1bGVzIGFsbG93IGRvbWFpbiBvd25lcnMgdG8gZGVmaW5lIHJ1bGVzIGZvciBzdWJkb21haW5zEhRhZGRpdGlvbmFsUHJvcGVydGllcxMAEghyZXF1aXJlZBUBEg9hbGxvd1N1YmRvbWFpbnMSCHJlcXVpcmVkFQkSCiRjcmVhdGVkQXQSCiR1cGRhdGVkQXQSDiR0cmFuc2ZlcnJlZEF0EgVsYWJlbBIPbm9ybWFsaXplZExhYmVsEhpub3JtYWxpemVkUGFyZW50RG9tYWluTmFtZRIMcHJlb3JkZXJTYWx0EgdyZWNvcmRzEg5zdWJkb21haW5SdWxlcxIJdHJhbnNpZW50FQESDHByZW9yZGVyU2FsdBIUYWRkaXRpb25hbFByb3BlcnRpZXMTABIIJGNvbW1lbnQS+wE3SW4gb3JkZXIgdG8gcmVnaXN0ZXIgYSBkb21haW4geW91IG5lZWQgdG8gY3JlYXRlIGEgcHJlb3JkZXIuIFRoZSBwcmVvcmRlciBzdGVwIGlzIG5lZWRlZCB0byBwcmV2ZW50IG1hbi1pbi10aGUtbWlkZGxlIGF0dGFja3MuIG5vcm1hbGl6ZWRMYWJlbCArICcuJyArIG5vcm1hbGl6ZWRQYXJlbnREb21haW4gbXVzdCBub3QgYmUgbG9uZ2VyIHRoYW4gMjUzIGNoYXJzIGxlbmd0aCBhcyBkZWZpbmVkIGJ5IFJGQyAxMDM1LiBEb21haW4gZG9jdW1lbnRzIGFyZSBpbW11dGFibGU6IG1vZGlmaWNhdGlvbiBhbmQgZGVsZXRpb24gYXJlIHJlc3RyaWN0ZWQIcHJlb3JkZXIWCBIQZG9jdW1lbnRzTXV0YWJsZRMAEgxjYW5CZURlbGV0ZWQTARIEdHlwZRIGb2JqZWN0EgdpbmRpY2VzFQEWAxIEbmFtZRIKc2FsdGVkSGFzaBIKcHJvcGVydGllcxUBFgESEHNhbHRlZERvbWFpbkhhc2gSA2FzYxIGdW5pcXVlEwESCnByb3BlcnRpZXMWARIQc2FsdGVkRG9tYWluSGFzaBYGEgR0eXBlEgVhcnJheRIJYnl0ZUFycmF5EwESCG1pbkl0ZW1zAiASCG1heEl0ZW1zAiASCHBvc2l0aW9uAgASC2Rlc2NyaXB0aW9uEllEb3VibGUgc2hhLTI1NiBvZiB0aGUgY29uY2F0ZW5hdGlvbiBvZiBhIDMyIGJ5dGUgcmFuZG9tIHNhbHQgYW5kIGEgbm9ybWFsaXplZCBkb21haW4gbmFtZRIIcmVxdWlyZWQVARIQc2FsdGVkRG9tYWluSGFzaBIUYWRkaXRpb25hbFByb3BlcnRpZXMTABIIJGNvbW1lbnQSSlByZW9yZGVyIGRvY3VtZW50cyBhcmUgaW1tdXRhYmxlOiBtb2RpZmljYXRpb24gYW5kIGRlbGV0aW9uIGFyZSByZXN0cmljdGVk",
+    "quorumHashes": [
+      "AAABC9mcu+F3eC33hC9wyZAP20QQNHz4kYnfFQPwa5A="
+    ],
+    "currentQuorumHash": "AAABP7yY5DKt8UlLUR/QJlH8BI108xugKSEIOrR6iAA=",
+    "validatorSets": [
+      {
+        "quorumHash": "AAABC9mcu+F3eC33hC9wyZAP20QQNHz4kYnfFQPwa5A=",
+        "coreHeight": 1131096,
+        "members": [
+          {
+            "proTxHash": "BbaHl4NE+iQzsqqZ1B9kPi2FgaeJzcIwhIic7KUkTqg=",
+            "nodeIp": "52.24.124.162"
+          },
+          {
+            "proTxHash": "iCUb1LEk7+uHU33qvuxU9sj1dfTfgfEM9ejuoHMJK28=",
+            "nodeIp": "52.33.28.47"
+          },
+          {
+            "proTxHash": "FD3Namt2hP3gHoihDl1l3popJExezVhtFKNCZXAl8RM=",
+            "nodeIp": "35.164.23.245"
+          }
+        ],
+        "thresholdPublicKey": "ixciXjkgFnI/cQNXS51yBi4MYgdPZWjRGxsubEsfzItgvTlABUxow9S1eCE7w9+f"
+      }
+    ],
+    "lastBlockProposer": "iCUb1LEk7+uHU33qvuxU9sj1dfTfgfEM9ejuoHMJK28=",
     "metadata": {
-      "height": "5990",
-      "coreChainLockedHeight": 1097384,
-      "epoch": 1170,
-      "timeMs": "1725567663863",
-      "protocolVersion": 1,
+      "height": "43865",
+      "coreChainLockedHeight": 1131112,
+      "epoch": 2483,
+      "timeMs": "1730295469308",
+      "protocolVersion": 4,
       "chainId": "dash-testnet-51"
     }
   }
@@ -1594,221 +2422,63 @@ grpcurl -proto protos/platform/v0/platform.proto \
 :::
 ::::
 
-### getDataContracts
+### getEvonodesProposedEpochBlocksByIds
 
-**Returns**: [Data Contract](../explanations/platform-protocol-data-contract.md) information for the requested data contracts
+Retrieves the number of blocks proposed by the specified evonodes in a certain epoch, based on their IDs.
+
+**Returns**: A list of evonodes and their proposed block counts or a cryptographic proof.
 
 **Parameters**:
 
-| Name    | Type    | Required | Description                               |
-| ------- | ------- | -------- | ----------------------------------------- |
-| `ids`   | Array   | Yes      | An array of data contract IDs             |
-| `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested data contracts |
+| Name               | Type     | Required | Description |
+| ------------------ | -------- | -------- | ----------- |
+| `epoch`            | Integer  | No       | The epoch to query for. If not set, the current epoch will be used |
+| `ids`              | Array    | Yes    | An array of evonode IDs for which proposed blocks are retrieved IDs<br>Note: masternode IDs are created uniquely as described in the [masternode identity IDs section](#masternode-identity-ids) |
+| `prove`            | Boolean  | No       | Set to `true` to receive a proof that contains the requested data |
 
 **Example Request and Response**
 
 ::::{tab-set}
 :::{tab-item} gRPCurl
-:sync: grpcurl
 ```shell
-# `id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "v0": {
       "ids": [
-        "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU="
-      ]
-    }
-  }' \
-  seed-1.testnet.networks.dash.org:1443 \
-  org.dash.platform.dapi.v0.Platform/getDataContracts
-```
-:::
-::::
-
-::::{tab-set}
-:::{tab-item} Response (gRPCurl)
-:sync: grpcurl
-```json
-{
-  "v0": {
-    "dataContracts": {
-      "dataContractEntries": [
-        {
-          "identifier": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
-          "dataContract": "AOZoxlmvZq7h5ywYbd57W34KHXEqCcQNVyH2Ir9TxTFVAAAAAAABAAABMBLBm5jsADOt2zbNZLf1EGcPKjUaQwS19plBRChu/awAAgZkb21haW4WBhIEdHlwZRIGb2JqZWN0EgdpbmRpY2VzFQMWAxIEbmFtZRIScGFyZW50TmFtZUFuZExhYmVsEgpwcm9wZXJ0aWVzFQIWARIabm9ybWFsaXplZFBhcmVudERvbWFpbk5hbWUSA2FzYxYBEg9ub3JtYWxpemVkTGFiZWwSA2FzYxIGdW5pcXVlEwEWAxIEbmFtZRIOZGFzaElkZW50aXR5SWQSCnByb3BlcnRpZXMVARYBEhxyZWNvcmRzLmRhc2hVbmlxdWVJZGVudGl0eUlkEgNhc2MSBnVuaXF1ZRMBFgISBG5hbWUSCWRhc2hBbGlhcxIKcHJvcGVydGllcxUBFgESG3JlY29yZHMuZGFzaEFsaWFzSWRlbnRpdHlJZBIDYXNjEgpwcm9wZXJ0aWVzFgcSBWxhYmVsFgYSBHR5cGUSBnN0cmluZxIHcGF0dGVybhIqXlthLXpBLVowLTldW2EtekEtWjAtOS1dezAsNjF9W2EtekEtWjAtOV0kEgltaW5MZW5ndGgCAxIJbWF4TGVuZ3RoAj8SCHBvc2l0aW9uAgASC2Rlc2NyaXB0aW9uEhlEb21haW4gbGFiZWwuIGUuZy4gJ0JvYicuEg9ub3JtYWxpemVkTGFiZWwWBhIEdHlwZRIGc3RyaW5nEgdwYXR0ZXJuEjxeW2EtaGota20tbnAtejAtOV1bYS1oai1rbS1ucC16MC05LV17MCw2MX1bYS1oai1rbS1ucC16MC05XSQSCW1heExlbmd0aAI/Eghwb3NpdGlvbgIBEgtkZXNjcmlwdGlvbhKjRG9tYWluIGxhYmVsIGNvbnZlcnRlZCB0byBsb3dlcmNhc2UgZm9yIGNhc2UtaW5zZW5zaXRpdmUgdW5pcXVlbmVzcyB2YWxpZGF0aW9uLiAibyIsICJpIiBhbmQgImwiIHJlcGxhY2VkIHdpdGggIjAiIGFuZCAiMSIgdG8gbWl0aWdhdGUgaG9tb2dyYXBoIGF0dGFjay4gZS5nLiAnYjBiJxIIJGNvbW1lbnQSXE11c3QgYmUgZXF1YWwgdG8gdGhlIGxhYmVsIGluIGxvd2VyY2FzZS4gIm8iLCAiaSIgYW5kICJsIiBtdXN0IGJlIHJlcGxhY2VkIHdpdGggIjAiIGFuZCAiMSIuEhBwYXJlbnREb21haW5OYW1lFgYSBHR5cGUSBnN0cmluZxIHcGF0dGVybhItXiR8XlthLXpBLVowLTldW2EtekEtWjAtOS1dezAsNjF9W2EtekEtWjAtOV0kEgltaW5MZW5ndGgCABIJbWF4TGVuZ3RoAj8SCHBvc2l0aW9uAgISC2Rlc2NyaXB0aW9uEidBIGZ1bGwgcGFyZW50IGRvbWFpbiBuYW1lLiBlLmcuICdkYXNoJy4SGm5vcm1hbGl6ZWRQYXJlbnREb21haW5OYW1lFgcSBHR5cGUSBnN0cmluZxIHcGF0dGVybhJBXiR8XlthLWhqLWttLW5wLXowLTldW2EtaGota20tbnAtejAtOS1cLl17MCw2MX1bYS1oai1rbS1ucC16MC05XSQSCW1pbkxlbmd0aAIAEgltYXhMZW5ndGgCPxIIcG9zaXRpb24CAxILZGVzY3JpcHRpb24SokEgcGFyZW50IGRvbWFpbiBuYW1lIGluIGxvd2VyY2FzZSBmb3IgY2FzZS1pbnNlbnNpdGl2ZSB1bmlxdWVuZXNzIHZhbGlkYXRpb24uICJvIiwgImkiIGFuZCAibCIgcmVwbGFjZWQgd2l0aCAiMCIgYW5kICIxIiB0byBtaXRpZ2F0ZSBob21vZ3JhcGggYXR0YWNrLiBlLmcuICdkYXNoJxIIJGNvbW1lbnQSwE11c3QgZWl0aGVyIGJlIGVxdWFsIHRvIGFuIGV4aXN0aW5nIGRvbWFpbiBvciBlbXB0eSB0byBjcmVhdGUgYSB0b3AgbGV2ZWwgZG9tYWluLiAibyIsICJpIiBhbmQgImwiIG11c3QgYmUgcmVwbGFjZWQgd2l0aCAiMCIgYW5kICIxIi4gT25seSB0aGUgZGF0YSBjb250cmFjdCBvd25lciBjYW4gY3JlYXRlIHRvcCBsZXZlbCBkb21haW5zLhIMcHJlb3JkZXJTYWx0FgYSBHR5cGUSBWFycmF5EglieXRlQXJyYXkTARIIbWluSXRlbXMCIBIIbWF4SXRlbXMCIBIIcG9zaXRpb24CBBILZGVzY3JpcHRpb24SIlNhbHQgdXNlZCBpbiB0aGUgcHJlb3JkZXIgZG9jdW1lbnQSB3JlY29yZHMWBxIEdHlwZRIGb2JqZWN0Egpwcm9wZXJ0aWVzFgISFGRhc2hVbmlxdWVJZGVudGl0eUlkFggSBHR5cGUSBWFycmF5EglieXRlQXJyYXkTARIIbWluSXRlbXMCIBIIbWF4SXRlbXMCIBIIcG9zaXRpb24CABIQY29udGVudE1lZGlhVHlwZRIhYXBwbGljYXRpb24veC5kYXNoLmRwcC5pZGVudGlmaWVyEgtkZXNjcmlwdGlvbhI+SWRlbnRpdHkgSUQgdG8gYmUgdXNlZCB0byBjcmVhdGUgdGhlIHByaW1hcnkgbmFtZSB0aGUgSWRlbnRpdHkSCCRjb21tZW50EiNNdXN0IGJlIGVxdWFsIHRvIHRoZSBkb2N1bWVudCBvd25lchITZGFzaEFsaWFzSWRlbnRpdHlJZBYIEgR0eXBlEgVhcnJheRIJYnl0ZUFycmF5EwESCG1pbkl0ZW1zAiASCG1heEl0ZW1zAiASCHBvc2l0aW9uAgESEGNvbnRlbnRNZWRpYVR5cGUSIWFwcGxpY2F0aW9uL3guZGFzaC5kcHAuaWRlbnRpZmllchILZGVzY3JpcHRpb24SPUlkZW50aXR5IElEIHRvIGJlIHVzZWQgdG8gY3JlYXRlIGFsaWFzIG5hbWVzIGZvciB0aGUgSWRlbnRpdHkSCCRjb21tZW50EiNNdXN0IGJlIGVxdWFsIHRvIHRoZSBkb2N1bWVudCBvd25lchINbWluUHJvcGVydGllcwIBEg1tYXhQcm9wZXJ0aWVzAgESCHBvc2l0aW9uAgUSFGFkZGl0aW9uYWxQcm9wZXJ0aWVzEwASCCRjb21tZW50EpBDb25zdHJhaW50IHdpdGggbWF4IGFuZCBtaW4gcHJvcGVydGllcyBlbnN1cmUgdGhhdCBvbmx5IG9uZSBpZGVudGl0eSByZWNvcmQgaXMgdXNlZCAtIGVpdGhlciBhIGBkYXNoVW5pcXVlSWRlbnRpdHlJZGAgb3IgYSBgZGFzaEFsaWFzSWRlbnRpdHlJZGASDnN1YmRvbWFpblJ1bGVzFgYSBHR5cGUSBm9iamVjdBIKcHJvcGVydGllcxYBEg9hbGxvd1N1YmRvbWFpbnMWBBIEdHlwZRIHYm9vbGVhbhILZGVzY3JpcHRpb24SW1RoaXMgb3B0aW9uIGRlZmluZXMgd2hvIGNhbiBjcmVhdGUgc3ViZG9tYWluczogdHJ1ZSAtIGFueW9uZTsgZmFsc2UgLSBvbmx5IHRoZSBkb21haW4gb3duZXISCCRjb21tZW50Ek9Pbmx5IHRoZSBkb21haW4gb3duZXIgaXMgYWxsb3dlZCB0byBjcmVhdGUgc3ViZG9tYWlucyBmb3Igbm9uIHRvcC1sZXZlbCBkb21haW5zEghwb3NpdGlvbgIAEghwb3NpdGlvbgIGEgtkZXNjcmlwdGlvbhJCU3ViZG9tYWluIHJ1bGVzIGFsbG93IGRvbWFpbiBvd25lcnMgdG8gZGVmaW5lIHJ1bGVzIGZvciBzdWJkb21haW5zEhRhZGRpdGlvbmFsUHJvcGVydGllcxMAEghyZXF1aXJlZBUBEg9hbGxvd1N1YmRvbWFpbnMSCHJlcXVpcmVkFQYSBWxhYmVsEg9ub3JtYWxpemVkTGFiZWwSGm5vcm1hbGl6ZWRQYXJlbnREb21haW5OYW1lEgxwcmVvcmRlclNhbHQSB3JlY29yZHMSDnN1YmRvbWFpblJ1bGVzEhRhZGRpdGlvbmFsUHJvcGVydGllcxMAEggkY29tbWVudBL7ATdJbiBvcmRlciB0byByZWdpc3RlciBhIGRvbWFpbiB5b3UgbmVlZCB0byBjcmVhdGUgYSBwcmVvcmRlci4gVGhlIHByZW9yZGVyIHN0ZXAgaXMgbmVlZGVkIHRvIHByZXZlbnQgbWFuLWluLXRoZS1taWRkbGUgYXR0YWNrcy4gbm9ybWFsaXplZExhYmVsICsgJy4nICsgbm9ybWFsaXplZFBhcmVudERvbWFpbiBtdXN0IG5vdCBiZSBsb25nZXIgdGhhbiAyNTMgY2hhcnMgbGVuZ3RoIGFzIGRlZmluZWQgYnkgUkZDIDEwMzUuIERvbWFpbiBkb2N1bWVudHMgYXJlIGltbXV0YWJsZTogbW9kaWZpY2F0aW9uIGFuZCBkZWxldGlvbiBhcmUgcmVzdHJpY3RlZAhwcmVvcmRlchYGEgR0eXBlEgZvYmplY3QSB2luZGljZXMVARYDEgRuYW1lEgpzYWx0ZWRIYXNoEgpwcm9wZXJ0aWVzFQEWARIQc2FsdGVkRG9tYWluSGFzaBIDYXNjEgZ1bmlxdWUTARIKcHJvcGVydGllcxYBEhBzYWx0ZWREb21haW5IYXNoFgYSBHR5cGUSBWFycmF5EglieXRlQXJyYXkTARIIbWluSXRlbXMCIBIIbWF4SXRlbXMCIBIIcG9zaXRpb24CABILZGVzY3JpcHRpb24SWURvdWJsZSBzaGEtMjU2IG9mIHRoZSBjb25jYXRlbmF0aW9uIG9mIGEgMzIgYnl0ZSByYW5kb20gc2FsdCBhbmQgYSBub3JtYWxpemVkIGRvbWFpbiBuYW1lEghyZXF1aXJlZBUBEhBzYWx0ZWREb21haW5IYXNoEhRhZGRpdGlvbmFsUHJvcGVydGllcxMAEggkY29tbWVudBJKUHJlb3JkZXIgZG9jdW1lbnRzIGFyZSBpbW11dGFibGU6IG1vZGlmaWNhdGlvbiBhbmQgZGVsZXRpb24gYXJlIHJlc3RyaWN0ZWQ="
-        }
-      ]
-    },
-    "metadata": {
-      "height": "6807",
-      "coreChainLockedHeight": 927014,
-      "epoch": 848,
-      "timeMs": "1701973925674",
-      "protocolVersion": 1,
-      "chainId": "dash-testnet-37"
-    }
-  }
-}
-```
-:::
-::::
-
-### getDataContractHistory
-
-**Returns**: [Data Contract](../explanations/platform-protocol-data-contract.md) information for the requested data contract  
-**Parameters**:
-
-| Name    | Type     | Required | Description                              |
-| ------- | -------- | -------- | ---------------------------------------- |
-| `id`    | Bytes    | Yes      | A data contract `id`                     |
-| `start_at_ms` | Integer | Yes | Request revisions starting at this timestamp |
-| `limit` | Integer  | Yes      | The maximum number of revisions to return |
-| `offset` | Integer | Yes      | The offset of the first revision to return |
-| `prove` | Boolean  | No       | Set to `true` to receive a proof that contains the requested data contract. The data requested will be encoded as part of the proof in the response.|
-
-**Example Request and Response**
-
-::::{tab-set}
-:::{tab-item} JavaScript (dapi-client)
-:sync: js-dapi-client
-```javascript
-const DAPIClient = require('@dashevo/dapi-client');
-const {
-  default: loadDpp,
-  DashPlatformProtocol,
-  Identifier,
-} = require('@dashevo/wasm-dpp');
-
-loadDpp();
-const dpp = new DashPlatformProtocol(null);
-const client = new DAPIClient({ network: 'testnet' });
-
-const contractId = Identifier.from('23iZPjG4ADx8CYGorW4yM8FUo1gihQL2fZszWLTMFyQf');
-client.platform.getDataContractHistory(contractId, 0, 2, 0).then((response) => {
-  for (const key in response.getDataContractHistory()) {
-    const revision = response.getDataContractHistory()[key];
-    dpp.dataContract.createFromBuffer(revision).then((dataContract) => {
-      console.dir(dataContract.toJSON(), { depth: 10 });
-    });
-  }
-});
-```
-:::
-
-:::{tab-item} gRPCurl
-:sync: grpcurl
-```shell
-# `id` must be represented in base64
-grpcurl -proto protos/platform/v0/platform.proto \
-  -d '{
-    "v0": {
-      "id":"D43WwBJeadt7AR8wRmcagPiCmi/YvDBHYwheFKzMfyw=",
-      "limit": 2,
-      "offset": 0,
-      "start_at_ms": 0,
+        "jspLy7OhJKsoOv1C2tO9sgd7OAlll4ig8dr/zlufAB8=","dUuJ2ujbIPxM7l462wexRtfv5Qimb6Co4QlGdbnao14="
+      ],
       "prove": false
     }
   }' \
   seed-1.testnet.networks.dash.org:1443 \
-  org.dash.platform.dapi.v0.Platform/getDataContractHistory
+  org.dash.platform.dapi.v0.Platform/getEvonodesProposedEpochBlocksByIds
 ```
 :::
 ::::
 
 ::::{tab-set}
-:::{tab-item} Response (JavaScript)
-:sync: js-dapi-client
-```json 
-{
-  "$format_version":"0",
-  "id":"2ciAVGRuzogbR2NNtNfbn6YdW7BkLWntC7jrLNRMZN9n",
-  "config":{
-    "$format_version":"0",
-    "canBeDeleted":false,
-    "readonly":false,
-    "keepsHistory":true,
-    "documentsKeepHistoryContractDefault":false,
-    "documentsMutableContractDefault":true,
-    "requiresIdentityEncryptionBoundedKey":null,
-    "requiresIdentityDecryptionBoundedKey":null
-  },
-  "version":1,
-  "ownerId":"EB9eBUQxLjA7XGj71x3Msdd1uNmehKYZff3b6idhnTyV",
-  "schemaDefs":null,
-  "documentSchemas":{
-    "note":{
-      "type":"object",
-      "properties":{
-        "message":{
-          "type":"string",
-          "position":0
-        }
-      },
-      "additionalProperties":false
-    }
-  }
-},
-{
-  "$format_version":"0",
-  "id":"2ciAVGRuzogbR2NNtNfbn6YdW7BkLWntC7jrLNRMZN9n",
-  "config":{
-    "$format_version":"0",
-    "canBeDeleted":false,
-    "readonly":false,
-    "keepsHistory":true,
-    "documentsKeepHistoryContractDefault":false,
-    "documentsMutableContractDefault":true,
-    "requiresIdentityEncryptionBoundedKey":null,
-    "requiresIdentityDecryptionBoundedKey":null
-  },
-  "version":2,
-  "ownerId":"EB9eBUQxLjA7XGj71x3Msdd1uNmehKYZff3b6idhnTyV",
-  "schemaDefs":null,
-  "documentSchemas":{
-    "note":{
-      "type":"object",
-      "properties":{
-        "message":{
-          "type":"string",
-          "position":0
-        },
-        "author":{
-          "type":"string",
-          "position":1
-        }
-      },
-      "additionalProperties":false
-    }
-  }
-}
-```
-:::
-
 :::{tab-item} Response (gRPCurl)
-:sync: grpcurl
 ```json
 {
   "v0": {
-    "dataContractHistory": {
-      "dataContractEntries": [
+    "evonodesProposedBlockCountsInfo": {
+      "evonodesProposedBlockCounts": [
         {
-          "date": "1701271990189",
-          "value": "ABgBjx2sR2xg0L+ti2CDLmGzmmI6g9+l/6SFwA8U3ybxAAAAAQABAAABw8GCMyj2ynyRr4i36i1KKHFYdYuPDVwKmo1jmEgT4zwAAQRub3RlFgMSBHR5cGUSBm9iamVjdBIKcHJvcGVydGllcxYBEgdtZXNzYWdlFgISBHR5cGUSBnN0cmluZxIIcG9zaXRpb24DABIUYWRkaXRpb25hbFByb3BlcnRpZXMTAA=="
+          "proTxHash": "dUuJ2ujbIPxM7l462wexRtfv5Qimb6Co4QlGdbnao14="
         },
         {
-          "date": "1701272469813",
-          "value": "ABgBjx2sR2xg0L+ti2CDLmGzmmI6g9+l/6SFwA8U3ybxAAAAAQABAAACw8GCMyj2ynyRr4i36i1KKHFYdYuPDVwKmo1jmEgT4zwAAQRub3RlFgMSBHR5cGUSBm9iamVjdBIKcHJvcGVydGllcxYCEgdtZXNzYWdlFgISBHR5cGUSBnN0cmluZxIIcG9zaXRpb24CABIGYXV0aG9yFgISBHR5cGUSBnN0cmluZxIIcG9zaXRpb24CARIUYWRkaXRpb25hbFByb3BlcnRpZXMTAA=="
+          "proTxHash": "jspLy7OhJKsoOv1C2tO9sgd7OAlll4ig8dr/zlufAB8=",
+          "count": "13"
         }
       ]
     },
     "metadata": {
-      "height": "6776",
-      "coreChainLockedHeight": 926975,
-      "epoch": 846,
-      "timeMs": "1701968396855",
-      "protocolVersion": 1,
-      "chainId": "dash-testnet-37"
+      "height": "13621",
+      "coreChainLockedHeight": 1105397,
+      "epoch": 1482,
+      "timeMs": "1726691577244",
+      "protocolVersion": 3,
+      "chainId": "dash-testnet-51"
     }
   }
 }
@@ -1816,212 +2486,60 @@ grpcurl -proto protos/platform/v0/platform.proto \
 :::
 ::::
 
-### getDocuments
+### getEvonodesProposedEpochBlocksByRange
 
-**Returns**: [Document](../explanations/platform-protocol-document.md) information for the requested document(s)  
+Retrieves the number of blocks proposed by evonodes for a specified epoch.
+
+**Returns**: A list of evonodes and their proposed block counts or a cryptographic proof.
+
 **Parameters**:
 
-:::{note}
-The `where`, `order_by`, `limit`, `start_at`, and `start_after` parameters must comply with the limits defined on the [Query Syntax](../reference/query-syntax.md) page.
-:::
-
-| Name                    | Type    | Required | Description                                                                                      |
-| ----------------------- | ------- | -------- | ------------------------------------------------------------------------------------------------ |
-| `data_contract_id`      | Bytes   | Yes      | A data contract `id`                                                                             |
-| `document_type`         | String  | Yes      | A document type defined by the data contract (e.g. `preorder` or `domain` for the DPNS contract) |
-| `where` \*              | Bytes   | No       | Where clause to filter the results |
-| `order_by` \*           | Bytes   | No       | Sort records by the field(s) provided |
-| `limit`                 | Integer | No       | Maximum number of results to return                                                              |
-| ----------              |         |          |                                                                                                  |
-| _One_ of the following: |         |          |                                                                                                  |
-| `start_at`              | Integer | No       | Return records beginning with the index provided                                                 |
-| `start_after`           | Integer | No       | Return records beginning after the index provided                                                |
-| ----------              |         |          |                                                                                                  |
-| `prove`                 | Boolean | No       | Set to `true` to receive a proof that contains the requested document(s). The data requested will be encoded as part of the proof in the response. |
+| Name               | Type     | Required | Description |
+| ------------------ | -------- | -------- | ----------- |
+| `epoch`            | Integer  | No       | The epoch to query for. If not set, the current epoch will be used |
+| `limit`            | Integer  | No       | Maximum number of evonodes proposed epoch blocks to return |
+| `start_after`      | Bytes    | No       | Retrieve results starting after this document |
+| `start_at`         | Bytes    | No       | Retrieve results starting at this document |
+| `prove`            | Boolean  | No       | Set to `true` to receive a proof that contains the requested data |
 
 **Example Request and Response**
 
 ::::{tab-set}
-:::{tab-item} JavaScript (dapi-client)
-:sync: js-dapi-client
-```javascript
-const DAPIClient = require('@dashevo/dapi-client');
-const {
-  default: loadDpp,
-  DashPlatformProtocol,
-  Identifier,
-} = require('@dashevo/wasm-dpp');
-
-loadDpp();
-const dpp = new DashPlatformProtocol(null);
-const client = new DAPIClient({ network: 'testnet' });
-
-const contractId = Identifier.from('GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec');
-const type = 'domain';
-const limit = 1;
-client.platform.getDataContract(contractId).then((contractResponse) => {
-  dpp.dataContract
-    .createFromBuffer(contractResponse.getDataContract())
-    .then((contract) => {
-      // Get document(s)
-      client.platform
-        .getDocuments(contractId, type, {
-          limit,
-        })
-        .then((response) => {
-          for (const document of response.documents) {
-            const doc = dpp.document.createExtendedDocumentFromDocumentBuffer(
-              document,
-              type,
-              contract,
-            );
-            console.log(doc.toJSON());
-          }
-        });
-    });
-});
-```
-:::
-
-:::{tab-item} JavaScript (dapi-grpc)
-:sync: js-dapi-grpc
-```javascript
-const {
-  v0: { PlatformPromiseClient, GetDataContractRequest, GetDocumentsRequest },
-} = require('@dashevo/dapi-grpc');
-const { default: loadDpp, DashPlatformProtocol, Identifier } = require('@dashevo/wasm-dpp');
-
-loadDpp();
-const dpp = new DashPlatformProtocol(null);
-const platformPromiseClient = new PlatformPromiseClient(
-  'https://seed-1.testnet.networks.dash.org:1443',
-);
-
-const contractId = Identifier.from('GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec');
-const contractIdBuffer = Buffer.from(contractId);
-const getDataContractRequest = new GetDataContractRequest();
-getDataContractRequest.setId(contractIdBuffer);
-
-platformPromiseClient
-  .getDataContract(getDataContractRequest)
-  .then((contractResponse) => {
-    dpp.dataContract.createFromBuffer(contractResponse.getDataContract()).then((contract) => {
-      // Get documents
-      const getDocumentsRequest = new GetDocumentsRequest();
-      const type = 'domain';
-      const limit = 10;
-
-      getDocumentsRequest.setDataContractId(contractIdBuffer);
-      getDocumentsRequest.setDocumentType(type);
-      // getDocumentsRequest.setWhere(whereSerialized);
-      // getDocumentsRequest.setOrderBy(orderBySerialized);
-      getDocumentsRequest.setLimit(limit);
-      // getDocumentsRequest.setStartAfter(startAfter);
-      // getDocumentsRequest.setStartAt(startAt);
-
-      platformPromiseClient.getDocuments(getDocumentsRequest).then((response) => {
-        for (const document of response.getDocuments().getDocumentsList()) {
-          const documentBuffer = Buffer.from(document);
-          const doc = dpp.document.createExtendedDocumentFromDocumentBuffer(
-            documentBuffer,
-            type,
-            contract,
-          );
-          console.log(doc.toJSON());
-        }
-      });
-    });
-  })
-  .catch((e) => console.error(e));
-```
-:::
-
-:::{tab-item} Request (gRPCurl)
-:sync: grpcurl
+:::{tab-item} gRPCurl
 ```shell
-# Request documents
-# `id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "v0": {
-      "data_contract_id":"5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
-      "document_type":"domain",
-      "limit":1
+      "epoch": 0,
+      "limit": 10,
+      "prove": false
     }
   }' \
   seed-1.testnet.networks.dash.org:1443 \
-  org.dash.platform.dapi.v0.Platform/getDocuments
+  org.dash.platform.dapi.v0.Platform/getEvonodesProposedEpochBlocksByRange
 ```
 :::
 ::::
 
 ::::{tab-set}
-:::{tab-item} Response (JavaScript)
-:sync: js-dapi-client
-```json
-{
-  "$id":"Do3YtBPJG72zG4tCbN5VE8djJ6rLpvx7yvtMWEy89HC",
-  "$ownerId":"4pk6ZhgDtxn9yN2bbB6kfsYLRmUBH7PKUq275cjyzepT",
-  "label":"Chronic",
-  "normalizedLabel":"chr0n1c",
-  "normalizedParentDomainName":"dash",
-  "parentDomainName":"dash",
-  "preorderSalt":"1P9N5qv1Ww2xkv6/XXpsvymyGYychRsLXMhCqvW79Jo=",
-  "records":{
-    "dashUniqueIdentityId":"OM4WaCQNLedQ0rpbl1UMTZhEbnVeMfL4941ZD08iyFw="
-  },
-  "subdomainRules":{
-    "allowSubdomains":false
-  },
-  "$revision":1,
-  "$createdAt":null,
-  "$updatedAt":null,
-  "$dataContract":{
-    "$format_version":"0",
-    "id":"GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec",
-    "config":{
-      "$format_version":"0",
-      "canBeDeleted":false,
-      "readonly":false,
-      "keepsHistory":false,
-      "documentsKeepHistoryContractDefault":false,
-      "documentsMutableContractDefault":true,
-      "requiresIdentityEncryptionBoundedKey":null,
-      "requiresIdentityDecryptionBoundedKey":null
-    },
-    "version":1,
-    "ownerId":"EuzJmuZdBSJs2eTrxHEp6QqJztbp6FKDNGMeb4W2Ds7h",
-    "schemaDefs":null,
-    "documentSchemas":{
-      "domain":[
-        "Object"
-      ],
-      "preorder":[
-        "Object"
-      ]
-    }
-  },
-  "$type":"domain"
-}
-```
-:::
-
 :::{tab-item} Response (gRPCurl)
-:sync: grpcurl
 ```json
 {
   "v0": {
-    "documents": {
-      "documents": [
-        "AAZ1S7dbhY4VJrSCvjs2Z1DIwa9Qt9MAyjbJdh7gPu6oDsGC/h1Ayf+ZzXp2zLWDF4XB2qMLWZ0brsAKo0r/0sYBAAcAAAGRivixugAAAZGK+LG6AAABkYr4sboAF2F1ZzI1LTEyMzQ1Njc4OTAxMjM0NTY3F2F1ZzI1LTEyMzQ1Njc4OTAxMjM0NTY3AQRkYXNoBGRhc2gAIQEOwYL+HUDJ/5nNenbMtYMXhcHaowtZnRuuwAqjSv/SxgEA"
+    "evonodesProposedBlockCountsInfo": {
+      "evonodesProposedBlockCounts": [
+        {
+          "proTxHash": "BbaHl4NE+iQzsqqZ1B9kPi2FgaeJzcIwhIic7KUkTqg=",
+          "count": "1"
+        }
       ]
     },
     "metadata": {
-      "height": "5991",
-      "coreChainLockedHeight": 1097384,
-      "epoch": 1170,
-      "timeMs": "1725567845055",
-      "protocolVersion": 1,
+      "height": "20263",
+      "coreChainLockedHeight": 1105827,
+      "epoch": 1499,
+      "timeMs": "1726752270072",
+      "protocolVersion": 3,
       "chainId": "dash-testnet-51"
     }
   }
@@ -2535,514 +3053,6 @@ grpcurl -proto protos/platform/v0/platform.proto \
       "coreChainLockedHeight": 1087403,
       "epoch": 781,
       "timeMs": "1724165757972",
-      "protocolVersion": 1,
-      "chainId": "dash-testnet-50"
-    }
-  }
-}
-```
-:::
-::::
-
-### getVotePollsByEndDate
-
-Retrieves vote polls that will end within a specified date range.
-
-**Returns**: A list of vote polls or a cryptographic proof.
-
-**Parameters**:
-
-| Name               | Type     | Required | Description |
-| ------------------ | -------- | -------- | ----------- |
-| `start_time_info`  | Object   | No       | Start time information for filtering vote polls |
-| `end_time_info`    | Object   | No       | End time information for filtering vote polls |
-| `limit`            | Integer  | No       | Maximum number of results to return |
-| `offset`           | Integer  | No       | Offset for pagination |
-| `ascending`        | Boolean  | No       | Sort order for results |
-| `prove`            | Boolean  | No       | Set to `true` to receive a proof that contains the requested vote polls |
-
-**Example Request and Response**
-
-::::{tab-set}
-:::{tab-item} gRPCurl
-```shell
-grpcurl -proto protos/platform/v0/platform.proto \
-  -d '{
-    "v0": {
-      "start_time_info": {"start_time_ms": "1701980000000", "start_time_included": true},
-      "end_time_info": {"end_time_ms": "1702000000000", "end_time_included": true},
-      "limit": 10
-    }
-  }' \
-  seed-1.testnet.networks.dash.org:1443 \
-  org.dash.platform.dapi.v0.Platform/getVotePollsByEndDate
-```
-:::
-::::
-
-::::{tab-set}
-:::{tab-item} Response (gRPCurl)
-```json
-{
-  "v0": {
-    "votePollsByTimestamps": {
-      "finishedResults": true
-    },
-    "metadata": {
-      "height": "2876",
-      "coreChainLockedHeight": 1086885,
-      "epoch": 761,
-      "timeMs": "1724094056585",
-      "protocolVersion": 1,
-      "chainId": "dash-testnet-50"
-    }
-  }
-}
-```
-:::
-::::
-
-### waitForStateTransitionResult
-
-**Returns**: The state transition hash and either a proof that the state transition was confirmed in a block or an error.  
-**Parameters**:
-
-| Name                    | Type    | Required | Description                      |
-| ----------------------- | ------- | -------- | -------------------------------- |
-| `state_transition_hash` | Bytes   | Yes      | Hash of the state transition     |
-| `prove`                 | Boolean | Yes      | Set to `true` to request a proof. The data requested will be encoded as part of the proof in the response. |
-
-**Example Request**
-
-```{eval-rst}
-..
-  Commented out info
-  [block:html]
-  {
-    "html": "<!--\nJavaScript (dapi-client) example (old)\nconst DAPIClient = require('@dashevo/dapi-client');\nconst DashPlatformProtocol = require('@dashevo/dpp');\nconst crypto = require('crypto');\n\nconst client = new DAPIClient({ network: 'testnet' });\nconst dpp = new DashPlatformProtocol();\n\n// Replace with your own state transition object before running\nconst stateTransitionObject = {\n  protocolVersion: 0,\n  type: 0,\n  signature: 'HxAipUsLWQBE++C1suSRNQiQh91rI1LZbblvQhk2erUaIvRneAagxGYYsXXYNvEeO+lBzlF1a9KHGGTHgnO/8Ts=',\n  signaturePublicKeyId: 0,\n  dataContract: {\n    protocolVersion: 0,\n    '$id': 'CMc7RghKkHeHtFdwfSX5Hzy7CUdpCEJnwsbfHdsbmJ32',\n    '$schema': 'https://schema.dash.org/dpp-0-4-0/meta/data-contract',\n    ownerId: '8Z3ps3tNoGoPEDYerUNCd4yi7zDwgBh2ejgSMExxvkfD',\n    documents: {\n      note: {\n        properties: { message: { type: 'string' } },\n        additionalProperties: false,\n      },\n    },\n  },\n  entropy: '+RqUArypdL8f/gCMAo4b6c3CoQvxHzsQG0BdYrT5QT0=',\n};\n\n// Convert signature and entropy to buffer\nstateTransitionObject.signature = Buffer.from(stateTransitionObject.signature, 'base64');\nstateTransitionObject.entropy = Buffer.from(stateTransitionObject.entropy, 'base64');\n\ndpp.stateTransition.createFromObject(stateTransitionObject, { skipValidation: true })\n  .then((stateTransition) => {\n    //  Calculate state transition hash\n    const hash = crypto.createHash('sha256')\n      .update(stateTransition.toBuffer())\n      .digest();\n\n    console.log(`Requesting proof of state transition with hash:\\n\\t${hash.toString('hex')}`);\n\n    client.platform.waitForStateTransitionResult(hash, { prove: true })\n      .then((response) => {\n        console.log(response);\n      });\n  });\n-->\n\n<!--\nJavaScript (dapi-grpc) example (old)\nconst {\n  v0: {\n    PlatformPromiseClient,\n    WaitForStateTransitionResultRequest,\n  },\n} = require('@dashevo/dapi-grpc');\nconst DashPlatformProtocol = require('@dashevo/dpp');\nconst crypto = require('crypto');\n\nconst platformPromiseClient = new PlatformPromiseClient(\n  'https://seed-1.testnet.networks.dash.org:1443',\n);\n\nconst dpp = new DashPlatformProtocol();\n\n// Replace with your own state transition object before running\nconst stateTransitionObject = {\n  protocolVersion: 0,\n  type: 0,\n  signature: 'HxAipUsLWQBE++C1suSRNQiQh91rI1LZbblvQhk2erUaIvRneAagxGYYsXXYNvEeO+lBzlF1a9KHGGTHgnO/8Ts=',\n  signaturePublicKeyId: 0,\n  dataContract: {\n    protocolVersion: 0,\n    '$id': 'CMc7RghKkHeHtFdwfSX5Hzy7CUdpCEJnwsbfHdsbmJ32',\n    '$schema': 'https://schema.dash.org/dpp-0-4-0/meta/data-contract',\n    ownerId: '8Z3ps3tNoGoPEDYerUNCd4yi7zDwgBh2ejgSMExxvkfD',\n    documents: {\n      note: {\n        properties: { message: { type: 'string' } },\n        additionalProperties: false,\n      },\n    },\n  },\n  entropy: '+RqUArypdL8f/gCMAo4b6c3CoQvxHzsQG0BdYrT5QT0=',\n};\n\n// Convert signature and entropy to buffer\nstateTransitionObject.signature = Buffer.from(stateTransitionObject.signature, 'base64');\nstateTransitionObject.entropy = Buffer.from(stateTransitionObject.entropy, 'base64');\n\ndpp.stateTransition.createFromObject(stateTransitionObject, { skipValidation: true })\n  .then((stateTransition) => {\n    //  Calculate state transition hash\n    const hash = crypto.createHash('sha256')\n      .update(stateTransition.toBuffer())\n      .digest();\n\n    const waitForStateTransitionResultRequest = new WaitForStateTransitionResultRequest();\n    waitForStateTransitionResultRequest.setStateTransitionHash(hash);\n    waitForStateTransitionResultRequest.setProve(true);\n\n    console.log(`Requesting proof of state transition with hash:\\n\\t${hash.toString('hex')}`);\n\n    platformPromiseClient.waitForStateTransitionResult(waitForStateTransitionResultRequest)\n      .then((response) => {\n        const rootTreeProof = Buffer.from(response.getProof().getRootTreeProof());\n        const storeTreeProof = Buffer.from(response.getProof().getStoreTreeProof());\n        console.log(`Root tree proof: ${rootTreeProof.toString('hex')}`);\n        console.log(`Store tree proof: ${storeTreeProof.toString('hex')}`);\n      })\n  \t\t.catch((e) => console.error(e));\n  });\n-->\n\n<!--\ngRPCurl example (old)\n# `state_transition_hash` must be represented in base64\n# Replace `state_transition_hash` with your own before running\ngrpcurl -proto protos/platform/v0/platform.proto \\\n  -d '{\n    \"state_transition_hash\":\"wEiwFu9WvAtylrwTph5v0uXQm743N+75C+C9DhmZBkw=\",\n    \"prove\": \"true\"\n    }' \\\n  seed-1.testnet.networks.dash.org:1443 \\\n  org.dash.platform.dapi.v0.Platform/waitForStateTransitionResult\n-->"
-  }
-  [/block]
-```
-
-::::{tab-set}
-:::{tab-item} JavaScript (dapi-client)
-:sync: js-dapi-client
-```javascript
-const DAPIClient = require('@dashevo/dapi-client');
-
-const client = new DAPIClient({ network: 'testnet' });
-
-// Replace <YOUR_STATE_TRANSITION_HASH> with your actual hash
-const hash = <YOUR_STATE_TRANSITION_HASH>;
-client.platform.waitForStateTransitionResult(hash, { prove: true })
-  .then((response) => {
-    console.log(response);
-  });
-
-```
-:::
-
-:::{tab-item} Request (gRPCurl)
-:sync: grpcurl
-```shell
-# Replace `your_state_transition_hash` with your own before running
-# `your_state_transition_hash` must be represented in base64
-#    Example: wEiwFu9WvAtylrwTph5v0uXQm743N+75C+C9DhmZBkw=
-grpcurl -proto protos/platform/v0/platform.proto \
-  -d '{
-    "v0": {
-      "state_transition_hash":your_state_transition_hash,
-      "prove": "true"
-    }
-  }' \
-  seed-1.testnet.networks.dash.org:1443 \
-  org.dash.platform.dapi.v0.Platform/waitForStateTransitionResult
-```
-:::
-::::
-
-```{eval-rst}
-..
-  Commented out info
-  [block:html]
-  {
-    "html": "<!--\ndapi-client\n{\n  proof: {\n    rootTreeProof: <Buffer 01 00 00 00 03 26 e0 35 e0 31 82 7e 7c 27 b0 91 23 41 ed d2 11 bf 3b 90 54 70 11 2c 68 5a 8e 76 8c 68 bb 39 21 3d cf 46 6d 09 d0 7a 28 e3 e9 0b 2b 0e ... 17 more bytes>,\n    storeTreeProof: <Buffer 01 0b ee 31 ce ca 2a bd 44 6a db d4 9f 13 4a 7d 70 25 96 a9 b9 02 6e c4 e1 90 95 f7 a1 b4 c9 de 1f e4 63 e6 ce f7 58 3a 5b c3 10 01 78 9b 4f 98 9a c9 ... 526 more bytes>\n  }\n}\n-->\n<!--\ndapi-grpc\nRequesting proof of state transition with hash:\n        8ae93b89c272455f3ce8d01dba99a3a28c9550262a602c6ba44de08e545d3aa9\nRoot tree proof: 010000000326e035e031827e7c27b0912341edd211bf3b905470112c685a8e768c68bb39213dcf466d09d07a28e3e90b2b0e1d1510dede30214f68e32f8cf498220101\nStore tree proof: 010bee31ceca2abd446adbd49f134a7d702596a9b9026ec4e19095f7a1b4c9de1fe463e6cef7583a5bc31001789b4f989ac9f8f524f1247fed372502d8c54a3c026072d5239f074422621673c250d1c74eadbb304a10013fb54a99ef641b9a7585d6d28dd443875e435a35022d92a0711f56ae23bc13f4a630a1455970451e3f1001fe2b060fca69ce2eb3d784cec28c0f575690f131026df252af068635bdf08f5448ea67c23d9a9a02831001a7df0a9f392682d7d7d0a29bd43d932c16b0d6530320a8b7df4cadb6cdfd5b5d1bb31cbb488d241e91d60cc1341cd686a3fbb6291f19e800a5632469645820a8b7df4cadb6cdfd5b5d1bb31cbb488d241e91d60cc1341cd686a3fbb6291f196724736368656d61783468747470733a2f2f736368656d612e646173682e6f72672f6470702d302d342d302f6d6574612f646174612d636f6e7472616374676f776e657249645820703796bfd3e2bbd54505a8e04929bb05b8aecfb1cd5c013ef8a8b84511770e0c69646f63756d656e7473a1646e6f7465a26a70726f70657274696573a1676d657373616765a1647479706566737472696e67746164646974696f6e616c50726f70657274696573f46f70726f746f636f6c56657273696f6e001001d94cd40044b8485e962d80e57c1992c77a182a1611111102abe7e3f7231ed71b8c4fd7ee09d4a1f970a51cd4100139312feadce145313ef34f720e940892d0ed2405111102245c6aaaf192b51207333be85ab77c9c9393af47100128ef7d4479e4f488373d92280fe8e52a9a48a6621111\n-->\n<!--\ngRPCurl\n{\n  \"proof\": {\n    \"merkleProof\": \"AQAAAAAAAAJHAV8NeFRgf0cWRiCIIVsbJcNs+bALwShVQEkXV2jRCueIAkeoHTKeU60+Jm2oiHbGSkOL8ui06Nj27SLz2raMF29iEAHKnCrDvO67hcJV79tfQwqQSFcxJOek9Fa/x3oYvwQrQQL8lxVOSAkZSC1qhI8LJa6PtR+u8TifMMmRCRY2dXrSUBABihjPBDgD9SM/d9JgWkYyT+sUp4FdgotmwHhZIB1rJVUCkaeftxRkQ/B0FU26ojDJirY/SwZ8RcU1/3pnbJbA+5EQBCBkeRNzJuVLjOKnDOmG48wnSzjHg5lLdlA5JSBD79rQxQAFAgEBAAAYUfu7+1iqqIwjkszndZ6Vm8pli6pjt4XxvvgKCcE3ygI+G8nIsflGKoZQOaWGcFBmXDzAwJqjGlMxSIWNSEgoQBACAQd7xuP4BzKoaf75MNyQQC6Q7e94Vg2IdQe2LFJysA4QAZ2mq+ad/rNJ7n2fPiJgHi4NMT9Wht6Kb5J8qF20hajJEQKz2VnGsgYNwMjY9kadWb63Tjk3nTqFttgjLnoz4PCpQBABpdWVJ9sfU+o+OEcUuFcDOV+y4gYFoao3kVNLZ+Yz7Y4RAuVHBoF21TyNc9DUDHmAfcaJf6K+/VzqIzfnJ7iGqXN+EAGvNlkFsWw+DjFg+MLjzo2MzUaWk7sA63+rG3FQJ7LO2hERERECPImih8uZnpEfew+qLeKrdEig5TR6g5VsfuHI9U2WuvsQAU7qdWenHDisDf3TNzJQytKJYaeyhmy2LEo11zZVwsoREQIAAAAAAAAA/wMBAAD6APcBAAAApGJpZFggZHkTcyblS4zipwzphuPMJ0s4x4OZS3ZQOSUgQ+/a0MVnYmFsYW5jZRo7mmxAaHJldmlzaW9uAGpwdWJsaWNLZXlzgqZiaWQAZGRhdGFYIQLlz7I9IuqDAf1fp2xiyvGiApsvgANo2ldfmrWv6MsfG2R0eXBlAGdwdXJwb3NlAGhyZWFkT25sefRtc2VjdXJpdHlMZXZlbACmYmlkAWRkYXRhWCECrq7odM9OoHGEyM1D19ZAaEPf50OKLwsxL2D4SpnLZllkdHlwZQBncHVycG9zZQBocmVhZE9ubHn0bXNlY3VyaXR5TGV2ZWwCAAEAAAAAAAAA0QQBAAAkAgEgbaBpE46QX8+EXS6Sl5CG4r+JuiXVDhxZeZy/TS8qnQEAUw2uiB7scatAs99mQfB5VfVb0lMSywDMHXpmUgNfONsC4OEPflWGlZAqBSOhaKD0/SfPJHbOOMEfCjTtBV1jjgwQARdKA3tf2c8gP3H7tRKcRMHXfljTH/4L8L63tbZk5FX/EQL+TedZ8kFHQEuNY8e9pfmaLI36Y7rHe1hAjVBSh9U95BABfPfYq74T0N0ygKE4spKvSQkekrnH0Ge8Ot0FEDsq2rcR\",\n    \"signatureLlmqHash\": \"AAAA1h0X9yUNsXpD0/iKlsPvVb+VezkZAIkQIzmGqoc=\",\n    \"signature\": \"jeByZ8qlZvID/C3LVVy/mZGHlRu2QhN3MZO09hCOjAH0gn1tqrAX6BXaJf6qRLw9APv0+nInObRF3JhstvsByPK8QOHCCl9M3NpcgI/HCECpqMMG8S9DPtJYI6HwQO5I\"\n  },\n  \"metadata\": {\n    \"height\": \"1221\",\n    \"coreChainLockedHeight\": 802939\n  }\n}\n-->"
-  }
-  [/block]
-```
-
-## Security Group Endpoints
-
-Security groups provide a way to distribute token configuration and update authorization across multiple identities. Each group defines a set of member identities, the voting power of each member, and the required power threshold to authorize an action. The endpoints in this section are used to retrieve information about groups and the actions they are performing.
-
-### getGroupInfo
-
-Retrieves information about a specific group within a contract, including its members and required power.
-
-**Returns**: Group information containing member details and required power, or a cryptographic proof.
-
-**Parameters**:
-
-| Name                     | Type     | Required | Description |
-|--------------------------|---------|----------|-------------|
-| `contract_id`            | Bytes   | Yes      | The ID of the contract containing the group |
-| `group_contract_position` | UInt32  | Yes      | The position of the group within the contract |
-| `prove`                  | Boolean | No       | Set to `true` to receive a proof that contains the requested group information |
-
-**Example Request and Response**
-
-::::{tab-set}
-:::{tab-item} gRPCurl
-```shell
-grpcurl -proto protos/platform/v0/platform.proto \
-  -d '{
-    "v0": {
-      "contract_id": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
-      "group_contract_position": 1,
-      "prove": false
-    }
-  }' \
-  seed-1.testnet.networks.dash.org:1443 \
-  org.dash.platform.dapi.v0.Platform/getGroupInfo
-```
-:::
-::::
-
-::::{tab-set}
-:::{tab-item} Response (gRPCurl)
-```json
-{
-  "v0": {
-    "group_info": {
-      "group_info": {
-        "members": [
-          {
-            "member_id": "01abcdef",
-            "power": 5
-          },
-          {
-            "member_id": "02abcdef",
-            "power": 10
-          }
-        ],
-        "group_required_power": 15
-      }
-    },
-    "metadata": {
-      "height": "2876",
-      "coreChainLockedHeight": 1086885,
-      "epoch": 761,
-      "timeMs": "1724094056585",
-      "protocolVersion": 1,
-      "chainId": "dash-testnet-50"
-    }
-  }
-}
-```
-:::
-::::
-
-### getGroupInfos
-
-Retrieves information about multiple groups within a contract, including their members and required power.
-
-**Returns**: A list of group information entries or a cryptographic proof.
-
-**Parameters**:
-
-| Name                                      | Type     | Required | Description |
-|-------------------------------------------|---------|----------|-------------|
-| `contract_id`                             | Bytes   | Yes      | The ID of the contract containing the groups |
-| `start_at_group_contract_position`        | Object  | No       | Filtering options for retrieving groups |
-| `start_at_group_contract_position`<br>`.start_group_contract_position` | UInt32  | No       | The position of the first group to retrieve |
-| `start_at_group_contract_position`<br>`.start_group_contract_position_included` | Boolean | No       | Whether the start position should be included in the results |
-| `count`                                   | UInt32  | No       | The maximum number of groups to retrieve |
-| `prove`                                   | Boolean | No       | Set to `true` to receive a proof that contains the requested group information |
-
-**Example Request and Response**
-
-::::{tab-set}
-:::{tab-item} gRPCurl
-```shell
-grpcurl -proto protos/platform/v0/platform.proto \
-  -d '{
-    "v0": {
-      "contract_id": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
-      "start_at_group_contract_position": {
-        "start_group_contract_position": 1,
-        "start_group_contract_position_included": true
-      },
-      "count": 5,
-      "prove": false
-    }
-  }' \
-  seed-1.testnet.networks.dash.org:1443 \
-  org.dash.platform.dapi.v0.Platform/getGroupInfos
-```
-:::
-::::
-
-::::{tab-set}
-:::{tab-item} Response (gRPCurl)
-```json
-{
-  "v0": {
-    "group_infos": {
-      "group_infos": [
-        {
-          "group_contract_position": 1,
-          "members": [
-            {
-              "member_id": "01abcdef",
-              "power": 5
-            },
-            {
-              "member_id": "02abcdef",
-              "power": 10
-            }
-          ],
-          "group_required_power": 15
-        },
-        {
-          "group_contract_position": 2,
-          "members": [
-            {
-              "member_id": "03abcdef",
-              "power": 8
-            },
-            {
-              "member_id": "04abcdef",
-              "power": 12
-            }
-          ],
-          "group_required_power": 20
-        }
-      ]
-    },
-    "metadata": {
-      "height": "2876",
-      "coreChainLockedHeight": 1086885,
-      "epoch": 761,
-      "timeMs": "1724094056585",
-      "protocolVersion": 1,
-      "chainId": "dash-testnet-50"
-    }
-  }
-}
-```
-:::
-::::
-
-### getGroupActions
-
-Retrieves a list of actions performed by a specific group within a contract.
-
-**Parameters**:
-
-| Name                              | Type     | Required | Description |
-|-----------------------------------|---------|----------|-------------|
-| `contract_id`                     | Bytes   | Yes      | The ID of the contract containing the group |
-| `group_contract_position`         | UInt32  | Yes      | The position of the group within the contract |
-| `status`                          | Enum    | Yes      | The status of the actions to retrieve (`ACTIVE = 0`, `CLOSED = 1`) |
-| `start_at_action_id`              | Object  | No       | Filtering options for retrieving actions |
-| `start_at_action_id.`<br>`start_action_id` | Bytes  | No       | The action ID to start retrieving from |
-| `start_at_action_id.`<br>`start_action_id_included` | Boolean | No | Whether the start action should be included in the results |
-| `count`                           | UInt32  | No       | The maximum number of actions to retrieve |
-| `prove`                           | Boolean | No       | Set to `true` to receive a proof that contains the requested group actions |
-
-**Returns**: A list of group actions or a cryptographic proof. The response message contains details about actions performed by a group, including various event types related to token operations, document updates, contract updates, and emergency actions. The list of possible actions is shown in the table below:
-
-| Event Type        | Subtype                     | Description |
-|-------------------|---------------------------|-------------|
-| **TokenEvent**    | `mint`                     | Mints new tokens to a specified recipient. |
-|                   | `burn`                     | Burns (destroys) a specified amount of tokens. |
-|                   | `freeze`                   | Freezes a specific entity's tokens. |
-|                   | `unfreeze`                 | Unfreezes a specific entity's tokens. |
-|                   | `destroy_frozen_funds`     | Destroys frozen funds for a specified entity. |
-|                   | `transfer`                 | Transfers tokens to another recipient. |
-|                   | `emergency_action`         | Performs emergency actions like pausing or resuming the contract. |
-|                   | `token_config_update`      | Updates token configuration settings. |
-| **DocumentEvent** | `create`                   | Represents the creation of a document. |
-| **ContractEvent** | `update`                   | Represents updates to a contract. |
-
-**Response Object**
-
-| Name                | Type      | Description |
-|---------------------|----------|-------------|
-| `group_actions`    | Object   | Contains a list of group actions |
-| `group_actions.group_actions` | Array of `GroupActionEntry` | A list of actions performed by the group |
-| `group_actions.group_actions[]`<br>`.action_id` | Bytes  | Unique identifier for the action |
-| `group_actions.group_actions[]`<br>`.event` | Object  | The event data associated with the action |
-| `group_actions.group_actions[]`<br>`.event.event_type` | Object  | The specific type of event |
-| `group_actions.group_actions[]`<br>`.event.event_type.token_event` | Object  | Token-related event details (if applicable). See [Token Event details](#token-event-fields) below for complete information. |
-| `group_actions.group_actions[]`<br>`.event.event_type.document_event` | Object  | Document-related event details |
-| `group_actions.group_actions[]`<br>`.event.event_type.document_event`<br>`.create` | Object  | Document creation event details |
-| `group_actions.group_actions[]`<br>`.event.event_type.document_event`<br>`.create.created_document` | Bytes | Created document data |
-| `group_actions.group_actions[]`<br>`.event.event_type.contract_event` | Object  | Contract-related event details |
-| `group_actions.group_actions[]`<br>`.event.event_type.contract_event`<br>`.update` | Object  | Contract update event details |
-| `group_actions.group_actions[]`<br>`.event.event_type.contract_event`<br>`.update.updated_contract` | Bytes | Updated contract data |
-| `metadata` | Object  | Metadata about the blockchain state. See [metadata details](#data-proofs-and-metadata) for complete information |
-
-#### Token Event Fields
-
-| Token Event Type | Field Name | Type | Description |
-|-----------------|------------|------|-------------|
-| `mint`   | `amount` | UInt64 | Amount of tokens to mint. |
-|          | `recipient_id` | Bytes | Identity ID of the recipient. |
-|          | `public_note` | String (Optional) | A public note for the mint event. |
-| `burn`   | `amount` | UInt64 | Amount of tokens to burn. |
-|          | `public_note` | String (Optional) | A public note for the burn event. |
-| `freeze` | `frozen_id` | Bytes | Identifier of the entity being frozen. |
-|          | `public_note` | String (Optional) | A public note for the freeze event. |
-| `unfreeze` | `frozen_id` | Bytes | Identifier of the entity being unfrozen. |
-|          | `public_note` | String (Optional) | A public note for the unfreeze event. |
-| `destroy_frozen_funds` | `frozen_id` | Bytes | Identifier of the frozen entity. |
-|          | `amount` | UInt64 | Amount of frozen funds to destroy. |
-|          | `public_note` | String (Optional) | A public note for the destruction event. |
-| `transfer` | `recipient_id` | Bytes | Identity ID of the recipient. |
-|          | `amount` | UInt64 | Amount of tokens transferred. |
-|          | `public_note` | String (Optional) | A public note for the transfer event. |
-|          | `shared_encrypted_note` | Object (Optional) | Encrypted note shared by sender and recipient. |
-|          | `personal_encrypted_note` | Object (Optional) | Personal encrypted note. |
-| `emergency_action` | `action_type` | Enum (`PAUSE = 0`, `RESUME = 1`) | Type of emergency action performed. |
-|           | `public_note` | String (Optional) | A public note for the emergency action. |
-| `token_config_update` | `token_config_update_item` | Bytes | Configuration update details. |
-|           | `public_note` | String (Optional) | A public note for the configuration update. |
-
-**Example Request and Response**
-
-::::{tab-set}
-:::{tab-item} gRPCurl
-```shell
-grpcurl -proto protos/platform/v0/platform.proto \
-  -d '{
-    "v0": {
-      "contract_id": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
-      "group_contract_position": 1,
-      "status": 0,
-      "start_at_action_id": {
-        "start_action_id": "01abcdef",
-        "start_action_id_included": true
-      },
-      "count": 5,
-      "prove": false
-    }
-  }' \
-  seed-1.testnet.networks.dash.org:1443 \
-  org.dash.platform.dapi.v0.Platform/getGroupActions
-```
-:::
-::::
-
-::::{tab-set}
-:::{tab-item} Response (gRPCurl)
-```json
-{
-  "v0": {
-    "group_actions": {
-      "group_actions": [
-        {
-          "action_id": "01abcdef",
-          "event": {
-            "event_type": {
-              "token_event": {
-                "mint": {
-                  "amount": "1000",
-                  "recipient_id": "02abcdef",
-                  "public_note": "Minting 1000 tokens"
-                }
-              }
-            }
-          }
-        },
-        {
-          "action_id": "02abcdef",
-          "event": {
-            "event_type": {
-              "token_event": {
-                "burn": {
-                  "amount": "500",
-                  "public_note": "Burning 500 tokens"
-                }
-              }
-            }
-          }
-        }
-      ]
-    },
-    "metadata": {
-      "height": "2876",
-      "coreChainLockedHeight": 1086885,
-      "epoch": 761,
-      "timeMs": "1724094056585",
-      "protocolVersion": 1,
-      "chainId": "dash-testnet-50"
-    }
-  }
-}
-```
-:::
-::::
-
-### getGroupActionSigners
-
-Retrieves the signers for a specified group action within a contract, along with their assigned power.
-
-**Returns**: A list of group action signers or a cryptographic proof.
-
-**Parameters**
-
-| Name                      | Type     | Required | Description |
-|---------------------------|---------|----------|-------------|
-| `contract_id`             | Bytes   | Yes      | The ID of the contract containing the group action. |
-| `group_contract_position` | UInt32  | Yes      | The position of the group within the contract. |
-| `status`                  | Enum    | Yes      | The status of the action (`ACTIVE = 0`, `CLOSED = 1`). |
-| `action_id`               | Bytes   | Yes      | The unique identifier of the action. |
-| `prove`                   | Boolean | No       | Set to `true` to receive a proof that contains the requested group action signers. |
-
-**Example Request and Response**
-
-::::{tab-set}
-:::{tab-item} gRPCurl
-```shell
-grpcurl -proto protos/platform/v0/platform.proto \
-  -d '{
-    "v0": {
-      "contract_id": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
-      "group_contract_position": 1,
-      "status": 0,
-      "action_id": "01abcdef",
-      "prove": false
-    }
-  }' \
-  seed-1.testnet.networks.dash.org:1443 \
-  org.dash.platform.dapi.v0.Platform/getGroupActionSigners
-```
-:::
-::::
-
-::::{tab-set}
-:::{tab-item} Response (gRPCurl)
-```json
-{
-  "v0": {
-    "group_action_signers": {
-      "signers": [
-        {
-          "signer_id": "01abcdef",
-          "power": 5
-        },
-        {
-          "signer_id": "02abcdef",
-          "power": 10
-        }
-      ]
-    },
-    "metadata": {
-      "height": "2876",
-      "coreChainLockedHeight": 1086885,
-      "epoch": 761,
-      "timeMs": "1724094056585",
       "protocolVersion": 1,
       "chainId": "dash-testnet-50"
     }
