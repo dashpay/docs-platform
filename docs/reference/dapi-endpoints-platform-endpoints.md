@@ -1869,6 +1869,9 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ## Security Group Endpoints
 
+:::{versionadded} 2.0.0
+:::
+
 Security groups provide a way to distribute token configuration and update authorization across multiple identities. Each group defines a set of member identities, the voting power of each member, and the required power threshold to authorize an action. The endpoints in this section are used to retrieve information about groups and the actions they are performing.
 
 ### getGroupInfo
@@ -3063,6 +3066,9 @@ grpcurl -proto protos/platform/v0/platform.proto \
 ::::
 
 ## Token Endpoints
+
+:::{versionadded} 2.0.0
+:::
 
 ### getIdentityTokenBalances
 
