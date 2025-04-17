@@ -35,8 +35,11 @@ The initial token implementation includes all actions required to create, use, a
 | [Burn](#burn)          | Burns (destroys) a specified amount of tokens |
 | [Freeze / Thaw](#freeze-and-thaw) | Freezes/thaws a specific entity's tokens |
 | [Destroy frozen funds](#destroy-frozen) | Destroys frozen funds for a specified entity |
+| [Claim](#claim) | Redeems or withdraws tokens to the authorized identity (e.g., from rewards) |
 | [Emergency action](#emergency-action) | Performs emergency actions like pausing or resuming the contract |
 | [Token config update](#configuration-updates) | Updates token configuration settings |
+| [Set Purchase Price](#set-purchase-price) | Sets or updates the price for direct token purchases |
+| [Purchase](#purchase) | Purchases tokens at the predefined price in exchange for Platform credits |
 
 #### Mint
 
@@ -64,6 +67,10 @@ The initial token implementation includes all actions required to create, use, a
 
 - Destroy tokens from a frozen identity’s balance (e.g., blacklisting stolen tokens in stablecoin systems).
 
+#### Claim
+
+- Claim tokens that have been created by a distribution method (e.g., preprogrammed). Tokens created this way are not directly assigned to the authorized identity, but must be claimed to take ownership.
+
 #### Emergency Action
 
 - Globally pause or unpause an entire token. While paused, no transfers can occur.
@@ -76,6 +83,18 @@ Update token configuration parameters, including:
 - Maximum supply
 - History retention
 - Group membership
+
+#### Set Purchase Price
+
+- Sets or updates the price for direct token purchases.
+  - Can be a single entry (for a fixed price) or multiple entries for tiered pricing.
+- Setting an empty price disables direct token purchases.
+- Records changes to the token history if direct pricing history is enabled.
+
+#### Purchase
+
+- Purchases tokens at the predefined price in exchange for Platform credits
+- Records changes to the token history if direct purchase history is enabled
 
 ### Configuration
 
