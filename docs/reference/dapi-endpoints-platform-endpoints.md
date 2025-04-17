@@ -61,6 +61,16 @@ console.log(`Masternode identity id (base58): ${base64Protx}`);
 
 ## Contested Resource Endpoints
 
+Contested resources are a special class of Dash Platform documents that require deterministic
+conflict resolution when multiple identities request the same logical resource (e.g., a DPNS name).
+These resources are defined at the data contract level using [contested
+indexes](./data-contracts.md#contested-indices). See the [DPNS conflict resolution
+section](../explanations/dpns.md#conflict-resolution) for an example of how this works for premium
+DPNS names.
+
+The endpoints in this section allow clients to check the status of active contests, retrieve
+contestants, and obtain the outcome.
+
 ### getContestedResources
 
 Retrieves the contested resources for a specific contract, document type, and index.
