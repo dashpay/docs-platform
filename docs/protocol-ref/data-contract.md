@@ -678,6 +678,9 @@ See the [groups implementation in rs-dpp](https://github.com/dashpay/platform/bl
 
 ### Data Contract tokens
 
+:::{versionadded} 2.0.0
+:::
+
 - Tokens provide token-related functionality within the contract, such as base supply, maximum supply, and manual minting/burning rules.  
 - Token configurations include change control rules, ensuring proper governance for modifying supply limits and token-related settings.
 - This enables contracts to define and manage tokens while ensuring compliance with governance rules (e.g., who can mint or burn tokens).
