@@ -153,7 +153,7 @@ Retrieves the voting record of a specific identity.
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "v0": {
-      "identity_id": "HxUSbKaFxbuvTUprfr5a0yU6u4EasTdSWvSxOwKjmxw="
+      "identity_id": "CSgo7cCB07oaVPBDJZuUE2jyxxiIGwap00eIOyG/4xM="
     }
   }' \
   seed-1.testnet.networks.dash.org:1443 \
@@ -168,15 +168,83 @@ grpcurl -proto protos/platform/v0/platform.proto \
 {
   "v0": {
     "votes": {
+      "contestedResourceIdentityVotes": [
+        {
+          "contractId": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
+          "documentTypeName": "domain",
+          "serializedIndexStorageValues": [
+            "ZGFzaA==",
+            "dDBueQ=="
+          ],
+          "voteChoice": {
+            "identityId": "+G9rGhk5ggauDroBJbx8DHj/DCjLaLvlxj3m4oFs9f0="
+          }
+        },
+        {
+          "contractId": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
+          "documentTypeName": "domain",
+          "serializedIndexStorageValues": [
+            "ZGFzaA==",
+            "anUxeQ=="
+          ],
+          "voteChoice": {
+            "identityId": "hzKARzLQgCeLgieyXkc22PVsDy9RoyRCSQpVA1sq3Ag="
+          }
+        },
+        {
+          "contractId": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
+          "documentTypeName": "domain",
+          "serializedIndexStorageValues": [
+            "ZGFzaA==",
+            "cmVkcGFuZGE="
+          ],
+          "voteChoice": {
+            "identityId": "Yiub6FbtHuyrGjiOhtFFsNzkFXay15HKapz/5WmIdRc="
+          }
+        },
+        {
+          "contractId": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
+          "documentTypeName": "domain",
+          "serializedIndexStorageValues": [
+            "ZGFzaA==",
+            "YTFleGFuZHJh"
+          ],
+          "voteChoice": {
+            "identityId": "FSzaDd9OWziOwkizZf/t6HdDCG3pY6zb4MTriOuiyf0="
+          }
+        },
+        {
+          "contractId": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
+          "documentTypeName": "domain",
+          "serializedIndexStorageValues": [
+            "ZGFzaA==",
+            "ZW0xMTFt"
+          ],
+          "voteChoice": {
+            "identityId": "HpGErJllHxDvKnetz9d88452CCfWsbm8s+SLq7hn1v4="
+          }
+        },
+        {
+          "contractId": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
+          "documentTypeName": "domain",
+          "serializedIndexStorageValues": [
+            "ZGFzaA==",
+            "YXNkdGhyZWVhcHI="
+          ],
+          "voteChoice": {
+            "identityId": "toqsgrVi2jpH5zyFqx8IkC2cK987anWbUQJknPu+qss="
+          }
+        }
+      ],
       "finishedResults": true
     },
     "metadata": {
-      "height": "7762",
-      "coreChainLockedHeight": 1099677,
-      "epoch": 1260,
-      "timeMs": "1725889742454",
-      "protocolVersion": 1,
-      "chainId": "dash-testnet-51"
+      "height": "164297",
+      "coreChainLockedHeight": 2256124,
+      "epoch": 25,
+      "timeMs": "1744850434997",
+      "protocolVersion": 8,
+      "chainId": "evo1"
     }
   }
 }
@@ -216,8 +284,8 @@ grpcurl -proto protos/platform/v0/platform.proto \
       "contract_id": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
       "document_type_name": "domain",
       "index_name": "parentNameAndLabel",
-      "index_values": [],
-      "contestant_id": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU="
+      "index_values": ["EgRkYXNo", "EgZlbTExMW0="],
+      "contestant_id": "HpGErJllHxDvKnetz9d88452CCfWsbm8s+SLq7hn1v4="
     }
   }' \
   seed-1.testnet.networks.dash.org:1443 \
@@ -232,15 +300,27 @@ grpcurl -proto protos/platform/v0/platform.proto \
 {
   "v0": {
     "contestedResourceVoters": {
+      "voters": [
+        "9BNnQL24MI/zNJQeg6njKqMFsPfY3r1syRB9zxAlZFQ=",
+        "7GFTbyVQbbUuol/RD2iNAeKbsL7NXPjfqSjhapTRN3g=",
+        "vMOhByXvdDR4bNAWsB/gF5WdtF+W4HIEciZgRJZnN4I=",
+        "rU44/IHactYbFCOO5uW5GRVVTiTXJXGIAGktOoY8kQs=",
+        "nrjH6/4hLLe9Eh/Y9NPsezMctlDH4+q+4+2AujX68WQ=",
+        "hLickXbsCtHIUjadrnX4DGaALQ1hBi4HSzAn1iAiI1A=",
+        "TC4jH+JzJyRlHQ/YxdtqN+L2icRxcM/8Uuq7gxjSJ+8=",
+        "Nk7hQkGkrfC7lApPG8EyQXOKXoGKsg07MfY1khdQxoM=",
+        "FE0hYA6383IDzr7zrFxdT6pgY9kXjt90b4OKJED7tCg=",
+        "CSgo7cCB07oaVPBDJZuUE2jyxxiIGwap00eIOyG/4xM="
+      ],
       "finishedResults": true
     },
     "metadata": {
-      "height": "7762",
-      "coreChainLockedHeight": 1099677,
-      "epoch": 1260,
-      "timeMs": "1725889742454",
-      "protocolVersion": 1,
-      "chainId": "dash-testnet-51"
+      "height": "164240",
+      "coreChainLockedHeight": 2256049,
+      "epoch": 25,
+      "timeMs": "1744839902217",
+      "protocolVersion": 8,
+      "chainId": "evo1"
     }
   }
 }
@@ -268,58 +348,53 @@ Retrieves the state of a vote for a specific contested resource.
 | `count`                                          | Integer  | No       | Number of results to return |
 | `prove`                                          | Boolean  | No       | Set to `true` to receive a proof that contains the requested vote state |
 
-```{eval-rst}
-..
-  Commented out info
-  The following example isn't fully functional
-  
-  **Example Request and Response**
+**Example Request and Response**
 
-  ::::{tab-set}
-  :::{tab-item} gRPCurl
-  ```shell
-  grpcurl -proto protos/platform/v0/platform.proto \
-    -d '{
-      "v0": {
-        "contract_id": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
-        "document_type_name": "domain",
-        "index_name": "parentNameAndLabel",
-        "index_values": ["EgRkYXNo", "value2"],
-        "result_type": 1
-      }
-    }' \
-    seed-1.testnet.networks.dash.org:1443 \
-    org.dash.platform.dapi.v0.Platform/getContestedResourceVoteState
-  ```
-  :::
-  ::::
-
-```{eval-rst}
-..
-  Commented out info
-  The following example isn't fully functional
-  
-  ::::{tab-set}
-  :::{tab-item} Response (gRPCurl)
-  ```json
-  {
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
     "v0": {
-      "contested_resource_contenders": {
-        "contenders": [{"identifier": "id1", "vote_count": 10}, {"identifier": "id2", "vote_count": 5}]
-      },
-      "metadata": {
-        "height": "6852",
-        "coreChainLockedHeight": 927072,
-        "epoch": 850,
-        "timeMs": "1701983652299",
-        "protocolVersion": 1,
-        "chainId": "dash-testnet-37"
-      }
+      "contract_id": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
+      "document_type_name": "domain",
+      "index_name": "parentNameAndLabel",
+      "index_values": ["EgRkYXNo", "EgZlbTExMW0="],
+      "result_type": 2
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getContestedResourceVoteState
+```
+:::
+::::
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "contestedResourceContenders": {
+      "contenders": [
+        {
+          "identifier": "HpGErJllHxDvKnetz9d88452CCfWsbm8s+SLq7hn1v4=",
+          "voteCount": 34,
+          "document": "AKcHIgv30Tb3zWNw0bgSF17cJp7HW+A6eiYRVpS3YMKuHpGErJllHxDvKnetz9d88452CCfWsbm8s+SLq7hn1v4BAAcAAAGWGJoweAAAAZYYmjB4AAABlhiaMHgABkVtaWxpTQZlbTExMW0BBGRhc2gEZGFzaAAhAR6RhKyZZR8Q7yp3rc/XfPOOdggn1rG5vLPki6u4Z9b+AQA="
+        }
+      ]
+    },
+    "metadata": {
+      "height": "164296",
+      "coreChainLockedHeight": 2256122,
+      "epoch": 25,
+      "timeMs": "1744850252661",
+      "protocolVersion": 8,
+      "chainId": "evo1"
     }
   }
-  ```
-  :::
-  ::::
+}
+```
+:::
+::::
 
 ### getVotePollsByEndDate
 
