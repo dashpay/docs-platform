@@ -53,7 +53,7 @@ const protx = '8eca4bcbb3a124ab283afd42dad3bdb2077b3809659788a0f1daffce5b9f001f'
 const base58Protx = bs58.encode(Buffer.from(protx, 'hex'));
 console.log(`Masternode identity id (base58): ${base58Protx}`);
 const base64Protx = Buffer.from(protx, 'hex').toString('base64');
-console.log(`Masternode identity id (base58): ${base64Protx}`);
+console.log(`Masternode identity id (base64): ${base64Protx}`);
 // Output:
 //  Masternode identity id (base58): AcPogCxrxeas7jrWYG7TnLHKbsA5KLHGfvg6oYgANZ8J
 //  Masternode identity id (base64): jspLy7OhJKsoOv1C2tO9sgd7OAlll4ig8dr/zlufAB8=
