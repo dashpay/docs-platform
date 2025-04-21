@@ -6,7 +6,14 @@
 
 Please refer to the [gRPC Overview](../reference/dapi-endpoints-grpc-overview.md) for details regarding running the examples shown below.
 
-## Data Proofs and Metadata
+## General Behavior
+
+### Versioning
+
+All Dash Platform endpoints are versioned so future updates can be done without creating significant
+issues for API consumers.
+
+### Data Proofs and Metadata
 
 Platform gRPC endpoints can provide [proofs](https://github.com/dashpay/platform/blob/master/packages/dapi-grpc/protos/platform/v0/platform.proto#L17-L22) so the data returned for a request can be verified as being valid. When requesting proofs, the data requested will be encoded as part of the proof in the response. Full support is not yet available in the JavaScript client, but can be used via the low level [dapi-grpc library](https://github.com/dashpay/platform/tree/master/packages/dapi-grpc).
 
@@ -21,15 +28,11 @@ Some [additional metadata](https://github.com/dashpay/platform/blob/master/packa
 | `protocolVersion`       | Platform protocol version                             |
 | `chainId`               | Name of the network                                   |
 
-## Versioning
-
-Dash Platform 0.25.16 included a [breaking change that added versioning](https://github.com/dashpay/platform/pull/1522) to these endpoints so future updates can be done without creating significant issues for API consumers.
-
 ```{eval-rst}
 .. _mn-identity-id:
 ```
 
-## Masternode identity IDs
+### Masternode identity IDs
 
 [Masternode identities](../explanations/identity.md#masternode-identities) are created automatically
 by the system based on the [Core masternode registration transaction (protx)
