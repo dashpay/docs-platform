@@ -3588,6 +3588,64 @@ grpcurl -proto protos/platform/v0/platform.proto \
 :::
 ::::
 
+### getTokenPerpetualDistributionLastClaim
+
+Retrieves the last-claim timestamp for a token’s perpetual distribution for a specific identity.
+
+**Returns**: A timestamp indicating the last successful claim, or a cryptographic proof.
+
+**Parameters**:
+
+| Name                      | Type    | Required | Description |
+|---------------------------|---------|----------|-------------|
+| `token_id`                | Bytes   | Yes      | The unique 32-byte identifier of the token |
+| `contract_info`           | Object  | No       | Token contract info, used to disambiguate tokens with the same ID across contracts |
+| `contract_info.`<br>`contract_id`         | Bytes   | Yes (if `contract_info` is provided) | ID of the data contract where the token is defined |
+| `contract_info.`<br>`token_contract_position` | Integer | Yes (if `contract_info` is provided) | Token position within the contract |
+| `identity_id`             | Bytes   | Yes      | Identity whose last-claim info is being requested |
+| `prove`                   | Boolean | No       | Set to `true` to receive a proof containing the requested last-claim data |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "token_id": "2wXv5jz2WxOqZ6RtN4xkGAMeA9ElvZyMvP9pshHylrs=",
+      "identity_id": "HpGErJllHxDvKnetz9d88452CCfWsbm8s+SLq7hn1v4=",
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getTokenPerpetualDistributionLastClaim
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "lastClaim": {
+      "timestampMs": "1744857654321"
+    },
+    "metadata": {
+      "height": "164312",
+      "coreChainLockedHeight": 2256151,
+      "epoch": 25,
+      "timeMs": "1744857654873",
+      "protocolVersion": 8,
+      "chainId": "evo1"
+    }
+  }
+}
+```
+:::
+::::
+
 ### getTokenPreProgrammedDistributions
 
 Retrieves pre-programmed distributions of a specified token.
