@@ -1441,13 +1441,79 @@ grpcurl -proto protos/platform/v0/platform.proto \
 :::
 ::::
 
+### getIdentityByNonUniquePublicKeyHash
+
+:::{versionadded} 2.0.0
+:::
+
+**Returns**: One or more [identities](../explanations/identity.md) associated with a public key
+hash, including non-unique masternode keys.
+
+:::{note}
+Unlike [`getIdentityByPublicKeyHash`](#getidentitybypublickeyhash), this endpoint supports public
+key hashes that may be associated with multiple identities, such as masternode voting keys. Use the
+`start_after` parameter to paginate through results.
+:::
+
+**Parameters**:
+
+| Name             | Type   | Required | Description |
+| ---------------- | ------ | -------- | ----------- |
+| `public_key_hash`| Bytes  | Yes      | Public key hash (sha256-ripemd160) to search for |
+| `start_after`    | Bytes  | No       | Identity ID to start after (for pagination) |
+| `prove`          | Boolean| No       | Set to `true` to receive a proof that contains the requested identity |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+:sync: grpcurl
+```shell
+# `public_key_hash` must be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "public_key_hash": "uNFZGqdNRA4K+cC+FsVbvBQYR/c="
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getIdentityByNonUniquePublicKeyHash
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (identity)
+```json
+{
+  "v0": {
+    "identity": {
+      "identity": "ADASwZuY7AAzrds2zWS39RBnDyo1GkMEtfaZQUQobv2sAgAAAAAAAAAAIQCgUViOvLoIUc3Ibd9YqICX+1+xQz+fdYxRkyZPslTrBzQABAAEAAgAAACECA+Zn..."
+    },
+    "metadata": {
+      "height": "7242",
+      "coreChainLockedHeight": 927815,
+      "epoch": 855,
+      "timeMs": "1702012386543",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-37"
+    }
+  }
+}
+```
+:::
+
+::::
+
 ### getIdentityByPublicKeyHash
 
 **Returns**: An [identity](../explanations/identity.md) associated with the provided public key hash
 
 :::{note}
-This endpoint only works for unique keys. Since masternode keys do not have to be unique (e.g.,
-voting keys), some masternode identities cannot be retrieved using this endpoint.
+This endpoint only works for unique keys. Since masternode keys do not have to be unique
+(e.g., voting keys), some masternode identities cannot be retrieved using this endpoint. See
+[`getIdentityByNonUniquePublicKeyHash`](#getidentitybynonuniquepublickeyhash) for masternode
+identities.
 :::
 
 **Parameters**:
