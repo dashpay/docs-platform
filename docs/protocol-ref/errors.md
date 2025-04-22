@@ -48,7 +48,7 @@ Code range:  10100-10199
 
 ### Data Contract
 
-Code range:  10200-10399
+Code range:  10200-10349
 
 | Code  | Error Description                               | Comment |
 | :---: | ----------------------------------------------- | ------- |
