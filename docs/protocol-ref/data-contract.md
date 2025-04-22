@@ -40,7 +40,7 @@ Include the following at the same level as the `properties` keyword to ensure pr
 
 ## Data Contract Object
 
-The data contract object consists of the following fields as defined in the Rust reference client ([rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/v1/data_contract.rs#L67-L105)):
+The data contract object consists of the following fields as defined in the Rust reference client ([rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/v1/data_contract.rs#L77-L121)):
 
 | Property        | Type           | Size | Description |
 | --------------- | -------------- | ---- | ----------- |
@@ -293,7 +293,9 @@ The full schema is [defined is rs-dpp](https://github.com/dashpay/platform/blob/
                   "properties": {
                     "position": true
                   },
-                  "required": ["position"]
+                  "required": [
+                    "position"
+                  ]
                 }
               }
             }
@@ -442,7 +444,9 @@ The full schema is [defined is rs-dpp](https://github.com/dashpay/platform/blob/
                 "maxLength": 256
               }
             },
-            "required": ["resolution"],
+            "required": [
+              "resolution"
+            ],
             "additionalProperties": false
           }
         },
