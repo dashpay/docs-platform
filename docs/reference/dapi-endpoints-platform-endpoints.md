@@ -2212,7 +2212,6 @@ Retrieves a list of actions performed by a specific group within a contract.
 |                   | `freeze`                   | Freezes a specific entity's tokens. |
 |                   | `unfreeze`                 | Unfreezes a specific entity's tokens. |
 |                   | `destroy_frozen_funds`     | Destroys frozen funds for a specified entity. |
-|                   | `transfer`                 | Transfers tokens to another recipient. |
 |                   | `emergency_action`         | Performs emergency actions like pausing or resuming the contract. |
 |                   | `token_config_update`      | Updates token configuration settings. |
 | **DocumentEvent** | `create`                   | Represents the creation of a document. |
@@ -2252,11 +2251,6 @@ Retrieves a list of actions performed by a specific group within a contract.
 | `destroy_frozen_funds` | `frozen_id` | Bytes | Identifier of the frozen entity. |
 |          | `amount` | UInt64 | Amount of frozen funds to destroy. |
 |          | `public_note` | String (Optional) | A public note for the destruction event. |
-| `transfer` | `recipient_id` | Bytes | Identity ID of the recipient. |
-|          | `amount` | UInt64 | Amount of tokens transferred. |
-|          | `public_note` | String (Optional) | A public note for the transfer event. |
-|          | `shared_encrypted_note` | Object (Optional) | Encrypted note shared by sender and recipient. |
-|          | `personal_encrypted_note` | Object (Optional) | Personal encrypted note. |
 | `emergency_action` | `action_type` | Enum (`PAUSE = 0`, `RESUME = 1`) | Type of emergency action performed. |
 |           | `public_note` | String (Optional) | A public note for the emergency action. |
 | `token_config_update` | `token_config_update_item` | Bytes | Configuration update details. |
