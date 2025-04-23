@@ -104,11 +104,12 @@ When creating a token, you define its configuration using the following paramete
 | Configuration Parameter | Mutable           | Default |
 |:------------------------|:------------------|:--------|
 | [Conventions](#display-conventions)      | Yes | N/A. Depends on implementation |
-| [Decimal precision](#display-conventions)| Yes | [8](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/associated_token/token_configuration_convention/v0/mod.rs#L38) |
-| [Base supply](#token-supply)             | **No**  | [100000](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/associated_token/token_configuration/v0/mod.rs#L159) |
+| [Decimal precision](#display-conventions)| Yes | [8](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/associated_token/token_configuration/v0/mod.rs#L376) |
+| [Base supply](#token-supply)             | **No**  | [100000](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/associated_token/token_configuration/v0/mod.rs#L378) |
 | [Maximum supply](#token-supply)          | Yes | None |
 | [Keep history](#history)                 | Yes | True |
 | [Start paused](#initial-state)           | Yes | False |
+| [Allow transfer to frozen balance](#allow-transfer-to-frozen-balance) | Yes | True |
 | [Main control group](#main-control-group)| Yes | None |
 | Main control group can be modified       | Yes | NoOne |
 
@@ -137,6 +138,10 @@ When creating a token, you define its configuration using the following paramete
 - Who (or what group) can change specific parameters later
 - Whether the authority to change these parameters can be transferred or locked to "no one"
 - Example: "Only group #1 can update the max supply.” See the [Rules section](#rules) for details.
+
+#### Allow Transfer to Frozen Balance
+
+- Allow transferring and minting of tokens to frozen identity token balances
 
 #### Main Control Group
 
@@ -180,19 +185,46 @@ Rules can authorize no one, specific identities, or multiparty groups. The compl
 
 ##### Action Rules
 
-Token action rules can be configured to allow updating who has access to many [token actions](#actions). The following table summarizes the available action rules:
+Token action rules can be configured to control access to many [token actions](#actions). The
+following table summarizes the configurable rules and their default authorized parties:
 
-| Configuration Rule | Can be Changed?   | Default Authorized Party|
-|:-------------------|:------------------|:--------|
-| Conventions change rules   | Yes | NoOne |
-| Max supply change rules    | Yes | NoOne |
-| Manual minting rules       | Yes | Contract Owner |
-| Manual burning rules       | Yes | Contract Owner |
-| Freeze rules               | Yes | NoOne |
-| Unfreeze rules             | Yes | NoOne |
-| Destroy frozen funds rules | Yes | NoOne |
-| Emergency_action rules     | Yes | NoOne |
-| Main control group can be modified | Yes | NoOne |
+###### General Controls
+
+| Configuration Rule                    | Can be Changed? | Default Authorized Party |
+|:--------------------------------------|:----------------|:-------------------------|
+| Conventions change rules              | Yes             | NoOne                    |
+| Max supply change rules               | Yes             | NoOne                    |
+| Main control group can be modified    | Yes             | NoOne                    |
+
+###### Minting and Burning
+
+| Configuration Rule                    | Can be Changed? | Default Authorized Party |
+|:--------------------------------------|:----------------|:-------------------------|
+| Manual minting rules                  | Yes             | Contract Owner           |
+| Manual burning rules                  | Yes             | Contract Owner           |
+| Minting: choosing destination rules   | Yes             | NoOne                    |
+
+###### Freezing Controls
+
+| Configuration Rule                    | Can be Changed? | Default Authorized Party |
+|:--------------------------------------|:----------------|:-------------------------|
+| Freeze rules                          | Yes             | NoOne                    |
+| Unfreeze rules                        | Yes             | NoOne                    |
+| Destroy frozen funds rules            | Yes             | NoOne                    |
+
+###### Distribution
+
+| Configuration Rule                    | Can be Changed? | Default Authorized Party |
+|:--------------------------------------|:----------------|:-------------------------|
+| Perpetual distribution rules          | Yes             | NoOne                    |
+| New tokens destination identity rules | Yes             | NoOne                    |
+| Direct purchase pricing change rules  | Yes             | NoOne                    |
+
+###### Emergency
+
+| Configuration Rule                    | Can be Changed? | Default Authorized Party |
+|:--------------------------------------|:----------------|:-------------------------|
+| Emergency action rules                | Yes             | NoOne                    |
 
 ##### Distribution Rules
 
@@ -433,7 +465,7 @@ In this group, Member A and Member C have a combined power of 11 and can perform
 
 ### Token-Based Fees
 
-Dash Platform allows developers to charge token fees for document-related actions (e.g., creating or transferring a document). This provides a way to monetize app usage or implement economic incentives using tokens. These fees are configured in the data contract under the `tokenCost` field.
+Dash Platform allows developers to charge token fees for document-related actions (e.g., creating or transferring a document). This provides a way to monetize app usage or implement economic incentives using tokens. These fees are configured in the data contract and apply to all document types in the contract.
 
 Examples:
 
