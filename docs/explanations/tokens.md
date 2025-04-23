@@ -16,6 +16,7 @@ Dash Platform’s token functionality provides a straightforward, account-based 
 - **Access Control [Groups](#groups)**: Multi-party groups with user-defined thresholds support complex authorization schemes for token management
 - **Built-in [Distribution](#distribution-rules)**: Manual minting or scheduled release over time
 - **Seamless Integration**: Tokens live alongside documents in a single data contract, enabling additional use cases (e.g., ticketing, digital assets, stablecoins)
+- **Token-Based Document [Fees](#token-based-fees)**: Charge tokens for an application's document actions (e.g., create, transfer), with options to burn tokens or reward the contract owner
 
 The following sections describe the features and configuration options available for token creators
 using Dash Platform.
@@ -429,6 +430,21 @@ For example, a group is defined with a required threshold of 10. The group membe
 - Member C: 5  
 
 In this group, Member A and Member C have a combined power of 11 and can perform actions without approval from Member B. If Member B proposes an action, Member A and C must both approve to authorize the action.
+
+### Token-Based Fees
+
+Dash Platform allows developers to charge token fees for document-related actions (e.g., creating or transferring a document). This provides a way to monetize app usage or implement economic incentives using tokens. These fees are configured in the data contract under the `tokenCost` field.
+
+Examples:
+
+- Require 1000 tokens to create a document
+- Burn 200 tokens when a document is transferred
+
+This allows for:
+
+- Spam protection (pay-to-post)
+- Revenue generation for app creators
+- Deflationary models via token burning
 
 ## Token Creation
 
