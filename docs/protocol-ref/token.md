@@ -24,7 +24,7 @@ Each token transition must comply with the [token base transition defined in rs-
 
 #### Token id
 
-The `$tokenId` is created by double sha256 hashing the token `$dataContractId` and `$tokenContractPosition` with a byte vector of the string "dash_token" as shown in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/tokens/mod.rs#L22-L27).
+The `$tokenId` is created by double sha256 hashing the token `$dataContractId` and `$tokenContractPosition` with a byte vector of the string "dash_token" as shown in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/tokens/mod.rs#L26-L31).
 
 ```rust
 // From the Rust reference implementation (rs-dpp)
@@ -57,7 +57,7 @@ The token transition actions [defined in rs-dpp](https://github.com/dashpay/plat
 
 ### Token Notes
 
-Some token transitions include optional notes fields. The maximum note length for these fields is [2048 characters](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/tokens/mod.rs#L14).
+Some token transitions include optional notes fields. The maximum note length for these fields is [2048 characters](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/tokens/mod.rs#L18).
 
 ### Token Burn Transition
 
