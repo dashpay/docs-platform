@@ -558,4 +558,14 @@ Once the data contract design is completed, the contract can be registered on th
 
 ## Token Trading
 
+### Direct Purchase
+
+Tokens can be configured to enable direct purchase by users. This allows the contract owner (or other authorized party) to sell the token directly to users at a fixed price or according to a tiered pricing schedule.
+
+The token’s [change control rules](#change-control-rules) include a `changeDirectPurchasePricingRules` setting to determine who is authorized to set or update the price. By default this is set to no one (`NoOne`) to disable direct sales. To allow direct sales, this rule should be set to authorize someone (e.g., the contract owner) to change pricing.
+
+When enabled, the authorized party can set the token price using a state transition. Users can purchase the token through Platform’s built-in mechanism (see [Token Set Purchase Price Transition](../protocol-ref/token.md#token-set-purchase-price-transition) and [Token Purchase Transition](../protocol-ref/token.md#token-purchase-transition)). The direct purchase system supports defining a minimum purchase amount and volume discounts via pricing tiers. The token’s price can also be removed to stop sales.
+
+### Marketplace
+
 A planned token marketplace will support the trading of tokens.
