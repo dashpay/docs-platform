@@ -4,6 +4,38 @@
 
 # FAQ
 
+## General
+
+:::{dropdown} What advantages does Dash Platform have over other projects?
+
+Dash Platform has numerous significant advantages, including:
+
+- Simple onboarding: No need to write Solidity or deploy custom contracts.
+- Document-based schema design: Familiar JSON-based approach for [data
+  contracts](../explanations/platform-protocol-data-contract.md) with built-in data validation
+  instead of low-level smart contracts.
+- Decentralized API: Query data directly from the network through the [Evonode-hosted
+  API](../explanations/dapi.md).
+- Verifiable data: Efficient [GroveDB proofs](https://www.grovedb.org/) for query responses provide
+  transparent data integrity.
+
+Although the current feature set covers many use cases, future versions will include features like
+smart contracts to make it even more competitive and directly comparable with projects like
+Ethereum, etc.
+
+:::
+
+:::{dropdown} When will Dash Platform be available?
+
+It already is! Dash Platform [launched on
+mainnet](https://www.dash.org/news/dash-evolution-v1-0-0-release-announcement/) in Q3 2024 and has
+had multiple releases since then to add features such as [NFTs](../explanations/nft.md).
+
+The next major release, v2.0, includes a flexible token system. Multiple teams are working to
+improve the SDK experience so developers can more easily get to work building their applications.
+
+:::
+
 ## DPNS names
 
 :::{tip}
