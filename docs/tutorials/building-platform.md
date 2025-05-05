@@ -206,3 +206,32 @@ docker volume prune -a      # Removes all unused volumes
 docker system prune         # Removes unused Docker data
 rm -rf ~/.dashmate          # Deletes the Dashmate configuration
 ```
+
+## Use JS SDK
+
+To connect to Dash Platform with the JavaScript SDK, use the `dapiAddresses` option and allow
+self-signed certificates as shown in this example:
+
+```js
+const Dash = require('dash');
+
+const client = new Dash.Client({
+  dapiAddresses: [
+    {
+      protocol: 'https',
+      host: '127.0.0.1:2443',
+      allowSelfSignedCertificate: true, // For self-signed certs on local devnet
+    },
+  ],
+});
+
+async function connect() {
+  const bestBlockHash = await client.getDAPIClient().core.getBestBlockHash();
+  return bestBlockHash;
+}
+
+connect()
+  .then((hash) => console.log('Connected. Best block hash:\n', hash))
+  .catch((err) => console.error('Something went wrong:\n', err))
+  .finally(() => client.disconnect());
+```
