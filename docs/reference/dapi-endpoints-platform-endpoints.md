@@ -2795,9 +2795,9 @@ Retrieves finalized epoch information within a specified index range.
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "v0": {
-      "start_epoch_index": 30,
+      "start_epoch_index": 7850,
       "start_epoch_index_included": true,
-      "end_epoch_index": 32,
+      "end_epoch_index": 7851,
       "end_epoch_index_included": false,
       "prove": false
     }
@@ -2817,34 +2817,105 @@ grpcurl -proto protos/platform/v0/platform.proto \
     "epochs": {
       "finalizedEpochInfos": [
         {
-          "number": 30,
-          "firstBlockHeight": "21343",
-          "firstCoreBlockHeight": 1078560,
-          "firstBlockTime": "1712340000000",
-          "feeMultiplier": 1.5,
+          "number": 7850,
+          "firstBlockHeight": "157747",
+          "firstCoreBlockHeight": 1267938,
+          "firstBlockTime": "1749613360443",
+          "feeMultiplier": 1,
           "protocolVersion": 9,
-          "totalBlocksInEpoch": "72",
-          "nextEpochStartCoreBlockHeight": 1078720,
-          "totalProcessingFees": "850000",
-          "totalDistributedStorageFees": "400000",
-          "totalCreatedStorageFees": "900000",
-          "coreBlockRewards": "1500000",
+          "totalBlocksInEpoch": "19",
+          "nextEpochStartCoreBlockHeight": 1267964,
+          "totalDistributedStorageFees": "38925829",
+          "totalCreatedStorageFees": "760",
+          "coreBlockRewards": "1947189353778",
           "blockProposers": [
             {
-              "proposerId": "pA9f...",
-              "blockCount": 27
+              "proposerId": "BbaHl4NE+iQzsqqZ1B9kPi2FgaeJzcIwhIic7KUkTqg=",
+              "blockCount": 1
+            },
+            {
+              "proposerId": "FD3Namt2hP3gHoihDl1l3popJExezVhtFKNCZXAl8RM=",
+              "blockCount": 1
+            },
+            {
+              "proposerId": "IBB+xQ6BiA3KGBeLt+U+LQRJwHNBBqYHJTua8v/qAGw=",
+              "blockCount": 1
+            },
+            {
+              "proposerId": "LkhlGi6cDLTy+3q4dAYapK8M0otZaVYx5qNa85UO9vs=",
+              "blockCount": 1
+            },
+            {
+              "proposerId": "OXQa2D3XkeHnOPGe2ugtbAMily5qRVmBQk2jdps9vUo=",
+              "blockCount": 1
+            },
+            {
+              "proposerId": "QHhPP5p2HGAVb5JEqQLAYm+LyP4AN4bHDx/GvkHaRn0=",
+              "blockCount": 1
+            },
+            {
+              "proposerId": "XGVCdmYVOHGDcV2VipJVUkcvkzNfoWEogEI+S72u9DY=",
+              "blockCount": 1
+            },
+            {
+              "proposerId": "YdM/R4kzeXvk3og1PHwthDwhMQ9tAPbv8xQkp1buffs=",
+              "blockCount": 1
+            },
+            {
+              "proposerId": "bRsYW6A2781Ep34Fqar2mgxOQJdq7ACwR3PlKGMyCWY=",
+              "blockCount": 1
+            },
+            {
+              "proposerId": "dxjtrTceRtIPrTAIbkrPSgXCtmDfauXypoSuvfG+QpA=",
+              "blockCount": 1
+            },
+            {
+              "proposerId": "hfFaMdODgpOpwdcqGg+iHmYRDOIIeL1MECTErh1b6CQ=",
+              "blockCount": 1
+            },
+            {
+              "proposerId": "hwdSNKxHNTtCu5fORjMMtnzUZIwB8LI5PX5ymw1niRg=",
+              "blockCount": 1
+            },
+            {
+              "proposerId": "iCUb1LEk7+uHU33qvuxU9sj1dfTfgfEM9ejuoHMJK28=",
+              "blockCount": 1
+            },
+            {
+              "proposerId": "iRe7VGMY80ENGnkBx7hGpzRGMRtRZLRaA/DmE/II8jQ=",
+              "blockCount": 1
+            },
+            {
+              "proposerId": "i40Rk6/SLlOM4Mn7UP7hVdD2F2ymjmXaaExdzi0eCBU=",
+              "blockCount": 1
+            },
+            {
+              "proposerId": "jeixKVL3BY2Ce9BM3/HCF12Hu/ifKLUkUqY3vJea3cQ=",
+              "blockCount": 1
+            },
+            {
+              "proposerId": "uozh3HKFe0Fo4zJyVx33+6+Ewxbf5IIXrdz2WV4lQhY=",
+              "blockCount": 1
+            },
+            {
+              "proposerId": "2bCQz8Gcry4n1RLmnEOBKidL3ynAgdCt5P0nKtVqX4k=",
+              "blockCount": 1
+            },
+            {
+              "proposerId": "/yYdLBx2kHoq2K62xWEXlvA7XL2IrpJFKkcn4T9PSsk=",
+              "blockCount": 1
             }
           ]
         }
       ]
     },
     "metadata": {
-      "height": "2880",
-      "coreChainLockedHeight": 1086889,
-      "epoch": 762,
-      "timeMs": "1724094057890",
-      "protocolVersion": 1,
-      "chainId": "dash-testnet-50"
+      "height": "157957",
+      "coreChainLockedHeight": 1268201,
+      "epoch": 7860,
+      "timeMs": "1749650741098",
+      "protocolVersion": 9,
+      "chainId": "dash-testnet-51"
     }
   }
 }
