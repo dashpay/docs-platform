@@ -2740,28 +2740,30 @@ grpcurl -proto protos/platform/v0/platform.proto \
     "epochs": {
       "epochInfos": [
         {
-          "number": 849,
-          "firstBlockHeight": "6822",
-          "firstCoreBlockHeight": 927030,
-          "startTime": "1701976758619",
-          "feeMultiplier": 2
+          "number": 7859,
+          "firstBlockHeight": "157927",
+          "firstCoreBlockHeight": 1268167,
+          "startTime": "1749645648076",
+          "feeMultiplier": 1,
+          "protocolVersion": 9
         },
         {
-          "number": 850,
-          "firstBlockHeight": "6840",
-          "firstCoreBlockHeight": 927061,
-          "startTime": "1701980303210",
-          "feeMultiplier": 2
+          "number": 7860,
+          "firstBlockHeight": "157947",
+          "firstCoreBlockHeight": 1268194,
+          "startTime": "1749649302574",
+          "feeMultiplier": 1,
+          "protocolVersion": 9
         }
       ]
     },
     "metadata": {
-      "height": "6843",
-      "coreChainLockedHeight": 927065,
-      "epoch": 850,
-      "timeMs": "1701980850126",
-      "protocolVersion": 1,
-      "chainId": "dash-testnet-37"
+      "height": "157955",
+      "coreChainLockedHeight": 1268198,
+      "epoch": 7860,
+      "timeMs": "1749650378981",
+      "protocolVersion": 9,
+      "chainId": "dash-testnet-51"
     }
   }
 }
