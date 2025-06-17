@@ -28,10 +28,14 @@ The following example shows a minimal `tokens` object defining a single token wi
 }
 ```
 
+Tokens may also define [distribution rules](#token-distribution-rules), [history tracking](#token-history-tracking), [marketplace rules](#token-marketplace-rules), and various [configuration options](#token-configuration). Refer to this table for a brief description of the major token sections:
+
 | Feature    | Description                                   |
 |------------|-----------------------------------------------|
 | [Conventions](#token-conventions) | Display properties including localization, decimals, and naming conventions |
+| [Configuration](#token-configuration) | Behavioral settings for token operations, freezing, and emergency actions |
 | [Change Control Rules](#token-change-control-rules) | Authorization rules governing who can modify token parameters |
+| [Distribution Rules](#token-distribution-rules) | Rules for token distribution, minting destinations, and pricing |
 | [History Tracking](#token-history-tracking) | Configuration for recording token operations in Platform history |
 
 ### Token Creation Fees
@@ -100,6 +104,22 @@ The `decimals` property specifies the number of decimal places for token amounts
   "$format_version": "0",
   "localizations": { /* ... */ },
   "decimals": 8  // 8 decimal places (default)
+}
+```
+
+## Token Configuration
+
+Token configuration controls behavioral aspects of token operations, including supply management, operational controls, and security features.
+**Example:**
+
+```json
+{
+  "baseSupply": 1000000,
+  "maxSupply": 10000000,
+  "startAsPaused": false,
+  "allowTransferToFrozenBalance": true,
+  "mainControlGroup": null,
+  "mainControlGroupCanBeModified": "NoOne"
 }
 ```
 
@@ -204,10 +224,33 @@ Token history tracking controls which operations are recorded in Platform's hist
 }
 ```
 
-## Token Configuration
+## Token Marketplace Rules
 
-Token configuration controls behavioral aspects of token operations, including supply management, operational controls, and security features.
+Marketplace rules define how tokens can be traded within Platform's built-in marketplace system.
 
+### Trade Modes
+
+| Mode | Description |
+|------|-------------|
+| `NotTradeable` | Token cannot be traded on the marketplace |
+
+**Example:**
+
+```json
+"marketplaceRules": {
+  "$format_version": "0",
+  "tradeMode": "NotTradeable",
+  "tradeModeChangeRules": {
+    "V0": {
+      "authorized_to_make_change": "NoOne",
+      "admin_action_takers": "NoOne",
+      "changing_authorized_action_takers_to_no_one_allowed": false,
+      "changing_admin_action_takers_to_no_one_allowed": false,
+      "self_changing_admin_action_takers_allowed": false
+    }
+  }
+}
+```
 
 ## Example Syntax
 
