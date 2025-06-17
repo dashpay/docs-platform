@@ -110,6 +110,28 @@ The `decimals` property specifies the number of decimal places for token amounts
 ## Token Configuration
 
 Token configuration controls behavioral aspects of token operations, including supply management, operational controls, and security features.
+
+### Supply Management
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `baseSupply` | unisgned integer | Initial supply of tokens created at contract deployment |
+| `maxSupply` | unsigned integer | Maximum number of tokens that can ever exist (null for unlimited) |
+
+### Operational Controls
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `startAsPaused` | boolean | Whether the token begins in a paused state where tokens cannot be transferred |
+| `allowTransferToFrozenBalance` | boolean | Whether transfers to frozen balances are permitted |
+
+### Control Group Management
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `mainControlGroup` | unsigned integer | Position assigned to the main control group |
+| `mainControlGroupCanBeModified` | string | Authorization level for modifying the main control group |
+
 **Example:**
 
 ```json
@@ -194,6 +216,33 @@ Tokens support the following change control rules:
 
 Distribution rules govern how tokens are created, allocated, and priced within the platform. These rules provide flexible mechanisms for token distribution and marketplace integration.
 
+### Distribution Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `perpetualDistribution` | object | Ongoing distribution mechanism for continuous token allocation |
+| `perpetualDistributionRules` | object | Change control rules for perpetual distribution |
+| `preProgrammedDistribution` | object | Scheduled distribution events with specific timing and recipients |
+| `newTokensDestinationIdentity` | string | Default identity to receive newly minted tokens |
+| `newTokensDestinationIdentityRules` | object | Change control rules for destination identity |
+| `mintingAllowChoosingDestination` | boolean | Whether minting operations can specify custom destinations |
+| `mintingAllowChoosingDestinationRules` | object | Change control rules for destination choice |
+| `changeDirectPurchasePricingRules` | object | Change control rules for direct purchase pricing |
+
+### Direct Purchase Pricing
+
+Direct purchase pricing enables tokens to be [purchased directly using Platform](../explanations/tokens.md#direct-purchase):
+
+```json
+"changeDirectPurchasePricingRules": {
+  "V0": {
+    "authorized_to_make_change": "ContractOwner",
+    "admin_action_takers": "NoOne",
+    "changing_authorized_action_takers_to_no_one_allowed": false,
+    "changing_admin_action_takers_to_no_one_allowed": false,
+    "self_changing_admin_action_takers_allowed": false
+  }
+}
 ```
 
 ## Token History Tracking
