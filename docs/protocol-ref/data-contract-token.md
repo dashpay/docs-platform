@@ -343,6 +343,28 @@ Marketplace rules define how tokens can be traded within Platform's built-in mar
 }
 ```
 
+## Token Constraints
+
+For performance and security reasons, tokens have the following constraints:
+
+### General Constraints
+
+| Description | Value |
+|-------------|-------|
+| Maximum number of keywords | [50](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/methods/validate_update/v0/mod.rs#L272-L277) |
+| Keyword length | [3 to 50 characters](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/methods/validate_update/v0/mod.rs#L279-L287) |
+| Description length | [3 to 100 characters](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/methods/validate_update/v0/mod.rs#L312-L323) |
+
+### Convention Constraints
+
+| Description | Value |
+|-------------|-------|
+| Language code length | [2 to 12 characters](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/associated_token/token_configuration_convention/methods/validate_localizations/v0/mod.rs#L97-L101) |
+| Singular form length | [3 to 25 characters](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/associated_token/token_configuration_convention/methods/validate_localizations/v0/mod.rs#L84-L89) |
+| Plural form length | [3 to 25 characters](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/associated_token/token_configuration_convention/methods/validate_localizations/v0/mod.rs#L90-L95) |
+| Decimal places | [0 to 16](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/associated_token/token_configuration_convention/methods/validate_localizations/v0/mod.rs#L31-L36) |
+
+
 ## Example Syntax
 
 This example shows the complete structure of a token definition with all major configuration options:
