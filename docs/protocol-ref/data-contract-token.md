@@ -229,6 +229,48 @@ Distribution rules govern how tokens are created, allocated, and priced within t
 | `mintingAllowChoosingDestinationRules` | object | Change control rules for destination choice |
 | `changeDirectPurchasePricingRules` | object | Change control rules for direct purchase pricing |
 
+### Perpetual Distribution
+
+Perpetual distribution enables ongoing token allocation. The following configuration distributes 100 tokens to the contract owner every 60 minutes (3600000 ms):
+
+```json
+"perpetualDistribution": {
+  "$format_version": "0",
+  "distributionType": {
+    "TimeBasedDistribution": {
+      "interval": 3600000,
+      "function": {
+        "FixedAmount": {
+          "amount": 100
+        }
+      }
+    }
+  },
+  "distributionRecipient": "ContractOwner"
+}
+```
+
+### Pre-Programmed Distribution
+
+Pre-programmed distribution allows scheduling specific token allocations at predetermined times. The following configuration distributes 3 sets of tokens to the same identity at the defined timestamps:
+
+```json
+"preProgrammedDistribution": {
+  "$format_version": "0",
+  "distributions": {
+    "1749662152621": {
+      "2yZbE3TAZAhLwNVQk7JMUUuBXgrVt1NG172PGjeUfjUo": 100
+    },
+    "1749665692621": {
+      "2yZbE3TAZAhLwNVQk7JMUUuBXgrVt1NG172PGjeUfjUo": 1000
+    },
+    "1781198092621": {
+      "2yZbE3TAZAhLwNVQk7JMUUuBXgrVt1NG172PGjeUfjUo": 1000000
+    }
+  }
+}
+```
+
 ### Direct Purchase Pricing
 
 Direct purchase pricing enables tokens to be [purchased directly using Platform](../explanations/tokens.md#direct-purchase):
