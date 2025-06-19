@@ -151,6 +151,10 @@ When creating a token, you define its configuration using the following paramete
 
 Token rules assign permissions for various token control and configuration actions. There are levels of authorization defined by rules: Admin and Control.
 
+:::{tip}
+For more details, see [Change Rule Structure](../protocol-ref/data-contract-token.md#change-rule-structure) section in the protocol reference.
+:::
+
 **Admin**
 
 Admin level rule settings are used to manage who has permission to perform actions by modifying which user or [group](#groups) is authorized to complete an action. An admin group can also modify who has admin authorization if the data contract has enabled that option.
@@ -158,30 +162,6 @@ Admin level rule settings are used to manage who has permission to perform actio
 **Control**
 
 Control level rule settings define who can perform token actions. This includes actions like [mint](#mint) or [burn](#burn), as well as [token distribution](#distribution-rules).
-
-##### Parameters
-
-Each rule consists of the following parameters [defined in DPP](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/change_control_rules/v0/mod.rs) that control its behavior:
-
-| Field | Description |
-| - | - |
-| `authorized_to`<br>`_make_change` | This is who is authorized to make such a change. Valid values are listed in the [authorized parties table](#authorized-parties). |
-| `admin_action_takers` | This is who is authorized to make such a change to the people authorized to make a change. Valid values are listed in the [authorized parties table](#authorized-parties). |
-| `changing_authorized`<br>`_action_takers_to`<br>`_no_one_allowed` | Are we allowed to change to `NoOne` in the future (default: false) |
-| `changing_admin_action`<br>`_takers_to_no_one_allowed` | Are we allowed to change the admin action takers to `NoOne` in the future (default: false) |
-| `self_changing_admin_`<br>`action_takers_allowed` | Can the admin action takers change themselves (default: false) |
-
-###### Authorized Parties
-
-Rules can authorize no one, specific identities, or multiparty groups. The complete set of options [defined by DPP](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/change_control_rules/authorized_action_takers.rs#L14-L21) is:
-
-| Authorized Party     | Description |
-|----------------------|-------------|
-| `NoOne`              | No one is authorized |
-| `ContractOwner`      | Only the contract owner is authorized |
-| `Identity(Identifier)` | Only an identity is authorized |
-| `MainGroup`          | Only the [main control group](#main-control-group) is authorized |
-| `Group(<x>)`         | Only the specific group based in contract position "x" is authorized |
 
 ##### Action Rules
 

@@ -149,7 +149,7 @@ Token configuration controls behavioral aspects of token operations, including s
 
 Change control rules define authorization requirements for modifying various aspects of a token after deployment. These rules specify who can make changes and under what conditions.
 
-### Authorization Types
+### Authorized Parties
 
 Rules can authorize no one, specific identities, or multiparty groups. The complete set of options [defined by DPP](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/change_control_rules/authorized_action_takers.rs#L14-L21) is:
 
@@ -163,7 +163,17 @@ Rules can authorize no one, specific identities, or multiparty groups. The compl
 
 ### Change Rule Structure
 
-Each change rule follows this structure:
+Each rule consists of the following parameters [defined in DPP](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/change_control_rules/v0/mod.rs) that control its behavior:
+
+| Field | Description |
+| - | - |
+| `authorized_to`<br>`_make_change` | This is who is authorized to make such a change. Valid values are listed in the [authorized parties table](#authorized-parties). |
+| `admin_action_takers` | This is who is authorized to make such a change to the people authorized to make a change. Valid values are listed in the [authorized parties table](#authorized-parties). |
+| `changing_authorized`<br>`_action_takers_to`<br>`_no_one_allowed` | Are we allowed to change to `NoOne` in the future (default: false) |
+| `changing_admin_action`<br>`_takers_to_no_one_allowed` | Are we allowed to change the admin action takers to `NoOne` in the future (default: false) |
+| `self_changing_admin_`<br>`action_takers_allowed` | Can the admin action takers change themselves (default: false) |
+
+**Example**
 
 ```json
 "<rule_name>": {
