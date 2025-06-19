@@ -250,6 +250,203 @@ Perpetual distribution enables ongoing token allocation. The following configura
 }
 ```
 
+#### Perpetual Distribution Options
+
+A wide variety of emission patterns are provided to cover most common scenarios. The following table summarizes the options and links to further details.
+
+| Name | Description |
+| - | - |
+| [Fixed Amount](#fixed-amount) | Emits a constant number of tokens per period |
+| [Random](#random) | Emits a random amount between `min` and `max`, using a PRF |
+| [Step Decreasing Amount](#step-decreasing-amount) | Emits tokens that decrease in discrete steps at fixed intervals |
+| [Linear](#linear) | Linear growth/decay with integer or fractional precision |
+| [Polynomial](#polynomial) | Polynomial with integer or fractional exponents or coefficients |
+| [Exponential](#exponential) | Emits tokens following an exponential function |
+| [Logarithmic](#logarithmic) | Slows emission over time |
+| [Inverted Logarithmic](#inverted-logarithmic) | Slows emission over time |
+| [Stepwise](#stepwise) | Emits constant values within predefined steps |
+
+##### Fixed Amount
+
+Emits a constant (fixed) number of tokens for every period.
+
+- **Formula:** `f(x) = n`
+- **Use Case:**
+  - When a predictable, unchanging reward is desired.
+  - Simplicity and stable emissions.
+- **Example:** If `n = 5` tokens per block, then after 3 blocks the total emission is 15 tokens.
+
+##### Random
+
+Emits a random number of tokens within a specified range.
+
+- **Formula**: `f(x) ∈ [min, max]`
+  - Constraints:
+    - `min` must be ≤ `max`, otherwise the function is invalid.
+    - If `min == max`, this behaves like a [Fixed Amount](#fixed-amount) function with a constant emission.
+- **Description**
+  - This function selects a **random** token emission amount between `min` and `max`.
+  - The value is drawn **uniformly** between the bounds.
+  - The randomness uses a Pseudo Random Function (PRF) from x.
+- **Use Case**
+  - **Stochastic Rewards**: Introduces randomness into rewards to incentivize unpredictability.
+  - **Lottery-Based Systems**: Used for randomized emissions, such as block rewards with probabilistic payouts.
+- **Example**
+
+  Suppose a system emits **between 10 and 100 tokens per period**.
+
+  ```text
+  Random { min: 10, max: 100 }
+  ```
+
+  | Period (x) | Emitted Tokens (Random) |
+  |------------|------------------------|
+  | 1          | 27                     |
+  | 2          | 94                     |
+  | 3          | 63                     |
+  | 4          | 12                     |
+
+  - Each period, the function emits a **random number of tokens** between `min = 10` and `max = 100`.
+  - Over time, the **average reward trends toward the midpoint** `(min + max) / 2`.
+
+##### Step Decreasing Amount
+
+Emits tokens that decrease in discrete steps at fixed intervals.
+
+- **Formula:** `f(x) = n * (1 - (numerator / denominator))^((x - s) / step_count)`
+- **Description:** Reduces token emissions by a fixed percentage at regular intervals. Includes optional start offset and minimum emission floor.
+  - `step_count`: number of periods between each step
+  - `numerator` and `denominator`: the reduction factor per step
+  - `s`: optional start period offset (e.g., start block or time). If not provided, the contract creation start is used.
+  - `n`: initial token emission amount
+  - `min_value`: optional minimum emission value
+- **Use Case:** Reward systems with predictable decay—ideal for Bitcoin-style halvings or Dash-style gradual reductions
+- **Example:**
+  - Bitcoin: 50% reduction every 210,000 blocks  
+  - Dash: ~7% reduction every 210,240 blocks
+
+##### Linear
+
+Emits tokens following a linear function that can increase or decrease over time with fractional precision.
+
+- **Formula:** `f(x) = (a * (x - s) / d) + b`
+
+- **Description:** Supports both integer and fractional slopes via `a / d` ratio. Enables precise reward schedules without floating-point rounding errors.  
+  - Parameters
+    - `a`: slope numerator (positive = increase, negative = decrease)
+    - `d`: slope divisor (enables fractional precision)
+    - `s`: optional start period offset (defaults to contract creation)
+    - `b`: starting emission amount
+    - `min_value` / `max_value`: optional emission bounds
+  - Behavior
+    - If `a > 0`, emissions increase linearly over time
+    - If `a < 0`, emissions decrease linearly over time
+    - If `a = 0`, emissions remain constant at `b`
+
+- **Use Case:** Predictable inflation or deflation, gradual reward scaling, clamped emission schedules
+
+- **Example:**
+  - Increasing Linear Emission: `f(x) = (1 * (x - 0) / 1) + 10`
+  - Decreasing Linear Emission: `f(x) = (-2 * (x - 0) / 1) + 100`
+  - Delayed Start: `f(x) = (5 * (x - 10) / 1) + 50`
+  - Clamping Emissions: `f(x) = (2 * (x - 0) / 1) + 50`
+
+##### Polynomial
+
+A polynomial function using fixed-point arithmetic for fractional or integer exponents.
+
+- **Formula:**  
+  `f(x) = (a * (x - s + o)^(m / n)) / d + b`
+
+- **Description:**  
+  Emits tokens based on a polynomial curve, where the exponent is defined as a fraction (`m / n`). This enables a wide range of growth or decay behaviors—linear, quadratic, root-based, and more—using precise fixed-point logic.  
+  Parameters:
+  - `a`: coefficient scaling the curve (positive for growth, negative for decay)  
+  - `m` and `n`: exponent numerator and denominator, allowing fractional powers (e.g., `m = 1`, `n = 2` → square root)
+  - `d`: divisor to scale the result
+  - `s`: optional start period offset
+  - `o`: offset inside the exponent input
+  - `b`: amount added after the curve is computed
+  - `min_value` / `max_value`: optional boundaries to clamp emissions
+
+- **Use Case:**  
+  - **Accelerating Growth:** Use `a > 0` and `m > 1` for quadratic/cubic growth  
+  - **Diminishing Emissions:** Use `a < 0` and fractional exponents for decaying curves  
+  - **Root-based Models:** Use `m = 1`, `n > 1` to slow down early growth  
+  - **Flexibility:** Fine-tune emission behavior with high control over shape
+
+- **Example:**
+  - Increasing Polynomial Growth: `f(x) = (2 * (x - s + o)^2) / d + 10`
+  - Decreasing Polynomial Decay: `f(x) = (5 * (x - s + o)^(-1)) / d + 10`
+  - Inverted Growth → Decreasing Over Time: `f(x) = (-3 * (x - s + o)^2) / d + 50`
+  - Inverted Decay → Slowing Increase: `f(x) = (-10 * (x - s + o)^(-2)) / d + 50`
+
+##### Exponential
+
+Emits tokens following an exponential function.
+
+- **Formula:** `f(x) = a * e^(b * x) + c`
+- **Description:**
+  - `b` > 0 -> rapid growth
+  - `b` < 0 -> rapid decay
+- **Use Case:** Early contributor boosts or quick emission tapering
+- **Example:** f(x) = 100 * e^(-0.693 * x) + 5
+
+##### Logarithmic
+
+Logarithmic growth of token emissions.
+
+- **Formula:** `f(x) = a * log_b(x) + c`
+- **Description:** Growth slows as `x` increases
+- **Use Case:** Sustainable long-term emission tapering
+- **Example:** f(x) = 20 * log_2(x) + 5
+
+##### Inverted Logarithmic
+
+Emits tokens following an inverted logarithmic decay curve.
+
+- **Formula:**  
+  `f(x) = (a * log(n / (m * (x - s + o)))) / d + b`
+
+- **Description:**  
+  Emits a high number of tokens initially, with emissions decreasing rapidly at first, then slowing over time. Useful when early adoption or front-loaded incentives are desired.  
+  Parameters:
+  - `a`: scaling factor for the log term
+  - `d`: divisor to scale the final result
+  - `m` and `n`: Control the logarithmic inversion
+  - `o`: offset applied inside the logarithm
+  - `s`: optional start period offset (defaults to contract creation time if not provided)
+  - `b`: offset added after scaling
+  - `min_value` / `max_value`: optional bounds to constrain emissions
+
+- **Use Case:**  
+  - **Gradual Decay of Rewards**: Prioritize early users with higher emissions that reduce over time  
+  - **Resource Draining / Controlled Burn**: Designed for token models where supply tapers gradually  
+  - **Airdrops & Grants**: Rewards diminish for late claimants, encouraging early participation
+
+- **Example:**
+  - `f(x) = (1000 * log(5000 / (5 * (x - 1000)))) / 10 + 10`
+  - Sample outputs:
+
+    | Period (x) | Emission (f(x)) |
+    |------------|----------------|
+    | 1000       | 500 tokens     |
+    | 1500       | 230 tokens     |
+    | 2000       | 150 tokens     |
+    | 5000       | 50 tokens      |
+    | 10,000     | 20 tokens      |
+    | 50,000     | 10 tokens      |
+
+  - Starts high and decays gradually without hitting zero too fast
+
+##### Stepwise
+
+Emits tokens in fixed amounts for specific intervals.
+
+- **Description:** Emissions remain constant within each step
+- **Use Case:** Adjust rewards at specific milestones
+- **Example:** 100 tokens per block for first 1000 blocks, then 50 tokens thereafter
+
 ### Pre-Programmed Distribution
 
 Pre-programmed distribution allows scheduling specific token allocations at predetermined times. The following configuration distributes 3 sets of tokens to the same identity at the defined timestamps:
