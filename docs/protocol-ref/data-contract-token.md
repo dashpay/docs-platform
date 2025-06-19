@@ -158,7 +158,7 @@ Rules can authorize no one, specific identities, or multiparty groups. The compl
 | `NoOne`              | No one is authorized |
 | `ContractOwner`      | Only the contract owner is authorized |
 | `Identity(Identifier)` | Only an identity is authorized |
-| `MainGroup`          | Only the [main control group](#main-control-group) is authorized |
+| `MainGroup`          | Only the [main control group](../explanations/tokens.md#main-control-group) is authorized |
 | `Group(<x>)`         | Only the specific group based in contract position "x" is authorized |
 
 ### Change Rule Structure
@@ -303,6 +303,7 @@ Token history tracking controls which operations are recorded in Platform's hist
 | `keepsDirectPurchaseHistory` | boolean | true | Record direct purchase transactions |
 
 **Example:**
+
 ```json
 "keepsHistory": {
   "$format_version": "0",
@@ -349,21 +350,27 @@ For performance and security reasons, tokens have the following constraints:
 
 ### General Constraints
 
-| Description | Value |
-|-------------|-------|
+| Parameter | Value |
+|-----------|-------|
 | Maximum number of keywords | [50](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/methods/validate_update/v0/mod.rs#L272-L277) |
 | Keyword length | [3 to 50 characters](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/methods/validate_update/v0/mod.rs#L279-L287) |
 | Description length | [3 to 100 characters](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/methods/validate_update/v0/mod.rs#L312-L323) |
+| Maximum note length | [2048 characters](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/tokens/mod.rs#L19) |
 
 ### Convention Constraints
 
-| Description | Value |
-|-------------|-------|
+| Parameter | Value |
+|-----------|-------|
 | Language code length | [2 to 12 characters](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/associated_token/token_configuration_convention/methods/validate_localizations/v0/mod.rs#L97-L101) |
-| Singular form length | [3 to 25 characters](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/associated_token/token_configuration_convention/methods/validate_localizations/v0/mod.rs#L84-L89) |
-| Plural form length | [3 to 25 characters](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/associated_token/token_configuration_convention/methods/validate_localizations/v0/mod.rs#L90-L95) |
+| Token name length (singular) | [3 to 25 characters](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/associated_token/token_configuration_convention/methods/validate_localizations/v0/mod.rs#L84-L89) |
+|  Token name length (plural)  | [3 to 25 characters](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/associated_token/token_configuration_convention/methods/validate_localizations/v0/mod.rs#L90-L95) |
 | Decimal places | [0 to 16](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/associated_token/token_configuration_convention/methods/validate_localizations/v0/mod.rs#L31-L36) |
 
+### Supply Constraints
+
+| Parameter | Value |
+|-----------|-------|
+| Maximum token amount | [2^64 - 1](https://github.com/thephez/platform/blob/chore-remove-unused-token-json/packages/rs-dpp/src/errors/consensus/basic/data_contract/invalid_token_base_supply_error.rs#L12-L16) |
 
 ## Example Syntax
 
