@@ -51,7 +51,7 @@ The identity `id` is a unique identifier created from the double sha256 hash of 
 The identity `id` uses the Dash Platform specific `application/x.dash.dpp.identifier` content media type. For additional information, please refer to the [js-dpp PR 252](https://github.com/dashevo/js-dpp/pull/252) that introduced it and [identifier.rs](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-platform-value/src/types/identifier.rs).
 :::
 
-See rs-dpp for examples of using [InstantSend](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/identity/state_transition/asset_lock_proof/instant/instant_asset_lock_proof.rs#L129-L139) or [ChainLocks](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/identity/state_transition/asset_lock_proof/chain/chain_asset_lock_proof.rs#L45-L51) to create the identity id.
+See rs-dpp for examples of using [InstantSend](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/identity/state_transition/asset_lock_proof/instant/instant_asset_lock_proof.rs#L29-L36) or [ChainLocks](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/identity/state_transition/asset_lock_proof/chain/chain_asset_lock_proof.rs#L45-L51) to create the identity id.
 
 ### Identity publicKeys
 
