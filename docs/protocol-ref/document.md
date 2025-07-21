@@ -24,11 +24,11 @@ The following fields are included in all document transitions:
 | $type | string | 1-64 characters | Name of a document type found in the data contract associated with the `dataContractId`|
 | $dataContractId | array | 32 bytes | Data contract ID [generated](../protocol-ref/data-contract.md#data-contract-id) from the data contract's `ownerId` and `entropy` |
 
-Each document transition must comply with the [document base transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_base_transition/v0/mod.rs#L43-L61).
+Each document transition must comply with the [document base transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_base_transition/v0/mod.rs#L43-L61).
 
 #### Document id
 
-The document `$id` is created by double sha256 hashing the document's `dataContractId`, `ownerId`, `type`, and `entropy` as shown in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/document/generate_document_id.rs).
+The document `$id` is created by double sha256 hashing the document's `dataContractId`, `ownerId`, `type`, and `entropy` as shown in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/document/generate_document_id.rs).
 
 ```rust
 // From the Rust reference implementation (rs-dpp)
@@ -52,7 +52,7 @@ pub fn generate_document_id_v0(
 
 #### Document Transition Action
 
-Document transition actions indicate what operation platform should perform with the provided transition data. Documents provide CRUD functionality, ownership transfer, and NFT features as [defined in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_transition_action_type.rs#L6-L14).
+Document transition actions indicate what operation platform should perform with the provided transition data. Documents provide CRUD functionality, ownership transfer, and NFT features as [defined in rs-dpp](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_transition_action_type.rs#L6-L14).
 
 | Action | Name | Description |
 | :-: | - | - |
@@ -73,7 +73,7 @@ The document create transition extends the [base transition](#document-base-tran
 | data | | Varies | Document data being submitted. |
 | $prefundedVotingBalance | | Varies | (Optional) Prefunded amount of credits reserved for unique index conflict resolution voting (e.g., [premium DPNS name](../explanations/dpns.md#conflict-resolution)).|
 
-Each document create transition must comply with the structure defined in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_create_transition/v0/mod.rs#L56-L80) (in addition to the [document base transition](#document-base-transition) that is required for all document transitions).
+Each document create transition must comply with the structure defined in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_create_transition/v0/mod.rs#L58-L82) (in addition to the [document base transition](#document-base-transition) that is required for all document transitions).
 
 ::: {note}
 The document create transition data field must include all [required document properties](./data-contract-document.md#required-properties) specified in the data contract.
@@ -110,7 +110,7 @@ The document replace transition extends the [base transition](#document-base-tra
 | $revision | unsigned integer | 64 bits | Document revision (=> 1) |
 | data | | Varies | Document data being updated |
 
-Each document replace transition must comply with the structure defined in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_replace_transition/v0/mod.rs#L35-L45) (in addition to the [document base transition](#document-base-transition) that is required for all document transitions).
+Each document replace transition must comply with the structure defined in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_replace_transition/v0/mod.rs#L35-L45) (in addition to the [document base transition](#document-base-transition) that is required for all document transitions).
 
 ::: {note}
 The document replace transition data field must include all [required document properties](./data-contract-document.md#required-properties) specified in the data contract.
@@ -140,7 +140,7 @@ The following example document create transition and subsequent table demonstrat
 
 ### Document Delete Transition
 
-The document delete transition only requires the fields found in the [base document transition](#document-base-transition). See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_delete_transition/v0/mod.rs#L21-L24) for details.
+The document delete transition only requires the fields found in the [base document transition](#document-base-transition). See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_delete_transition/v0/mod.rs#L21-L24) for details.
 
 ### Document Transfer Transition
 
@@ -151,7 +151,7 @@ The document transfer transition allows a document owner to transfer document ow
 | $revision | unsigned integer | 64 bits | Document revision (=> 1) |
 | recipientOwnerId | array of bytes | 32 bytes | Identifier of the recipient (new owner). See the [NFT page](../explanations/nft.md#transfer-and-trade) for more details. |
 
-Each document transfer transition must comply with the structure defined in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_transfer_transition/v0/mod.rs#L33-L46) (in addition to the [document base transition](#document-base-transition) that is required for all document transitions).
+Each document transfer transition must comply with the structure defined in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_transfer_transition/v0/mod.rs#L33-L46) (in addition to the [document base transition](#document-base-transition) that is required for all document transitions).
 
 ### Document Purchase Transition
 
@@ -162,7 +162,7 @@ The document purchase transition allows an identity to purchase a document previ
 | $revision | unsigned integer | 64 bits | Document revision (=> 1) |
 | price | unsigned integer | 64 bits | Number of credits being offered for the purchase. See the [NFT page](../explanations/nft.md#transfer-and-trade) for more details. |
 
-Each document purchase transition must comply with the structure defined in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_purchase_transition/v0/mod.rs#L23-L33) (in addition to the [document base transition](#document-base-transition) that is required for all document transitions).
+Each document purchase transition must comply with the structure defined in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_purchase_transition/v0/mod.rs#L23-L33) (in addition to the [document base transition](#document-base-transition) that is required for all document transitions).
 
 ### Document Update Price Transition
 
@@ -173,11 +173,11 @@ The document update price transition allows a document owner to set or update th
 | $revision | unsigned integer | 64 bits | Document revision (=> 1) |
 | $price | unsigned integer | 64 bits | Updated price for the document. Can only be set by the current document owner. See the [NFT page](../explanations/nft.md#transfer-and-trade) for more details. |
 
-Each document update price transition must comply with the structure defined in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_update_price_transition/v0/mod.rs#L27-L40) (in addition to the [document base transition](#document-base-transition) that is required for all document transitions).
+Each document update price transition must comply with the structure defined in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_update_price_transition/v0/mod.rs#L27-L40) (in addition to the [document base transition](#document-base-transition) that is required for all document transitions).
 
 ## Document Object
 
-The document object represents the data provided by the platform in response to a query. Responses consist of an array of these objects containing the following fields as defined in the Rust reference client ([rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/document/v0/mod.rs#L35-L105)):
+The document object represents the data provided by the platform in response to a query. Responses consist of an array of these objects containing the following fields as defined in the Rust reference client ([rs-dpp](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/document/v0/mod.rs#L35-L105)):
 
 | Property | Type | Required | Description |
 | - | - | - | - |

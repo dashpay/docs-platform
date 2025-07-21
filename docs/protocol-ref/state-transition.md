@@ -13,15 +13,15 @@
 
 ### Fees
 
-State transition fees are paid via the credits established when an identity is created. Credits are created at a rate of [1000 credits/satoshi](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/balances/credits.rs#L37). Fees for actions vary based on parameters related to storage and computational effort that are defined in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/fee/default_costs/constants.rs).
+State transition fees are paid via the credits established when an identity is created. Credits are created at a rate of [1000 credits/satoshi](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/balances/credits.rs#L37). Fees for actions vary based on parameters related to storage and computational effort that are defined in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/fee/default_costs/constants.rs).
 
 ### Size
 
-All serialized data (including state transitions) is limited to a maximum size of [16 KB](http://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/util/cbor_serializer.rs#L8).
+All serialized data (including state transitions) is limited to a maximum size of [16 KB](http://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/util/cbor_serializer.rs#L8).
 
 ### Common Fields
 
-The list of common fields used by multiple state transitions is defined in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/common_fields.rs). All state transitions include the following fields:
+The list of common fields used by multiple state transitions is defined in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/state_transition/state_transitions/common_fields.rs). All state transitions include the following fields:
 
 | Field           | Type           | Size | Description |
 | --------------- | -------------- | ---- | ----------- |
@@ -38,7 +38,7 @@ Additionally, all state transitions except the identity create and topup state t
 
 ## State Transition Types
 
-Dash Platform Protocol defines the [state transition types](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transition_types.rs#L21-L32) that perform identity, contract, document, and token operations. See the subsections below for details on each state transition type.
+Dash Platform Protocol defines the [state transition types](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/state_transition/state_transition_types.rs#L21-L32) that perform identity, contract, document, and token operations. See the subsections below for details on each state transition type.
 
 ### Batch
 
@@ -47,7 +47,7 @@ Dash Platform Protocol defines the [state transition types](https://github.com/d
 | ownerId     | array of bytes | 32 bytes | [Identity](../protocol-ref/identity.md) submitting the document(s) |
 | transitions | array of transition objects | Varies | A  batch of [document](../protocol-ref/document.md#document-overview) or token actions (up to 10 objects) |
 
-More detailed information about the `transitions` array can be found in the [document section](../protocol-ref/document.md). See the implementation in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/v1/mod.rs#L29-L37).
+More detailed information about the `transitions` array can be found in the [document section](../protocol-ref/document.md). See the implementation in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/v1/mod.rs#L29-L37).
 
 ### Data Contract Create
 
@@ -60,7 +60,7 @@ More detailed information about the `dataContract` object can be found in the [d
 
 #### Entropy Generation
 
-Entropy is included in [Data Contracts](../protocol-ref/data-contract.md#data-contract-create) and [Documents](../protocol-ref/document.md#document-create-transition). Dash Platform using the following entropy generator found in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/util/entropy_generator.rs#L12-L16):
+Entropy is included in [Data Contracts](../protocol-ref/data-contract.md#data-contract-create) and [Documents](../protocol-ref/document.md#document-create-transition). Dash Platform using the following entropy generator found in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/util/entropy_generator.rs#L12-L16):
 
 ```rust
 // From the Rust reference implementation (rs-dpp)
@@ -115,7 +115,7 @@ More detailed information about the `publicKeys` object can be found in the [ide
 | amount          | unsigned integer | 64 bits | Number of credits being transferred |
 | nonce           | unsigned integer | 64 bits | Identity nonce for this transition to prevent replay attacks |
 
-See the implementation in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_credit_transfer_transition/v0/mod.rs#L39-L50).
+See the implementation in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_credit_transfer_transition/v0/mod.rs#L39-L50).
 
 ### Identity Credit Withdrawal
 
@@ -128,7 +128,7 @@ See the implementation in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0
 | outputScript    | script | Varies | If None, the withdrawal is sent to the address set by Core |
 | nonce           | unsigned integer | 64 bits | Identity nonce for this transition to prevent replay attacks |
 
-See the implementation in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_credit_withdrawal_transition/v1/mod.rs#L32-L45).
+See the implementation in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_credit_withdrawal_transition/v1/mod.rs#L32-L45).
 
 ### Masternode Vote
 
@@ -136,10 +136,10 @@ See the implementation in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0
 | --------------- | -------------- | ---- | ----------- |
 | proTxHash       | array of bytes | 32 bytes | An identifier based on a masternode or evonode's [provider registration transaction](inv:user:std#ref-txs-proregtx) hash |
 | voterIdentityId | array of bytes | 32 bytes | The voter's [Identity ID](../protocol-ref/identity.md#identity-id). This will be a masternode identity based on the protx hash. |
-| vote | [Vote](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/voting/votes/mod.rs#L20-L22) | Varies | Vote information |
+| vote | [Vote](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/voting/votes/mod.rs#L20-L22) | Varies | Vote information |
 | nonce           | unsigned integer | 64 bits | Identity nonce for this transition to prevent replay attacks |
 
-See the implementation in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/masternode_vote_transition/v0/mod.rs#L40-L50).
+See the implementation in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/state_transition/state_transitions/identity/masternode_vote_transition/v0/mod.rs#L40-L50).
 
 ## State Transition Signing
 
@@ -201,12 +201,12 @@ This table shows the fields that must be excluded when creating state transition
 
 | State transition | Signature | Signature public key ID | Identity ID | Identity public key signature(s) |
 | - | :-: | :-: | :-: | :-: |
-| [Batch](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/v1/mod.rs#L33-L36) | Exclude | Exclude | N/A | N/A |
-| [Contract create](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/contract/data_contract_create_transition/v0/mod.rs#L41-L44) | Exclude | Exclude | N/A | N/A |
-| [Contract update](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/contract/data_contract_update_transition/v0/mod.rs#L41-L44) | Exclude | Exclude | N/A | N/A |
-| [Identity create](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_create_transition/v0/mod.rs#L50-L54) | Exclude | N/A | Exclude | [Exclude](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/public_key_in_creation/v0/mod.rs#L47-L48) |
-| [Identity topup](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_topup_transition/v0/mod.rs#L45-L46)  | Exclude | N/A | N/A | N/A |
-| [Identity update](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_update_transition/v0/mod.rs#L63-L68) | Exclude | Exclude | N/A | [Exclude for any keys being added by the state transition](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/public_key_in_creation/v0/mod.rs#L47-L48) |
-| [Identity credit transfer](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_credit_transfer_transition/v0/mod.rs#L46-L49) | Exclude | Exclude | N/A | N/A |
-| [Identity credit withdrawal](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_credit_withdrawal_transition/v1/mod.rs#L41-L44) | Exclude | Exclude | N/A | N/A |
-| [Masternode vote](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/masternode_vote_transition/v0/mod.rs#L46-L49) | Exclude | Exclude | N/A | N/A |
+| [Batch](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/v1/mod.rs#L34-L37) | Exclude | Exclude | N/A | N/A |
+| [Contract create](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/state_transition/state_transitions/contract/data_contract_create_transition/v0/mod.rs#L41-L44) | Exclude | Exclude | N/A | N/A |
+| [Contract update](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/state_transition/state_transitions/contract/data_contract_update_transition/v0/mod.rs#L41-L44) | Exclude | Exclude | N/A | N/A |
+| [Identity create](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_create_transition/v0/mod.rs#L50-L54) | Exclude | N/A | Exclude | [Exclude](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/state_transition/state_transitions/identity/public_key_in_creation/v0/mod.rs#L47-L48) |
+| [Identity topup](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_topup_transition/v0/mod.rs#L45-L46)  | Exclude | N/A | N/A | N/A |
+| [Identity update](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_update_transition/v0/mod.rs#L63-L68) | Exclude | Exclude | N/A | [Exclude for any keys being added by the state transition](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/state_transition/state_transitions/identity/public_key_in_creation/v0/mod.rs#L47-L48) |
+| [Identity credit transfer](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_credit_transfer_transition/v0/mod.rs#L46-L49) | Exclude | Exclude | N/A | N/A |
+| [Identity credit withdrawal](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_credit_withdrawal_transition/v1/mod.rs#L41-L44) | Exclude | Exclude | N/A | N/A |
+| [Masternode vote](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/state_transition/state_transitions/identity/masternode_vote_transition/v0/mod.rs#L46-L49) | Exclude | Exclude | N/A | N/A |

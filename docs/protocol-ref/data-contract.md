@@ -45,9 +45,9 @@ There are a variety of constraints currently defined for performance and securit
 
 | Parameter | Size |
 | - | - |
-| Maximum serialized data contract size | [16384 bytes (16 KB)](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-platform-version/src/version/system_limits/v1.rs#L4) |
-| Maximum field value size | [5120 bytes (5 KB)](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-platform-version/src/version/system_limits/v1.rs#L5) |
-| Maximum state transition size | [20480 bytes (20 KB)](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-platform-version/src/version/system_limits/v1.rs#L6) |
+| Maximum serialized data contract size | [16384 bytes (16 KB)](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-platform-version/src/version/system_limits/v1.rs#L4) |
+| Maximum field value size | [5120 bytes (5 KB)](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-platform-version/src/version/system_limits/v1.rs#L5) |
+| Maximum state transition size | [20480 bytes (20 KB)](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-platform-version/src/version/system_limits/v1.rs#L6) |
 
 A document cannot exceed the maximum state transition size in any case. For example, although it is
 possible to define a data contract with 10 document fields that each support the maximum field size
@@ -67,7 +67,7 @@ Include the following at the same level as the `properties` keyword to ensure pr
 
 ## Data Contract Object
 
-The data contract object consists of the following fields as defined in the Rust reference client ([rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/v1/data_contract.rs#L77-L121)):
+The data contract object consists of the following fields as defined in the Rust reference client ([rs-dpp](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/data_contract/v1/data_contract.rs#L77-L121)):
 
 | Property        | Type           | Size | Description |
 | --------------- | -------------- | ---- | ----------- |
@@ -88,7 +88,7 @@ The data contract object consists of the following fields as defined in the Rust
 
 ### Data Contract schema
 
-The full schema is [defined is rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/document_type/schema/enrich_with_base_schema/v0/mod.rs#L6-L7), hosted on [GitHub](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json), and can be viewed by expanding this dropdown:
+The full schema is [defined is rs-dpp](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/data_contract/document_type/schema/enrich_with_base_schema/v0/mod.rs#L6-L7), hosted on [GitHub](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json), and can be viewed by expanding this dropdown:
 
 ::: {dropdown} Full schema
 
@@ -708,7 +708,7 @@ The full schema is [defined is rs-dpp](https://github.com/dashpay/platform/blob/
 
 ### Data Contract id
 
-The data contract `id` is a hash of the `ownerId` and entropy as shown [here](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/generate_data_contract.rs).
+The data contract `id` is a hash of the `ownerId` and entropy as shown [here](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/data_contract/generate_data_contract.rs).
 
 ```rust
 // From the Rust reference implementation (rs-dpp)
@@ -736,7 +736,7 @@ See the [data contract documents](./data-contract-document.md) page for details.
 
 ### Data Contract config
 
-The data contract config defines configuration options for data contracts, controlling their lifecycle, mutability, history management, and encryption requirements. Data contracts support three categories of configuration options to provide flexibility in contract design. It is only necessary to include them in a data contract when non-default values are used. The default values for these configuration options are defined in the [Rust DPP implementation](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/config/fields.rs).
+The data contract config defines configuration options for data contracts, controlling their lifecycle, mutability, history management, and encryption requirements. Data contracts support three categories of configuration options to provide flexibility in contract design. It is only necessary to include them in a data contract when non-default values are used. The default values for these configuration options are defined in the [Rust DPP implementation](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/data_contract/config/fields.rs).
 
 | Contract option                         | Default | Description |
 |-----------------------------------------|---------|-------------|
@@ -774,7 +774,7 @@ The following example (from the [DashPay contract's `contactRequest` document](h
 }
 ```
 
-See the data contract [config implementation in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/config/v0/mod.rs#L17-L42) for more details.
+See the data contract [config implementation in rs-dpp](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/data_contract/config/v0/mod.rs#L18-L43) for more details.
 
 ### Data Contract groups
 
@@ -786,7 +786,7 @@ Groups can be used to distribute contract configuration and update authorization
 - Changes to a token (e.g., mint, burn, freeze) can be configured so they require group authorization.
   - Example: "2-of-3 multisig” among three admins, each with certain voting power.
 
-See the [groups implementation in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/group/v0/mod.rs#L31-L34) for more details.
+See the [groups implementation in rs-dpp](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/data_contract/group/v0/mod.rs#L32-L35) for more details.
 
 ### Data Contract tokens
 
@@ -816,7 +816,7 @@ Data contracts are created on the platform by submitting the [data contract obje
 | signaturePublicKeyId | unsigned integer | 32 bits | The `id` of the [identity public key](../protocol-ref/identity.md#identity-publickeys) that signed the state transition (`=> 0`) |
 | signature            | array of bytes | 65 bytes | Signature of state transition data |
 
-See the [data contract create implementation in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/contract/data_contract_create_transition/v0/mod.rs#L37-L45) for more details.
+See the [data contract create implementation in rs-dpp](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/state_transition/state_transitions/contract/data_contract_create_transition/v0/mod.rs#L37-L45) for more details.
 
 ### Data Contract Update
 
@@ -838,7 +838,7 @@ object](#data-contract-object) in a data contract update state transition consis
 | signaturePublicKeyId | unsigned integer | 32 bits | The `id` of the [identity public key](../protocol-ref/identity.md#identity-publickeys) that signed the state transition (`=> 0`) |
 | signature            | array of bytes | 65 bytes | Signature of state transition data |
 
-See the [data contract update implementation in rs-dpp](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/state_transition/state_transitions/contract/data_contract_update_transition/v0/mod.rs#L33-L45) for more details.
+See the [data contract update implementation in rs-dpp](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/state_transition/state_transitions/contract/data_contract_update_transition/v0/mod.rs#L33-L45) for more details.
 
 ### Data Contract State Transition Signing
 

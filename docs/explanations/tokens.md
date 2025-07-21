@@ -104,8 +104,8 @@ When creating a token, you define its configuration using the following paramete
 | Configuration Parameter | Mutable           | Default |
 |:------------------------|:------------------|:--------|
 | [Conventions](#display-conventions)      | Yes | N/A. Depends on implementation |
-| [Decimal precision](#display-conventions)| Yes | [8](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/associated_token/token_configuration/v0/mod.rs#L376) |
-| [Base supply](#token-supply)             | **No**  | [100000](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/data_contract/associated_token/token_configuration/v0/mod.rs#L378) |
+| [Decimal precision](#display-conventions)| Yes | [8](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/data_contract/associated_token/token_configuration/v0/mod.rs#493) |
+| [Base supply](#token-supply)             | **No**  | [100000](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/data_contract/associated_token/token_configuration/v0/mod.rs#L495) |
 | [Maximum supply](#token-supply)          | Yes | None |
 | [Keep history](#history)                 | Yes | True |
 | [Start paused](#initial-state)           | Yes | False |

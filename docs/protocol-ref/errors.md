@@ -6,7 +6,7 @@
 
 ## Platform Error Codes
 
-Dash Platform Protocol implements a comprehensive set of consensus error codes. Refer to the tables below for a list of the codes as specified in [code.rs](https://github.com/dashpay/platform/blob/v2.0-dev/packages/rs-dpp/src/errors/consensus/codes.rs) of the consensus source code.
+Dash Platform Protocol implements a comprehensive set of consensus error codes. Refer to the tables below for a list of the codes as specified in [code.rs](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/errors/consensus/codes.rs) of the consensus source code.
 
 Platform error codes are organized into four categories. Each category may be further divided into sub-categories. The four categories and their error code ranges are:
 
