@@ -7,7 +7,7 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'Dash Platform'
-copyright = '2024, Dash Core Group, Inc'
+copyright = '2025, Dash Core Group, Inc'
 author = 'thephez'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -121,7 +121,7 @@ html_context = {
     # "github_url": "https://github.com", # or your GitHub Enterprise site
     "github_user": "dashpay",
     "github_repo": "docs-platform",
-    "github_version": "1.0.0",
+    "github_version": "2.0.0",
     "doc_path": "",
 }
 
