@@ -137,6 +137,7 @@ explanations/dashpay
 explanations/fees
 explanations/tokens
 explanations/nft
+explanations/query
 ```
 
 ```{toctree}
