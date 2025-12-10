@@ -55,7 +55,6 @@ type. If a field is not indexed, it cannot be used for filtering or sorting.
 Benefits of indexed querying include:
 
 - Predictable performance
-- No full-table scanning
 - Consistent execution across nodes
 
 :::{important}

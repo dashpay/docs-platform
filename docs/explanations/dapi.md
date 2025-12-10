@@ -24,6 +24,11 @@ To overcome these obstacles, the Dash decentralized API (DAPI) uses Dash's robus
 
 DAPI protects connections by using TLS to encrypt communication between clients and the masternodes. This encryption safeguards transmitted data from unauthorized access, interception, or tampering. [Platform gRPC endpoints](../reference/dapi-endpoints-platform-endpoints.md) provide an additional level of security by optionally returning cryptographic proofs. Successful proof verification guarantees that the server responded without modifying the requested data.
 
+:::{note}
+See the [Query Capabilities page](./query.md) for more detailed information regarding Platform data
+retrieval.
+:::
+
 ## Endpoint Overview
 
 DAPI currently provides 2 types of endpoints: [JSON-RPC](https://www.jsonrpc.org/) and [gRPC](https://grpc.io/docs/guides/). The JSON-RPC endpoints expose some layer 1 information while the gRPC endpoints support layer 2 as well as streaming of events related to blocks and transactions/transitions. For a list of all endpoints and usage details, please see the [DAPI endpoint reference section](../reference/dapi-endpoints.md).
