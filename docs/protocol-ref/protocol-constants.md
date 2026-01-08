@@ -39,9 +39,9 @@ Credits are the unit of account for fees on Dash Platform. They are created from
 
 **Conversion:** 1 Dash = 100,000,000 duffs = 100,000,000,000 credits
 
-## Fee Constants
+## Protocol Fees
 
-### Base Processing Fees
+### Base Processing
 
 These constants define the base costs for state transition processing.
 
@@ -55,9 +55,9 @@ These constants define the base costs for state transition processing.
 | `READ_BASE_PROCESSING_COST` | 8,400 | Base read cost | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/fee/default_costs/constants.rs#L8) |
 | `WRITE_BASE_PROCESSING_COST` | 6,000 | Base write cost | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/fee/default_costs/constants.rs#L9) |
 
-### Minimum State Transition Fees
+### State Transition Pricing
 
-These are the minimum fees required for each state transition type.
+These constants define minimum values required for a state transition to be considered valid.
 
 | State Transition | Min Fee (Credits) | Min Fee (Dash) | Source |
 |------------------|-------------------|----------------|--------|
@@ -76,7 +76,11 @@ These are the minimum fees required for each state transition type.
 | Identity Key (per key at creation) | 6,500,000 | 0.000065 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-platform-version/src/version/fee/state_transition_min_fees/v1.rs#L17) |
 | Identity TopUp (base) | 500,000 | 0.000005 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-platform-version/src/version/fee/state_transition_min_fees/v1.rs#L18) |
 
-### Processing Fees
+### Execution and Resource Pricing
+
+These fees meter execution and resource usage. They do not affect validity, but determine total cost.
+
+#### Processing
 
 Fees for specific operations during state transition processing.
 
@@ -92,7 +96,7 @@ Fees for specific operations during state transition processing.
 | Network threshold signing | 100,000,000 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-platform-version/src/version/fee/processing/v1.rs#L11) |
 | Validate key structure | 50 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-platform-version/src/version/fee/processing/v1.rs#L12) |
 
-### Storage Fees
+#### Storage
 
 Fees related to data storage operations.
 
@@ -104,7 +108,9 @@ Fees related to data storage operations.
 | Non-storage load (per byte) | 10 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-platform-version/src/version/fee/storage/v1.rs) |
 | Storage seek | 2,000 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-platform-version/src/version/fee/storage/v1.rs) |
 
-### Signature Verification Fees
+#### Cryptographic Operations
+
+##### Signature Verification
 
 Fees for verifying different signature types.
 
@@ -116,7 +122,7 @@ Fees for verifying different signature types.
 | BIP13 Script Hash | 300,000 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-platform-version/src/version/fee/signature/v1.rs) |
 | EdDSA 25519 Hash160 | 3,500 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-platform-version/src/version/fee/signature/v1.rs) |
 
-### Hashing Fees
+##### Hashing
 
 Fees for cryptographic hash operations.
 
@@ -128,6 +134,57 @@ Fees for cryptographic hash operations.
 | SHA256 (per block) | 5,000 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-platform-version/src/version/fee/hashing/v1.rs) |
 | Blake3 (per block) | 300 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-platform-version/src/version/fee/hashing/v1.rs) |
 | RIPEMD160 (per block) | 5,000 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-platform-version/src/version/fee/hashing/v1.rs) |
+
+### Voting
+
+Fees related to contested document voting.
+
+| Fee Type | Amount (Credits) | Amount (Dash) | Source |
+|----------|------------------|---------------|--------|
+| Contested document vote resolution fund | 20,000,000,000 | 0.2 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-platform-version/src/version/fee/vote_resolution_fund_fees/v1.rs) |
+| Contested document unlock fund | 400,000,000,000 | 4.0 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-platform-version/src/version/fee/vote_resolution_fund_fees/v1.rs) |
+| Single vote cost | 10,000,000 | 0.0001 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-platform-version/src/version/fee/vote_resolution_fund_fees/v1.rs) |
+
+## Identity Model
+
+### Identity Limits
+
+| Limit | Value | Description | Source |
+|-------|-------|-------------|--------|
+| Max public keys per identity | 15,000 | Maximum keys an identity can have | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/identity/fields.rs#L7) |
+| Max keys in creation | 6 | Keys allowed at identity creation | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-platform-version/src/version/dpp_versions/dpp_state_transition_versions/v1.rs#L18) |
+| Identity nonce value filter | 0xFFFFFFFFFF | 40-bit nonce filter | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/identity/identity_nonce.rs#L13) |
+| Max missing identity revisions | 24 | Maximum revision gaps | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/identity/identity_nonce.rs#L15) |
+
+### Identity Create Fees
+
+| Requirement | Value | Description | Source |
+|-------------|-------|-------------|--------|
+| Min asset lock balance | 200,000 duffs | 0.002 Dash minimum | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-platform-version/src/version/dpp_versions/dpp_state_transition_versions/v1.rs#L20) |
+| Min top-up balance | 50,000 duffs | 0.0005 Dash minimum | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-platform-version/src/version/dpp_versions/dpp_state_transition_versions/v1.rs#L21) |
+| Min address funding balance | 50,000 duffs | 0.0005 Dash minimum | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-platform-version/src/version/dpp_versions/dpp_state_transition_versions/v1.rs#L22) |
+| Min identity funding amount | 200,000 credits | Minimum for address-based creation | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-platform-version/src/version/dpp_versions/dpp_state_transition_versions/v1.rs#L41) |
+
+## Document & Data Contract Model
+
+### Document and Index Limits
+
+| Limit | Value | Description | Source |
+|-------|-------|-------------|--------|
+| Max indexed string length | 63 characters | Maximum indexable string | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/mod.rs#L23) |
+| Max indexed byte array length | 255 bytes | Maximum indexable byte array | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/mod.rs#L24) |
+| Max indexed array items | 1,024 | Maximum items in indexed array | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/mod.rs#L25) |
+| Max index size | 255 bytes | Maximum total index size | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/data_contract/document_type/mod.rs#L38) |
+| Default hash size | 32 bytes | Standard hash size | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/data_contract/document_type/mod.rs#L35) |
+| Default float size | 8 bytes | Standard float size | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/data_contract/document_type/mod.rs#L36) |
+| Empty tree storage size | 33 bytes | Storage for empty tree | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/data_contract/document_type/mod.rs#L37) |
+| Storage flags size | 2 bytes | Size of storage flags | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/data_contract/document_type/mod.rs#L39) |
+
+### Data Contract Constants
+
+| Constant | Value | Description | Source |
+|----------|-------|-------------|--------|
+| Initial contract version | 1 | Starting version number | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/data_contract/mod.rs#L76) |
 
 ### Data Contract Registration Fees
 
@@ -145,69 +202,17 @@ One-time fees for registering data contracts and their components.
 | Token pre-programmed distribution | 10,000,000,000 | 0.1 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-platform-version/src/version/fee/data_contract_registration/v2.rs) |
 | Search keyword (per keyword) | 10,000,000,000 | 0.1 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-platform-version/src/version/fee/data_contract_registration/v2.rs) |
 
-### Vote Resolution Fund Fees
+### Tokens
 
-Fees related to contested document voting.
+Tokens are defined within data contracts and share the same lifecycle, versioning, and validation model as documents.
 
-| Fee Type | Amount (Credits) | Amount (Dash) | Source |
-|----------|------------------|---------------|--------|
-| Contested document vote resolution fund | 20,000,000,000 | 0.2 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-platform-version/src/version/fee/vote_resolution_fund_fees/v1.rs) |
-| Contested document unlock fund | 400,000,000,000 | 4.0 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-platform-version/src/version/fee/vote_resolution_fund_fees/v1.rs) |
-| Single vote cost | 10,000,000 | 0.0001 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-platform-version/src/version/fee/vote_resolution_fund_fees/v1.rs) |
-
-## Withdrawal Constants
-
-| Constant | Value | Description | Source |
-|----------|-------|-------------|--------|
-| Min withdrawal amount | ~181,000 credits | Based on unlock tx size | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_credit_withdrawal_transition/) |
-| Min core fee per byte | 1 | Must be Fibonacci number | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_credit_withdrawal_transition/) |
-
-## Identity Limits
-
-| Limit | Value | Description | Source |
-|-------|-------|-------------|--------|
-| Max public keys per identity | 15,000 | Maximum keys an identity can have | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/identity/fields.rs#L7) |
-| Max keys in creation | 6 | Keys allowed at identity creation | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-platform-version/src/version/dpp_versions/dpp_state_transition_versions/v1.rs#L18) |
-| Identity nonce value filter | 0xFFFFFFFFFF | 40-bit nonce filter | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/identity/identity_nonce.rs#L13) |
-| Max missing identity revisions | 24 | Maximum revision gaps | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/identity/identity_nonce.rs#L15) |
-
-### Identity Create Requirements
-
-| Requirement | Value | Description | Source |
-|-------------|-------|-------------|--------|
-| Min asset lock balance | 200,000 duffs | 0.002 Dash minimum | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-platform-version/src/version/dpp_versions/dpp_state_transition_versions/v1.rs#L20) |
-| Min top-up balance | 50,000 duffs | 0.0005 Dash minimum | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-platform-version/src/version/dpp_versions/dpp_state_transition_versions/v1.rs#L21) |
-| Min address funding balance | 50,000 duffs | 0.0005 Dash minimum | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-platform-version/src/version/dpp_versions/dpp_state_transition_versions/v1.rs#L22) |
-| Min identity funding amount | 200,000 credits | Minimum for address-based creation | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-platform-version/src/version/dpp_versions/dpp_state_transition_versions/v1.rs#L41) |
-
-## Document and Index Limits
-
-### Document Type Limits
-
-| Limit | Value | Description | Source |
-|-------|-------|-------------|--------|
-| Max indexed string length | 63 characters | Maximum indexable string | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/mod.rs#L23) |
-| Max indexed byte array length | 255 bytes | Maximum indexable byte array | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/mod.rs#L24) |
-| Max indexed array items | 1,024 | Maximum items in indexed array | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/mod.rs#L25) |
-| Max index size | 255 bytes | Maximum total index size | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/data_contract/document_type/mod.rs#L38) |
-| Default hash size | 32 bytes | Standard hash size | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/data_contract/document_type/mod.rs#L35) |
-| Default float size | 8 bytes | Standard float size | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/data_contract/document_type/mod.rs#L36) |
-| Empty tree storage size | 33 bytes | Storage for empty tree | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/data_contract/document_type/mod.rs#L37) |
-| Storage flags size | 2 bytes | Size of storage flags | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/data_contract/document_type/mod.rs#L39) |
-
-## Data Contract Constants
-
-| Constant | Value | Description | Source |
-|----------|-------|-------------|--------|
-| Initial contract version | 1 | Starting version number | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/data_contract/mod.rs#L76) |
-
-## Token Limits
+#### Token Limits
 
 | Limit | Value | Description | Source |
 |-------|-------|-------------|--------|
 | Max token note length | 2,048 characters | Maximum note/memo length | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/tokens/mod.rs#L19) |
 
-### Token Distribution Function Limits
+#### Token Distribution Function Limits
 
 These limits apply to token perpetual distribution function parameters.
 
@@ -225,6 +230,29 @@ These limits apply to token perpetual distribution function parameters.
 | Exponential N | 0 | 32 | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/data_contract/associated_token/token_perpetual_distribution/distribution_function/mod.rs) |
 | Default step decreasing max cycles | 128 | 128 | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/data_contract/associated_token/token_perpetual_distribution/distribution_function/mod.rs#L20) |
 
+## Address System
+
+:::{versionadded} 3.0.0
+:::
+
+### Address Constants
+
+| Constant | Value | Description | Source |
+|----------|-------|-------------|--------|
+| Address hash size | 20 bytes | Size of address hash | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/address_funds/platform_address.rs#L22) |
+| Platform HRP (mainnet) | "dashevo" | Human-readable prefix | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/address_funds/platform_address.rs#L85) |
+| Platform HRP (testnet) | "tdashevo" | Testnet human-readable prefix | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/address_funds/platform_address.rs#L87) |
+| P2PKH address type | 0 | Pay-to-public-key-hash | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/address_funds/platform_address.rs#L91) |
+| P2SH address type | 1 | Pay-to-script-hash | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/address_funds/platform_address.rs#L93) |
+
+### Transaction Limits
+
+| Limit | Value | Description | Source |
+|-------|-------|-------------|--------|
+| Min output amount | 500,000 credits | Minimum output per address | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-platform-version/src/version/dpp_versions/dpp_state_transition_versions/v1.rs#L39) |
+| Min input amount | 100,000 credits | Minimum input per address | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-platform-version/src/version/dpp_versions/dpp_state_transition_versions/v1.rs#L40) |
+| Max fee strategies | 4 | Maximum fee strategy steps | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-platform-version/src/version/dpp_versions/dpp_state_transition_versions/v1.rs#L45) |
+
 ## Epoch and Time Constants
 
 | Constant | Value | Description | Source |
@@ -235,26 +263,15 @@ These limits apply to token perpetual distribution function parameters.
 | Epoch key offset | 256 | Offset for epoch keys | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/block/epoch/mod.rs#L6) |
 | Max epoch | 65,279 | Maximum epoch number (u16::MAX - 256) | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/block/epoch/mod.rs#L9) |
 
-## Address Constants
-
-| Constant | Value | Description | Source |
-|----------|-------|-------------|--------|
-| Address hash size | 20 bytes | Size of address hash | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/address_funds/platform_address.rs#L22) |
-| Platform HRP (mainnet) | "dashevo" | Human-readable prefix | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/address_funds/platform_address.rs#L85) |
-| Platform HRP (testnet) | "tdashevo" | Testnet human-readable prefix | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/address_funds/platform_address.rs#L87) |
-| P2PKH address type | 0 | Pay-to-public-key-hash | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/address_funds/platform_address.rs#L91) |
-| P2SH address type | 1 | Pay-to-script-hash | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/address_funds/platform_address.rs#L93) |
-
-## Address-Based Transition Limits
-
-| Limit | Value | Description | Source |
-|-------|-------|-------------|--------|
-| Min output amount | 500,000 credits | Minimum output per address | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-platform-version/src/version/dpp_versions/dpp_state_transition_versions/v1.rs#L39) |
-| Min input amount | 100,000 credits | Minimum input per address | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-platform-version/src/version/dpp_versions/dpp_state_transition_versions/v1.rs#L40) |
-| Max fee strategies | 4 | Maximum fee strategy steps | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-platform-version/src/version/dpp_versions/dpp_state_transition_versions/v1.rs#L45) |
-
 ## Refund Constants
 
 | Constant | Value | Description | Source |
 |----------|-------|-------------|--------|
 | Min refund limit | 32 bytes | Minimum bytes for refund | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/fee/fee_result/refunds.rs#L23) |
+
+## Withdrawal Constants
+
+| Constant | Value | Description | Source |
+|----------|-------|-------------|--------|
+| Min withdrawal amount | ~181,000 credits | Based on unlock tx size | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_credit_withdrawal_transition/) |
+| Min core fee per byte | 1 | Must be Fibonacci number | [rs-dpp](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_credit_withdrawal_transition/) |
