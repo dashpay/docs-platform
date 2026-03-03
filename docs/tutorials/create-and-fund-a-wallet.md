@@ -2,10 +2,9 @@
 .. tutorials-create-wallet:
 ```
 
-
 # Create and fund a wallet
 
-In order to make changes on Dash Platform, you need a wallet with a balance. This tutorial explains how to generate a new wallet, retrieve an address from it, and transfer test funds to the address from a faucet.
+In order to make create an identity on Dash Platform, you need a platform address with a balance. This tutorial explains how to generate a new wallet, derive a platform address from it, and transfer test funds to the address.
 
 ## Prerequisites
 
@@ -13,45 +12,42 @@ In order to make changes on Dash Platform, you need a wallet with a balance. Thi
 
 # Code
 
-```javascript
-const Dash = require('dash');
+```{code-block} javascript
+:caption: generateWallet.mjs
 
-const clientOpts = {
-  network: 'testnet',
-  wallet: {
-    mnemonic: null, // this indicates that we want a new wallet to be generated
-    // if you want to get a new address for an existing wallet
-    // replace 'null' with an existing wallet mnemonic
-    offlineMode: true,  // this indicates we don't want to sync the chain
-    // it can only be used when the mnemonic is set to 'null'
-  },
-};
+import { wallet, PlatformAddressSigner, PrivateKey } from '@dashevo/evo-sdk';
 
-const client = new Dash.Client(clientOpts);
+const network = 'testnet';
 
-const createWallet = async () => {
-  const account = await client.getWalletAccount();
+try {
+  const mnemonic = await wallet.generateMnemonic();
+  const pathInfo = network === 'testnet'
+  ? await wallet.derivationPathBip44Testnet(0, 0, 0)
+  : await wallet.derivationPathBip44Mainnet(0, 0, 0);
 
-  const mnemonic = client.wallet.exportWallet();
-  const address = account.getUnusedAddress();
+  // Derive the first BIP44 key to get a platform address
+  const keyInfo = await wallet.deriveKeyFromSeedWithPath({
+    mnemonic,
+    path: pathInfo.path,
+    network,
+  });
+
+  // Get the platform address (bech32m) from the private key
+  const privateKey = PrivateKey.fromWIF(keyInfo.toObject().privateKeyWif);
+  const signer = new PlatformAddressSigner();
+  const platformAddress = signer.addKey(privateKey);
+
+  // ⚠️ Never log mnemonics in real applications
   console.log('Mnemonic:', mnemonic);
-  console.log('Unused address:', address.address);
-};
-
-createWallet()
-  .catch((e) => console.error('Something went wrong:\n', e))
-  .finally(() => client.disconnect());
-
-// Handle wallet async errors
-client.on('error', (error, context) => {
-  console.error(`Client error: ${error.name}`);
-  console.error(context);
-});
+  console.log('Platform address:', platformAddress.toBech32m(network));
+} catch (e) {
+  console.error('Something went wrong:', e.message);
+}
 ```
 
 ```text
-Mnemonic: thrive wolf habit timber birth service crystal patient tiny depart tower focus
-Unused address: yXF7LsyajRvJGX96vPHBmo9Dwy9zEvzkbh
+Mnemonic: toilet kingdom uncover super company economy jump fence car later exact multiply
+Platform address: tdash1kpk3fhjfj884gz6zmjj42m9udmvp2mg5rsdx8zhr
 ```
 
 :::{attention}
@@ -60,8 +56,11 @@ Please save your mnemonic for the next step and for re-use in subsequent tutoria
 
 # What's Happening
 
-Once we connect, we output the newly generated mnemonic from `client.wallet.exportWallet()` and an unused address from the wallet from `account.getUnusedAddress()`.
+We use the SDK's `wallet` utilities to generate a BIP39 mnemonic phrase, then derive a platform
+address from it using the BIP44 derivation path. Platform addresses are bech32m-encoded addresses
+(prefixed with `tdash1` on testnet) that hold credits directly on Dash Platform.
 
 # Next Step
 
-Using the [faucet](https://faucet.testnet.networks.dash.org/), send test funds to the "unused address" from the console output. You will need to wait until the funds are confirmed to use them. The [block explorer](https://insight.testnet.networks.dash.org/insight/) can be used to check confirmations.
+Using the [Core -> Platform bridge](https://bridge.thepasta.org/), send test funds to the platform
+address from the console output.
