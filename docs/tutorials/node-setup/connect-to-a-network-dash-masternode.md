@@ -158,8 +158,4 @@ dashmate start
 
 ## Remote Development Network
 
-:::{note}
-In order to connect to a remote [devnet](../../reference/glossary.md#devnet) (e.g. one run by Dash Core Group), please use one of the methods described in the [Connect to a Devnet](../../tutorials/connecting-to-testnet.md#connect-to-a-devnet) section.
-:::
-
 For development we recommend using either a local network created via dashmate as [described above](#local-network) or using Testnet. While configuring a remote development network is possible using the Dash network deployment tool, it is beyond the scope of this documentation. For details regarding this tool, please refer to the [GitHub repository](https://github.com/dashpay/dash-network-deploy).

@@ -8,7 +8,7 @@ The purpose of this tutorial is to walk through the steps necessary to access th
 
 ## Overview
 
-Platform services are provided via a combination of HTTP and gRPC connections to DAPI, and some connections to an Insight API. Although one could interact with DAPI by connecting to these directly, or by using [DAPI-client](https://github.com/dashpay/platform/tree/master/packages/js-dapi-client), the easiest approach is to use the [JavaScript Dash SDK](https://github.com/dashpay/platform/tree/master/packages/js-dash-sdk).
+Platform services are provided via a combination of HTTP and gRPC connections to DAPI. The easiest approach is to use the [Dash Evo SDK](https://www.npmjs.com/package/@dashevo/evo-sdk), which handles connection management automatically.
 
 ## Prerequisites
 
@@ -18,94 +18,60 @@ Platform services are provided via a combination of HTTP and gRPC connections to
 
 ### 1. Install the Dash SDK
 
-The JavaScript SDK package is available from npmjs.com and can be installed by running `npm install dash` from the command line:
+The JavaScript SDK package is available from npmjs.com and can be installed by running `npm install @dashevo/evo-sdk` from the command line:
 
 ```shell
-npm install dash
+npm install @dashevo/evo-sdk
 ```
 
 ### 2. Connect to Dash Platform
 
-:::{tip}
-The JavaScript Dash SDK connects to mainnet by default. To connect to other networks,
-set the `network` option when instantiating the client as shown in the following example.
+Create a file named `dashConnect.mjs` with the following contents. Then run it by typing `node dashConnect.mjs` from the command line:
+
+```{code-block} javascript
+:caption: dashConnect.mjs
+
+import { EvoSDK } from '@dashevo/evo-sdk';
+
+try {
+  const sdk = EvoSDK.testnetTrusted();
+  await sdk.connect();
+  const status = await sdk.system.status();
+  console.log('Connected. System status:\n', status.toJSON());
+} catch (e) {
+  console.error('Failed to fetch system status:', e.message);
+}
+```
+
+Once this returns successfully, you're ready to begin developing! See the [Quickstart](../tutorials/introduction.md#quickstart) for recommended next steps. For details on SDK methods, please refer to the [SDK documentation](https://dashpay.github.io/evo-sdk-website/docs.html).
+
+## Connect to a Local Devnet
+
+The SDK supports connecting to a local development network managed by [dashmate](https://github.com/dashpay/platform/tree/master/packages/dashmate). The `local` factory methods expect a dashmate-managed environment with a quorum sidecar running at `127.0.0.1:2444`.
+
+```{code-block} javascript
+:caption: localConnect.mjs
+
+import { EvoSDK } from '@dashevo/evo-sdk';
+
+try {
+  const sdk = EvoSDK.localTrusted();
+  await sdk.connect();
+  const status = await sdk.system.status();
+  console.log('Connected. System status:\n', status.toJSON());
+} catch (e) {
+  console.error('Failed to fetch system status:', e.message);
+}
+```
+
+:::{note}
+The WASM-based SDK currently only supports connecting to known networks (testnet, mainnet, local) via the built-in factory methods. Connecting to remote devnets with custom addresses is not yet supported.
 :::
-
-Create a file named `dashConnect.js` with the following contents. Then run it by typing `node dashConnect.js` from the command line:
-
-```javascript dashConnect.js
-const Dash = require('dash');
-
-const client = new Dash.Client({ network: 'testnet' });
-
-async function connect() {
-  return await client.getDAPIClient().core.getBestBlockHash();
-}
-
-connect()
-  .then((d) => console.log('Connected. Best block hash:\n', d))
-  .catch((e) => console.error('Something went wrong:\n', e))
-  .finally(() => client.disconnect());
-```
-
-Once this returns successfully, you're ready to begin developing! See the [Quickstart](../tutorials/introduction.md#quickstart) for recommended next steps. For details on all SDK options and methods, please refer to the [SDK documentation](../sdk-js/overview.md).
-
-## Connect to a Devnet
-
-The SDK also supports connecting to development networks (devnets). Since devnets can be created by anyone, the client library will be unaware of them unless connection information is provided using one of the options described below.
-
-### Connect via Seed
-
-Using a seed node is the preferred method in most cases. The client uses the provided seed node to a retrieve a list of available masternodes on the network so requests can be spread across the entire network.
-
-```javascript
-const Dash = require('dash');
-
-const client = new Dash.Client({
-  network: 'testnet',
-  seeds: [{
-    host: 'seed-1.testnet.networks.dash.org:1443',
-  }],
-});
-
-async function connect() {
-  return await client.getDAPIClient().core.getBestBlockHash();
-}
-
-connect()
-  .then((d) => console.log('Connected. Best block hash:\n', d))
-  .catch((e) => console.error('Something went wrong:\n', e))
-  .finally(() => client.disconnect());
-```
-
-### Connect via Address
-
-Custom addresses may be directly specified via `dapiAddresses` in cases where it is beneficial to know exactly what node(s) are being accessed (e.g. debugging, local development, etc.).
-
-```javascript
-const Dash = require('dash');
-
-const client = new Dash.Client({
-  dapiAddresses: [
-    '127.0.0.1:3000:3010',
-    '127.0.0.2:3000:3010',
-  ],
-});
-
-async function connect() {
-  return await client.getDAPIClient().core.getBestBlockHash();
-}
-
-connect()
-  .then((d) => console.log('Connected. Best block hash:\n', d))
-  .catch((e) => console.error('Something went wrong:\n', e))
-  .finally(() => client.disconnect());
-```
 
 ## Connect Directly to DAPI (Optional)
 
 :::{attention}
-Normally, the Dash SDK, dapi-client, or another library should be used to interact with DAPI. Connecting directly may be helpful for debugging in some cases, but generally is not required.
+Normally, the Dash SDK or another library should be used to interact with DAPI. Connecting directly may be helpful for debugging in some cases, but generally is not required.
 :::
 
 The example below demonstrates retrieving the hash of the best block hash directly from a DAPI node via command line and several languages:
