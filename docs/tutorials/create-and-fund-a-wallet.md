@@ -35,11 +35,12 @@ try {
   // Get the platform address (bech32m) from the private key
   const privateKey = PrivateKey.fromWIF(keyInfo.toObject().privateKeyWif);
   const signer = new PlatformAddressSigner();
-  const platformAddress = signer.addKey(privateKey);
+  const address = signer.addKey(privateKey).toBech32m(network);
 
   // ⚠️ Never log mnemonics in real applications
   console.log('Mnemonic:', mnemonic);
-  console.log('Platform address:', platformAddress.toBech32m(network));
+  console.log('Platform address:', address);
+  console.log('Fund address using:', `https://bridge.thepasta.org/?address=${address}`);
 } catch (e) {
   console.error('Something went wrong:', e.message);
 }
