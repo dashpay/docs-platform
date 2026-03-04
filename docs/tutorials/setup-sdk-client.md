@@ -9,9 +9,7 @@ tutorials.
 
 ## Code
 
-Save the following module in a file named `sdkClient.mjs`. Edit the `clientConfig` section at the
-top with your mnemonic (or set `PLATFORM_MNEMONIC` in a `.env` file). Later tutorials import from
-this file.
+Save the following module in a file named `setupDashClient.mjs`. Later tutorials import from this file.
 
 | Export | Purpose |
 | ------ | -------- |
@@ -21,9 +19,14 @@ this file.
 | `AddressKeyManager` | Derives platform address keys for address operations |
 | `clientConfig` | Shared network and mnemonic configuration |
 
+:::{important}
+After saving, open `setupDashClient.mjs` and set your mnemonic in the `clientConfig` section near the top
+of the file — either edit the value directly or create a `.env` file with `PLATFORM_MNEMONIC`.
+:::
+
 ```{code-block} javascript
-:caption: sdkClient.mjs
-:name: sdkClient.mjs
+:caption: setupDashClient.mjs
+:name: setupDashClient.mjs
 
 /* eslint-disable max-classes-per-file */
 import {
@@ -41,16 +44,21 @@ import {
 // Load .env if dotenv is installed (optional — not needed for tutorials).
 // Top-level await requires ESM — .mjs extension ensures this.
 // eslint-disable-next-line import/no-extraneous-dependencies
-try { const { config } = await import('dotenv'); config(); } catch { /* dotenv not installed */ }
+try {
+  const { config } = await import('dotenv');
+  config();
+} catch {
+  /* dotenv not installed */
+}
 
 // ⚠️ Tutorial helper — holds WIFs in memory for convenience.
 // Do not use this pattern as-is for production key management.
 
-// ---------------------------------------------------------------------------
-// Configuration — edit these values for your environment
-// ---------------------------------------------------------------------------
-// If a .env file exists (and dotenv is installed), its PLATFORM_MNEMONIC and
-// NETWORK values are used automatically. Otherwise edit the values below.
+// ###########################################################################
+// #  CONFIGURATION — edit these values for your environment               #
+// ###########################################################################
+// Option 1: Edit the values below directly.
+// Option 2: Create a .env file with PLATFORM_MNEMONIC and NETWORK.
 
 const clientConfig = {
   // The network to connect to ('testnet' or 'mainnet')
@@ -61,6 +69,19 @@ const clientConfig = {
   mnemonic: process.env.PLATFORM_MNEMONIC || null,
   // mnemonic: 'your twelve word mnemonic phrase goes here ...',
 };
+
+/**
+ * Build a DIP-13 identity key derivation path.
+ * Returns the full 7-level hardened path:
+ *   m/9'/{coin}'/5'/0'/0'/{identityIndex}'/{keyIndex}'
+ */
+async function dip13KeyPath(network, identityIndex, keyIndex) {
+  const base =
+    network === 'testnet'
+      ? await wallet.derivationPathDip13Testnet(5)
+      : await wallet.derivationPathDip13Mainnet(5);
+  return `${base.path}/0'/0'/${identityIndex}'/${keyIndex}'`;
+}
 
 // ---------------------------------------------------------------------------
 // SDK client helpers
@@ -164,11 +185,10 @@ class IdentityKeyManager {
     network = 'testnet',
     identityIndex = 0,
   }) {
-    const coin = network === 'testnet' ? 1 : 5;
-    const derive = (keyIndex) =>
+    const derive = async (keyIndex) =>
       wallet.deriveKeyFromSeedWithPath({
         mnemonic,
-        path: `m/9'/${coin}'/5'/0'/0'/${identityIndex}'/${keyIndex}'`,
+        path: await dip13KeyPath(network, identityIndex, keyIndex),
         network,
       });
 
@@ -227,21 +247,21 @@ class IdentityKeyManager {
    * @returns {Promise<number>} The first unused identity index
    */
   static async findNextIndex(sdk, mnemonic, network = 'testnet') {
-    const coin = network === 'testnet' ? 1 : 5;
+    /* eslint-disable no-await-in-loop */
     for (let i = 0; ; i += 1) {
-      // eslint-disable-next-line no-await-in-loop
+      const path = await dip13KeyPath(network, i, 0);
       const key = await wallet.deriveKeyFromSeedWithPath({
         mnemonic,
-        path: `m/9'/${coin}'/5'/0'/0'/${i}'/0'`,
+        path,
         network,
       });
       const privateKey = PrivateKey.fromWIF(key.toObject().privateKeyWif);
-      // eslint-disable-next-line no-await-in-loop
       const existing = await sdk.identities.byPublicKeyHash(
         privateKey.getPublicKeyHash(),
       );
       if (!existing) return i;
     }
+    /* eslint-enable no-await-in-loop */
   }
 
   /**
@@ -265,11 +285,10 @@ class IdentityKeyManager {
     const idx =
       identityIndex ??
       (await IdentityKeyManager.findNextIndex(sdk, mnemonic, network));
-    const coin = network === 'testnet' ? 1 : 5;
-    const derive = (keyIndex) =>
+    const derive = async (keyIndex) =>
       wallet.deriveKeyFromSeedWithPath({
         mnemonic,
-        path: `m/9'/${coin}'/5'/0'/0'/${idx}'/${keyIndex}'`,
+        path: await dip13KeyPath(network, idx, keyIndex),
         network,
       });
 
@@ -353,7 +372,18 @@ class IdentityKeyManager {
    * @returns {{ identity, identityKey, signer }}
    */
   async getSigner(keyName) {
+    if (!this.id) {
+      throw new Error(
+        'Identity ID is not set. Use IdentityKeyManager.create() for an existing identity, ' +
+          'or create/register the identity first and then set the ID.',
+      );
+    }
     const key = this.keys[keyName];
+    if (!key) {
+      throw new Error(
+        `Unknown key "${keyName}". Use: ${Object.keys(this.keys).join(', ')}`,
+      );
+    }
     const identity = await this.sdk.identities.fetch(this.id);
     const identityKey = identity.getPublicKeyById(key.keyId);
     const signer = new IdentitySigner();
@@ -431,12 +461,15 @@ class AddressKeyManager {
    * @param {number} [opts.count=1] - Number of addresses to derive
    */
   static async create({ sdk, mnemonic, network = 'testnet', count = 1 }) {
-    const coin = network === 'testnet' ? 1 : 5;
     const addresses = [];
 
+    /* eslint-disable no-await-in-loop */
     for (let i = 0; i < count; i += 1) {
-      const path = `m/44'/${coin}'/0'/0/${i}`;
-      // eslint-disable-next-line no-await-in-loop
+      const pathInfo =
+        network === 'testnet'
+          ? await wallet.derivationPathBip44Testnet(0, 0, i)
+          : await wallet.derivationPathBip44Mainnet(0, 0, i);
+      const { path } = pathInfo;
       const keyInfo = await wallet.deriveKeyFromSeedWithPath({
         mnemonic,
         path,
@@ -454,6 +487,7 @@ class AddressKeyManager {
         path,
       });
     }
+    /* eslint-enable no-await-in-loop */
 
     return new AddressKeyManager(sdk, addresses, network);
   }
@@ -496,7 +530,13 @@ class AddressKeyManager {
    * @returns {Promise<PlatformAddressInfo|undefined>}
    */
   async getInfoAt(index) {
-    return this.sdk.addresses.get(this.addresses[index].bech32m);
+    const entry = this.addresses[index];
+    if (!entry) {
+      throw new Error(
+        `No derived address at index ${index} (count=${this.addresses.length})`,
+      );
+    }
+    return this.sdk.addresses.get(entry.bech32m);
   }
 }
 
@@ -513,7 +553,11 @@ export async function setupDashClient() {
   let addressKeyManager;
   if (mnemonic) {
     keyManager = await IdentityKeyManager.create({ sdk, mnemonic, network });
-    addressKeyManager = await AddressKeyManager.create({ sdk, mnemonic, network });
+    addressKeyManager = await AddressKeyManager.create({
+      sdk,
+      mnemonic,
+      network,
+    });
   }
 
   return { sdk, keyManager, addressKeyManager };
@@ -524,7 +568,7 @@ export { IdentityKeyManager, AddressKeyManager, clientConfig };
 
 ## What's Happening
 
-The `sdkClient.mjs` module is a single-file setup that subsequent tutorials import. It handles:
+The `setupDashClient.mjs` module is a single-file setup that subsequent tutorials import. It handles:
 
 - **`clientConfig`** — your network and mnemonic, defined once. Set values directly or use a `.env`
   file with `NETWORK` and `PLATFORM_MNEMONIC`.
