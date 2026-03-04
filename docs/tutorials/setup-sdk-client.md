@@ -9,19 +9,23 @@ tutorials.
 
 ## Code
 
-Save the following module in a file named `sdkClient.mjs` for use in later tutorials. It exports
-three things:
+Save the following module in a file named `sdkClient.mjs`. Edit the `clientConfig` section at the
+top with your mnemonic (or set `PLATFORM_MNEMONIC` in a `.env` file). Later tutorials import from
+this file.
 
 | Export | Purpose |
 | ------ | -------- |
+| `setupDashClient()` | Connects and creates key managers from `clientConfig` |
 | `createClient()` | Connects to the network |
 | `IdentityKeyManager` | Derives identity keys and provides signers for write operations |
 | `AddressKeyManager` | Derives platform address keys for address operations |
+| `clientConfig` | Shared network and mnemonic configuration |
 
 ```{code-block} javascript
 :caption: sdkClient.mjs
 :name: sdkClient.mjs
 
+/* eslint-disable max-classes-per-file */
 import {
   EvoSDK,
   IdentityPublicKeyInCreation,
@@ -33,6 +37,30 @@ import {
   SecurityLevel,
   wallet,
 } from '@dashevo/evo-sdk';
+
+// Load .env if dotenv is installed (optional — not needed for tutorials).
+// Top-level await requires ESM — .mjs extension ensures this.
+// eslint-disable-next-line import/no-extraneous-dependencies
+try { const { config } = await import('dotenv'); config(); } catch { /* dotenv not installed */ }
+
+// ⚠️ Tutorial helper — holds WIFs in memory for convenience.
+// Do not use this pattern as-is for production key management.
+
+// ---------------------------------------------------------------------------
+// Configuration — edit these values for your environment
+// ---------------------------------------------------------------------------
+// If a .env file exists (and dotenv is installed), its PLATFORM_MNEMONIC and
+// NETWORK values are used automatically. Otherwise edit the values below.
+
+const clientConfig = {
+  // The network to connect to ('testnet' or 'mainnet')
+  network: process.env.NETWORK || 'testnet',
+
+  // BIP39 mnemonic for wallet operations (identity & address tutorials).
+  // Leave as null for read-only tutorials.
+  mnemonic: process.env.PLATFORM_MNEMONIC || null,
+  // mnemonic: 'your twelve word mnemonic phrase goes here ...',
+};
 
 // ---------------------------------------------------------------------------
 // SDK client helpers
@@ -61,19 +89,55 @@ export async function createClient(network = 'testnet') {
 // IdentityKeyManager
 // ---------------------------------------------------------------------------
 
+/** Key specs for the 5 standard identity keys (DIP-9). */
 const KEY_SPECS = [
-  { keyId: 0, purpose: Purpose.AUTHENTICATION, securityLevel: SecurityLevel.MASTER },
-  { keyId: 1, purpose: Purpose.AUTHENTICATION, securityLevel: SecurityLevel.HIGH },
-  { keyId: 2, purpose: Purpose.AUTHENTICATION, securityLevel: SecurityLevel.CRITICAL },
-  { keyId: 3, purpose: Purpose.TRANSFER, securityLevel: SecurityLevel.CRITICAL },
-  { keyId: 4, purpose: Purpose.ENCRYPTION, securityLevel: SecurityLevel.MEDIUM },
+  {
+    keyId: 0,
+    purpose: Purpose.AUTHENTICATION,
+    securityLevel: SecurityLevel.MASTER,
+  },
+  {
+    keyId: 1,
+    purpose: Purpose.AUTHENTICATION,
+    securityLevel: SecurityLevel.HIGH,
+  },
+  {
+    keyId: 2,
+    purpose: Purpose.AUTHENTICATION,
+    securityLevel: SecurityLevel.CRITICAL,
+  },
+  {
+    keyId: 3,
+    purpose: Purpose.TRANSFER,
+    securityLevel: SecurityLevel.CRITICAL,
+  },
+  {
+    keyId: 4,
+    purpose: Purpose.ENCRYPTION,
+    securityLevel: SecurityLevel.MEDIUM,
+  },
 ];
 
+/**
+ * Manages identity keys and signing for write operations.
+ *
+ * Mirrors the old js-dash-sdk pattern where `setupDashClient()` hid all
+ * wallet/signing config. Construct once, then call getAuth(), getTransfer(),
+ * or getMaster() to get a ready-to-use { identity, identityKey, signer }.
+ *
+ * Keys are derived from a BIP39 mnemonic using standard DIP-9 paths
+ * (compatible with dash-evo-tool / Dash wallets):
+ *   Key 0 = MASTER (identity updates)
+ *   Key 1 = HIGH auth (documents, names)
+ *   Key 2 = CRITICAL auth (contracts, documents, names)
+ *   Key 3 = TRANSFER (credit transfers/withdrawals)
+ *   Key 4 = ENCRYPTION MEDIUM (encrypted messaging/data)
+ */
 class IdentityKeyManager {
   constructor(sdk, identityId, keys, identityIndex) {
     this.sdk = sdk;
     this.id = identityId;
-    this.keys = keys;
+    this.keys = keys; // { master, auth, authHigh, transfer, encryption }
     this.identityIndex = identityIndex ?? 0;
   }
 
@@ -82,8 +146,16 @@ class IdentityKeyManager {
   }
 
   /**
-   * Create from a BIP39 mnemonic for an existing on-chain identity.
-   * If identityId is omitted, it is auto-resolved from the mnemonic.
+   * Create an IdentityKeyManager from a BIP39 mnemonic.
+   * Derives all standard identity keys using DIP-9 paths.
+   *
+   * @param {object} opts
+   * @param {object} opts.sdk - Connected EvoSDK instance
+   * @param {string} [opts.identityId] - Identity ID. If omitted, auto-resolved
+   *   from the mnemonic by looking up the master key's public key hash on-chain.
+   * @param {string} opts.mnemonic - BIP39 mnemonic
+   * @param {string} [opts.network='testnet'] - 'testnet' or 'mainnet'
+   * @param {number} [opts.identityIndex=0] - Which identity derived from this mnemonic
    */
   static async create({
     sdk,
@@ -101,14 +173,19 @@ class IdentityKeyManager {
       });
 
     const [masterKey, authHighKey, authKey, transferKey, encryptionKey] =
-      await Promise.all([derive(0), derive(1), derive(2), derive(3), derive(4)]);
+      await Promise.all([
+        derive(0), // MASTER
+        derive(1), // HIGH auth
+        derive(2), // CRITICAL auth
+        derive(3), // TRANSFER
+        derive(4), // ENCRYPTION MEDIUM
+      ]);
 
     let resolvedId = identityId;
     if (!resolvedId) {
       const privateKey = PrivateKey.fromWIF(masterKey.toObject().privateKeyWif);
-      const identity = await sdk.identities.byPublicKeyHash(
-        privateKey.getPublicKeyHash(),
-      );
+      const pubKeyHash = privateKey.getPublicKeyHash();
+      const identity = await sdk.identities.byPublicKeyHash(pubKeyHash);
       if (!identity) {
         throw new Error(
           'No identity found for the given mnemonic (key 0 public key hash)',
@@ -122,25 +199,44 @@ class IdentityKeyManager {
       resolvedId,
       {
         master: { keyId: 0, privateKeyWif: masterKey.toObject().privateKeyWif },
-        authHigh: { keyId: 1, privateKeyWif: authHighKey.toObject().privateKeyWif },
+        authHigh: {
+          keyId: 1,
+          privateKeyWif: authHighKey.toObject().privateKeyWif,
+        },
         auth: { keyId: 2, privateKeyWif: authKey.toObject().privateKeyWif },
-        transfer: { keyId: 3, privateKeyWif: transferKey.toObject().privateKeyWif },
-        encryption: { keyId: 4, privateKeyWif: encryptionKey.toObject().privateKeyWif },
+        transfer: {
+          keyId: 3,
+          privateKeyWif: transferKey.toObject().privateKeyWif,
+        },
+        encryption: {
+          keyId: 4,
+          privateKeyWif: encryptionKey.toObject().privateKeyWif,
+        },
       },
       identityIndex,
     );
   }
 
-  /** Find the first unused DIP-9 identity index for a mnemonic. */
+  /**
+   * Find the first unused DIP-9 identity index for a mnemonic.
+   * Scans indices starting at 0 until no on-chain identity is found.
+   *
+   * @param {object} sdk - Connected EvoSDK instance
+   * @param {string} mnemonic - BIP39 mnemonic
+   * @param {string} [network='testnet'] - 'testnet' or 'mainnet'
+   * @returns {Promise<number>} The first unused identity index
+   */
   static async findNextIndex(sdk, mnemonic, network = 'testnet') {
     const coin = network === 'testnet' ? 1 : 5;
     for (let i = 0; ; i += 1) {
+      // eslint-disable-next-line no-await-in-loop
       const key = await wallet.deriveKeyFromSeedWithPath({
         mnemonic,
         path: `m/9'/${coin}'/5'/0'/0'/${i}'/0'`,
         network,
       });
       const privateKey = PrivateKey.fromWIF(key.toObject().privateKeyWif);
+      // eslint-disable-next-line no-await-in-loop
       const existing = await sdk.identities.byPublicKeyHash(
         privateKey.getPublicKeyHash(),
       );
@@ -149,8 +245,16 @@ class IdentityKeyManager {
   }
 
   /**
-   * Create for a new (not yet registered) identity.
+   * Create an IdentityKeyManager for a new (not yet registered) identity.
    * Derives keys and stores public key data needed for identity creation.
+   * If identityIndex is omitted, auto-selects the next unused index.
+   *
+   * @param {object} opts
+   * @param {object} opts.sdk - Connected EvoSDK instance
+   * @param {string} opts.mnemonic - BIP39 mnemonic
+   * @param {string} [opts.network='testnet'] - 'testnet' or 'mainnet'
+   * @param {number} [opts.identityIndex] - Identity index (auto-scanned if omitted)
+   * @returns {Promise<IdentityKeyManager>}
    */
   static async createForNewIdentity({
     sdk,
@@ -158,7 +262,8 @@ class IdentityKeyManager {
     network = 'testnet',
     identityIndex,
   }) {
-    const idx = identityIndex ??
+    const idx =
+      identityIndex ??
       (await IdentityKeyManager.findNextIndex(sdk, mnemonic, network));
     const coin = network === 'testnet' ? 1 : 5;
     const derive = (keyIndex) =>
@@ -203,7 +308,12 @@ class IdentityKeyManager {
     return new IdentityKeyManager(sdk, null, keys, idx);
   }
 
-  /** Build IdentityPublicKeyInCreation objects for all 5 keys (for identity creation). */
+  /**
+   * Build IdentityPublicKeyInCreation objects for all 5 standard keys.
+   * Only works when public key data is available (via createForNewIdentity).
+   *
+   * @returns {IdentityPublicKeyInCreation[]}
+   */
   getKeysInCreation() {
     return KEY_SPECS.map((spec) => {
       const key = Object.values(this.keys).find((k) => k.keyId === spec.keyId);
@@ -223,7 +333,12 @@ class IdentityKeyManager {
     });
   }
 
-  /** Build an IdentitySigner loaded with all 5 key WIFs (for identity creation). */
+  /**
+   * Build an IdentitySigner loaded with all 5 key WIFs.
+   * Useful for identity creation where all keys must sign.
+   *
+   * @returns {IdentitySigner}
+   */
   getFullSigner() {
     const signer = new IdentitySigner();
     Object.values(this.keys).forEach((key) => {
@@ -232,7 +347,11 @@ class IdentityKeyManager {
     return signer;
   }
 
-  /** Fetch identity and build { identity, identityKey, signer } for a given key. */
+  /**
+   * Fetch identity and build { identity, identityKey, signer } for a given key.
+   * @param {string} keyName - One of: master, auth, authHigh, transfer, encryption
+   * @returns {{ identity, identityKey, signer }}
+   */
   async getSigner(keyName) {
     const key = this.keys[keyName];
     const identity = await this.sdk.identities.fetch(this.id);
@@ -242,27 +361,30 @@ class IdentityKeyManager {
     return { identity, identityKey, signer };
   }
 
-  /** CRITICAL auth (key 2) -- contracts, documents, names. */
+  /** CRITICAL auth (key 2) — contracts, documents, names. */
   async getAuth() {
     return this.getSigner('auth');
   }
 
-  /** HIGH auth (key 1) -- documents, names. */
+  /** HIGH auth (key 1) — documents, names. */
   async getAuthHigh() {
     return this.getSigner('authHigh');
   }
 
-  /** TRANSFER (key 3) -- credit transfers, withdrawals. */
+  /** TRANSFER — credit transfers, withdrawals. */
   async getTransfer() {
     return this.getSigner('transfer');
   }
 
-  /** ENCRYPTION (key 4) -- encrypted messaging/data. */
+  /** ENCRYPTION MEDIUM — encrypted messaging/data. */
   async getEncryption() {
     return this.getSigner('encryption');
   }
 
-  /** MASTER (key 0) -- identity updates (add/disable keys). */
+  /**
+   * MASTER — identity updates (add/disable keys).
+   * @param {string[]} [additionalKeyWifs] - WIFs for new keys being added
+   */
   async getMaster(additionalKeyWifs) {
     const result = await this.getSigner('master');
     if (additionalKeyWifs) {
@@ -276,19 +398,37 @@ class IdentityKeyManager {
 // AddressKeyManager
 // ---------------------------------------------------------------------------
 
+/**
+ * Manages platform address keys and signing for address operations.
+ *
+ * Parallel to IdentityKeyManager but for platform address operations.
+ * Derives BIP44 keys from a mnemonic and provides ready-to-use
+ * PlatformAddressSigner instances.
+ *
+ * Platform addresses are bech32m-encoded L2 addresses (tdash1... on testnet)
+ * that hold credits directly, independent of identities.
+ */
 class AddressKeyManager {
   constructor(sdk, addresses, network) {
     this.sdk = sdk;
-    this.addresses = addresses;
+    this.addresses = addresses; // [{ address, bech32m, privateKeyWif, path }]
     this.network = network;
   }
 
+  /** The first derived address (index 0). */
   get primaryAddress() {
     return this.addresses[0];
   }
 
   /**
-   * Create from a BIP39 mnemonic. Derives platform address keys using BIP44 paths.
+   * Create an AddressKeyManager from a BIP39 mnemonic.
+   * Derives platform address keys using BIP44 paths.
+   *
+   * @param {object} opts
+   * @param {object} opts.sdk - Connected EvoSDK instance
+   * @param {string} opts.mnemonic - BIP39 mnemonic
+   * @param {string} [opts.network='testnet'] - 'testnet' or 'mainnet'
+   * @param {number} [opts.count=1] - Number of addresses to derive
    */
   static async create({ sdk, mnemonic, network = 'testnet', count = 1 }) {
     const coin = network === 'testnet' ? 1 : 5;
@@ -296,6 +436,7 @@ class AddressKeyManager {
 
     for (let i = 0; i < count; i += 1) {
       const path = `m/44'/${coin}'/0'/0/${i}`;
+      // eslint-disable-next-line no-await-in-loop
       const keyInfo = await wallet.deriveKeyFromSeedWithPath({
         mnemonic,
         path,
@@ -317,7 +458,10 @@ class AddressKeyManager {
     return new AddressKeyManager(sdk, addresses, network);
   }
 
-  /** Create a PlatformAddressSigner with the primary key loaded. */
+  /**
+   * Create a PlatformAddressSigner with the primary key loaded.
+   * @returns {PlatformAddressSigner}
+   */
   getSigner() {
     const signer = new PlatformAddressSigner();
     const privateKey = PrivateKey.fromWIF(this.primaryAddress.privateKeyWif);
@@ -325,7 +469,10 @@ class AddressKeyManager {
     return signer;
   }
 
-  /** Create a PlatformAddressSigner with all derived keys loaded. */
+  /**
+   * Create a PlatformAddressSigner with all derived keys loaded.
+   * @returns {PlatformAddressSigner}
+   */
   getFullSigner() {
     const signer = new PlatformAddressSigner();
     this.addresses.forEach((addr) => {
@@ -335,31 +482,64 @@ class AddressKeyManager {
     return signer;
   }
 
-  /** Fetch current balance and nonce for the primary address. */
+  /**
+   * Fetch current balance and nonce for the primary address.
+   * @returns {Promise<PlatformAddressInfo|undefined>}
+   */
   async getInfo() {
     return this.sdk.addresses.get(this.primaryAddress.bech32m);
   }
+
+  /**
+   * Fetch current balance and nonce for an address by index.
+   * @param {number} index - Address index
+   * @returns {Promise<PlatformAddressInfo|undefined>}
+   */
+  async getInfoAt(index) {
+    return this.sdk.addresses.get(this.addresses[index].bech32m);
+  }
 }
 
-export { IdentityKeyManager, AddressKeyManager };
+// ---------------------------------------------------------------------------
+// setupDashClient — convenience wrapper
+// ---------------------------------------------------------------------------
+
+export async function setupDashClient() {
+  const { network, mnemonic } = clientConfig;
+
+  const sdk = await createClient(network);
+
+  let keyManager;
+  let addressKeyManager;
+  if (mnemonic) {
+    keyManager = await IdentityKeyManager.create({ sdk, mnemonic, network });
+    addressKeyManager = await AddressKeyManager.create({ sdk, mnemonic, network });
+  }
+
+  return { sdk, keyManager, addressKeyManager };
+}
+
+export { IdentityKeyManager, AddressKeyManager, clientConfig };
 ```
 
 ## What's Happening
 
-The `sdkClient.mjs` module consolidates three concerns:
+The `sdkClient.mjs` module is a single-file setup that subsequent tutorials import. It handles:
 
-- **`createClient()`** handles connecting to the network. It creates an SDK instance configured for
-  the chosen network (testnet, mainnet, or local) and establishes the connection.
+- **`clientConfig`** — your network and mnemonic, defined once. Set values directly or use a `.env`
+  file with `NETWORK` and `PLATFORM_MNEMONIC`.
 
-- **`IdentityKeyManager`** derives 5 standard identity keys from your mnemonic using DIP-9 key
-  paths. Each key serves a specific purpose (authentication, transfers, encryption). When you need
-  to perform a write operation, you call a method like `getAuth()` which returns
-  `{ identity, identityKey, signer }` -- everything the SDK needs to sign and submit the
-  transaction.
+- **`setupDashClient()`** — the main entry point for most tutorials. Connects to the network and
+  creates key managers from `clientConfig`, returning `{ sdk, keyManager, addressKeyManager }`.
 
-- **`AddressKeyManager`** derives platform address keys from your mnemonic using BIP44 paths. These
-  addresses hold credits on the L2 platform layer and are used for identity creation, top-ups, and
-  credit transfers between addresses.
+- **`createClient()`** — creates a connected SDK instance for a given network (testnet, mainnet, or
+  local).
 
-This module is imported in the following tutorials to streamline them and avoid repeating
-client initialization and key management details.
+- **`IdentityKeyManager`** — derives 5 standard identity keys from your mnemonic using DIP-9 key
+  paths. Each key serves a specific purpose (authentication, transfers, encryption). Call methods
+  like `getAuth()` to get `{ identity, identityKey, signer }` — everything the SDK needs to sign
+  and submit a transaction.
+
+- **`AddressKeyManager`** — derives platform address keys from your mnemonic using BIP44 paths.
+  These addresses hold credits on the L2 platform layer and are used for identity creation, top-ups,
+  and credit transfers between addresses.
