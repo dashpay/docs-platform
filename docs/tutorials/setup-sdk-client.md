@@ -1,111 +1,365 @@
 # Setup SDK Client
 
-:::{warning}
-The JavaScript SDK should only be used in production when connected to trusted nodes. While it
-provides easy access to Dash Platform without requiring a full node, it **_does not support Dash
-Platform's proofs or verify synchronized blockchain data_**. Therefore, it is less secure than the
-[Rust SDK](../sdk-rs/overview.md), which requests proofs for all queried data.
-:::
-
-In this tutorial we will show how to configure the client for use in the remaining tutorials.
+In this tutorial we will show how to configure the client and key managers for use in the remaining
+tutorials.
 
 ## Prerequisites
 
 - [General prerequisites](../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
-- A wallet mnemonic with some funds in it: [How to Create and Fund a
-  Wallet](../tutorials/create-and-fund-a-wallet.md)
 
 ## Code
 
-:::{tip}
-The JavaScript Dash SDK connects to mainnet by default. To connect to other networks,
-set the `network` option when instantiating the client as shown in the following example.
-:::
+Save the following module in a file named `sdkClient.mjs` for use in later tutorials. It exports
+three things:
 
-Save the following client configuration module in a file named `setupDashClient.js`. This module
-will be re-used in later tutorials.
+| Export | Purpose |
+| ------ | -------- |
+| `createClient()` | Connects to the network |
+| `IdentityKeyManager` | Derives identity keys and provides signers for write operations |
+| `AddressKeyManager` | Derives platform address keys for address operations |
 
 ```{code-block} javascript
-:caption: setupDashClient.js
-:name: setupDashClient.js
+:caption: sdkClient.mjs
+:name: sdkClient.mjs
 
-// Fully configured client options
-const clientOptions = {
-  // The network to connect to ('mainnet', 'testnet' or 'local')
-  network: 'testnet',
+import {
+  EvoSDK,
+  IdentityPublicKeyInCreation,
+  IdentitySigner,
+  KeyType,
+  PlatformAddressSigner,
+  PrivateKey,
+  Purpose,
+  SecurityLevel,
+  wallet,
+} from '@dashevo/evo-sdk';
 
-  // Wallet configuration for transactions and account management
-  wallet: {
-    // The mnemonic (seed phrase) for the wallet. Required for signing transactions.
-    mnemonic: 'a Dash wallet mnemonic with testnet funds goes here',
+// ---------------------------------------------------------------------------
+// SDK client helpers
+// ---------------------------------------------------------------------------
 
-    // Unsafe wallet options (use with caution)
-    unsafeOptions: {
-      // Starting synchronization from a specific block height can speed up the initial wallet sync process.
-      skipSynchronizationBeforeHeight: 875000, // only sync from mid-2023
-    },
+export async function createClient(network = 'testnet') {
+  const factories = {
+    testnet: () => EvoSDK.testnetTrusted(),
+    mainnet: () => EvoSDK.mainnetTrusted(),
+    local: () => EvoSDK.localTrusted(),
+  };
 
-    // The default account index to use for transactions and queries. Default is 0.
-    // defaultAccountIndex: 0,
-  },
-
-  // Configuration for Dash Platform applications
-  apps: {
-    // yourApp: { contractId: 'yourCustomAppContractId' },
-    tutorialContract: {
-      contractId: '8cvMFwa2YbEsNNoc1PXfTacy2PVq2SzVnkZLeQSzjfi6', // Contract ID
-    },
-  },
-
-  // Custom list of DAPI seed nodes to connect to. Overrides the default seed list.
-  // Format: { service: 'ip|domain:port' }
-  // seeds: [
-  //   { host: 'seed-1.testnet.networks.dash.org:1443' }
-  // ],
-
-  // Custom list of DAPI addresses to connect to
-  // Format: [ 'ip:port' }
-  // dapiAddresses: [ '127.0.0.1:3000' ],
-
-  // Request timeout in milliseconds for DAPI calls
-  // timeout: 3000,
-
-  // The number of retries for a failed DAPI request before giving up
-  // retries: 5,
-
-  // The base ban time in milliseconds for a DAPI node that fails to respond properly
-  // baseBanTime: 120000,
-};
-
-/**
- * Creates and returns a Dash client instance
- * @returns {Dash.Client} The Dash client instance.
- */
-const setupDashClient = () => {
-  // Ensure that numeric values from environment variables are properly converted to numbers
-  if (clientOptions.wallet?.unsafeOptions?.skipSynchronizationBeforeHeight) {
-    clientOptions.wallet.unsafeOptions.skipSynchronizationBeforeHeight =
-      parseInt(
-        clientOptions.wallet.unsafeOptions.skipSynchronizationBeforeHeight,
-        10,
-      );
+  const factory = factories[network];
+  if (!factory) {
+    throw new Error(
+      `Unknown network "${network}". Use: ${Object.keys(factories).join(', ')}`,
+    );
   }
-  return new Dash.Client(clientOptions);
-};
 
-module.exports = setupDashClient;
+  const sdk = factory();
+  await sdk.connect();
+  return sdk;
+}
+
+// ---------------------------------------------------------------------------
+// IdentityKeyManager
+// ---------------------------------------------------------------------------
+
+const KEY_SPECS = [
+  { keyId: 0, purpose: Purpose.AUTHENTICATION, securityLevel: SecurityLevel.MASTER },
+  { keyId: 1, purpose: Purpose.AUTHENTICATION, securityLevel: SecurityLevel.HIGH },
+  { keyId: 2, purpose: Purpose.AUTHENTICATION, securityLevel: SecurityLevel.CRITICAL },
+  { keyId: 3, purpose: Purpose.TRANSFER, securityLevel: SecurityLevel.CRITICAL },
+  { keyId: 4, purpose: Purpose.ENCRYPTION, securityLevel: SecurityLevel.MEDIUM },
+];
+
+class IdentityKeyManager {
+  constructor(sdk, identityId, keys, identityIndex) {
+    this.sdk = sdk;
+    this.id = identityId;
+    this.keys = keys;
+    this.identityIndex = identityIndex ?? 0;
+  }
+
+  get identityId() {
+    return this.id;
+  }
+
+  /**
+   * Create from a BIP39 mnemonic for an existing on-chain identity.
+   * If identityId is omitted, it is auto-resolved from the mnemonic.
+   */
+  static async create({
+    sdk,
+    identityId,
+    mnemonic,
+    network = 'testnet',
+    identityIndex = 0,
+  }) {
+    const coin = network === 'testnet' ? 1 : 5;
+    const derive = (keyIndex) =>
+      wallet.deriveKeyFromSeedWithPath({
+        mnemonic,
+        path: `m/9'/${coin}'/5'/0'/0'/${identityIndex}'/${keyIndex}'`,
+        network,
+      });
+
+    const [masterKey, authHighKey, authKey, transferKey, encryptionKey] =
+      await Promise.all([derive(0), derive(1), derive(2), derive(3), derive(4)]);
+
+    let resolvedId = identityId;
+    if (!resolvedId) {
+      const privateKey = PrivateKey.fromWIF(masterKey.toObject().privateKeyWif);
+      const identity = await sdk.identities.byPublicKeyHash(
+        privateKey.getPublicKeyHash(),
+      );
+      if (!identity) {
+        throw new Error(
+          'No identity found for the given mnemonic (key 0 public key hash)',
+        );
+      }
+      resolvedId = identity.id.toString();
+    }
+
+    return new IdentityKeyManager(
+      sdk,
+      resolvedId,
+      {
+        master: { keyId: 0, privateKeyWif: masterKey.toObject().privateKeyWif },
+        authHigh: { keyId: 1, privateKeyWif: authHighKey.toObject().privateKeyWif },
+        auth: { keyId: 2, privateKeyWif: authKey.toObject().privateKeyWif },
+        transfer: { keyId: 3, privateKeyWif: transferKey.toObject().privateKeyWif },
+        encryption: { keyId: 4, privateKeyWif: encryptionKey.toObject().privateKeyWif },
+      },
+      identityIndex,
+    );
+  }
+
+  /** Find the first unused DIP-9 identity index for a mnemonic. */
+  static async findNextIndex(sdk, mnemonic, network = 'testnet') {
+    const coin = network === 'testnet' ? 1 : 5;
+    for (let i = 0; ; i += 1) {
+      const key = await wallet.deriveKeyFromSeedWithPath({
+        mnemonic,
+        path: `m/9'/${coin}'/5'/0'/0'/${i}'/0'`,
+        network,
+      });
+      const privateKey = PrivateKey.fromWIF(key.toObject().privateKeyWif);
+      const existing = await sdk.identities.byPublicKeyHash(
+        privateKey.getPublicKeyHash(),
+      );
+      if (!existing) return i;
+    }
+  }
+
+  /**
+   * Create for a new (not yet registered) identity.
+   * Derives keys and stores public key data needed for identity creation.
+   */
+  static async createForNewIdentity({
+    sdk,
+    mnemonic,
+    network = 'testnet',
+    identityIndex,
+  }) {
+    const idx = identityIndex ??
+      (await IdentityKeyManager.findNextIndex(sdk, mnemonic, network));
+    const coin = network === 'testnet' ? 1 : 5;
+    const derive = (keyIndex) =>
+      wallet.deriveKeyFromSeedWithPath({
+        mnemonic,
+        path: `m/9'/${coin}'/5'/0'/0'/${idx}'/${keyIndex}'`,
+        network,
+      });
+
+    const derivedKeys = await Promise.all(
+      KEY_SPECS.map((spec) => derive(spec.keyId)),
+    );
+
+    const keys = {
+      master: {
+        keyId: 0,
+        privateKeyWif: derivedKeys[0].toObject().privateKeyWif,
+        publicKey: derivedKeys[0].toObject().publicKey,
+      },
+      authHigh: {
+        keyId: 1,
+        privateKeyWif: derivedKeys[1].toObject().privateKeyWif,
+        publicKey: derivedKeys[1].toObject().publicKey,
+      },
+      auth: {
+        keyId: 2,
+        privateKeyWif: derivedKeys[2].toObject().privateKeyWif,
+        publicKey: derivedKeys[2].toObject().publicKey,
+      },
+      transfer: {
+        keyId: 3,
+        privateKeyWif: derivedKeys[3].toObject().privateKeyWif,
+        publicKey: derivedKeys[3].toObject().publicKey,
+      },
+      encryption: {
+        keyId: 4,
+        privateKeyWif: derivedKeys[4].toObject().privateKeyWif,
+        publicKey: derivedKeys[4].toObject().publicKey,
+      },
+    };
+
+    return new IdentityKeyManager(sdk, null, keys, idx);
+  }
+
+  /** Build IdentityPublicKeyInCreation objects for all 5 keys (for identity creation). */
+  getKeysInCreation() {
+    return KEY_SPECS.map((spec) => {
+      const key = Object.values(this.keys).find((k) => k.keyId === spec.keyId);
+      if (!key?.publicKey) {
+        throw new Error(
+          `Public key data not available for key ${spec.keyId}. Use createForNewIdentity().`,
+        );
+      }
+      const pubKeyData = Uint8Array.from(Buffer.from(key.publicKey, 'hex'));
+      return new IdentityPublicKeyInCreation({
+        keyId: spec.keyId,
+        purpose: spec.purpose,
+        securityLevel: spec.securityLevel,
+        keyType: KeyType.ECDSA_SECP256K1,
+        data: pubKeyData,
+      });
+    });
+  }
+
+  /** Build an IdentitySigner loaded with all 5 key WIFs (for identity creation). */
+  getFullSigner() {
+    const signer = new IdentitySigner();
+    Object.values(this.keys).forEach((key) => {
+      signer.addKeyFromWif(key.privateKeyWif);
+    });
+    return signer;
+  }
+
+  /** Fetch identity and build { identity, identityKey, signer } for a given key. */
+  async getSigner(keyName) {
+    const key = this.keys[keyName];
+    const identity = await this.sdk.identities.fetch(this.id);
+    const identityKey = identity.getPublicKeyById(key.keyId);
+    const signer = new IdentitySigner();
+    signer.addKeyFromWif(key.privateKeyWif);
+    return { identity, identityKey, signer };
+  }
+
+  /** CRITICAL auth (key 2) -- contracts, documents, names. */
+  async getAuth() {
+    return this.getSigner('auth');
+  }
+
+  /** HIGH auth (key 1) -- documents, names. */
+  async getAuthHigh() {
+    return this.getSigner('authHigh');
+  }
+
+  /** TRANSFER (key 3) -- credit transfers, withdrawals. */
+  async getTransfer() {
+    return this.getSigner('transfer');
+  }
+
+  /** ENCRYPTION (key 4) -- encrypted messaging/data. */
+  async getEncryption() {
+    return this.getSigner('encryption');
+  }
+
+  /** MASTER (key 0) -- identity updates (add/disable keys). */
+  async getMaster(additionalKeyWifs) {
+    const result = await this.getSigner('master');
+    if (additionalKeyWifs) {
+      additionalKeyWifs.forEach((wif) => result.signer.addKeyFromWif(wif));
+    }
+    return result;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// AddressKeyManager
+// ---------------------------------------------------------------------------
+
+class AddressKeyManager {
+  constructor(sdk, addresses, network) {
+    this.sdk = sdk;
+    this.addresses = addresses;
+    this.network = network;
+  }
+
+  get primaryAddress() {
+    return this.addresses[0];
+  }
+
+  /**
+   * Create from a BIP39 mnemonic. Derives platform address keys using BIP44 paths.
+   */
+  static async create({ sdk, mnemonic, network = 'testnet', count = 1 }) {
+    const coin = network === 'testnet' ? 1 : 5;
+    const addresses = [];
+
+    for (let i = 0; i < count; i += 1) {
+      const path = `m/44'/${coin}'/0'/0/${i}`;
+      const keyInfo = await wallet.deriveKeyFromSeedWithPath({
+        mnemonic,
+        path,
+        network,
+      });
+      const obj = keyInfo.toObject();
+      const privateKey = PrivateKey.fromWIF(obj.privateKeyWif);
+      const signer = new PlatformAddressSigner();
+      const platformAddress = signer.addKey(privateKey);
+
+      addresses.push({
+        address: platformAddress,
+        bech32m: platformAddress.toBech32m(network),
+        privateKeyWif: obj.privateKeyWif,
+        path,
+      });
+    }
+
+    return new AddressKeyManager(sdk, addresses, network);
+  }
+
+  /** Create a PlatformAddressSigner with the primary key loaded. */
+  getSigner() {
+    const signer = new PlatformAddressSigner();
+    const privateKey = PrivateKey.fromWIF(this.primaryAddress.privateKeyWif);
+    signer.addKey(privateKey);
+    return signer;
+  }
+
+  /** Create a PlatformAddressSigner with all derived keys loaded. */
+  getFullSigner() {
+    const signer = new PlatformAddressSigner();
+    this.addresses.forEach((addr) => {
+      const privateKey = PrivateKey.fromWIF(addr.privateKeyWif);
+      signer.addKey(privateKey);
+    });
+    return signer;
+  }
+
+  /** Fetch current balance and nonce for the primary address. */
+  async getInfo() {
+    return this.sdk.addresses.get(this.primaryAddress.bech32m);
+  }
+}
+
+export { IdentityKeyManager, AddressKeyManager };
 ```
-
-## Wallet Operations
-
-Since the SDK does not cache wallet information, lengthy re-syncs (5+ minutes) may be required for some Core chain wallet operations (e.g. `client.getWalletAccount()`). A future release will add caching so that access is much faster after the initial sync.
-
-For now, the `skipSynchronizationBeforeHeight` option can be used to sync the wallet starting at a
-certain block height. Set it to a height just below your wallet's first transaction height to
-minimize the sync time.
 
 ## What's Happening
 
-In this module, we return an SDK client configured with the options necessary for typical use. The
-module is then imported in the following tutorials to streamline them and avoid repeating client
-initialization details.
+The `sdkClient.mjs` module consolidates three concerns:
+
+- **`createClient()`** handles connecting to the network. It creates an SDK instance configured for
+  the chosen network (testnet, mainnet, or local) and establishes the connection.
+
+- **`IdentityKeyManager`** derives 5 standard identity keys from your mnemonic using DIP-9 key
+  paths. Each key serves a specific purpose (authentication, transfers, encryption). When you need
+  to perform a write operation, you call a method like `getAuth()` which returns
+  `{ identity, identityKey, signer }` -- everything the SDK needs to sign and submit the
+  transaction.
+
+- **`AddressKeyManager`** derives platform address keys from your mnemonic using BIP44 paths. These
+  addresses hold credits on the L2 platform layer and are used for identity creation, top-ups, and
+  credit transfers between addresses.
+
+This module is imported in the following tutorials to streamline them and avoid repeating
+client initialization and key management details.
