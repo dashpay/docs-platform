@@ -14,19 +14,28 @@ In this tutorial we will retrieve the identity created in the [Register an Ident
 
 ## Code
 
-```javascript
-const setupDashClient = require('../setupDashClient');
+```{code-block} javascript
+:caption: retrieveIdentity.mjs
 
-const client = setupDashClient();
+import { setupDashClient } from '../setupDashClient.mjs';
 
-const retrieveIdentity = async () => {
-  return client.platform.identities.get('an identity ID goes here');
-};
+const { sdk, keyManager } = await setupDashClient();
 
-retrieveIdentity()
-  .then((d) => console.log('Identity retrieved:\n', d.toJSON()))
-  .catch((e) => console.error('Something went wrong:\n', e))
-  .finally(() => client.disconnect());
+// Identity ID from the identity create tutorial
+const IDENTITY_ID = keyManager.identityId;
+
+if (!IDENTITY_ID) {
+  throw new Error(
+    'No identity found. Run the "Register an Identity" tutorial first or provide an identity ID.',
+  );
+}
+
+try {
+  const identity = await sdk.identities.fetch(IDENTITY_ID);
+  console.log('Identity retrieved:\n', identity.toJSON());
+} catch (e) {
+  console.error('Something went wrong:\n', e.message);
+}
 ```
 
 ## Example Identity
@@ -35,20 +44,70 @@ The following example response shows a retrieved identity:
 
 ```json
 {
-   "protocolVersion":0,
-   "id":"6Jz8pFZFhssKSTacgQmZP14zGZNnFYZFKSbx4WVAJFy3",
-   "publicKeys":[
-      {
-         "id":0,
-         "type":0,
-         "data":"A4zZl0EaRBB6IlDbyR80YUM2l02qqNUCoIizkQxubtxi"
-      }
-   ],
-   "balance":10997588,
-   "revision":0
+  "$version": "0",
+  "id": "FKZZFDTfGdSWUmL2g7H9e46pMJMPQp9DHQcvjrsS6884",
+  "publicKeys": [
+    {
+      "$version": "0",
+      "id": 0,
+      "purpose": 0,
+      "securityLevel": 0,
+      "contractBounds": null,
+      "type": 0,
+      "readOnly": false,
+      "data": "AlBCEk8Ic+6wNW6ifZvZEhAwowcwNsvnINdrM0g8v/E3",
+      "disabledAt": null
+    },
+    {
+      "$version": "0",
+      "id": 1,
+      "purpose": 0,
+      "securityLevel": 2,
+      "contractBounds": null,
+      "type": 0,
+      "readOnly": false,
+      "data": "A8KQezkA1nv0K3KwL2rwfco3fKEevnnIMWQ6U6q18Oad",
+      "disabledAt": null
+    },
+    {
+      "$version": "0",
+      "id": 2,
+      "purpose": 0,
+      "securityLevel": 1,
+      "contractBounds": null,
+      "type": 0,
+      "readOnly": false,
+      "data": "Axo18YRoOaN9QXpZBgpt7JOs+KkVSdwsa5qtigDJU9fR",
+      "disabledAt": null
+    },
+    {
+      "$version": "0",
+      "id": 3,
+      "purpose": 3,
+      "securityLevel": 1,
+      "contractBounds": null,
+      "type": 0,
+      "readOnly": false,
+      "data": "A1XZSbd9slDQnDS+Wt2S2lHXOtoTrPEFSHFquHTryktX",
+      "disabledAt": null
+    },
+    {
+      "$version": "0",
+      "id": 4,
+      "purpose": 1,
+      "securityLevel": 3,
+      "contractBounds": null,
+      "type": 0,
+      "readOnly": false,
+      "data": "As04TZMCOTYWZnAe2IA1qbdf47005uMDs1YEg+s9t6Rt",
+      "disabledAt": null
+    }
+  ],
+  "balance": 5000000,
+  "revision": 0
 }
 ```
 
 ## What's Happening
 
-After we initialize the Client, we request an identity. The `platform.identities.get` method takes a single argument: an identity ID. After the identity is retrieved, it is displayed on the console.
+After we initialize the client, we request an identity. The `sdk.identities.fetch` method takes a single argument: an identity ID. After the identity is retrieved, it is displayed on the console.
