@@ -13,37 +13,52 @@ Identities serve as the basis for interactions with Dash Platform. They consist 
 ## Prerequisites
 
 - [General prerequisites](../../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
-- A wallet mnemonic with some funds in it: [How to Create and Fund a Wallet](../../tutorials/create-and-fund-a-wallet.md)
+- A platform address with a balance: [How to Create and Fund a Wallet](../../tutorials/create-and-fund-a-wallet.md)
 - A configured client: [Setup SDK Client](../setup-sdk-client.md)
 
 ## Code
 
-:::{note}
-:class: note
-Since the SDK does not cache wallet information, lengthy re-syncs (5+ minutes) may be required for some Core chain wallet operations. See [Wallet Operations](../setup-sdk-client.md#wallet-operations) for options.
-:::
+```{code-block} javascript
+:caption: registerIdentity.mjs
 
-```javascript
-const setupDashClient = require('../setupDashClient');
+import { randomBytes } from 'node:crypto';
+import { Identity, Identifier } from '@dashevo/evo-sdk';
+import { setupDashClient } from '../setupDashClient.mjs';
 
-const client = setupDashClient();
+const { sdk, keyManager, addressKeyManager } = await setupDashClient({ requireIdentity: false });
 
-const createIdentity = async () => {
-  return client.platform.identities.register();
-};
+try {
+  // Build the identity shell with 5 standard public keys
+  const identity = new Identity(new Identifier(randomBytes(32)));
+  keyManager.getKeysInCreation().forEach((key) => {
+    identity.addPublicKey(key.toIdentityPublicKey());
+  });
 
-createIdentity()
-  .then((d) => console.log('Identity:\n', d.toJSON()))
-  .catch((e) => console.error('Something went wrong:\n', e))
-  .finally(() => client.disconnect());
+  // Create the identity on-chain, funded from the platform address
+  const result = await sdk.addresses.createIdentity({
+    identity,
+    inputs: [{
+      address: addressKeyManager.primaryAddress.bech32m,
+      amount: 5000000n, // Credits to fund the new identity
+    }],
+    identitySigner: keyManager.getFullSigner(),
+    addressSigner: addressKeyManager.getSigner(),
+  });
+
+  console.log('Identity registered!\nIdentity ID:', result.identity.id.toString());
+} catch (e) {
+  console.error('Something went wrong:\n', e.message);
+}
 ```
 
-The Identity will be output to the console. The Identity will need to have one confirmation before it is accessible via `client.platform.identity.get`.
-
 :::{attention}
-Make a note of the returned identity `id` as it will be used used in subsequent tutorials throughout the documentation.
+Make a note of the returned identity `id` as it will be used in subsequent tutorials throughout the documentation.
 :::
 
 ## What's Happening
 
-After connecting to the Client, we call `platform.identities.register`. This will generate a keypair and submit an _Identity Create State Transaction_. After the Identity is registered, we output it to the console.
+We call `setupDashClient({ requireIdentity: false })` since we're creating a new identity rather than loading an existing one. This connects to the network and derives keys from the mnemonic, returning `sdk`, `keyManager`, and `addressKeyManager`.
+
+1. **Identity shell**: We create a temporary `Identity` object with a random identifier and attach all 5 standard public keys from the key manager. These keys serve different purposes (master, authentication, transfer, and encryption).
+
+2. **On-chain creation**: We call `sdk.addresses.createIdentity()` which requires two signers -- the `identitySigner` (proves ownership of the identity keys) and the `addressSigner` (authorizes the credit transfer from the platform address). This submits an _Identity Create State Transition_ to the network.
