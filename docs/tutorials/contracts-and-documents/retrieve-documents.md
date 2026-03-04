@@ -9,138 +9,76 @@ In this tutorial we will retrieve some of the current data from a data contract.
 ## Prerequisites
 
 - [General prerequisites](../../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
-- A configured client: [Setup SDK Client](../setup-sdk-client.md)- A Dash Platform Contract ID: [Tutorial: Register a Data Contract](../../tutorials/contracts-and-documents/register-a-data-contract.md)
+- A configured client: [Setup SDK Client](../setup-sdk-client.md)
+- (Optional) A Dash Platform Contract ID: [Tutorial: Register a Data Contract](../../tutorials/contracts-and-documents/register-a-data-contract.md) — a default testnet tutorial contract is provided
 
 ## Code
 
-```javascript
-const setupDashClient = require('../setupDashClient');
+```{code-block} javascript
+:caption: getDocuments.mjs
 
-const client = setupDashClient();
+import { setupDashClient } from '../setupDashClient.mjs';
 
-const getDocuments = async () => {
-  return client.platform.documents.get('tutorialContract.note', {
-    limit: 2, // Only retrieve 2 document
+const { sdk } = await setupDashClient();
+
+// Default tutorial contract (testnet). Replace or override via DATA_CONTRACT_ID.
+const DATA_CONTRACT_ID =
+  process.env.DATA_CONTRACT_ID ??
+  'FW3DHrQiG24VqzPY4ARenMgjEPpBNuEQTZckV8hbVCG4';
+
+try {
+  const results = await sdk.documents.query({
+    dataContractId: DATA_CONTRACT_ID,
+    documentTypeName: 'note',
+    limit: 2,
   });
-};
 
-getDocuments()
-  .then((d) => {
-    for (const n of d) {
-      console.log('Document:\n', n.toJSON());
-    }
-  })
-  .catch((e) => console.error('Something went wrong:\n', e))
-  .finally(() => client.disconnect());
+  for (const [id, doc] of results) {
+    console.log('Document:', id.toString(), doc.toJSON());
+  }
+} catch (e) {
+  console.error('Something went wrong:\n', e.message);
+}
 ```
-
-:::{tip}
-The example above shows how access to contract documents via `<contract name>.<contract document>` syntax (e.g. `tutorialContract.note`) can be enabled by passing a contract identity to the constructor. Please refer to the [Dash SDK documentation](https://github.com/dashpay/platform/blob/master/packages/js-dash-sdk/docs/getting-started/multiple-apps.md) for details.
-:::
 
 ### Queries
 
-The example code uses a very basic query to return only one result. More extensive querying capabilities are covered in the [query syntax reference](../../reference/query-syntax.md).
+The example code uses a very basic query to return only two results. More extensive querying capabilities are covered in the [query syntax reference](../../reference/query-syntax.md).
 
 ## Example Document
 
-The following examples show the structure of a `note` document (from the data contract registered in the tutorial) returned from the SDK when retrieved with various methods.
-
-The values returned by `.toJSON()` include the base document properties (prefixed with `$`) present in all documents along with the data contract defined properties.
+The following examples show the structure of a `note` document returned from the SDK. The values returned by `.toJSON()` include the base document properties (prefixed with `$`) present in all documents along with the data contract defined properties (the `message` propoerty in the example document).
 
 :::{note}
 Note: When using `.toJSON()`, binary data is displayed as a base64 string (since JSON is a text-based format).
 :::
 
-The values returned by `.getData()` (and also shown in the console.dir() `data` property) represent _only_ the properties defined in the `note` document described by the [tutorial data contract](../../tutorials/contracts-and-documents/register-a-data-contract.md#code).
-
-::::{tab-set}
-:::{tab-item} .toJSON()
 ```json
-{
-  "$protocolVersion": 0,
-  "$id": "6LpCQhkXYV2vqkv1UWByew4xQ6BaxxnGkhfMZsN3SV9u",
-  "$type": "note",
-  "$dataContractId": "3iaEhdyAVbmSjd59CT6SCrqPjfAfMdPTc8ksydgqSaWE",
-  "$ownerId": "CEPMcuBgAWeaCXiP2gJJaStANRHW6b158UPvL1C8zw2W",
+ {
+  "$id": "5CL7qwbGPi4P6jqhat5pQxzSZ9PPxvNkDU8tU9yXYyzt",
+  "$ownerId": "FKZZFDTfGdSWUmL2g7H9e46pMJMPQp9DHQcvjrsS6884",
   "$revision": 1,
-  "message": "Tutorial CI Test @ Fri, 23 Jul 2021 13:12:13 GMT"
+  "$createdAt": null,
+  "$updatedAt": null,
+  "$transferredAt": null,
+  "$createdAtBlockHeight": null,
+  "$updatedAtBlockHeight": null,
+  "$transferredAtBlockHeight": null,
+  "$createdAtCoreBlockHeight": null,
+  "$updatedAtCoreBlockHeight": null,
+  "$transferredAtCoreBlockHeight": null,
+  "$creatorId": null,
+  "$dataContractId": "FW3DHrQiG24VqzPY4ARenMgjEPpBNuEQTZckV8hbVCG4",
+  "$type": "note",
+  "$entropy": "jsO295ymKBeMAiAwrSsaDX7qjYD/9i+Q8g9MIDx/xik="
+  "message": "Tutorial Test @ Wed, 04 Mar 2026 22:37:48 GMT",
 }
 ```
-:::
-
-:::{tab-item} .getData()
-```json
-{
-  "Tutorial CI Test @ Fri, 23 Jul 2021 13:12:13 GMT"
-}
-```
-:::
-
-:::{tab-item} .data.message
-```text
-Tutorial CI Test @ Fri, 23 Jul 2021 13:12:13 GMT
-```
-:::
-
-:::{tab-item} console.dir(document)
-```text
-Document {
-  dataContract: DataContract {
-    protocolVersion: 0,
-    id: Identifier(32) [Uint8Array] [
-       40,  93, 196, 112,  38, 188,  51, 122,
-      149,  59,  21,  39, 147, 119,  87,  53,
-      236,  60,  97,  42,  31,  82, 135, 120,
-       68, 188,  55, 153, 226, 198, 181, 139
-    ],
-    ownerId: Identifier(32) [Uint8Array] [
-      166, 222,  98,  87, 193,  19,  82,  37,
-       50, 118, 210,  64, 103, 122,  28, 155,
-      168,  21, 198, 134, 142, 151, 153, 136,
-       46,  64, 223,  74, 215, 153, 158, 167
-    ],
-    schema: 'https://schema.dash.org/dpp-0-4-0/meta/data-contract',
-    documents: { note: [Object] },
-    '$defs': undefined,
-    binaryProperties: { note: {} },
-    metadata: Metadata { blockHeight: 526, coreChainLockedHeight: 542795 }
-  },
-  entropy: undefined,
-  protocolVersion: 0,
-  id: Identifier(32) [Uint8Array] [
-     79,  93, 213, 226,  76,  79, 205, 191,
-    165, 190,  68,  28,   8,  83,  61, 226,
-    222, 248,  48, 235, 147, 110, 181, 229,
-      7,  66,  65, 230, 100, 194, 192, 156
-  ],
-  type: 'note',
-  dataContractId: Identifier(32) [Uint8Array] [
-     40,  93, 196, 112,  38, 188,  51, 122,
-    149,  59,  21,  39, 147, 119,  87,  53,
-    236,  60,  97,  42,  31,  82, 135, 120,
-     68, 188,  55, 153, 226, 198, 181, 139
-  ],
-  ownerId: Identifier(32) [Uint8Array] [
-    166, 222,  98,  87, 193,  19,  82,  37,
-     50, 118, 210,  64, 103, 122,  28, 155,
-    168,  21, 198, 134, 142, 151, 153, 136,
-     46,  64, 223,  74, 215, 153, 158, 167
-  ],
-  revision: 1,
-  data: { message: 'Tutorial CI Test @ Fri, 23 Jul 2021 13:12:13 GMT' },
-  metadata: Metadata { blockHeight: 526, coreChainLockedHeight: 542795 }
-}
-```
-:::
-::::
 
 ## What's happening
 
-After we initialize the Client, we request some documents. The `client.platform.documents.get` method takes two arguments: a record locator and a query object. The records locator consists of an app name (e.g. `tutorialContract`) and the top-level document type requested, (e.g. `note`).
+After we initialize the Client, we request documents using `sdk.documents.query()`. The method takes an object with the `dataContractId`, `documentTypeName`, and optional query parameters like `where`, `orderBy`, `limit`, `startAt`, and `startAfter`.
 
-:::{note}
-Access to the DPNS contract is built into the Dash SDK. DPNS documents may be accessed via the `dpns` app name (e.g. `dpns.domain`).
-:::
+Results are returned as a `Map` where each key is a document ID and each value is the document object. We iterate over the entries using `for (const [id, doc] of results)`.
 
-If you need more than the first 100 documents, you'll have to make additional requests with `startAt` incremented by 100 each time. In the future, the Dash SDK may return documents with paging information to make this easier and reveal how many documents are returned in total.
+If you need more than the default number of documents, use the `startAt` or `startAfter` parameters for pagination.
