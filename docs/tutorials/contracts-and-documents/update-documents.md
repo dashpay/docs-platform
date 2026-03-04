@@ -9,53 +9,74 @@ In this tutorial we will update existing data on Dash Platform. Data is stored i
 ## Prerequisites
 
 - [General prerequisites](../../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
-- A wallet mnemonic with some funds in it: [Tutorial: Create and Fund a Wallet](../../tutorials/create-and-fund-a-wallet.md)
+- A platform address with a balance: [Tutorial: Create and Fund a Wallet](../../tutorials/create-and-fund-a-wallet.md)
 - A configured client: [Setup SDK Client](../setup-sdk-client.md)
-- Access to a previously created document (e.g., one created using the [Submit Documents tutorial](../../tutorials/contracts-and-documents/submit-documents.md))
+- A Dash Platform Identity: [Tutorial: Register an Identity](../../tutorials/identities-and-names/register-an-identity.md)
+- (Optional) A Dash Platform Contract ID: [Tutorial: Register a Data Contract](../../tutorials/contracts-and-documents/register-a-data-contract.md) — a default testnet tutorial contract is provided
+- An existing document (e.g., one created using the [Submit Documents tutorial](../../tutorials/contracts-and-documents/submit-documents.md))
 
 ## Code
 
-```javascript
-const setupDashClient = require('../setupDashClient');
+```{code-block} javascript
+:caption: updateDocument.mjs
 
-const client = setupDashClient();
+import { Document } from '@dashevo/evo-sdk';
+import { setupDashClient } from '../setupDashClient.mjs';
 
-const updateNoteDocument = async () => {
-  const { platform } = client;
-  const identity = await platform.identities.get('an identity ID goes here');
-  const documentId = 'an existing document ID goes here';
+const { sdk, keyManager } = await setupDashClient();
+const { identity, identityKey, signer } = await keyManager.getAuth();
 
-  // Retrieve the existing document
-  const [document] = await client.platform.documents.get(
-    'tutorialContract.note',
-    { where: [['$id', '==', documentId]] },
-  );
+// Default tutorial contract (testnet). Replace or override via DATA_CONTRACT_ID.
+const DATA_CONTRACT_ID =
+  process.env.DATA_CONTRACT_ID ??
+  'FW3DHrQiG24VqzPY4ARenMgjEPpBNuEQTZckV8hbVCG4';
 
-  // Update document
-  document.set('message', `Updated document @ ${new Date().toUTCString()}`);
+// Replace with your existing document ID from the Submit Documents tutorial
+const DOCUMENT_ID = 'YOUR_DOCUMENT_ID';
 
-  // Sign and submit the document replace transition
-  await platform.documents.broadcast({ replace: [document] }, identity);
-  return document;
-};
+try {
+  // Fetch the existing document to get current revision
+  const docs = await sdk.documents.query({
+    dataContractId: DATA_CONTRACT_ID,
+    documentTypeName: 'note',
+    where: [['$id', '==', DOCUMENT_ID]],
+  });
+  const existingDoc = [...docs.values()][0];
+  if (!existingDoc) {
+    throw new Error(`Document ${DOCUMENT_ID} not found`);
+  }
 
-updateNoteDocument()
-  .then((d) => console.log('Document updated:\n', d.toJSON()))
-  .catch((e) => console.error('Something went wrong:\n', e))
-  .finally(() => client.disconnect());
+  // Create the replacement document with incremented revision
+  const document = new Document({
+    properties: {
+      message: `Updated Tutorial Test @ ${new Date().toUTCString()}`,
+    },
+    documentTypeName: 'note',
+    dataContractId: DATA_CONTRACT_ID,
+    ownerId: identity.id,
+    revision: existingDoc.revision + 1n,
+    id: DOCUMENT_ID,
+  });
+
+  // Submit the replacement to the platform
+  await sdk.documents.replace({
+    document,
+    identityKey,
+    signer,
+  });
+
+  console.log('Document updated:\n', document.toJSON());
+} catch (e) {
+  console.error('Something went wrong:\n', e.message);
+}
 ```
-
-:::{tip}
-The example above shows how access to contract documents via `<contract name>.<contract document>` syntax (e.g. `tutorialContract.note`) can be enabled by passing a contract identity to the constructor. Please refer to the [Dash SDK documentation](https://github.com/dashpay/platform/blob/master/packages/js-dash-sdk/docs/getting-started/multiple-apps.md) for details.
-:::
 
 ## What's happening
 
-After we initialize the Client, we retrieve the document to be updated via `platform.documents.get` using its `id`. Once the document has been retrieved, we must submit it to [DAPI](../../explanations/dapi.md) with the desired data updates. Documents are submitted in batches that may contain multiple documents to be created, replaced, or deleted. In this example, a single document is being updated.
+After we initialize the client, we get the auth key signer from the key manager. We first query for the existing document by its `$id` to retrieve the current `revision` number. We then create a new `Document` object with the updated properties, the same `id`, and the revision incremented by one (as a `BigInt`).
 
-The `platform.documents.broadcast` method then takes the document batch (e.g. `{replace: [noteDocument]}`) and an identity parameter. Internally, it creates a [State Transition](../../explanations/platform-protocol-state-transition.md) containing the previously created document, signs the state transition, and submits the signed state transition to DAPI.
+The `sdk.documents.replace()` method takes the document and signing credentials. Internally, it creates a [State Transition](../../explanations/platform-protocol-state-transition.md) containing the replacement document, signs the state transition, and submits it to DAPI.
 
 :::{note}
-:class: note
-Since the SDK does not cache wallet information, lengthy re-syncs (5+ minutes) may be required for some Core chain wallet operations. See [Wallet Operations](../setup-sdk-client.md#wallet-operations) for options.
+The SDK requires constructing a complete replacement `Document` with all fields — including the document `id` and incremented `revision`. The example above queries the existing document first to determine the current revision.
 :::
