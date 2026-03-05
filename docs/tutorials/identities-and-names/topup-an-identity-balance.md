@@ -4,6 +4,10 @@
 
 # Topup an identity's balance
 
+:::{attention}
+This tutorial has not been migrated to use the latest Dash SDK yet and is out-of-date.
+:::
+
 The purpose of this tutorial is to walk through the steps necessary to add credits to an identity's balance.
 
 ## Overview

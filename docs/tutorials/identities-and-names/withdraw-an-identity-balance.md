@@ -3,7 +3,7 @@
 ```
 
 :::{attention}
-Mainnet withdrawals will not be available until the activation of Dash Platform v1.4 on mainnet in late October or early November. They are already available on testnet.
+This tutorial has not been migrated to use the latest Dash SDK yet and is out-of-date.
 :::
 
 # Withdraw an Identity's balance

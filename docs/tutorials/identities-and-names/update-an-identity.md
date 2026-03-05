@@ -4,7 +4,10 @@
 
 # Update an identity
 
-Since Dash Platform v0.23, it is possible to update identities to add new keys or disable existing ones. Platform retains disabled keys so that any existing data they signed can still be verified while preventing them from signing new data.
+:::{attention}
+This tutorial has not been migrated to use the latest Dash SDK yet and is out-of-date.
+:::
+
 
 ## Prerequisites
 

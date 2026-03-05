@@ -4,6 +4,10 @@
 
 # Transfer to an Identity
 
+:::{attention}
+This tutorial has not been migrated to use the latest Dash SDK yet and is out-of-date.
+:::
+
 The purpose of this tutorial is to walk through the steps necessary to transfer credits to an
 identity. Additional details regarding credits can be found in the [credits description](../../explanations/identity.md#credits).
 
