@@ -49,6 +49,7 @@ try {
 ```text
 Mnemonic: toilet kingdom uncover super company economy jump fence car later exact multiply
 Platform address: tdash1kpk3fhjfj884gz6zmjj42m9udmvp2mg5rsdx8zhr
+Fund address using: https://bridge.thepasta.org/?address=tdash1kpk3fhjfj884gz6zmjj42m9udmvp2mg5rsdx8zhr
 ```
 
 :::{attention}
