@@ -47,12 +47,20 @@ try {
 
   console.log('Identity registered!\nIdentity ID:', result.identity.id.toString());
 } catch (e) {
-  console.error('Something went wrong:\n', e.message);
+  // Known SDK bug: proof verification fails but the identity was created
+  // Issue: https://github.com/dashpay/platform/issues/3095
+  // Extract the real identity ID from the error message
+  const match = e.message?.match(/proof returned identity (\w+) but/);
+  if (match) {
+    console.log('Identity registered!\nIdentity ID:', match[1]);
+  } else {
+    console.error('Something went wrong:\n', e.message);
+  }
 }
 ```
 
 :::{attention}
-Make a note of the returned identity `id` as it will be used in subsequent tutorials throughout the documentation.
+Make a note of the returned identity ID as it will be used in subsequent tutorials throughout the documentation.
 :::
 
 ## What's Happening
