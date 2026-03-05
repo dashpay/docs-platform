@@ -14,93 +14,117 @@ In this tutorial we will retrieve the name created in the [Register a Name for a
 ## Code
 
 ::::{tab-set}
-:::{tab-item} JavaScript - Resolve by Name
-```javascript
-const setupDashClient = require('../setupDashClient');
+:::{tab-item} Resolve by Name
 
-const client = setupDashClient();
+```{code-block} javascript
+:caption: resolve-by-name.mjs
 
-const retrieveName = async () => {
-  // Retrieve by full name (e.g., myname.dash)
-  return client.platform.names.resolve('<identity name>.dash');
-};
+import { setupDashClient } from '../setupDashClient.mjs';
 
-retrieveName()
-  .then((d) => console.log('Name retrieved:\n', d.getData()))
-  .catch((e) => console.error('Something went wrong:\n', e))
-  .finally(() => client.disconnect());
-```
-:::
+const { sdk } = await setupDashClient();
 
-:::{tab-item} JavaScript - Revolve by Record
-```javascript
-const setupDashClient = require('../setupDashClient');
+const NAME = 'quantumexplorer.dash';
 
-const client = setupDashClient();
-
-const retrieveNameByRecord = async () => {
-  // Retrieve by a name's identity ID
-  return client.platform.names.resolveByRecord(
-    'identity',
-    '<identity id>',
-  );
-};
-
-retrieveNameByRecord()
-  .then((d) => console.log('Name retrieved:\n', d[0].getData()))
-  .catch((e) => console.error('Something went wrong:\n', e))
-  .finally(() => client.disconnect());
-```
-:::
-
-:::{tab-item} JavaScript - Search for Name
-```javascript
-const setupDashClient = require('../setupDashClient');
-
-const client = setupDashClient();
-
-const retrieveNameBySearch = async () => {
-  // Search for names (e.g. `user*`)
-  return client.platform.names.search('user', 'dash');
-};
-
-retrieveNameBySearch()
-  .then((d) => {
-    for (const name of d) {
-      console.log('Name retrieved:\n', name.getData());
-    }
-  })
-  .catch((e) => console.error('Something went wrong:\n', e))
-  .finally(() => client.disconnect());
-```
-:::
-::::
-
-## Example Name
-
-The following example response shows a retrieved name:
-
-```json
-{
-  "label": "Tutorial-Test-Jettie-94475",
-  "normalizedLabel": "tut0r1a1-test-jett1e-94475",
-  "normalizedParentDomainName": "dash",
-  "parentDomainName": "dash",
-  "records": {
-    "identity": "woTQprzGS4bLqqbAhY2heG8QfD58Doo2UhDbiVVrLKG"
-  },
-  "subdomainRules": {
-    "allowSubdomains": false
-  }
+try {
+  // Resolve by full name (e.g., myname.dash)
+  const result = await sdk.dpns.resolveName(NAME);
+  console.log(`Identity ID for "${NAME}": ${result}`);
+} catch (e) {
+  console.error('Something went wrong:\n', e.message);
 }
 ```
+
+**Example Response**
+
+```text
+Identity ID for "quantumexplorer.dash": BNnn19SAJZuvsUu787dMzPDXASwuCrm4yQ864tEpQFvo
+```
+
+:::
+
+:::{tab-item} Get Identity Names
+
+```{code-block} javascript
+:caption: get-identity-names.mjs
+
+import { setupDashClient } from '../setupDashClient.mjs';
+
+const { sdk, keyManager } = await setupDashClient();
+
+// Identity ID from the identity create tutorial
+let IDENTITY_ID = 'GgZekwh38XcWQTyWWWvmw6CEYFnLU7yiZFPWZEjqKHit';
+
+// Uncomment the line below to use the identity created in the earlier tutorial
+// IDENTITY_ID = keyManager.identityId;
+
+try {
+  // Retrieve usernames registered to an identity
+  const usernames = await sdk.dpns.usernames({ identityId: IDENTITY_ID });
+  console.log(`Name(s) retrieved for ${IDENTITY_ID}:\n`, usernames);
+} catch (e) {
+  console.error('Something went wrong:\n', e.message);
+}
+```
+
+**Example Response**
+
+```text
+Name(s) retrieved for GgZekwh38XcWQTyWWWvmw6CEYFnLU7yiZFPWZEjqKHit:
+ [ 'Tutorial-Test-000000-backup.dash', 'Tutorial-Test-000000.dash' ]
+```
+
+:::
+
+:::{tab-item} Search for Name
+
+```{code-block} javascript
+:caption: search-by-name.mjs
+
+import { setupDashClient } from '../setupDashClient.mjs';
+
+const { sdk } = await setupDashClient();
+
+const DPNS_CONTRACT_ID = 'GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec';
+const PREFIX = 'Tutorial-Test-00';
+
+try {
+  // Convert prefix to homograph-safe form for normalized search
+  const normalizedPrefix = await sdk.dpns.convertToHomographSafe(PREFIX);
+
+  // Search the DPNS contract for matching names
+  const results = await sdk.documents.query({
+    dataContractId: DPNS_CONTRACT_ID,
+    documentTypeName: 'domain',
+    where: [
+      ['normalizedParentDomainName', '==', 'dash'],
+      ['normalizedLabel', 'startsWith', normalizedPrefix],
+    ],
+    orderBy: [['normalizedLabel', 'asc']],
+  });
+
+  for (const [id, doc] of results) {
+    const { label, parentDomainName } = doc.toJSON();
+    console.log(`${label}.${parentDomainName} (ID: ${id.toString()})`);
+  }
+} catch (e) {
+  console.error('Something went wrong:\n', e.message);
+}
+```
+
+**Example Response**
+
+```text
+Tutorial-Test-000000.dash (ID: E8m6NCCnpschx4WRfk1uLMHqttqMJKPwYt8fWaVSJPrL)
+Tutorial-Test-000000-backup.dash (ID: 98bruK9TdJki5xP8BYpmNXqdH9ZHzBD9phwDRzhaJsWF)
+```
+
+:::
+::::
 
 ## What's Happening
 
 After we initialize the Client, we request a name. The [code examples](#code) demonstrate the three ways to request a name:
 
-1. Resolve by name. The `platform.names.resolve` method takes a single argument: a fully-qualified name (e.g., `user-9999.dash`).
-2. Resolve by record. The `platform.names.resolveByRecord` method takes two arguments: the record type (e.g., `identity`) and the record value to resolve.
-3. Search. The `platform.names.search` method takes two arguments: the leading characters of the name to search for and the domain to search (e.g., `dash` for names in the `*.dash` domain). The search will return names that begin the with string provided in the first parameter.
-
-After the name is retrieved, it is displayed on the console.
+1. **Resolve by name.** The `sdk.dpns.resolveName` method takes a single argument: a fully-qualified name (e.g., `quantumexplorer.dash`). It returns the identity ID that the name resolves to.
+2. **Get identity names.** The `sdk.dpns.usernames` method takes an object with an `identityId` property to find all names registered to that identity. It returns an array of fully-qualified names.
+3. **Search.** To search for names by prefix, we query the DPNS contract's `domain` documents directly using `sdk.documents.query()`. The prefix is first converted to a homograph-safe form via `sdk.dpns.convertToHomographSafe()`. Results are returned as a `Map` of document IDs to document objects. We call `.toJSON()` on each document to extract the `label` and `parentDomainName`.

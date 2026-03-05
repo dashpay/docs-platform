@@ -13,7 +13,7 @@ Dash Platform names make cryptographic identities easy to remember and communica
 ## Prerequisites
 
 - [General prerequisites](../../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
-- A wallet mnemonic with some funds in it: [Tutorial: Create and Fund a Wallet](../../tutorials/create-and-fund-a-wallet.md)
+- A platform address with a balance: [Tutorial: Create and Fund a Wallet](../../tutorials/create-and-fund-a-wallet.md)
 - A configured client: [Setup SDK Client](../setup-sdk-client.md)
 - A Dash Platform identity: [Tutorial: Register an Identity](../../tutorials/identities-and-names/register-an-identity.md)
 - A name you want to register: [Name restrictions](../../explanations/dpns.md#implementation)
@@ -21,38 +21,39 @@ Dash Platform names make cryptographic identities easy to remember and communica
 ## Code
 
 :::{tip}
-The name must be the full domain name including the parent domain (i.e. `myname.dash` rather than `myname`). Currently, only the `dash` top-level domain may be used.
+Pass only the label (e.g., `myname`), not the full domain name. The `.dash` suffix is handled by the SDK. Currently, only the `dash` top-level domain may be used.
 :::
 
-```javascript
-const setupDashClient = require('../setupDashClient');
+```{code-block} javascript
+:caption: registerName.mjs
 
-const client = setupDashClient();
+import { setupDashClient } from '../setupDashClient.mjs';
 
-const registerName = async () => {
-  const { platform } = client;
+const { sdk, keyManager } = await setupDashClient();
+const { identity, identityKey, signer } = await keyManager.getAuth();
 
-  const identity = await platform.identities.get('an identity ID goes here');
-  const nameRegistration = await platform.names.register(
-    '<identity name goes here>.dash',
-    { identity: identity.getId() },
+// ⚠️ Change this to a unique name to register
+const NAME_LABEL = 'alice';
+
+try {
+  // Register a DPNS name for the identity
+  const result = await sdk.dpns.registerName({
+    label: NAME_LABEL,
     identity,
-  );
+    identityKey,
+    signer,
+  });
 
-  return nameRegistration;
-};
-
-registerName()
-  .then((d) => console.log('Name registered:\n', d.toJSON()))
-  .catch((e) => console.error('Something went wrong:\n', e))
-  .finally(() => client.disconnect());
+  console.log('Name registered:\n', result.toJSON());
+} catch (e) {
+  if (e.message?.includes('duplicate unique properties')) {
+    console.error(`Name "${NAME_LABEL}.dash" is already registered. Try a different name.`);
+  } else {
+    console.error('Something went wrong:\n', e.message);
+  }
+}
 ```
 
 ## What's Happening
 
-After initializing the Client, we fetch the Identity we'll be associating with a name. This is an asynchronous method so we use _await_ to pause until the request is complete. Next, we call `platform.names.register` and pass in the name we want to register, the type of identity record to create, and the identity we just fetched. We wait for the result, and output it to the console.
-
-:::{note}
-:class: note
-Since the SDK does not cache wallet information, lengthy re-syncs (5+ minutes) may be required for some Core chain wallet operations. See [Wallet Operations](../setup-sdk-client.md#wallet-operations) for options.
-:::
+After initializing the client, we get the auth key signer using `keyManager.getAuth()`. We then call `sdk.dpns.registerName()` with the label (name without the `.dash` suffix), the identity, and the signing credentials. The SDK submits a DPNS domain document to the network. We wait for the result and output it to the console.
