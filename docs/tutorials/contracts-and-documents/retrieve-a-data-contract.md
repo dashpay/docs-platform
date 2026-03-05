@@ -14,44 +14,24 @@ In this tutorial we will retrieve the data contract created in the [Register a D
 
 ## Code
 
-### Retrieving a data contract
+```{code-block} javascript
+:caption: retrieveContract.mjs
 
-```javascript
-const setupDashClient = require('../setupDashClient');
+import { setupDashClient } from '../setupDashClient.mjs';
 
-const client = setupDashClient();
+const { sdk } = await setupDashClient();
 
-const retrieveContract = async () => {
-  const contractId = '8cvMFwa2YbEsNNoc1PXfTacy2PVq2SzVnkZLeQSzjfi6';
-  return client.platform.contracts.get(contractId);
-};
+// Default tutorial contract (testnet). Replace or override via DATA_CONTRACT_ID.
+const DATA_CONTRACT_ID =
+  process.env.DATA_CONTRACT_ID ??
+  'FW3DHrQiG24VqzPY4ARenMgjEPpBNuEQTZckV8hbVCG4';
 
-retrieveContract()
-  .then((d) => console.dir(d.toJSON(), { depth: 5 }))
-  .catch((e) => console.error('Something went wrong:\n', e))
-  .finally(() => client.disconnect());
-```
-
-### Updating the client app list
-
-:::{note}
-In many cases it may be desirable to work with a newly retrieved data contract using the `<contract name>.<contract document>` syntax (e.g. `dpns.domain`). Data contracts that were created after the client was initialized or not included in the initial client options can be added via `client.getApps().set(...)`.
-:::
-
-```javascript
-const Dash = require('dash');
-const { PlatformProtocol: { Identifier } } = Dash;
-
-const myContractId = 'a contract ID';
-const client = new Dash.Client({ network: 'testnet' });
-
-client.platform.contracts.get(myContractId)
-  .then((myContract) => {
-    client.getApps().set('myNewContract', {
-      contractId: Identifier.from(myContractId),
-      contract: myContract,
-    });
-  });
+try {
+  const contract = await sdk.contracts.fetch(DATA_CONTRACT_ID);
+  console.log('Contract retrieved:\n', contract.toJSON());
+} catch (e) {
+  console.error('Something went wrong:\n', e.message);
+}
 ```
 
 ## Example Data Contract
@@ -60,8 +40,8 @@ The following example response shows a retrieved contract:
 
 ```json
 {
-  "$format_version": "0",
-  "id": "8cvMFwa2YbEsNNoc1PXfTacy2PVq2SzVnkZLeQSzjfi6",
+  "$format_version": "1",
+  "id": "FW3DHrQiG24VqzPY4ARenMgjEPpBNuEQTZckV8hbVCG4",
   "config": {
     "$format_version": "0",
     "canBeDeleted": false,
@@ -69,19 +49,30 @@ The following example response shows a retrieved contract:
     "keepsHistory": false,
     "documentsKeepHistoryContractDefault": false,
     "documentsMutableContractDefault": true,
+    "documentsCanBeDeletedContractDefault": true,
     "requiresIdentityEncryptionBoundedKey": null,
     "requiresIdentityDecryptionBoundedKey": null
   },
-  "version": 1,
-  "ownerId": "AsdMKouqE5NB7CeQFi4wr5oj8vFUYTtdSvxFtAvtCbhh",
+  "version": 2,
+  "ownerId": "CtnBVhWjGhtPihUHKS132b9f9zSKMxRHDA6wSDtjRofy",
   "schemaDefs": null,
   "documentSchemas": {
     "note": {
       "type": "object",
-      "properties": { "message": { "type": "string" } },
+      "properties": ["Object"],
       "additionalProperties": false
     }
-  }
+  },
+  "createdAt": null,
+  "updatedAt": null,
+  "createdAtBlockHeight": null,
+  "updatedAtBlockHeight": null,
+  "createdAtEpoch": null,
+  "updatedAtEpoch": null,
+  "groups": {},
+  "tokens": {},
+  "keywords": [],
+  "description": null
 }
 ```
 
@@ -91,6 +82,4 @@ Please refer to the [data contract reference page](../../reference/data-contract
 
 ## What's Happening
 
-After we initialize the Client, we request a contract. The `platform.contracts.get` method takes a single argument: a contract ID. After the contract is retrieved, it is displayed on the console.
-
-The second code example shows how the contract could be assigned a name to make it easily accessible without initializing an additional client.
+After we initialize the client, we call `sdk.contracts.fetch()` with a contract ID. After the contract is retrieved, it is displayed on the console.

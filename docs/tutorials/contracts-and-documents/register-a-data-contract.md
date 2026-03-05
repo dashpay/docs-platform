@@ -4,14 +4,18 @@
 
 # Register a data contract
 
-In this tutorial we will register a data contract.
+The purpose of this tutorial is to walk through the steps necessary to register a [data contract](../../explanations/platform-protocol-data-contract.md) on Dash Platform.
+
+## Overview
+
+Data contracts define the schema (structure) of the data an application stores on Dash Platform. Contracts are registered on the platform and referenced by applications when creating or querying documents. Additional details are available in the [data contract explanation](../../explanations/platform-protocol-data-contract.md).
 
 ## Prerequisites
 
-* [General prerequisites](../../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
-* A wallet mnemonic with some funds in it: [Tutorial: Create and Fund a Wallet](../../tutorials/create-and-fund-a-wallet.md)
-* A configured client: [Setup SDK Client](../setup-sdk-client.md)
-* A Dash Platform Identity: [Tutorial: Register an Identity](../../tutorials/identities-and-names/register-an-identity.md)
+- [General prerequisites](../../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
+- A platform address with a balance: [Tutorial: Create and Fund a Wallet](../../tutorials/create-and-fund-a-wallet.md)
+- A configured client: [Setup SDK Client](../setup-sdk-client.md)
+- A Dash Platform Identity: [Tutorial: Register an Identity](../../tutorials/identities-and-names/register-an-identity.md)
 
 ## Code
 
@@ -33,7 +37,7 @@ data.
 The fifth tab shows a data contract configured to store contract history. This allows all contract
 revisions to be retrieved in the future as needed.
 
-The sixth tab shows a data contract configured for creating NFTs. It allows documents to be deleted, transferred, or traded. It also limits document creation to the contract owner. See the [NFT explanation section](../../explanations/nft.md) for more details about NFTs on Dash Platform. **_Note: the JavaScript SDK supports NFT contract registration, but does not currently support trades or transfers._**
+The sixth tab shows a data contract configured for creating NFTs. It allows documents to be deleted, transferred, or traded. It also limits document creation to the contract owner. See the [NFT explanation section](../../explanations/nft.md) for more details about NFTs on Dash Platform.
 
 :::{attention}
 Since Platform v0.25.16, each document property must assign `position` value to support [backwards compatibility](https://github.com/dashpay/platform/pull/1594) for contract updates.
@@ -241,330 +245,374 @@ array of bytes (e.g. a NodeJS Buffer).
 :::
 ::::
 
-:::{note
+:::{note}
 Please refer to the [data contract reference page](../../reference/data-contracts.md) for more comprehensive details related to contracts and documents.
 :::
 
 ### Registering the data contract
 
-The following examples demonstrate the details of creating contracts using the features [described above](#defining-contract-documents). Also, note that the sixth tab shows a data contract with contract history enabled to store each contract revision so it can be retrieved as needed for future reference:
+The following examples demonstrate the details of creating contracts using the features [described above](#defining-contract-documents). Also, note that the fifth tab shows a data contract with contract history enabled to store each contract revision so it can be retrieved as needed for future reference:
 
 ::::{tab-set}
 :::{tab-item} 1. Minimal contract
 :sync: minimal
 ```javascript
-const setupDashClient = require('../setupDashClient');
+import { DataContract } from '@dashevo/evo-sdk';
+import { setupDashClient } from '../setupDashClient.mjs';
 
-const client = setupDashClient();
+const { sdk, keyManager } = await setupDashClient();
+const { identity, identityKey, signer } = await keyManager.getAuth();
 
-const registerContract = async () => {
-  const { platform } = client;
-  const identity = await platform.identities.get('an identity ID goes here');
-
-  const contractDocuments = {
-    note: {
-      type: 'object',
-      properties: {
-        message: {
-          type: 'string',
-          "position": 0
-        },
+// Define the document schemas for the contract
+const documentSchemas = {
+  note: {
+    type: 'object',
+    properties: {
+      message: {
+        type: 'string',
+        position: 0,
       },
-      additionalProperties: false,
     },
-  };
-
-  const contract = await platform.contracts.create(contractDocuments, identity);
-  console.dir({ contract: contract.toJSON() });
-
-  // Sign and submit the data contract
-  await platform.contracts.publish(contract, identity);
-  return contract;
+    additionalProperties: false,
+  },
 };
 
-registerContract()
-  .then((d) => console.log('Contract registered:\n', d.toJSON()))
-  .catch((e) => console.error('Something went wrong:\n', e))
-  .finally(() => client.disconnect());
+try {
+  // Get the next identity nonce for contract creation
+  const identityNonce = await sdk.identities.nonce(identity.id.toString());
+
+  // Create the data contract
+  const dataContract = new DataContract({
+    ownerId: identity.id,
+    identityNonce: (identityNonce || 0n) + 1n,
+    schemas: documentSchemas,
+    fullValidation: true,
+  });
+
+  // Publish the contract to the platform
+  const publishedContract = await sdk.contracts.publish({
+    dataContract,
+    identityKey,
+    signer,
+  });
+
+  console.log('Contract registered:\n', publishedContract.toJSON());
+} catch (e) {
+  console.error('Something went wrong:\n', e.message);
+}
 ```
 :::
 
 :::{tab-item} 2. Indexed
 :sync: indexed
 ```javascript
-const setupDashClient = require('../setupDashClient');
+import { DataContract } from '@dashevo/evo-sdk';
+import { setupDashClient } from '../setupDashClient.mjs';
 
-const client = setupDashClient();
+const { sdk, keyManager } = await setupDashClient();
+const { identity, identityKey, signer } = await keyManager.getAuth();
 
-const registerContract = async () => {
-  const { platform } = client;
-  const identity = await platform.identities.get('an identity ID goes here');
-
-  const contractDocuments = {
-    note: {
-      type: 'object',
-      indices: [{
-        name: 'ownerId',
-        properties: [{ $ownerId: 'asc' }],
-        unique: false,
-      }],
-      properties: {
-        message: {
-          type: 'string',
-          "position": 0
-        },
+// Define the document schemas for the contract
+const documentSchemas = {
+  note: {
+    type: 'object',
+    indices: [{
+      name: 'ownerId',
+      properties: [{ $ownerId: 'asc' }],
+      unique: false,
+    }],
+    properties: {
+      message: {
+        type: 'string',
+        position: 0,
       },
-      additionalProperties: false,
     },
-  };
-
-  const contract = await platform.contracts.create(contractDocuments, identity);
-  console.dir({ contract: contract.toJSON() });
-
-  await platform.contracts.publish(contract, identity);
-  return contract;
+    additionalProperties: false,
+  },
 };
 
-registerContract()
-  .then((d) => console.log('Contract registered:\n', d.toJSON()))
-  .catch((e) => console.error('Something went wrong:\n', e))
-  .finally(() => client.disconnect());
+try {
+  // Get the next identity nonce for contract creation
+  const identityNonce = await sdk.identities.nonce(identity.id.toString());
+
+  // Create the data contract
+  const dataContract = new DataContract({
+    ownerId: identity.id,
+    identityNonce: (identityNonce || 0n) + 1n,
+    schemas: documentSchemas,
+    fullValidation: true,
+  });
+
+  // Publish the contract to the platform
+  const publishedContract = await sdk.contracts.publish({
+    dataContract,
+    identityKey,
+    signer,
+  });
+
+  console.log('Contract registered:\n', publishedContract.toJSON());
+} catch (e) {
+  console.error('Something went wrong:\n', e.message);
+}
 ```
 :::
 
 :::{tab-item} 3. Timestamps
 :sync: timestamp
 ```javascript
-const setupDashClient = require('../setupDashClient');
+import { DataContract } from '@dashevo/evo-sdk';
+import { setupDashClient } from '../setupDashClient.mjs';
 
-const client = setupDashClient();
+const { sdk, keyManager } = await setupDashClient();
+const { identity, identityKey, signer } = await keyManager.getAuth();
 
-const registerContract = async () => {
-  const { platform } = client;
-  const identity = await platform.identities.get('an identity ID goes here');
-
-  const contractDocuments = {
-    note: {
-      type: 'object',
-      properties: {
-        message: {
-          type: 'string',
-          "position": 0
-        },
+// Define the document schemas for the contract
+const documentSchemas = {
+  note: {
+    type: 'object',
+    properties: {
+      message: {
+        type: 'string',
+        position: 0,
       },
-      required: ['$createdAt', '$updatedAt'],
-      additionalProperties: false,
     },
-  };
-
-  const contract = await platform.contracts.create(contractDocuments, identity);
-  console.dir({ contract: contract.toJSON() });
-
-  await platform.contracts.publish(contract, identity);
-  return contract;
+    required: ['$createdAt', '$updatedAt'],
+    additionalProperties: false,
+  },
 };
 
-registerContract()
-  .then((d) => console.log('Contract registered:\n', d.toJSON()))
-  .catch((e) => console.error('Something went wrong:\n', e))
-  .finally(() => client.disconnect());
+try {
+  // Get the next identity nonce for contract creation
+  const identityNonce = await sdk.identities.nonce(identity.id.toString());
+
+  // Create the data contract
+  const dataContract = new DataContract({
+    ownerId: identity.id,
+    identityNonce: (identityNonce || 0n) + 1n,
+    schemas: documentSchemas,
+    fullValidation: true,
+  });
+
+  // Publish the contract to the platform
+  const publishedContract = await sdk.contracts.publish({
+    dataContract,
+    identityKey,
+    signer,
+  });
+
+  console.log('Contract registered:\n', publishedContract.toJSON());
+} catch (e) {
+  console.error('Something went wrong:\n', e.message);
+}
 ```
 :::
 
 :::{tab-item} 4. Binary data
 :sync: binary
 ```javascript
-const setupDashClient = require('../setupDashClient');
+import { DataContract } from '@dashevo/evo-sdk';
+import { setupDashClient } from '../setupDashClient.mjs';
 
-const client = setupDashClient();
+const { sdk, keyManager } = await setupDashClient();
+const { identity, identityKey, signer } = await keyManager.getAuth();
 
-const registerContract = async () => {
-  const { platform } = client;
-  const identity = await platform.identities.get('an identity ID goes here');
-
-  const contractDocuments = {
-    block: {
-      type: 'object',
-      properties: {
-        hash: {
-          type: 'array',
-          byteArray: true,
-          maxItems: 64,
-          description: 'Store block hashes',
-          "position": 0
-        },
+// Define the document schemas for the contract
+const documentSchemas = {
+  block: {
+    type: 'object',
+    properties: {
+      hash: {
+        type: 'array',
+        byteArray: true,
+        maxItems: 64,
+        description: 'Store block hashes',
+        position: 0,
       },
-      additionalProperties: false,
     },
-  };
-
-  const contract = await platform.contracts.create(contractDocuments, identity);
-  console.dir({ contract: contract.toJSON() }, { depth: 5 });
-
-  await platform.contracts.publish(contract, identity);
-  return contract;
+    additionalProperties: false,
+  },
 };
 
-registerContract()
-  .then((d) => console.log('Contract registered:\n', d.toJSON()))
-  .catch((e) => console.error('Something went wrong:\n', e))
-  .finally(() => client.disconnect());
+try {
+  // Get the next identity nonce for contract creation
+  const identityNonce = await sdk.identities.nonce(identity.id.toString());
+
+  // Create the data contract
+  const dataContract = new DataContract({
+    ownerId: identity.id,
+    identityNonce: (identityNonce || 0n) + 1n,
+    schemas: documentSchemas,
+    fullValidation: true,
+  });
+
+  // Publish the contract to the platform
+  const publishedContract = await sdk.contracts.publish({
+    dataContract,
+    identityKey,
+    signer,
+  });
+
+  console.log('Contract registered:\n', publishedContract.toJSON());
+} catch (e) {
+  console.error('Something went wrong:\n', e.message);
+}
 ```
 :::
 
 :::{tab-item} 5. Contract with history
 :sync: history
 ```javascript
-const setupDashClient = require('../setupDashClient');
+import { DataContract } from '@dashevo/evo-sdk';
+import { setupDashClient } from '../setupDashClient.mjs';
 
-const client = setupDashClient();
+const { sdk, keyManager } = await setupDashClient();
+const { identity, identityKey, signer } = await keyManager.getAuth();
 
-const registerContract = async () => {
-  const { platform } = client;
-  const identity = await platform.identities.get('an identity ID goes here');
-
-  const contractDocuments = {
-    note: {
-      type: 'object',
-      properties: {
-        message: {
-          type: 'string',
-          "position": 0
-        },
+// Define the document schemas for the contract
+const documentSchemas = {
+  note: {
+    type: 'object',
+    properties: {
+      message: {
+        type: 'string',
+        position: 0,
       },
-      additionalProperties: false,
     },
-  };
-
-  const contract = await platform.contracts.create(contractDocuments, identity);
-  contract.setConfig({
-    canBeDeleted: false,
-    readonly: false,    // Make contract read-only
-    keepsHistory: true, // Enable storing of contract history
-    documentsKeepHistoryContractDefault: false,
-    documentsMutableContractDefault: true,
-  })
-  console.dir({ contract: contract.toJSON() });
-
-  // Sign and submit the data contract
-  await platform.contracts.publish(contract, identity);
-  return contract;
+    additionalProperties: false,
+  },
 };
 
-registerContract()
-  .then((d) => console.log('Contract registered:\n', d.toJSON()))
-  .catch((e) => console.error('Something went wrong:\n', e))
-  .finally(() => client.disconnect());
+try {
+  // Get the next identity nonce for contract creation
+  const identityNonce = await sdk.identities.nonce(identity.id.toString());
+
+  // Create the data contract
+  const dataContract = new DataContract({
+    ownerId: identity.id,
+    identityNonce: (identityNonce || 0n) + 1n,
+    schemas: documentSchemas,
+    fullValidation: true,
+  });
+
+  // Enable storing of contract history
+  dataContract.setConfig({
+    canBeDeleted: false,
+    readonly: false,
+    keepsHistory: true,
+    documentsKeepHistoryContractDefault: false,
+    documentsMutableContractDefault: true,
+  });
+
+  // Publish the contract to the platform
+  const publishedContract = await sdk.contracts.publish({
+    dataContract,
+    identityKey,
+    signer,
+  });
+
+  console.log('Contract registered:\n', publishedContract.toJSON());
+} catch (e) {
+  console.error('Something went wrong:\n', e.message);
+}
 ```
 :::
 
 :::{tab-item} 6. NFT Contract
 :sync: nft
 ```javascript
-const setupDashClient = require('../setupDashClient');
+import { DataContract } from '@dashevo/evo-sdk';
+import { setupDashClient } from '../setupDashClient.mjs';
 
-const client = setupDashClient();
+const { sdk, keyManager } = await setupDashClient();
+const { identity, identityKey, signer } = await keyManager.getAuth();
 
-const registerContract = async () => {
-  const { platform } = client;
-  const identity = await platform.identities.get('an identity ID goes here');
-
-  const contractDocuments = {
-    card: {
-      type: "object",
-      documentsMutable: false,    // Documents cannot be modified/replaced
-      canBeDeleted: true,         // Documents can be deleted
-      transferable: 1,            // Transfers enabled
-      tradeMode: 1,               // Direct purchase trades enabled
-      creationRestrictionMode: 1, // Only the contract owner can mint      
-      properties: {
-        name: {
-          type: "string",
-          description: "Name of the card",
-          minLength: 0,
-          maxLength: 63,
-          position: 0
-        },
-        description: {
-          type: "string",
-          description: "Description of the card",
-          minLength: 0,
-          maxLength: 256,
-          position: 1
-        },
-        attack: {
-          type: "integer",
-          description: "Attack power of the card",
-          position: 2
-        },
-        defense: {
-          type: "integer",
-          description: "Defense level of the card",
-          position: 3
-        }
+// Define the document schemas for the contract
+const documentSchemas = {
+  card: {
+    type: 'object',
+    documentsMutable: false,    // true = documents can be modified (replaced)
+    canBeDeleted: true,         // true = documents can be deleted
+    transferable: 1,            // 0 = transfers disabled; 1 = transfers enabled
+    tradeMode: 1,               // 0 = no trading; 1 = direct purchases
+    creationRestrictionMode: 1, // 0 = anyone can mint; 1 = only contract owner can mint
+    properties: {
+      name: {
+        type: 'string',
+        description: 'Name of the card',
+        minLength: 0,
+        maxLength: 63,
+        position: 0,
       },
-      indices: [
-        {
-          name: "owner",
-          properties: [
-            {
-              $ownerId: "asc"
-            }
-          ]
-        },
-        {
-          name: "attack",
-          properties: [
-            {
-              attack: "asc"
-            }
-          ]
-        },
-        {
-          name: "defense",
-          properties: [
-            {
-              defense: "asc"
-            }
-          ]
-        }
-      ],
-      required: [
-        "name",
-        "attack",
-        "defense"
-      ],
-      additionalProperties: false
-    }
-  }
-
-  const contract = await platform.contracts.create(contractDocuments, identity);
-  console.dir({ contract: contract.toJSON() });
-
-  // Sign and submit the data contract
-  await platform.contracts.publish(contract, identity);
-  return contract;
+      description: {
+        type: 'string',
+        description: 'Description of the card',
+        minLength: 0,
+        maxLength: 256,
+        position: 1,
+      },
+      attack: {
+        type: 'integer',
+        description: 'Attack power of the card',
+        position: 2,
+      },
+      defense: {
+        type: 'integer',
+        description: 'Defense level of the card',
+        position: 3,
+      },
+    },
+    indices: [
+      {
+        name: 'owner',
+        properties: [{ $ownerId: 'asc' }],
+      },
+      {
+        name: 'attack',
+        properties: [{ attack: 'asc' }],
+      },
+      {
+        name: 'defense',
+        properties: [{ defense: 'asc' }],
+      },
+    ],
+    required: ['name', 'attack', 'defense'],
+    additionalProperties: false,
+  },
 };
 
-registerContract()
-  .then((d) => console.log('Contract registered:\n', d.toJSON()))
-  .catch((e) => console.error('Something went wrong:\n', e))
-  .finally(() => client.disconnect());
+try {
+  // Get the next identity nonce for contract creation
+  const identityNonce = await sdk.identities.nonce(identity.id.toString());
+
+  // Create the data contract
+  const dataContract = new DataContract({
+    ownerId: identity.id,
+    identityNonce: (identityNonce || 0n) + 1n,
+    schemas: documentSchemas,
+    fullValidation: true,
+  });
+
+  // Publish the contract to the platform
+  const publishedContract = await sdk.contracts.publish({
+    dataContract,
+    identityKey,
+    signer,
+  });
+
+  console.log('Contract registered:\n', publishedContract.toJSON());
+} catch (e) {
+  console.error('Something went wrong:\n', e.message);
+}
 ```
 :::
 ::::
 
 :::{attention}
-Make a note of the returned data contract `id` as it will be used used in subsequent tutorials throughout the documentation.
+Make a note of the returned data contract ID as it will be used in subsequent tutorials throughout the documentation.
 :::
 
 ## What's Happening
 
-After we initialize the Client, we create an object defining the documents this data contract requires (e.g. a `note` document in the example). The `platform.contracts.create` method takes two arguments: a contract definitions JSON-schema object and an identity. The contract definitions object consists of the document types being created (e.g. `note`). It defines the properties and any indices.
+After we initialize the client, we get the auth key signer from the key manager. We then define the document schemas for our contract (e.g. a `note` document).
 
-Once the data contract has been created, we still need to submit it to DAPI. The `platform.contracts.publish` method takes a data contract and an identity parameter. Internally, it creates a State Transition containing the previously created contract, signs the state transition, and submits the signed state transition to DAPI. A response will only be returned if an error is encountered.
-
-:::{note}
-:class: note
-Since the SDK does not cache wallet information, lengthy re-syncs (5+ minutes) may be required for some Core chain wallet operations. See [Wallet Operations](../setup-sdk-client.md#wallet-operations) for options.
-:::
+To create the contract, we first fetch the identity's current nonce and increment it. We then create a `DataContract` object with the owner identity, nonce, and document schemas. Finally, we call `sdk.contracts.publish()` with the contract and signing credentials to submit it to the network.

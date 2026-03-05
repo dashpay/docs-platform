@@ -17,96 +17,72 @@ information.
 
 ## Code
 
-### Retrieving data contract history
+```{code-block} javascript
+:caption: retrieveContractHistory.mjs
 
-```javascript
-const setupDashClient = require('../setupDashClient');
+import { setupDashClient } from '../setupDashClient.mjs';
 
-const client = setupDashClient();
+const { sdk } = await setupDashClient();
 
-const retrieveContractHistory = async () => {
-  const contractId = '8cvMFwa2YbEsNNoc1PXfTacy2PVq2SzVnkZLeQSzjfi6'
-  return await client.platform.contracts.history(contractId, 0, 10, 0);
-};
+// Default tutorial contract with history (testnet). Replace or override via DATA_CONTRACT_ID.
+const DATA_CONTRACT_ID =
+  process.env.DATA_CONTRACT_ID ??
+  '5J4VPym1Bnc2Ap9bbo9wNw6fZLGsCzDM7ZScdzcggN1r';
 
-retrieveContractHistory()
-  .then((d) => {
-    Object.entries(d).forEach(([key, value]) => {
-      client.platform.dpp.dataContract
-        .createFromObject(value)
-        .then((contract) => console.dir(contract.toJSON(), { depth: 5 }));
-    });
-  })
-  .catch((e) => console.error('Something went wrong:\n', e))
-  .finally(() => client.disconnect());
+try {
+  const history = await sdk.contracts.getHistory({
+    dataContractId: DATA_CONTRACT_ID,
+  });
+
+  for (const [timestamp, contract] of history) {
+    console.log(`Version at ${timestamp}:`, contract.toJSON());
+  }
+} catch (e) {
+  console.error('Something went wrong:\n', e.message);
+}
 ```
 
 ## Example data contract history
 
 The following example response shows a retrieved contract history:
 
-```json
-[
-  {
-    "$format_version": "0",
-    "id": "BWgzcW4XRhmYKzup1xY8fMi3ZHGG1Hf8fD9Rm3e3bopm",
-    "config": {
-      "$format_version": "0",
-      "canBeDeleted": false,
-      "readonly": false,
-      "keepsHistory": true,
-      "documentsKeepHistoryContractDefault": false,
-      "documentsMutableContractDefault": true,
-      "requiresIdentityEncryptionBoundedKey": null,
-      "requiresIdentityDecryptionBoundedKey": null
-    },
-    "version": 1,
-    "ownerId": "DKFKmJ58ZTDddvviDJwDyCznDMxd9Y6bsJcBN5Xp8m5w",
-    "schemaDefs": null,
-    "documentSchemas": {
-      "note": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string"
-          }
-        },
-        "additionalProperties": false
-      }
+```text
+Version at 1772722751435: {
+  '$format_version': '1',
+  id: '5J4VPym1Bnc2Ap9bbo9wNw6fZLGsCzDM7ZScdzcggN1r',
+  config: {
+    '$format_version': '1',
+    canBeDeleted: false,
+    readonly: false,
+    keepsHistory: true,
+    documentsKeepHistoryContractDefault: false,
+    documentsMutableContractDefault: true,
+    documentsCanBeDeletedContractDefault: true,
+    requiresIdentityEncryptionBoundedKey: null,
+    requiresIdentityDecryptionBoundedKey: null,
+    sizedIntegerTypes: true
+  },
+  version: 1,
+  ownerId: 'FKZZFDTfGdSWUmL2g7H9e46pMJMPQp9DHQcvjrsS6884',
+  schemaDefs: null,
+  documentSchemas: {
+    note: {
+      type: 'object',
+      properties: [Object],
+      additionalProperties: false
     }
   },
-  {
-    "$format_version": "0",
-    "id": "BWgzcW4XRhmYKzup1xY8fMi3ZHGG1Hf8fD9Rm3e3bopm",
-    "config": {
-      "$format_version": "0",
-      "canBeDeleted": false,
-      "readonly": false,
-      "keepsHistory": true,
-      "documentsKeepHistoryContractDefault": false,
-      "documentsMutableContractDefault": true,
-      "requiresIdentityEncryptionBoundedKey": null,
-      "requiresIdentityDecryptionBoundedKey": null
-    },
-    "version": 2,
-    "ownerId": "DKFKmJ58ZTDddvviDJwDyCznDMxd9Y6bsJcBN5Xp8m5w",
-    "schemaDefs": null,
-    "documentSchemas": {
-      "note": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string"
-          },
-          "author": {
-            "type": "string"
-          }
-        },
-        "additionalProperties": false
-      }
-    }
-  }
-]
+  createdAt: 1772722751435,
+  updatedAt: null,
+  createdAtBlockHeight: 273561,
+  updatedAtBlockHeight: null,
+  createdAtEpoch: 14269,
+  updatedAtEpoch: null,
+  groups: {},
+  tokens: {},
+  keywords: [],
+  description: null
+}
 ```
 
 :::{note}
@@ -115,7 +91,9 @@ Please refer to the [data contract reference page](../../reference/data-contract
 
 ## What's Happening
 
-After we initialize the Client, we request a contract's history. The `platform.contracts.history`
-method takes four arguments: a contract ID, timestamp to start at, number of revisions to retrieve,
-and a number to offset the start of the records. After the contract history is retrieved, it is
-displayed on the console.
+After we initialize the client, we request a contract's history. The contract ID defaults to a
+testnet tutorial contract but can be overridden via the `DATA_CONTRACT_ID` environment variable. The
+`sdk.contracts.getHistory` method takes an object with a `dataContractId` property. It returns a
+`Map` where each key is a timestamp (`BigInt`) and each value is the contract at that revision.
+After the contract history is retrieved, we iterate over the entries and display each revision on the
+console.
