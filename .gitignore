@@ -2,4 +2,5 @@
 *.exe
 _build
 **/.DS_Store
+.local/
 .vscode
