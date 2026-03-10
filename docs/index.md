@@ -115,7 +115,6 @@ tutorials/setup-sdk-client
 tutorials/identities-and-names
 tutorials/contracts-and-documents
 tutorials/send-funds
-tutorials/use-dapi-client-methods
 tutorials/setup-a-node
 tutorials/tui/index
 tutorials/building-platform
