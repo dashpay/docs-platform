@@ -18,7 +18,7 @@ information.
 ## Code
 
 ```{code-block} javascript
-:caption: retrieveContractHistory.mjs
+:caption: contract-retrieve-history.mjs
 
 import { setupDashClient } from '../setupDashClient.mjs';
 

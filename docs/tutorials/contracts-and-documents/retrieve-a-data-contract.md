@@ -15,7 +15,7 @@ In this tutorial we will retrieve the data contract created in the [Register a D
 ## Code
 
 ```{code-block} javascript
-:caption: retrieveContract.mjs
+:caption: contract-retrieve.mjs
 
 import { setupDashClient } from '../setupDashClient.mjs';
 

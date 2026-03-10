@@ -17,7 +17,7 @@ In this tutorial we will submit some data to an application on Dash Platform. Da
 ## Code
 
 ```{code-block} javascript
-:caption: submitDocument.mjs
+:caption: document-submit.mjs
 
 import { Document } from '@dashevo/evo-sdk';
 import { setupDashClient } from '../setupDashClient.mjs';

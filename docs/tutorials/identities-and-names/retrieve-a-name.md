@@ -17,7 +17,7 @@ In this tutorial we will retrieve the name created in the [Register a Name for a
 :::{tab-item} Resolve by Name
 
 ```{code-block} javascript
-:caption: resolve-by-name.mjs
+:caption: name-resolve-by-name.mjs
 
 import { setupDashClient } from '../setupDashClient.mjs';
 
@@ -45,7 +45,7 @@ Identity ID for "quantumexplorer.dash": BNnn19SAJZuvsUu787dMzPDXASwuCrm4yQ864tEp
 :::{tab-item} Get Identity Names
 
 ```{code-block} javascript
-:caption: get-identity-names.mjs
+:caption: name-get-identity-names.mjs
 
 import { setupDashClient } from '../setupDashClient.mjs';
 
@@ -78,7 +78,7 @@ Name(s) retrieved for GgZekwh38XcWQTyWWWvmw6CEYFnLU7yiZFPWZEjqKHit:
 :::{tab-item} Search for Name
 
 ```{code-block} javascript
-:caption: search-by-name.mjs
+:caption: name-search-by-name.mjs
 
 import { setupDashClient } from '../setupDashClient.mjs';
 

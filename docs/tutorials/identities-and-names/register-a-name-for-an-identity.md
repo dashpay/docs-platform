@@ -25,7 +25,7 @@ Pass only the label (e.g., `myname`), not the full domain name. The `.dash` suff
 :::
 
 ```{code-block} javascript
-:caption: registerName.mjs
+:caption: name-register.mjs
 
 import { setupDashClient } from '../setupDashClient.mjs';
 
@@ -47,7 +47,9 @@ try {
   console.log('Name registered:\n', result.toJSON());
 } catch (e) {
   if (e.message?.includes('duplicate unique properties')) {
-    console.error(`Name "${NAME_LABEL}.dash" is already registered. Try a different name.`);
+    console.error(
+      `Name "${NAME_LABEL}.dash" is already registered. Try a different name.`,
+    );
   } else {
     console.error('Something went wrong:\n', e.message);
   }

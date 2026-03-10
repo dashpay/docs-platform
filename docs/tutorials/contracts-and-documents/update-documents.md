@@ -18,7 +18,7 @@ In this tutorial we will update existing data on Dash Platform. Data is stored i
 ## Code
 
 ```{code-block} javascript
-:caption: updateDocument.mjs
+:caption: document-update.mjs
 
 import { Document } from '@dashevo/evo-sdk';
 import { setupDashClient } from '../setupDashClient.mjs';

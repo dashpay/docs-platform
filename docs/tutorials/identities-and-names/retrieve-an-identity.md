@@ -15,7 +15,7 @@ In this tutorial we will retrieve the identity created in the [Register an Ident
 ## Code
 
 ```{code-block} javascript
-:caption: retrieveIdentity.mjs
+:caption: identity-retrieve.mjs
 
 import { setupDashClient } from '../setupDashClient.mjs';
 

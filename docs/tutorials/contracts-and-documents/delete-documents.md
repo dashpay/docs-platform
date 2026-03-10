@@ -18,7 +18,7 @@ In this tutorial we will delete data from Dash Platform. Data is stored in the f
 ## Code
 
 ```{code-block} javascript
-:caption: deleteDocument.mjs
+:caption: document-delete.mjs
 
 import { setupDashClient } from '../setupDashClient.mjs';
 

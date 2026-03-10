@@ -15,7 +15,7 @@ In this tutorial we will retrieve some of the current data from a data contract.
 ## Code
 
 ```{code-block} javascript
-:caption: getDocuments.mjs
+:caption: document-retrieve.mjs
 
 import { setupDashClient } from '../setupDashClient.mjs';
 
