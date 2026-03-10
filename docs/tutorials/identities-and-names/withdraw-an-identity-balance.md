@@ -13,7 +13,6 @@ Over time, users may want to convert some of their identity's [Platform credits]
 ## Prerequisites
 
 - [General prerequisites](../../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
-- A platform address with a balance: [Tutorial: Create and Fund a Wallet](../../tutorials/create-and-fund-a-wallet.md)
 - A configured client: [Setup SDK Client](../setup-sdk-client.md)
 - A Dash Platform Identity with a credit balance: [Tutorial: Register an Identity](../../tutorials/identities-and-names/register-an-identity.md)
 - A Core chain address to receive the withdrawn credits as Dash
