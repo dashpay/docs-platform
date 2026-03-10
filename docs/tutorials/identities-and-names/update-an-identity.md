@@ -4,98 +4,113 @@
 
 # Update an identity
 
-:::{attention}
-This tutorial has not been migrated to use the latest Dash SDK yet and is out-of-date.
-:::
-
+It is possible to update identities to add new keys or disable existing ones. Platform retains disabled keys so that any existing data they signed can still be verified while preventing them from signing new data.
 
 ## Prerequisites
 
 - [General prerequisites](../../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
-- A wallet mnemonic with some funds in it: [Tutorial: Create and Fund a Wallet](../../tutorials/create-and-fund-a-wallet.md)
+- A platform address with a balance: [Tutorial: Create and Fund a Wallet](../../tutorials/create-and-fund-a-wallet.md)
 - A configured client: [Setup SDK Client](../setup-sdk-client.md)
 - A Dash Platform Identity: [Tutorial: Register an Identity](../../tutorials/identities-and-names/register-an-identity.md)
 
 ## Code
 
-The two examples below demonstrate updating an existing identity to add a new key and disabling an existing key:
+The two examples below demonstrate updating an existing identity to disable an existing key and to add a new key:
 
 :::{attention}
-The current SDK version signs all state transitions with public key id `1`. If it is disabled, the SDK will be unable to use the identity. Future SDK versions will provide a way to also sign using keys added in an identity update.
+The identity's master key must be used to sign identity update state transitions.
 :::
 
 ::::{tab-set}
 :::{tab-item} Disable identity key
-```javascript
-const setupDashClient = require('../setupDashClient');
 
-const client = setupDashClient();
+```{code-block} javascript
+:caption: identity-update-disable-key.mjs
 
-const updateIdentityDisableKey = async () => {
-  const identityId = 'an identity ID goes here';
-  const keyId = 'a public key ID goes here'; // One of the identity's public key IDs
+import { setupDashClient } from '../setupDashClient.mjs';
 
-  // Retrieve the identity to be updated and the public key to disable
-  const existingIdentity = await client.platform.identities.get(identityId);
-  const publicKeyToDisable = existingIdentity.getPublicKeyById(keyId);
+const { sdk, keyManager } = await setupDashClient();
+const { identity, signer } = await keyManager.getMaster();
 
-  const updateDisable = {
-    disable: [publicKeyToDisable],
-  };
+const KEY_ID = 99; // Replace with one of the identity's existing public key IDs
 
-  await client.platform.identities.update(existingIdentity, updateDisable);
-  return client.platform.identities.get(identityId);
+console.log(`Disabling key ${KEY_ID} on identity ${keyManager.identityId}...`);
+
+try {
+  await sdk.identities.update({
+    identity,
+    disablePublicKeys: [KEY_ID], // Disable public key id KEY_ID
+    signer,
+  });
+
+  const updatedIdentity = await sdk.identities.fetch(keyManager.identityId);
+  console.log('Identity updated:\n', updatedIdentity.toJSON());
+} catch (e) {
+  console.error('Something went wrong:\n', e.message);
 }
-
-updateIdentityDisableKey()
-  .then((d) => console.log('Identity updated:\n', d.toJSON()))
-  .catch((e) => console.error('Something went wrong:\n', e))
-  .finally(() => client.disconnect());
 ```
 :::
 
 :::{tab-item} Add identity key
-```javascript
-const setupDashClient = require('../setupDashClient');
 
-const client = setupDashClient();
+```{code-block} javascript
+:caption: identity-update-add-key.mjs
 
-const updateIdentityAddKey = async () => {
-  const identityId = 'an identity ID goes here';
-  const existingIdentity = await client.platform.identities.get(identityId);
-  const newKeyId = existingIdentity.toJSON().publicKeys.length;
+import {
+  IdentityPublicKeyInCreation,
+  KeyType,
+  Purpose,
+  SecurityLevel,
+  wallet,
+} from '@dashevo/evo-sdk';
+import { setupDashClient, clientConfig, dip13KeyPath } from '../setupDashClient.mjs';
 
-  // Get an unused identity index
-  const account = await client.platform.client.getWalletAccount();
-  const identityIndex = await account.getUnusedIdentityIndex();
+const { sdk, keyManager } = await setupDashClient();
 
-  // Get unused private key and construct new identity public key
-  const { privateKey: identityPrivateKey } =
-    account.identities.getIdentityHDKeyByIndex(identityIndex, 0);
+// Fetch identity to determine the next available key ID
+const { identity, signer } = await keyManager.getMaster();
+const existingKeys = identity.toJSON().publicKeys;
+const newKeyId = Math.max(...existingKeys.map((k) => k.id)) + 1;
 
-  const identityPublicKey = identityPrivateKey.toPublicKey().toBuffer();
+console.log(`Adding key ${newKeyId} to identity ${keyManager.identityId}...`);
 
-  const newPublicKey = new IdentityPublicKeyWithWitness(1);
-  newPublicKey.setId(newKeyId);
-  newPublicKey.setSecurityLevel(IdentityPublicKey.SECURITY_LEVELS.HIGH);
-  newPublicKey.setData(identityPublicKey);  
+// Derive the new key using the standard DIP-13 path
+const newKeyPath = await dip13KeyPath(
+  clientConfig.network,
+  keyManager.identityIndex,
+  newKeyId,
+);
+const newKeyInfo = await wallet.deriveKeyFromSeedWithPath({
+  mnemonic: clientConfig.mnemonic,
+  path: newKeyPath,
+  network: clientConfig.network,
+});
+const newKeyObj = newKeyInfo.toObject();
 
-  const updateAdd = {
-    add: [newPublicKey],
-  };
+// Build the new public key
+const newPublicKey = new IdentityPublicKeyInCreation({
+  keyId: newKeyId,
+  purpose: Purpose.AUTHENTICATION,
+  securityLevel: SecurityLevel.HIGH,
+  keyType: KeyType.ECDSA_SECP256K1,
+  data: Uint8Array.from(Buffer.from(newKeyObj.publicKey, 'hex')),
+});
 
-  // Submit the update signed with the new key
-  await client.platform.identities.update(existingIdentity, updateAdd, {
-    [newPublicKey.getId()]: identityPrivateKey,
+// Add the new key's WIF to the signer so it can co-sign
+signer.addKeyFromWif(newKeyObj.privateKeyWif);
+
+try {
+  await sdk.identities.update({
+    identity,
+    addPublicKeys: [newPublicKey],
+    signer,
   });
 
-  return client.platform.identities.get(identityId);
-};
-
-updateIdentityAddKey()
-  .then((d) => console.log('Identity updated:\n', d.toJSON()))
-  .catch((e) => console.error('Something went wrong:\n', e))
-  .finally(() => client.disconnect());
+  const updatedIdentity = await sdk.identities.fetch(keyManager.identityId);
+  console.log('Identity updated:\n', updatedIdentity.toJSON());
+} catch (e) {
+  console.error('Something went wrong:\n', e.message);
+}
 ```
 :::
 ::::
@@ -104,23 +119,12 @@ updateIdentityAddKey()
 
 ### Disabling keys
 
-After we initialize the Client, we retrieve our existing identity and provide the `id` of one (or more) of the identity keys to disable. The update is submitted to DAPI using the `platform.identities.update` method with two arguments:
-
-1. An identity
-2. An object containing the key(s) to be disabled
-
-Internally, the method creates a State Transition containing the updated identity, signs the state transition, and submits the signed state transition to DAPI. After the identity is updated, we output it to the console.
+After connecting to the client, we get the master key signer from the key manager. We specify the key ID to disable and call `sdk.identities.update()` with an array of key IDs to disable. The updated identity is then fetched and logged to confirm the change.
 
 ### Adding keys
 
-After we initialize the Client, we retrieve our existing identity and set an `id` for the key to be added. Next, we get an unused private key from our wallet and use it to derive a public key to add to our identity. The update is submitted to DAPI using the `platform.identities.update` method with three arguments:
-
-1. An identity
-2. An object containing the key(s) to be added
-3. An object containing the id and private key for each public key being added
+After connecting to the client, we get the master key signer and inspect the identity's existing keys to determine the next available key ID. We then derive a new key using the DIP-13 derivation path, build an `IdentityPublicKeyInCreation` object, and add the new key's WIF to the signer so it can co-sign (proving ownership). Finally, we call `sdk.identities.update()` with the new public key to add.
 
 :::{note}
 When adding new public keys, they must be signed using the associated private key to prove ownership of the keys.
 :::
-
-Internally, the method creates a State Transition containing the updated identity, signs the state transition, and submits the signed state transition to DAPI. After the identity is updated, we output it to the console.

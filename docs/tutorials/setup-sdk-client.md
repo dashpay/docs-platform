@@ -75,7 +75,7 @@ const clientConfig = {
  * Returns the full 7-level hardened path:
  *   m/9'/{coin}'/5'/0'/0'/{identityIndex}'/{keyIndex}'
  */
-async function dip13KeyPath(network, identityIndex, keyIndex) {
+export async function dip13KeyPath(network, identityIndex, keyIndex) {
   const base =
     network === 'testnet'
       ? await wallet.derivationPathDip13Testnet(5)
@@ -546,7 +546,7 @@ class AddressKeyManager {
 
 export async function setupDashClient({
   requireIdentity = true,
-  identityIndex = 0,
+  identityIndex,
 } = {}) {
   const { network, mnemonic } = clientConfig;
   const sdk = await createClient(network);
