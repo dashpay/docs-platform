@@ -11,8 +11,6 @@ identity. Additional details regarding credits can be found in the [credits desc
 
 - [General prerequisites](../../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK
   installed)
-- A platform address with a balance: [Tutorial: Create and Fund a
-  Wallet](../../tutorials/create-and-fund-a-wallet.md)
 - A configured client: [Setup SDK Client](../setup-sdk-client.md)
 - Two Dash Platform Identities: [Tutorial: Register an
   Identity](../../tutorials/identities-and-names/register-an-identity.md)

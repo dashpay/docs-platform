@@ -8,7 +8,7 @@ The purpose of this tutorial is to walk through the steps necessary to add credi
 
 ## Overview
 
-As users interact with Dash Platform applications, the credit balance associated with their identity will decrease. Eventually it will be necessary to topup the balance by transferring credits from a funded platform address. Additional details regarding credits can be found in the [Credits description](../../explanations/identity.md#credits).
+As users interact with Dash Platform applications, the credit balance associated with their identity will decrease. Eventually it will be necessary to top up the balance by transferring credits from a funded platform address. Additional details regarding credits can be found in the [Credits description](../../explanations/identity.md#credits).
 
 ## Prerequisites
 
