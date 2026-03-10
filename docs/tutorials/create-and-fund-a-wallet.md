@@ -13,7 +13,7 @@ In order to make create an identity on Dash Platform, you need a platform addres
 # Code
 
 ```{code-block} javascript
-:caption: generateWallet.mjs
+:caption: create-wallet.mjs
 
 import { wallet, PlatformAddressSigner, PrivateKey } from '@dashevo/evo-sdk';
 

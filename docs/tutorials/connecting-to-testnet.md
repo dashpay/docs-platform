@@ -26,10 +26,10 @@ npm install @dashevo/evo-sdk
 
 ### 2. Connect to Dash Platform
 
-Create a file named `dashConnect.mjs` with the following contents. Then run it by typing `node dashConnect.mjs` from the command line:
+Create a file named `connect.mjs` with the following contents. Then run it by typing `node connect.mjs` from the command line:
 
 ```{code-block} javascript
-:caption: dashConnect.mjs
+:caption: connect.mjs
 
 import { EvoSDK } from '@dashevo/evo-sdk';
 
