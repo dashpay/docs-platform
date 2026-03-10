@@ -2,13 +2,9 @@
 .. tutorials-withdraw-identity-balance:
 ```
 
-:::{attention}
-This tutorial has not been migrated to use the latest Dash SDK yet and is out-of-date.
-:::
-
 # Withdraw an Identity's balance
 
-The purpose of this tutorial is to walk through the steps necessary to withdraw part of their identity's balance from Platform to a Dash address.
+The purpose of this tutorial is to walk through the steps necessary to withdraw part of an identity's balance from Platform to a Dash address.
 
 ## Overview
 
@@ -17,54 +13,45 @@ Over time, users may want to convert some of their identity's [Platform credits]
 ## Prerequisites
 
 - [General prerequisites](../../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
-- A wallet mnemonic with some funds in it: [Tutorial: Create and Fund a Wallet](../../tutorials/create-and-fund-a-wallet.md)
+- A platform address with a balance: [Tutorial: Create and Fund a Wallet](../../tutorials/create-and-fund-a-wallet.md)
 - A configured client: [Setup SDK Client](../setup-sdk-client.md)
 - A Dash Platform Identity with a credit balance: [Tutorial: Register an Identity](../../tutorials/identities-and-names/register-an-identity.md)
 - A Core chain address to receive the withdrawn credits as Dash
 
 ## Code
 
-```javascript
-const setupDashClient = require('../setupDashClient');
+```{code-block} javascript
+:caption: identity-withdraw-credits.mjs
 
-const client = setupDashClient();
+import { setupDashClient } from '../setupDashClient.mjs';
 
-const withdrawCredits = async () => {
-  const identityId = 'an identity ID goes here';
-  const identity = await client.platform.identities.get(identityId);
+const { sdk, keyManager } = await setupDashClient();
+const { identity, signer } = await keyManager.getTransfer();
 
-  console.log('Identity balance before transfer: ', identity.balance);
+console.log('Identity balance before withdrawal:', identity.balance);
 
-  const toAddress = 'a Dash address goes here';
-  const amount = 1000000; // Number of credits to withdraw
-  const amountDash = amount / (1000 * 100000000);
+// Default: testnet faucet address. Replace or override via WITHDRAW_ADDRESS.
+const toAddress =
+  process.env.WITHDRAWAL_ADDRESS ?? 'yXWJGWuD4VBRMp9n2MtXQbGpgSeWyTRHme';
+const amount = 190000n; // Credits to withdraw
+const amountDash = Number(amount) / (1000 * 100000000);
 
-  console.log(`Withdrawing ${amount} credits (${amountDash} DASH)`);
-  // Temporarily force minRelay to have a value so withdrawal succeeds
-  // https://github.com/dashpay/platform/issues/2233
-  client.wallet.storage.getDefaultChainStore().state.fees.minRelay = 1000;
+console.log(`Withdrawing ${amount} credits (${amountDash} DASH)`);
 
-  const response = await client.platform.identities.withdrawCredits(
+try {
+  const remainingBalance = await sdk.identities.creditWithdrawal({
     identity,
     amount,
-    {
-      toAddress,
-    },
-  );
-  return client.platform.identities.get(identityId);
-};
+    toAddress,
+    signer,
+  });
 
-withdrawCredits()
-  .then((d) => console.log('Identity balance after withdrawal: ', d.balance))
-  .catch((e) => console.error('Something went wrong:\n', e))
-  .finally(() => client.disconnect());
+  console.log(`Identity balance after withdrawal: ${remainingBalance} credits`);
+} catch (e) {
+  console.error('Something went wrong:\n', e.message);
+}
 ```
 
 ## What's Happening
 
-After connecting to the Client, we get an identity and set the withdrawal address and amount. We then call `platform.identities.withdrawCredits` with the identity, withdrawal amount in credits, and the destination address. This creates an unlock transaction and decreases the identity's credit balance by the relevant amount including a fee. The updated identity balance is output to the console. Once the withdrawal is processed, it is broadcast to the Core chain where the unlocked Dash is sent to the provided destination address.
-
-:::{note}
-:class: note
-Since the SDK does not cache wallet information, lengthy re-syncs (5+ minutes) may be required for some Core chain wallet operations. See [Wallet Operations](../setup-sdk-client.md#wallet-operations) for options.
-:::
+After connecting to the client, we get the transfer key signer using `keyManager.getTransfer()` and log the identity's current balance. We also convert the credit amount to Dash for display (1000 credits = 1 duff = 0.00000001 DASH). We then call `sdk.identities.creditWithdrawal()` with the identity, withdrawal amount in credits, the destination Core chain address, and the signer to authorize the withdrawal. The remaining credit balance is logged to confirm the withdrawal succeeded.

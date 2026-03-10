@@ -4,49 +4,53 @@
 
 # Topup an identity's balance
 
-:::{attention}
-This tutorial has not been migrated to use the latest Dash SDK yet and is out-of-date.
-:::
-
 The purpose of this tutorial is to walk through the steps necessary to add credits to an identity's balance.
 
 ## Overview
 
-As users interact with Dash Platform applications, the credit balance associated with their identity will decrease. Eventually it will be necessary to topup the balance by converting some Dash to credits.  Additional details regarding credits can be found in the [Credits description](../../explanations/identity.md#credits).
+As users interact with Dash Platform applications, the credit balance associated with their identity will decrease. Eventually it will be necessary to topup the balance by transferring credits from a funded platform address. Additional details regarding credits can be found in the [Credits description](../../explanations/identity.md#credits).
 
 ## Prerequisites
 
 - [General prerequisites](../../tutorials/introduction.md#prerequisites) (Node.js / Dash SDK installed)
-- A wallet mnemonic with some funds in it: [Tutorial: Create and Fund a Wallet](../../tutorials/create-and-fund-a-wallet.md)
+- A platform address with a balance: [Tutorial: Create and Fund a Wallet](../../tutorials/create-and-fund-a-wallet.md)
 - A configured client: [Setup SDK Client](../setup-sdk-client.md)
 - A Dash Platform Identity: [Tutorial: Register an Identity](../../tutorials/identities-and-names/register-an-identity.md)
 
 ## Code
 
-```javascript
-const setupDashClient = require('../setupDashClient');
+```{code-block} javascript
+:caption: identity-topup.mjs
 
-const client = setupDashClient();
+import { setupDashClient } from '../setupDashClient.mjs';
 
-const topupIdentity = async () => {
-  const identityId = 'an identity ID goes here';
-  const topUpAmount = 100000; // Number of duffs
+const { sdk, addressKeyManager, keyManager } = await setupDashClient();
+const signer = addressKeyManager.getSigner();
 
-  await client.platform.identities.topUp(identityId, topUpAmount);
-  return client.platform.identities.get(identityId);
-};
+try {
+  // Identity ID from the identity create tutorial
+  const IDENTITY_ID = keyManager.identityId;
+  const identity = await sdk.identities.fetch(IDENTITY_ID);
 
-topupIdentity()
-  .then((d) => console.log('Identity credit balance: ', d.balance))
-  .catch((e) => console.error('Something went wrong:\n', e))
-  .finally(() => client.disconnect());
+  const result = await sdk.addresses.topUpIdentity({
+    identity,
+    inputs: [{
+      address: addressKeyManager.primaryAddress.bech32m,
+      amount: 200000n, // Credits to transfer
+    }],
+    signer,
+  });
+
+  console.log(`Top-up result:
+  Start balance: ${identity.toJSON().balance}
+  Final balance: ${result.newBalance}`);
+} catch (e) {
+  console.error('Something went wrong:\n', e.message);
+}
 ```
 
 ## What's Happening
 
-After connecting to the Client, we call `platform.identities.topUp` with an identity ID and a topup amount in duffs (1 duff = 1000 credits). This creates a lock transaction and increases the identity's credit balance by the relevant amount (minus fee). The updated balance is output to the console.
+After connecting to the client, we get the address signer from the address key manager and fetch the identity to top up using its ID from the key manager.
 
-:::{note}
-:class: note
-Since the SDK does not cache wallet information, lengthy re-syncs (5+ minutes) may be required for some Core chain wallet operations. See [Wallet Operations](../setup-sdk-client.md#wallet-operations) for options.
-:::
+We then call `sdk.addresses.topUpIdentity()` with the identity, the source platform address, the amount of credits to transfer, and the signer to authorize the transfer. The start and final balances are logged to confirm the top-up succeeded.
