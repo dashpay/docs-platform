@@ -23,6 +23,11 @@ Docs](https://readthedocs.org/). Feel free to [open an
 issue](https://github.com/dashpay/docs-platform/issues/new/choose) or submit PRs modifying the
 English source text in this repository.
 
+Tutorial code blocks in `docs/tutorials/` are synced from the
+[platform-tutorials](https://github.com/dashpay/platform-tutorials) repo. Run
+`python3 scripts/tutorial-sync/sync_tutorial_code.py --check --source /path/to/platform-tutorials`
+to check for drift, or without `--check` to update the docs in-place.
+
 ## License
 
 [MIT](/LICENSE) © Dash Core Group, Inc.
