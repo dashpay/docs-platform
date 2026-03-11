@@ -21,9 +21,10 @@ const network = 'testnet';
 
 try {
   const mnemonic = await wallet.generateMnemonic();
-  const pathInfo = network === 'testnet'
-  ? await wallet.derivationPathBip44Testnet(0, 0, 0)
-  : await wallet.derivationPathBip44Mainnet(0, 0, 0);
+  const pathInfo =
+    network === 'testnet'
+      ? await wallet.derivationPathBip44Testnet(0, 0, 0)
+      : await wallet.derivationPathBip44Mainnet(0, 0, 0);
 
   // Derive the first BIP44 key to get a platform address
   const keyInfo = await wallet.deriveKeyFromSeedWithPath({
@@ -40,7 +41,10 @@ try {
   // ⚠️ Never log mnemonics in real applications
   console.log('Mnemonic:', mnemonic);
   console.log('Platform address:', address);
-  console.log('Fund address using:', `https://bridge.thepasta.org/?address=${address}`);
+  console.log(
+    'Fund address using:',
+    `https://bridge.thepasta.org/?address=${address}`,
+  );
 } catch (e) {
   console.error('Something went wrong:', e.message);
 }
