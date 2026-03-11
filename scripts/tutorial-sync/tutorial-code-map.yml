@@ -1,0 +1,173 @@
+# Maps platform-tutorials source files to inline code blocks in docs.
+#
+# source:   path relative to platform-tutorials root
+# doc:      path relative to docs/tutorials/
+# block_id: how to locate the code block in the markdown:
+#   caption: match :caption: value in {code-block} directives
+#   sync:    match :sync: value in tab-items (use with language filter)
+#   tab:     match tab-item title text (use with language filter)
+# language:  fenced block language (default: javascript)
+
+docs_root: docs/tutorials
+
+mappings:
+  # -- Top-level tutorials --
+
+  - source: connect.mjs
+    doc: connecting-to-testnet.md
+    block_id:
+      caption: connect.mjs
+
+  - source: create-wallet.mjs
+    doc: create-and-fund-a-wallet.md
+    block_id:
+      caption: create-wallet.mjs
+
+  - source: setupDashClient.mjs
+    doc: setup-sdk-client.md
+    block_id:
+      caption: setupDashClient.mjs
+
+  # send-funds.md excluded: source file uses old CommonJS SDK,
+  # docs already migrated to Evo SDK. Add when platform-tutorials updates.
+
+  # -- Identities and Names --
+
+  - source: 1-Identities-and-Names/identity-register.mjs
+    doc: identities-and-names/register-an-identity.md
+    block_id:
+      caption: identity-register.mjs
+
+  - source: 1-Identities-and-Names/identity-retrieve.mjs
+    doc: identities-and-names/retrieve-an-identity.md
+    block_id:
+      caption: identity-retrieve.mjs
+
+  - source: 1-Identities-and-Names/identity-topup.mjs
+    doc: identities-and-names/topup-an-identity-balance.md
+    block_id:
+      caption: identity-topup.mjs
+
+  - source: 1-Identities-and-Names/identity-withdraw-credits.mjs
+    doc: identities-and-names/withdraw-an-identity-balance.md
+    block_id:
+      caption: identity-withdraw-credits.mjs
+
+  - source: 1-Identities-and-Names/identity-update-disable-key.mjs
+    doc: identities-and-names/update-an-identity.md
+    block_id:
+      caption: identity-update-disable-key.mjs
+
+  - source: 1-Identities-and-Names/identity-update-add-key.mjs
+    doc: identities-and-names/update-an-identity.md
+    block_id:
+      caption: identity-update-add-key.mjs
+
+  - source: 1-Identities-and-Names/identity-transfer-credits.mjs
+    doc: identities-and-names/transfer-credits-to-an-identity.md
+    block_id:
+      caption: identity-transfer-credits.mjs
+
+  - source: 1-Identities-and-Names/name-register.mjs
+    doc: identities-and-names/register-a-name-for-an-identity.md
+    block_id:
+      caption: name-register.mjs
+
+  - source: 1-Identities-and-Names/name-resolve-by-name.mjs
+    doc: identities-and-names/retrieve-a-name.md
+    block_id:
+      caption: name-resolve-by-name.mjs
+
+  - source: 1-Identities-and-Names/name-get-identity-names.mjs
+    doc: identities-and-names/retrieve-a-name.md
+    block_id:
+      caption: name-get-identity-names.mjs
+
+  - source: 1-Identities-and-Names/name-search-by-name.mjs
+    doc: identities-and-names/retrieve-a-name.md
+    block_id:
+      caption: name-search-by-name.mjs
+
+  # -- Contracts and Documents --
+
+  # register-a-data-contract.md: 6 JS blocks in tab-set (second tab-set).
+  # First tab-set has JSON schemas with the same sync values -- language
+  # filter distinguishes them.
+  - source: 2-Contracts-and-Documents/contract-register-minimal.mjs
+    doc: contracts-and-documents/register-a-data-contract.md
+    block_id:
+      sync: minimal
+    language: javascript
+
+  - source: 2-Contracts-and-Documents/contract-register-indexed.mjs
+    doc: contracts-and-documents/register-a-data-contract.md
+    block_id:
+      sync: indexed
+    language: javascript
+
+  - source: 2-Contracts-and-Documents/contract-register-timestamps.mjs
+    doc: contracts-and-documents/register-a-data-contract.md
+    block_id:
+      sync: timestamp
+    language: javascript
+
+  - source: 2-Contracts-and-Documents/contract-register-binary.mjs
+    doc: contracts-and-documents/register-a-data-contract.md
+    block_id:
+      sync: binary
+    language: javascript
+
+  - source: 2-Contracts-and-Documents/contract-register-history.mjs
+    doc: contracts-and-documents/register-a-data-contract.md
+    block_id:
+      sync: history
+    language: javascript
+
+  - source: 2-Contracts-and-Documents/contract-register-nft.mjs
+    doc: contracts-and-documents/register-a-data-contract.md
+    block_id:
+      sync: nft
+    language: javascript
+
+  - source: 2-Contracts-and-Documents/contract-retrieve.mjs
+    doc: contracts-and-documents/retrieve-a-data-contract.md
+    block_id:
+      caption: contract-retrieve.mjs
+
+  - source: 2-Contracts-and-Documents/contract-retrieve-history.mjs
+    doc: contracts-and-documents/retrieve-data-contract-history.md
+    block_id:
+      caption: contract-retrieve-history.mjs
+
+  # update-a-data-contract.md: 2 JS blocks in tab-set, no :sync: or :caption:
+  - source: 2-Contracts-and-Documents/contract-update-minimal.mjs
+    doc: contracts-and-documents/update-a-data-contract.md
+    block_id:
+      tab: Minimal contract
+    language: javascript
+
+  - source: 2-Contracts-and-Documents/contract-update-history.mjs
+    doc: contracts-and-documents/update-a-data-contract.md
+    block_id:
+      tab: Contract with history
+    language: javascript
+
+  - source: 2-Contracts-and-Documents/document-submit.mjs
+    doc: contracts-and-documents/submit-documents.md
+    block_id:
+      caption: document-submit.mjs
+
+  - source: 2-Contracts-and-Documents/document-retrieve.mjs
+    doc: contracts-and-documents/retrieve-documents.md
+    block_id:
+      caption: document-retrieve.mjs
+
+  - source: 2-Contracts-and-Documents/document-update.mjs
+    doc: contracts-and-documents/update-documents.md
+    block_id:
+      caption: document-update.mjs
+
+  - source: 2-Contracts-and-Documents/document-delete.mjs
+    doc: contracts-and-documents/delete-documents.md
+    block_id:
+      caption: document-delete.mjs
