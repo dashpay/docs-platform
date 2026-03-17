@@ -161,7 +161,6 @@ Platform Bridge <https://bridge.thepasta.org/>
 Platform Explorer <https://platform-explorer.com/>
 Testnet Block Explorer <https://insight.testnet.networks.dash.org/insight/>
 Testnet Faucet <https://faucet.testnet.networks.dash.org/>
-JavaScript SDK <https://github.com/dashpay/platform/tree/master/packages/js-dash-sdk#readme>
 Previous Version of Docs <https://docs.dash.org/projects/platform/en/2.0.0/docs/>
 ```
 
