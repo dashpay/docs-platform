@@ -157,6 +157,7 @@ protocol-ref/errors
 
 resources/faq
 resources/repository-overview
+Platform Bridge <https://bridge.thepasta.org/>
 Platform Explorer <https://platform-explorer.com/>
 Testnet Block Explorer <https://insight.testnet.networks.dash.org/insight/>
 Testnet Faucet <https://faucet.testnet.networks.dash.org/>
