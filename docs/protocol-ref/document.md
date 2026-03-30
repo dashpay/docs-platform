@@ -195,6 +195,7 @@ The document object represents the data provided by the platform in response to 
 | $createdAt<br>CoreBlockHeight | unsigned integer (64 bits) | No | Core block height at document creation, if required by the schema |
 | $updatedAt<br>CoreBlockHeight | unsigned integer (64 bits) | No |Core block height at the document's last update, if required by the schema |
 | $transferredAt<br>CoreBlockHeight | unsigned integer (64 bits) | No |Core block height when document was last transferred, if required by the schema |
+| $creatorId | array | No | Identity of the document creator (32 bytes), if required by the document type schema |
 
 ### Example Document Object
 

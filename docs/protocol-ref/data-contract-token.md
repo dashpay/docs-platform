@@ -264,6 +264,18 @@ Perpetual distribution enables ongoing token allocation. The following configura
 }
 ```
 
+#### Distribution Types
+
+The `distributionType` field accepts one of three schedule types:
+
+| Type | Interval Unit | Description |
+|------|---------------|-------------|
+| `BlockBasedDistribution` | Block height | Emits tokens every N blocks. If `start` is not set, begins at the block when the data contract is registered. |
+| `TimeBasedDistribution` | Milliseconds | Emits tokens every N milliseconds. If `start` is not set, begins at the time of the block when the data contract is registered. |
+| `EpochBasedDistribution` | Epochs | Emits tokens every N epochs. If `start` is not set, begins at the epoch of the block when the data contract is registered. Distribution happens at the start of the following epoch. Required when using `EvonodesByParticipation` as the distribution recipient. |
+
+Each type wraps an `interval` (the period length) and a `function` (the emission pattern from the options below).
+
 #### Perpetual Distribution Options
 
 A wide variety of emission patterns are provided to cover most common scenarios. The following table summarizes the options and links to further details.
@@ -327,13 +339,16 @@ Emits a random number of tokens within a specified range.
 
 Emits tokens that decrease in discrete steps at fixed intervals.
 
-- **Formula:** `f(x) = n * (1 - (numerator / denominator))^((x - s) / step_count)`
-- **Description:** Reduces token emissions by a fixed percentage at regular intervals. Includes optional start offset and minimum emission floor.
-  - `step_count`: number of periods between each step
-  - `numerator` and `denominator`: the reduction factor per step
-  - `s`: optional start period offset (e.g., start block or time). If not provided, the contract creation start is used.
-  - `n`: initial token emission amount
-  - `min_value`: optional minimum emission value
+- **Formula:** `f(x) = distribution_start_amount * (1 - (decrease_per_interval_numerator / decrease_per_interval_denominator))^((x - start_decreasing_offset) / step_count)`
+- **Description:** Reduces token emissions by a fixed percentage at regular intervals.
+  - `step_count` (u32): number of periods between each step
+  - `decrease_per_interval_numerator` (u16): reduction factor numerator
+  - `decrease_per_interval_denominator` (u16): reduction factor denominator
+  - `start_decreasing_offset` (optional u64): start period offset. If not provided, the contract creation start is used. Before this offset, `distribution_start_amount` is emitted every interval.
+  - `distribution_start_amount` (TokenAmount): initial token emission amount
+  - `max_interval_count` (optional u16): maximum number of decreasing intervals. **Defaults to 128 if not set.** After this many cycles, `trailing_distribution_interval_amount` is emitted per interval. Maximum value: 1024.
+  - `trailing_distribution_interval_amount` (TokenAmount): token emission after all decreasing intervals are exhausted
+  - `min_value` (optional u64): minimum emission floor
 - **Use Case:** Reward systems with predictable decay—ideal for Bitcoin-style halvings or Dash-style gradual reductions
 - **Example:**
   - Bitcoin: 50% reduction every 210,000 blocks  
@@ -612,7 +627,7 @@ For performance and security reasons, tokens have the following constraints:
 
 | Parameter | Value |
 |-----------|-------|
-| Maximum token amount | [2^64 - 1](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/errors/consensus/basic/data_contract/invalid_token_base_supply_error.rs#L12-L16) |
+| Maximum token amount | [i64::MAX (2^63 - 1 = 9,223,372,036,854,775,807)](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/errors/consensus/basic/data_contract/invalid_token_base_supply_error.rs#L12-L16) |
 
 ## Example Syntax
 

@@ -48,3 +48,21 @@ The following table details the DPNS constraints applied via data triggers. Thes
 | `domain`   | `UPDATE_PRICE` | Action not allowed                                                                                          |
 | `preorder` | `REPLACE`      | Action not allowed                                                                                          |
 | `preorder` | `DELETE`       | Action not allowed                                                                                          |
+
+### Other System Contract Triggers
+
+In addition to DPNS, the following system contracts have registered data triggers:
+
+**Dashpay**
+
+| Document         | Action   | Trigger Description                              |
+| ---------------- | -------- | ------------------------------------------------ |
+| `contactRequest` | `CREATE` | Validates contact request fields and permissions |
+
+**Masternode Rewards**
+
+| Document      | Action    | Trigger Description                                         |
+| ------------- | --------- | ----------------------------------------------------------- |
+| `rewardShare` | `CREATE`  | Rejected by data trigger (only masternodes can create)      |
+| `rewardShare` | `REPLACE` | Rejected by data trigger (only masternodes can update)      |
+| `rewardShare` | `DELETE`  | Rejected by data trigger (only masternodes can delete)      |

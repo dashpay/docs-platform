@@ -94,6 +94,7 @@ Fees for specific operations during state transition processing.
 | Fetch prefunded specialized balance | 10,000 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-platform-version/src/version/fee/processing/v1.rs#L9) |
 | Fetch single identity key | 10,000 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-platform-version/src/version/fee/processing/v1.rs#L10) |
 | Network threshold signing | 100,000,000 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-platform-version/src/version/fee/processing/v1.rs#L11) |
+| Fetch key with type, nonce and balance | 12,000 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-platform-version/src/version/fee/processing/v1.rs#L10) |
 | Validate key structure | 50 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.0-dev/packages/rs-platform-version/src/version/fee/processing/v1.rs#L12) |
 
 #### Storage

@@ -83,6 +83,12 @@ The data contract object consists of the following fields as defined in the Rust
 | [tokens](./data-contract-token.md) | object         | Varies    | (Optional \*) Token definitions (see [Contract Tokens](./data-contract-token.md) for details) |
 | keywords | array of strings | Varies | (Optional) Keywords associated with the contract to improve searchability. Maximum of 20 words. |
 | description | string | 3-100 characters | (Optional) Brief description of the contract. |
+| createdAt | unsigned integer | 64 bits | (Read-only) Timestamp in milliseconds when the contract was created. Set by platform. |
+| updatedAt | unsigned integer | 64 bits | (Read-only) Timestamp in milliseconds when the contract was last updated. Set by platform. |
+| createdAtBlockHeight | unsigned integer | 64 bits | (Read-only) Block height at contract creation. Set by platform. |
+| updatedAtBlockHeight | unsigned integer | 64 bits | (Read-only) Block height at last contract update. Set by platform. |
+| createdAtEpoch | unsigned integer | 16 bits | (Read-only) Epoch index at contract creation. Set by platform. |
+| updatedAtEpoch | unsigned integer | 16 bits | (Read-only) Epoch index at last contract update. Set by platform. |
 
 \* The data contract object must define documents or tokens. It may include both documents and tokens.
 
