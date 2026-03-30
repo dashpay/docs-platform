@@ -18,14 +18,14 @@ When document state transitions are received, DPP checks if there is a trigger a
 
 ### Example
 
-As an example, DPP contains several data triggers for DPNS as defined in the [data triggers factory](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/data_trigger/get_data_triggers_factory.rs). The `domain` document has added constraints for creation. All DPNS document types have constraints on replacing or deleting:
+As an example, DPP contains several data triggers for DPNS as defined in the [data triggers factory](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/batch/data_triggers/executor.rs). The `domain` document has added constraints for creation. All DPNS document types have constraints on replacing or deleting:
 
 | Data Contract | Document           | Action(s)                                                                                                                            | Trigger Description                                                                                      |
 | ------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
-| DPNS          | `domain`           | [`CREATE`](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/lib/dataTrigger/dpnsTriggers/createDomainDataTrigger.js) | Enforces DNS compatibility, validates provided hashes, and restricts top-level domain (TLD) registration |
+| DPNS          | `domain`           | [`CREATE`](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/batch/data_triggers/triggers/dpns/v0/mod.rs#L48) | Enforces DNS compatibility, validates provided hashes, and restricts top-level domain (TLD) registration |
 | ----          | ----               | ----                                                                                                                                 | ----                                                                                                     |
-| DPNS          | `domain`           | [`REPLACE`](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/data_trigger/reject_data_trigger.rs)                | Prevents updates to existing documents                                                                   |
-| DPNS          | `domain`           | [`DELETE`](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/data_trigger/reject_data_trigger.rs)                 | Prevents deletion of existing documents                                                                  |
+| DPNS          | `domain`           | [`REPLACE`](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/batch/data_triggers/triggers/reject/v0/mod.rs#L25)                | Prevents updates to existing documents                                                                   |
+| DPNS          | `domain`           | [`DELETE`](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/batch/data_triggers/triggers/reject/v0/mod.rs#L25)                 | Prevents deletion of existing documents                                                                  |
 
 **DPNS Trigger Constraints**
 
