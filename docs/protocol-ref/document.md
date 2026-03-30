@@ -201,7 +201,6 @@ The document object represents the data provided by the platform in response to 
 
 ```json
 {
-  "$protocolVersion": 1,
   "$id": "4mWnFcDDzCpeLExJqE8v7pfN4EERC8NE2xn4hw3VKriU",
   "$type": "note",
   "$dataContractId": "63au7XVDt8aHtPrsYKoHx2bnRTSenwH62pDN1BQ5n5m9",
