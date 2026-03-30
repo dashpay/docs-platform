@@ -36,8 +36,8 @@ Platform addresses are derived from standard Bitcoin/Dash address formats and en
 
 **Encoding:**
 
-- **Mainnet HRP:** `evo`
-- **Testnet HRP:** `tevo`
+- **Mainnet HRP:** `dash`
+- **Testnet HRP:** `tdash` (also used for Devnet and Regtest)
 
 **Derivation:** Standard Bitcoin derivation using `Hash160(compressed_pubkey)` where Hash160 = RIPEMD160(SHA256(x)).
 
@@ -63,7 +63,7 @@ Witnesses provide cryptographic proof of address ownership. Each input in an add
 
 1. Verify redeem script hashes to address
 2. Parse script for threshold (M) and public keys (N)
-3. Hash signable bytes once (reused for all signatures)
+3. Double-SHA256 hash the signable bytes (reused for all signatures)
 4. Match M signatures to N public keys in order
 
 See the [witness implementation in rs-dpp](https://github.com/dashpay/platform/blob/v3.0.0/packages/rs-dpp/src/address_funds/witness.rs).
@@ -246,8 +246,8 @@ For complete constants reference, see [Protocol Constants](protocol-constants.md
 | `min_input_amount`           | 100,000 credits | 64 bits | Minimum per input                     |
 | `min_output_amount`          | 500,000 credits | 64 bits | Minimum per output                    |
 | `min_identity_funding_amount`| 200,000 credits | 64 bits | Minimum for identity creation/top-up  |
-| `max_address_inputs`         | 0 (unlimited)   | 16 bits | Maximum inputs per transition         |
-| `max_address_outputs`        | 0 (unlimited)   | 16 bits | Maximum outputs per transition        |
-| `max_address_fee_strategies` | 4               | 8 bits  | Maximum fee strategy steps            |
+| `max_address_inputs`         | 16              | 16 bits | Maximum inputs per transition (Protocol Version 11+) |
+| `max_address_outputs`        | 128             | 16 bits | Maximum outputs per transition (Protocol Version 11+) |
+| `max_address_fee_strategies` | 4               | 16 bits | Maximum fee strategy steps            |
 
 For related identity operations, see [Identity](identity.md) and [State Transitions](state-transition.md).

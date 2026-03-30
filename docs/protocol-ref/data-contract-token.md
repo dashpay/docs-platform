@@ -95,6 +95,10 @@ The `localizations` object contains language-specific display properties using [
 }
 ```
 
+::::{note}
+An English (`en`) localization entry is required. Tokens without an `en` key in the `localizations` map will fail protocol validation with a `MissingDefaultLocalizationError`.
+::::
+
 ### Decimal Precision
 
 The `decimals` property specifies the number of decimal places for token amounts. This affects how token balances are displayed and calculated. If `decimals` is set to zero, token operations (e.g., mint, transfer) will only allow integer amounts.
@@ -395,21 +399,17 @@ A polynomial function using fixed-point arithmetic for fractional or integer exp
 
 Emits tokens following an exponential function.
 
-- **Formula:** `f(x) = a * e^(b * x) + c`
-- **Description:**
-  - `b` > 0 -> rapid growth
-  - `b` < 0 -> rapid decay
+- **Formula:** `f(x) = (a * e^(m * (x - s + o) / n)) / d + b`
+- **Description:** Exponential growth or decay depending on parameter signs
 - **Use Case:** Early contributor boosts or quick emission tapering
-- **Example:** f(x) = 100 * e^(-0.693 * x) + 5
 
 ##### Logarithmic
 
 Logarithmic growth of token emissions.
 
-- **Formula:** `f(x) = a * log_b(x) + c`
-- **Description:** Growth slows as `x` increases
+- **Formula:** `f(x) = (a * ln(m * (x - s + o) / n)) / d + b`
+- **Description:** Growth slows as `x` increases (uses natural log)
 - **Use Case:** Sustainable long-term emission tapering
-- **Example:** f(x) = 20 * log_2(x) + 5
 
 ##### Inverted Logarithmic
 
@@ -550,6 +550,39 @@ Marketplace rules define how tokens can be traded within Platform's built-in mar
   }
 }
 ```
+
+## Token Distribution Function Parameters
+
+The distribution functions use the following parameters defined across various implementations:
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `a` | integer | - | Coefficient/scaling factor |
+| `b` | integer | - | Base offset or constant term |
+| `c` | integer | - | Additional offset |
+| `d` | integer | 1 | Divisor for precision control |
+| `m` | integer | - | Exponent numerator |
+| `n` | integer | 1 | Exponent denominator |
+| `o` | integer | 0 | Offset inside function input |
+| `s` | integer | 0 | Start period offset |
+| `min_value` | integer | - | Minimum emission bound |
+| `max_value` | integer | - | Maximum emission bound |
+| `step_count` | integer | - | Periods between steps |
+| `numerator` | integer | - | Reduction factor numerator |
+| `denominator` | integer | - | Reduction factor denominator |
+| `interval` | integer | - | Time interval in milliseconds |
+
+### Distribution Recipients
+
+| Recipient | Description |
+|-----------|-------------|
+| `ContractOwner` | Tokens sent to the contract owner |
+| `Identity(Identifier)` | Tokens sent to a specific identity |
+| `EvonodesByParticipation` | Tokens distributed to evonodes proportional to their participation (only valid with `EpochBasedDistribution`) |
+
+:::{seealso}
+For all protocol constants, see [Protocol Constants](protocol-constants.md).
+:::
 
 ## Token Constraints
 

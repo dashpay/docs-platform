@@ -145,8 +145,8 @@ The `indices` array consists of one or more objects that each contain:
   {
     "name": "<index name a>",
     "properties": [
-      { "<field name a>": "<asc"|"desc>" },
-      { "<field name b>": "<asc"|"desc>" }
+      { "<field name a>": "asc" },
+      { "<field name b>": "asc" }
     ],
     "unique": true|false,
     "nullSearchable": true|false,
@@ -163,7 +163,7 @@ The `indices` array consists of one or more objects that each contain:
   {
     "name": "<index name b>",
     "properties": [
-      { "<field name c>": "<asc"|"desc>" },
+      { "<field name c>": "asc" },
     ],
   }
 ]

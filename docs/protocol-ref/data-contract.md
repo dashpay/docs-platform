@@ -71,9 +71,9 @@ The data contract object consists of the following fields as defined in the Rust
 
 | Property        | Type           | Size | Description |
 | --------------- | -------------- | ---- | ----------- |
-| $version | unsigned integer      | 32 bits | The platform protocol version ([currently `8`](https://github.com/dashpay/platform/blob/v1.8.0/packages/rs-platform-version/src/version/mod.rs#L26)) |
+| $version | unsigned integer      | 32 bits | The platform protocol version ([currently `12`](https://github.com/dashpay/platform/blob/v1.8.0/packages/rs-platform-version/src/version/mod.rs#L26)) |
 | [$schema](#data-contract-schema) | string         | Varies      | A valid URL |
-| [id](#data-contract-id)         | array of bytes | 32 bytes      | Contract ID generated from `ownerId` and entropy (content media type: `application/x.dash.dpp.identifier`) |
+| [id](#data-contract-id)         | array of bytes | 32 bytes      | Contract ID generated from `ownerId` and identity nonce (content media type: `application/x.dash.dpp.identifier`) |
 | [version](#data-contract-version) | unsigned integer        | Yes      | The data contract version |
 | ownerId         | array of bytes | 32 bytes      | [Identity](../protocol-ref/identity.md) that registered the data contract defining the document (content media type: `application/x.dash.dpp.identifier`) |
 | [documents](./data-contract-document.md) | object         | Varies    | (Optional \*) Document definitions (see [Contract Documents](./data-contract-document.md) for details) |
@@ -793,7 +793,7 @@ Groups can be used to distribute contract configuration and update authorization
 |----------|-------|-------------|
 | `max_contract_group_size` | 256 | Maximum members per group |
 | Maximum member power | 65,535 (u16::MAX) | Maximum voting power per member |
-| Maximum required power | 4,294,967,295 (u32::MAX) | Maximum threshold power |
+| Maximum required power | 65,535 (u16::MAX) | Maximum threshold power |
 
 #### Group Action Info
 
@@ -878,6 +878,8 @@ object](#data-contract-object) in a data contract update state transition consis
 | $version        | unsigned integer | 32 bits | The platform protocol version (currently `1`) |
 | type            | unsigned integer | 8 bits  | State transition type (`4` for data contract update)  |
 | dataContract    | [data contract object](#data-contract-object) | Varies | Object containing the updated data contract details<br>**Note:** the data contract's [`version` property](#data-contract-version) must be incremented with each update |
+| identityContractNonce | unsigned integer | 64 bits | Identity contract nonce for replay protection |
+| userFeeIncrease | unsigned integer | 16 bits | Extra fee to prioritize processing if the mempool is full. Typically set to zero. |
 | signaturePublicKeyId | unsigned integer | 32 bits | The `id` of the [identity public key](../protocol-ref/identity.md#identity-publickeys) that signed the state transition (`=> 0`) |
 | signature            | array of bytes | 65 bytes | Signature of state transition data |
 

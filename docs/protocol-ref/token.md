@@ -4,6 +4,27 @@
 
 Dash Platform lets developers create and manage tokens (similar to ERC-20 style assets) without writing smart contracts. Tokens leverage [data contracts](./data-contract.md), [state transitions](./state-transition.md), and built-in access control (via data contract groups) to enable flexible token management. All token operations are completed by submitting them to the platform in a [batch state transition](./state-transition.md#batch).
 
+## Token Constants and Limits
+
+| Constant | Value | Description |
+|----------|-------|-------------|
+| `MAX_TOKEN_NOTE_LEN` | 2,048 bytes | Maximum length for public/private notes |
+| `document_batch_sub_transition` | 100,000 credits | Minimum fee per token sub-transition |
+
+### Token Fee Payer Options
+
+Token transitions support flexible fee payment via the `GasFeesPaidBy` enum:
+
+| Value | Name | Description |
+|-------|------|-------------|
+| 0 | `DocumentOwner` | Fees paid by the identity submitting the transition |
+| 1 | `ContractOwner` | Fees paid by the contract owner |
+| 2 | `PreferContractOwner` | Fees paid by the contract owner if possible, otherwise by the document owner |
+
+:::{seealso}
+For all protocol constants, see [Protocol Constants](protocol-constants.md).
+:::
+
 ## Token State Transition Details
 
 All token transitions include the [token base transition fields](#token-base-transition). Most token transitions (.e.g., [token mint](#token-mint-transition)) require additional fields to provide their functionality.
@@ -14,7 +35,7 @@ The following fields are included in all token transitions:
 
 | Field | Type | Size | Description |
 | ----- | ---- | ---- | ----------- |
-| $identityContractNonce | unsigned integer | 64 bits | Identity contract nonce |
+| $identity-contract-nonce | unsigned integer | 64 bits | Identity contract nonce |
 | $tokenContractPosition | unsigned integer | 16 bits | Position of the token within the contract |
 | $dataContractId | array | 32 bytes | Data contract ID [generated](../protocol-ref/data-contract.md#data-contract-id) from the data contract's `ownerId` and `entropy` |
 | [$tokenId](#token-id) | array | 32 bytes | Token ID generated from the data contract ID and the token position |

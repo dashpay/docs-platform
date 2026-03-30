@@ -181,7 +181,6 @@ The document object represents the data provided by the platform in response to 
 
 | Property | Type | Required | Description |
 | - | - | - | - |
-| protocolVersion | integer | Yes | The platform protocol version (currently `1`) |
 | $id | array | Yes | The [document ID](#document-id) (32 bytes)|
 | $type | string | Yes  | Document type defined in the referenced contract (1-64 characters) |
 | $revision | unsigned integer (64 bits) | No | Document revision (=>1) if the document is mutable |

@@ -24,8 +24,8 @@ As an example, DPP contains several data triggers for DPNS as defined in the [da
 | ------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
 | DPNS          | `domain`           | [`CREATE`](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/lib/dataTrigger/dpnsTriggers/createDomainDataTrigger.js) | Enforces DNS compatibility, validates provided hashes, and restricts top-level domain (TLD) registration |
 | ----          | ----               | ----                                                                                                                                 | ----                                                                                                     |
-| DPNS          | All Document Types | [`REPLACE`](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/data_trigger/reject_data_trigger.rs)                | Prevents updates to existing documents                                                                   |
-| DPNS          | All Document Types | [`DELETE`](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/data_trigger/reject_data_trigger.rs)                 | Prevents deletion of existing documents                                                                  |
+| DPNS          | `domain`           | [`REPLACE`](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/data_trigger/reject_data_trigger.rs)                | Prevents updates to existing documents                                                                   |
+| DPNS          | `domain`           | [`DELETE`](https://github.com/dashpay/platform/blob/v0.24.5/packages/rs-dpp/src/data_trigger/reject_data_trigger.rs)                 | Prevents deletion of existing documents                                                                  |
 
 **DPNS Trigger Constraints**
 
@@ -42,6 +42,9 @@ The following table details the DPNS constraints applied via data triggers. Thes
 | `domain`   | `CREATE`  | Subdomain registration only allowed by the parent domain owner if `subdomainRules.allowSubdomains` is false |
 | `domain`   | `CREATE`  | Referenced `preorder` document must exist                                                                   |
 | `domain`   | `REPLACE` | Action not allowed                                                                                          |
-| `domain`   | `DELETE`  | Action not allowed                                                                                          |
-| `preorder` | `REPLACE` | Action not allowed                                                                                          |
-| `preorder` | `DELETE`  | Action not allowed                                                                                          |
+| `domain`   | `DELETE`       | Action not allowed                                                                                          |
+| `domain`   | `TRANSFER`     | Action not allowed                                                                                          |
+| `domain`   | `PURCHASE`     | Action not allowed                                                                                          |
+| `domain`   | `UPDATE_PRICE` | Action not allowed                                                                                          |
+| `preorder` | `REPLACE`      | Action not allowed                                                                                          |
+| `preorder` | `DELETE`       | Action not allowed                                                                                          |

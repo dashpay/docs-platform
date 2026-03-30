@@ -12,7 +12,6 @@ Identities consist of multiple objects that are described in the following secti
 
 | Field           | Type           | Description                                 |
 | --------------- | -------------- | ------------------------------------------- |
-| $version        | integer        | The protocol version                        |
 | [id](#identity-id) | array of bytes | The identity id (32 bytes)  |
 | [publicKeys](#identity-publickeys) | array of keys  | Public key(s) associated with the identity |
 | [balance](#identity-balance) | integer        | Credit balance associated with the identity |
@@ -72,6 +71,7 @@ Each item in the `publicKeys` array consists of an object containing:
 | [securityLevel](#public-key-securitylevel) | integer        | Public key security level (`0` - Master, `1` - Critical, `2` - High, `3` - Medium) |
 | [readonly](#public-key-readonly) | boolean        | Identity public key can't be modified with `readOnly` set to `true`. This can’t be changed after adding a key. |
 | [disabledAt](#public-key-disabledat) | integer        | Timestamp indicating that the key was disabled at a specified time |
+| contractBounds | object (optional) | Restricts this key to a specific data contract or document type context |
 | signature     | array of bytes | Signature of the signable identity create or topup state transition by the private key associated with this public key |
 
 See the [public key implementation in rs-dpp](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/identity/identity_public_key/v0/mod.rs#L39-L50) for more details.
@@ -107,6 +107,15 @@ The `purpose` field describes which operations are supported by the key. Please 
 | `2`  | Decryption     | Medium                    |
 | `3`  | Transfer       | Critical                  |
 
+The system automatically creates the following key types for masternodes and evonodes. They cannot
+be created or updated manually:
+
+| Type | Description    | Allowed Security Level |
+| :--: | -------------- | ---------------------- |
+| `4`  | System         | Critical               |
+| `5`  | Voting         | High                   |
+| `6`  | Owner          | Critical               |
+
 #### Public Key `securityLevel`
 
 The `securityLevel` field indicates how securely the key should be stored by clients. Please refer to [DIP11 - Identities](https://github.com/dashpay/dips/blob/master/dip-0011.md#keys) for additional information regarding this.
@@ -131,9 +140,57 @@ The `disabledAt` field indicates that the key has been disabled. Its value equal
 
 Each identity has a balance of credits established by an [asset lock transaction](inv:user:std#ref-txs-assetlocktx) on the Core chain. This credit balance is used to pay the fees associated with state transitions.
 
+## Identity Constants and Limits
+
+The following constants and limits apply to identities:
+
+| Constant | Value | Description |
+|----------|-------|-------------|
+| `IDENTITY_MAX_KEYS` | 15,000 | Maximum number of public keys per identity |
+| `MAX_CREDITS` | 9,223,372,036,854,775,807 | Maximum credit balance (i64::MAX) |
+| `max_public_keys_in_creation` | 6 | Maximum keys when creating an identity |
+| `min_identity_funding_amount` | 200,000 credits | Minimum credits for identity creation |
+| `identity_create_base_cost` | 2,000,000 credits | Base fee for identity creation |
+| `identity_key_in_creation_cost` | 6,500,000 credits | Fee per key during creation |
+| `identity_topup_base_cost` | 500,000 credits | Base fee for identity top-up |
+
+### Identity Creation Cost Calculation
+
+The total cost to create an identity is:
+
+```text
+Total = identity_create_base_cost + (number_of_keys × identity_key_in_creation_cost)
+```
+
+**Examples:**
+
+- 1 key: 2,000,000 + 6,500,000 = **8,500,000 credits** (0.000085 Dash)
+- 2 keys: 2,000,000 + 13,000,000 = **15,000,000 credits** (0.00015 Dash)
+- 6 keys: 2,000,000 + 39,000,000 = **41,000,000 credits** (0.00041 Dash)
+
+### Minimum Funding Requirements
+
+| Operation | Required Balance (credits) | Required Balance (Dash) |
+|-----------|---------------------------|------------------------|
+| Identity create (asset lock) | 200,000 | 0.000002 |
+| Identity top-up (asset lock) | 50,000 | 0.0000005 |
+| Address funding | 50,000 | 0.0000005 |
+
+:::{seealso}
+For all protocol constants, see [Protocol Constants](protocol-constants.md).
+:::
+
 ## Identity State Transition Details
 
 There are five identity-related state transitions: [identity create](#identity-create), [identity topup](#identity-topup), [identity update](#identity-update), [identity credit transfer](#identity-credit-transfer), and [identity credit withdrawal](#identity-credit-withdrawal). Details are provided in this section including information about [asset locking](#asset-lock) and [signing](#identity-state-transition-signing) required for these state transitions.
+
+:::{note}
+Protocol Version 11 introduced additional address-based identity operations. See [Address-Based State Transitions](address-transitions.md) for:
+
+- Identity Credit Transfer to Addresses (type 9)
+- Identity Create from Addresses (type 10)
+- Identity Top-Up from Addresses (type 11)
+:::
 
 ### Identity Create
 
@@ -192,7 +249,7 @@ Identities can transfer credits on the platform by submitting an identity credit
 | Field                | Type           | Description |
 | -------------------- | -------------- | ----------- |
 | $version             | integer        | The protocol version (currently `1`) |
-| type                 | integer        | State transition type (`6` for identity credit transfer) |
+| type                 | integer        | State transition type (`7` for identity credit transfer) |
 | identityId           | array of bytes | The [identity id](#identity-id) of the sender (32 bytes) |
 | recipientId          | array of bytes | The [identity id](#identity-id) of the recipient (32 bytes) |
 | amount               | integer        | The credit amount to transfer |
@@ -210,7 +267,7 @@ Credits can be withdrawn from an identity to an external Core wallet using an id
 | Field                | Type           | Description |
 | -------------------- | -------------- | ----------- |
 | $version             | integer        | The protocol version (currently `1`) |
-| type                 | integer        | State transition type (`7` for identity credit withdrawal) |
+| type                 | integer        | State transition type (`6` for identity credit withdrawal) |
 | identityId           | array of bytes | An [identity id](#identity-id) (32 bytes) |
 | amount               | integer        | The amount of credits to withdraw (64 bits) |
 | coreFeePerByte       | integer        | Fee per byte for the transaction on Core (32 bits) |

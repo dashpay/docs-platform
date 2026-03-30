@@ -120,6 +120,9 @@ Code range:  10350-10399
 | 10354 |GroupExceedsMaxMembersError                                |         |
 | 10355 |GroupMemberHasPowerOfZeroError                             |         |
 | 10356 |GroupMemberHasPowerOverLimitError                          |         |
+| 10357 |MainGroupIsNotDefinedError                                |         |
+| 10358 |GroupRequiredPowerIsInvalidError                           |         |
+| 10359 |GroupHasTooFewMembersError                                 |         |
 
 ### Document
 
@@ -160,6 +163,10 @@ Code range: 10450-10499
 | 10454 | DestinationIdentityForTokenMintingNotSetError          |         |
 | 10455 | ChoosingTokenMintRecipientNotAllowedError              |         |
 | 10456 | TokenTransferToOurselfError                            |         |
+| 10457 | InvalidTokenConfigUpdateNoChangeError                  |         |
+| 10458 | InvalidTokenAmountError                                |         |
+| 10459 | InvalidTokenNoteTooBigError                            |         |
+| 10460 | TokenNoteOnlyAllowedWhenProposerError                  |         |
 
 ### Identity
 
@@ -200,6 +207,7 @@ Code range:  10500-10599
 | 10530 | IdentityAssetLockTransactionOutPointNotEnoughBalanceError     |         |
 | 10531 | IdentityAssetLockStateTransitionReplayError                   |         |
 | 10532 | WithdrawalOutputScriptNotAllowedWhenSigningWithOwnerKeyError  |         |
+| 10533 | InvalidKeyPurposeForContractBoundsError                       |         |
 
 ### State Transition
 
@@ -210,6 +218,7 @@ Code range:  10600-10699
 | 10600 | InvalidStateTransitionTypeError     |         |
 | 10601 | MissingStateTransitionTypeError     |         |
 | 10602 | StateTransitionMaxSizeExceededError |         |
+| 10603 | StateTransitionNotActiveError      |         |
 
 ### General
 
@@ -235,6 +244,7 @@ Code range:  10700-10799
 | 20009 | BasicECDSAError                             |                |
 | 20010 | BasicBLSError                               |                |
 | 20011 | InvalidSignaturePublicKeyPurposeError       |                |
+| 20012 | UncompressedPublicKeyNotAllowedError        |                |
 
 ## Fee Errors
 
@@ -255,6 +265,11 @@ Code range:  40000-40099
 | 40002 | DataContractConfigUpdateError           |         |
 | 40003 | DataContractUpdatePermissionError       |         |
 | 40004 | DataContractUpdateActionNotAllowedError |         |
+| 40005 | PreProgrammedDistributionTimestampInPastError    |         |
+| 40006 | IdentityInTokenConfigurationNotFoundError        |         |
+| 40007 | IdentityMemberOfGroupNotFoundError               |         |
+| 40008 | DataContractNotFoundError                        |         |
+| 40009 | InvalidTokenPositionStateError                   |         |
 
 ### Document State
 
@@ -277,6 +292,9 @@ Code range:  40100-40149
 | 40112 | DocumentContestIdentityAlreadyContestantError          |         |
 | 40113 | DocumentContestDocumentWithSameIdAlreadyPresentError   |         |
 | 40114 | DocumentContestNotPaidForError                         |         |
+| 40115 | RequiredTokenPaymentInfoNotSetError                    |         |
+| 40116 | IdentityHasNotAgreedToPayRequiredTokenAmountError      |         |
+| 40117 | IdentityTryingToPayWithWrongTokenError                 |         |
 
 ### Token State
 
@@ -319,6 +337,7 @@ Code range:  40200-40299
 | 40214 | MissingTransferKeyError                                    |         |
 | 40215 | NoTransferKeyForCoreWithdrawalAvailableError               |         |
 | 40216 | RecipientIdentityDoesNotExistError                         |         |
+| 40217 | IdentityToFreezeDoesNotExistError                          |         |
 
 ### Voting State
 
@@ -353,6 +372,17 @@ Code range: 40500-40799
 | 40501 | DataTriggerExecutionError     |         |
 | 40502 | DataTriggerInvalidResultError |         |
 
+### Address State
+
+Code range: 40600-40699
+
+| Code  | Error Description               | Comment |
+| :---: | ------------------------------- | ------- |
+| 40600 | AddressDoesNotExistError        |         |
+| 40601 | AddressNotEnoughFundsError      |         |
+| 40602 | AddressesNotEnoughFundsError    |         |
+| 40603 | AddressInvalidNonceError        |         |
+
 ### Group State
 
 Code range: 40800-40899
@@ -363,3 +393,16 @@ Code range: 40800-40899
 | 40801 | GroupActionDoesNotExistError            |         |
 | 40802 | GroupActionAlreadyCompletedError        |         |
 | 40803 | GroupActionAlreadySignedByIdentityError |         |
+| 40804 | ModificationOfGroupActionMainParametersNotPermittedError |         |
+
+### Shielded State
+
+Code range: 40900-40999
+
+| Code  | Error Description               | Comment |
+| :---: | ------------------------------- | ------- |
+| 40900 | InvalidAnchorError              |         |
+| 40901 | NullifierAlreadySpentError      |         |
+| 40902 | InvalidShieldedProofError       |         |
+| 40903 | InsufficientPoolNotesError      |         |
+| 40904 | InsufficientShieldedFeeError    |         |
