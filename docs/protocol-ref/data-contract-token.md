@@ -610,7 +610,7 @@ For performance and security reasons, tokens have the following constraints:
 | Maximum number of keywords | [50](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/data_contract/methods/validate_update/v0/mod.rs#L272-L277) |
 | Keyword length | [3 to 50 characters](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/data_contract/methods/validate_update/v0/mod.rs#L279-L287) |
 | Description length | [3 to 100 characters](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/data_contract/methods/validate_update/v0/mod.rs#L312-L323) |
-| Maximum note length | [2048 characters](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/tokens/mod.rs#L19) |
+| Maximum note length | [2048 bytes](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/tokens/mod.rs#L19) |
 | Maximum number of tokens per contract | Only limited by [maximum contract size](./data-contract.md#data-size) |
 
 ### Convention Constraints

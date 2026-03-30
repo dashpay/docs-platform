@@ -185,7 +185,7 @@ For all protocol constants, see [Protocol Constants](protocol-constants.md).
 There are five identity-related state transitions: [identity create](#identity-create), [identity topup](#identity-topup), [identity update](#identity-update), [identity credit transfer](#identity-credit-transfer), and [identity credit withdrawal](#identity-credit-withdrawal). Details are provided in this section including information about [asset locking](#asset-lock) and [signing](#identity-state-transition-signing) required for these state transitions.
 
 :::{note}
-Protocol Version 11 introduced additional address-based identity operations. See [Address-Based State Transitions](address-transitions.md) for:
+Protocol Version 11 introduced additional address-based identity operations. See [Address-Based State Transitions](address-system.md) for:
 
 - Identity Credit Transfer to Addresses (type 9)
 - Identity Create from Addresses (type 10)
@@ -299,11 +299,11 @@ The InstantSend asset lock proof is used for transactions that have received an 
 
 #### ChainLock Asset Lock Proof
 
-The ChainLock asset lock proof is used for transactions that have note received an InstantSend lock, but have been included in a block that has received a ChainLock. Asset locks using a ChainLock as proof must comply with this structure established in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/identity/state_transition/asset_lock_proof/chain/chain_asset_lock_proof.rs#L15-L20).
+The ChainLock asset lock proof is used for transactions that have not received an InstantSend lock, but have been included in a block that has received a ChainLock. Asset locks using a ChainLock as proof must comply with this structure established in [rs-dpp](https://github.com/dashpay/platform/blob/v2.0.1/packages/rs-dpp/src/identity/state_transition/asset_lock_proof/chain/chain_asset_lock_proof.rs#L15-L20).
 
 | Field                 | Type           | Description |
 | --------------------- | -------------- | ----------- |
-| type                  | array of bytes | The type of asset lock proof (`1` for ChainLocks) |
+| type                  | integer        | The type of asset lock proof (`1` for ChainLocks) |
 | coreChainLockedHeight | integer        | Height of the ChainLocked Core block containing the transaction |
 | outPoint              | object         | The  [outpoint](https://docs.dash.org/en/stable/docs/core/resources/glossary.html#outpoint) being used as the asset lock |
 
