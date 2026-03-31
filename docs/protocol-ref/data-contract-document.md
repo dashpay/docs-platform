@@ -262,6 +262,29 @@ Documents support the following configuration options to provide flexibility in 
 | [`requiresIdentity`<br>`DecryptionBoundedKey`](./data-contract.md#key-management) | integer  | Key requirements for identity decryption:<br>`0` - Unique non-replaceable<br>`1` - Multiple<br>`2` - Multiple with reference to latest key |
 | `signatureSecurity`<br>`LevelRequirement`  | integer  | Public key security level:<br>`1` - Critical<br>`2` - High<br>`3` - Medium. Default is High if none specified. |
 
+### Token Costs
+
+The `tokenCost` option allows document types to require token payment for operations. When configured, users must pay a specified amount of tokens to perform each operation type. Each operation cost is defined as a [documentActionTokenCost](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L293-336) object with the following properties:
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `contractId` | array (32 bytes) | No | Identifier of the contract containing the payment token. Defaults to the current contract if omitted. |
+| `tokenPosition` | integer (0–65535) | Yes | Position of the token within the contract |
+| `amount` | integer (1–281474976710655) | Yes | Number of tokens required for the operation |
+| `effect` | integer | No | Token disposition after payment:<br>`0` - Transfer to contract owner (default)<br>`1` - Burn (tokens destroyed) |
+| `gasFeesPaidBy` | integer | No | Who pays gas fees for the operation:<br>`0` - Document owner (default)<br>`1` - Contract owner<br>`2` - Prefer contract owner (falls back to document owner if insufficient) |
+
+The following operation types can each have an independent cost configuration:
+
+| Operation | Description |
+|-----------|-------------|
+| `create` | Creating a new document |
+| `replace` | Replacing an existing document |
+| `delete` | Deleting a document |
+| `transfer` | Transferring document ownership |
+| `update_price` | Updating a document's purchase price |
+| `purchase` | Purchasing a document |
+
 :::{dropdown} List of all usable document properties
 
   This list of properties is defined in the [Rust DPP implementation](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/src/data_contract/document_type/mod.rs#L41) and the [document meta-schema](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json).
