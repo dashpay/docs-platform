@@ -200,7 +200,6 @@ Tokens support the following change control rules:
 | `conventionsChangeRules` | Controls who can modify token conventions (localization) |
 | `maxSupplyChangeRules` | Controls who can modify the maximum supply limit |
 | `perpetualDistributionRules` | Controls who can modify perpetual distribution settings (subset of `distributionRules`) |
-| `preProgrammedDistribution` | Controls who can modify pre-programmed distribution settings (subset of `distributionRules`) |
 | `newTokensDestinationIdentityRules` | Controls who can change where new tokens are sent  (subset of `distributionRules`)|
 | `mintingAllowChoosingDestinationRules` | Controls who can modify minting destination rules  (subset of `distributionRules`)|
 | `changeDirectPurchasePricingRules` | Controls who can set direct purchase pricing  (subset of `distributionRules`)|
@@ -236,7 +235,6 @@ Distribution rules govern how tokens are created, allocated, and priced within t
 |----------|------|-------------|
 | `perpetualDistribution` | object | Ongoing distribution mechanism for continuous token allocation |
 | `perpetualDistributionRules` | object | Change control rules for perpetual distribution |
-| `preProgrammedDistribution` | object | Scheduled distribution events with specific timing and recipients |
 | `newTokensDestinationIdentity` | string | Default identity to receive newly minted tokens |
 | `newTokensDestinationIdentityRules` | object | Change control rules for destination identity |
 | `mintingAllowChoosingDestination` | boolean | Whether minting operations can specify custom destinations |

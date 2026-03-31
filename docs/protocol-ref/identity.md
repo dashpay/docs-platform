@@ -23,7 +23,6 @@ See the [identity implementation in rs-dpp](https://github.com/dashpay/platform/
 
 ```json
 {
-  "protocolVersion":1,
   "id":"6YfP6tT9AK8HPVXMK7CQrhpc8VMg7frjEnXinSPvUmZC",
   "publicKeys":[
     {
@@ -57,7 +56,7 @@ See rs-dpp for examples of using [InstantSend](https://github.com/dashpay/platfo
 The identity `publicKeys` array stores information regarding each public key associated with the identity. Multiple identities may use the same public key.
 
 :::{note}
-Each identity must have at least two public keys: a primary key ([security level](#public-key-securitylevel) `0`) that is only used when updating the identity and an additional one ([security level](#public-key-securitylevel) `2`) used to sign state transitions. The maximum number of keys is 15000 as [defined by rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/identity/fields.rs#L7).
+Each identity must have at least two public keys: a primary key ([security level](#public-key-securitylevel) `0`) that is only used when updating the identity and an additional one ([security level](#public-key-securitylevel) `1` or `2`) used to sign state transitions. The maximum number of keys is 15000 as [defined by rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/identity/fields.rs#L7).
 :::
 
 Each item in the `publicKeys` array consists of an object containing:
@@ -172,9 +171,9 @@ Total = identity_create_base_cost + (number_of_keys × identity_key_in_creation_
 
 | Operation | Required Balance (credits) | Required Balance (Dash) |
 |-----------|---------------------------|------------------------|
-| Identity create (asset lock) | 200,000 | 0.000002 |
-| Identity top-up (asset lock) | 50,000 | 0.0000005 |
-| Address funding | 50,000 | 0.0000005 |
+| Identity create (asset lock) | 200,000,000 | 0.002 |
+| Identity top-up (asset lock) | 50,000,000 | 0.0005 |
+| Address funding | 50,000,000 | 0.0005 |
 
 :::{seealso}
 For all protocol constants, see [Protocol Constants](protocol-constants.md).
@@ -234,7 +233,7 @@ Identities are updated on the platform by submitting the identity information in
 | identityId           | array of bytes       | The [identity id](#identity-id) (32 bytes) |
 | revision             | integer              | Identity update revision |
 | nonce                | integer              | Identity nonce for this transition to prevent replay attacks |
-| addPublicKeys        | array of public [keys](#identity-publickeys) | (Optional) Array of up to 10 new public keys to add to the identity. Required if adding keys. |
+| addPublicKeys        | array of public [keys](#identity-publickeys) | (Optional) Array of up to 6 new public keys to add to the identity. Required if adding keys. |
 | disablePublicKeys    | array of integers    | (Optional) Array of up to 10 existing identity public key ID(s) to disable for the identity. Required if disabling keys. |
 | userFeeIncrease | integer        | Extra fee to prioritize processing if the mempool is full. Typically set to zero. |
 | signaturePublicKeyId | integer              | The ID of public key used to sign the state transition |

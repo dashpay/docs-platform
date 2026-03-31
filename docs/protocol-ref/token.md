@@ -39,7 +39,7 @@ The following fields are included in all token transitions:
 | $tokenContractPosition | unsigned integer | 16 bits | Position of the token within the contract |
 | $dataContractId | array | 32 bytes | Data contract ID [generated](../protocol-ref/data-contract.md#data-contract-id) from the data contract's `ownerId` and `entropy` |
 | [$tokenId](#token-id) | array | 32 bytes | Token ID generated from the data contract ID and the token position |
-| usingGroupInfo | [GroupStateTransitionInfo object](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/group/mod.rs#L42-L59) | Varies | Optional field indicating group multi-party authentication rules |
+| usingGroupInfo | [GroupStateTransitionInfo object](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/group/mod.rs#L42-L50) | Varies | Optional field indicating group multi-party authentication rules |
 
 Each token transition must comply with the [token base transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_base_transition/v0/mod.rs#L42-L60).
 
@@ -73,8 +73,8 @@ The token transition actions [defined in rs-dpp](https://github.com/dashpay/plat
 | 6 | [Claim](#token-claim-transition) | Retrieve tokens based on a specified distribution method |
 | 7 | [Emergency Action](#token-emergency-action-transition) | Execute an emergency protocol affecting tokens |
 | 8 | [Config Update](#token-config-update-transition) | Modify the configuration settings of a token |
-| 9 | [Set Purchase Price](#token-set-purchase-price-transition) | Define or update the token’s direct purchase pricing schedule for users (enables or adjusts direct token sales) |
-| 10 | [Purchase](#token-purchase-transition) | Purchase tokens directly from the token’s owner or distribution pool at the predefined price (transfers tokens to the buyer in exchange for Platform credits) |
+| 9 | [Purchase](#token-purchase-transition) | Purchase tokens directly from the token’s owner or distribution pool at the predefined price (transfers tokens to the buyer in exchange for Platform credits) |
+| 10 | [Set Purchase Price](#token-set-purchase-price-transition) | Define or update the token’s direct purchase pricing schedule for users (enables or adjusts direct token sales) |
 
 :::{note}
 The numeric action codes above are for client-side reference ordering only. `TokenTransitionActionType` is not used by the platform backend consensus directly.
@@ -214,6 +214,5 @@ This transition extends the [base transition](#token-base-transition) to include
 | ----- | ---- | ---- | ----------- |
 | tokenCount       | unsigned integer | 64 bits | Number of tokens the user is purchasing. Must be at least the minimum purchase amount defined by the current pricing and cannot exceed any available supply limits. |
 | totalAgreedPrice | unsigned integer | 64 bits | Maximum total price (in credits) the purchaser agrees to pay. Must be at least the unit price (or tiered price) times `tokenCount` according to the current pricing schedule. |
-| publicNote | string | [<= 2048 bytes](#token-notes) | Optional public note |
 
 Each token purchase transition must comply with the [token direct purchase transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_direct_purchase_transition/v0/mod.rs#L20-L31).

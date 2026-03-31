@@ -71,10 +71,9 @@ The data contract object consists of the following fields as defined in the Rust
 
 | Property        | Type           | Size | Description |
 | --------------- | -------------- | ---- | ----------- |
-| $version | unsigned integer      | 32 bits | The platform protocol version ([currently `12`](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/mod.rs#L34)) |
-| [$schema](#data-contract-schema) | string         | Varies      | A valid URL |
+| [$schema](#data-contract-schema) | string         | Varies      | Schema URL; injected per-document-type during enrichment (not stored on the contract directly) |
 | [id](#data-contract-id)         | array of bytes | 32 bytes      | Contract ID generated from `ownerId` and identity nonce (content media type: `application/x.dash.dpp.identifier`) |
-| [version](#data-contract-version) | unsigned integer        | Yes      | The data contract version |
+| [version](#data-contract-version) | unsigned integer        | 32 bits      | The data contract version |
 | ownerId         | array of bytes | 32 bytes      | [Identity](../protocol-ref/identity.md) that registered the data contract defining the document (content media type: `application/x.dash.dpp.identifier`) |
 | [documents](./data-contract-document.md) | object         | Varies    | (Optional \*) Document definitions (see [Contract Documents](./data-contract-document.md) for details) |
 | [config](#data-contract-config) | DataContractConfig | Varies | (Optional) Internal configuration for the contract |
@@ -749,6 +748,7 @@ The data contract config defines configuration options for data contracts, contr
 | `canBeDeleted`                          | `false` | Determines if the contract can be deleted |
 | `readonly`                              | `false` | Determines if the contract is read-only. Read-only contracts cannot be updated. |
 | `keepsHistory`                          | `false` | Determines if changes to the contract itself are tracked, maintaining a historical record of contract modifications. |
+| `sizedIntegerTypes`                     | `true`  | Enables sized integer types for the contract. |
 
 | Document default option                 | Default | Description |
 |-----------------------------------------|---------|-------------|
@@ -780,7 +780,7 @@ The following example (from the [DashPay contract's `contactRequest` document](h
 }
 ```
 
-See the data contract [config implementation in rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/data_contract/config/v0/mod.rs#L21-L46) for more details.
+See the data contract [config implementation in rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/data_contract/config/v1/mod.rs#L21-L48) for more details.
 
 ### Data Contract groups
 
@@ -798,8 +798,8 @@ Groups can be used to distribute contract configuration and update authorization
 | Constant | Value | Description |
 |----------|-------|-------------|
 | `max_contract_group_size` | 256 | Maximum members per group |
-| Maximum member power | 65,535 (u16::MAX) | Maximum voting power per member |
-| Maximum required power | 65,535 (u16::MAX) | Maximum threshold power |
+| Maximum member power | 65,535 (u32, validated max) | Maximum voting power per member |
+| Maximum required power | 65,535 (u32, validated max) | Maximum threshold power |
 
 #### Group Action Info
 
@@ -808,7 +808,8 @@ When submitting a group-authorized action, the transition includes:
 | Field | Type | Description |
 |-------|------|-------------|
 | `groupContractPosition` | u16 | Position of the group in the contract |
-| `signerPower` | GroupMemberPower | Power of the signing member |
+| `actionId` | Identifier (32 bytes) | The action identifier |
+| `actionIsProposer` | bool | Whether the signer is the action proposer |
 
 #### Use Cases
 
@@ -856,11 +857,11 @@ Data contracts are created on the platform by submitting the [data contract obje
 
 | Field           | Type           | Size | Description |
 | --------------- | -------------- | ---- | ----------- |
-| $version        | unsigned integer | 32 bits | The platform protocol version (currently `1`) |
+| $version        | unsigned integer | 32 bits | The platform protocol version (currently `12`) |
 | type            | unsigned integer | 8 bits  | State transition type (`0` for data contract create)  |
 | dataContract    | [data contract object](#data-contract-object) | Varies | Object containing the data contract details |
 | identityNonce   | unsigned integer     | 64 bits | Identity nonce for this transition to prevent replay attacks |
-| entropy         | array of bytes | 32 bytes | Entropy used to generate the data contract ID. Generated as [shown here](../protocol-ref/state-transition.md#entropy-generation). |
+| identityNonce   | unsigned integer | 64 bits | Identity nonce for this transition to prevent replay attacks |
 | userFeeIncrease | unsigned integer | 16 bits | Extra fee to prioritize processing if the mempool is full. Typically set to zero. |
 | signaturePublicKeyId | unsigned integer | 32 bits | The `id` of the [identity public key](../protocol-ref/identity.md#identity-publickeys) that signed the state transition (`=> 0`) |
 | signature            | array of bytes | 65 bytes | Signature of state transition data |
@@ -881,7 +882,7 @@ object](#data-contract-object) in a data contract update state transition consis
 
 | Field           | Type           | Size | Description |
 | --------------- | -------------- | ---- | ----------- |
-| $version        | unsigned integer | 32 bits | The platform protocol version (currently `1`) |
+| $version        | unsigned integer | 32 bits | The platform protocol version (currently `12`) |
 | type            | unsigned integer | 8 bits  | State transition type (`4` for data contract update)  |
 | dataContract    | [data contract object](#data-contract-object) | Varies | Object containing the updated data contract details<br>**Note:** the data contract's [`version` property](#data-contract-version) must be incremented with each update |
 | identityContractNonce | unsigned integer | 64 bits | Identity contract nonce for replay protection |

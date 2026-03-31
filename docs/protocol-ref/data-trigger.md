@@ -26,6 +26,9 @@ As an example, DPP contains several data triggers for DPNS as defined in the [da
 | ----          | ----               | ----                                                                                                                                 | ----                                                                                                     |
 | DPNS          | `domain`           | [`REPLACE`](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/batch/data_triggers/triggers/reject/v0/mod.rs#L25)                | Prevents updates to existing documents                                                                   |
 | DPNS          | `domain`           | [`DELETE`](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/batch/data_triggers/triggers/reject/v0/mod.rs#L25)                 | Prevents deletion of existing documents                                                                  |
+| DPNS          | `domain`           | [`TRANSFER`](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/batch/data_triggers/triggers/reject/v0/mod.rs#L25) | Prevents transfer of existing documents |
+| DPNS          | `domain`           | [`PURCHASE`](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/batch/data_triggers/triggers/reject/v0/mod.rs#L25) | Prevents purchase of existing documents |
+| DPNS          | `domain`           | [`UPDATE_PRICE`](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/batch/data_triggers/triggers/reject/v0/mod.rs#L25) | Prevents updating price of existing documents |
 
 **DPNS Trigger Constraints**
 
@@ -34,7 +37,8 @@ The following table details the DPNS constraints applied via data triggers. Thes
 | Document   | Action    | Constraint                                                                                                  |
 | ---------- | --------- | ----------------------------------------------------------------------------------------------------------- |
 | `domain`   | `CREATE`  | Full domain length \<= 253 characters                                                                       |
-| `domain`   | `CREATE`  | `normalizedLabel` matches lowercase `label`                                                                 |
+| `domain`   | `CREATE`  | `normalizedLabel` matches homograph-safe conversion of `label` (lowercase with character substitutions: o→0, l/i→1) |
+| `domain`   | `CREATE`  | `normalizedParentDomainName` matches homograph-safe conversion of `parentDomainName` |
 | `domain`   | `CREATE`  | `ownerId` matches `records.dashUniqueIdentityId` or `dashAliasIdentityId` (whichever one is present)        |
 | `domain`   | `CREATE`  | Only creating a top-level domain with an authorized identity                                                |
 | `domain`   | `CREATE`  | Referenced `normalizedParentDomainName` must be an existing parent domain                                   |
@@ -46,8 +50,6 @@ The following table details the DPNS constraints applied via data triggers. Thes
 | `domain`   | `TRANSFER`     | Action not allowed                                                                                          |
 | `domain`   | `PURCHASE`     | Action not allowed                                                                                          |
 | `domain`   | `UPDATE_PRICE` | Action not allowed                                                                                          |
-| `preorder` | `REPLACE`      | Action not allowed                                                                                          |
-| `preorder` | `DELETE`       | Action not allowed                                                                                          |
 
 ### Other System Contract Triggers
 
@@ -66,3 +68,10 @@ In addition to DPNS, the following system contracts have registered data trigger
 | `rewardShare` | `CREATE`  | Rejected by data trigger (only masternodes can create)      |
 | `rewardShare` | `REPLACE` | Rejected by data trigger (only masternodes can update)      |
 | `rewardShare` | `DELETE`  | Rejected by data trigger (only masternodes can delete)      |
+
+**Withdrawals**
+
+| Document     | Action    | Trigger Description |
+| ------------ | --------- | ------------------- |
+| `withdrawal` | `REPLACE` | Rejected by data trigger (withdrawal documents cannot be updated) |
+| `withdrawal` | `DELETE`  | Rejected unless status is `COMPLETE` |

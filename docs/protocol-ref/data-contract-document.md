@@ -250,6 +250,7 @@ Documents support the following configuration options to provide flexibility in 
 | `transferable`                       | integer  | Transferable without a marketplace sell:<br>`0` - Never<br>`1` - Always<br>See the [NFT page](../explanations/nft.md#transfer-and-trade) for more details |
 | `tradeMode`                          | integer  | Built-in marketplace system:<br>`0` - None<br>`1` - Direct purchase (the purchaser can buy the item without requiring approval)<br>See the [NFT page](../explanations/nft.md#transfer-and-trade) for more details |
 | `creationRestrictionMode`            | integer  | Restriction of document creation:<br>`0` - No restrictions<br>`1` - Contract owner only<br>`2` - No creation (System Only)<br>See the [NFT page](../explanations/nft.md#creation-restrictions) for more details |
+| `keywords`                           | array of strings | Up to 50 strings (3–50 characters each) describing the document type for searchability |
 
 | Security option | Type | Description |
 |-----------------|------|-------------|
@@ -278,6 +279,8 @@ Documents support the following configuration options to provide flexibility in 
   | [`requiresIdentity`<br>`DecryptionBoundedKey`](./data-contract.md#key-management) | integer  | Key requirements for identity decryption:<br>`0` - Unique non-replaceable<br>`1` - Multiple<br>`2` - Multiple with reference to latest key |
   | [`properties`](#document-properties) | object   | Defines the properties of the document. |
   | [`transient`](#transient-properties) | array    | An array of strings specifying transient properties that are validated by Platform but not stored. |
+  | `tokenCost`                          | object   | Defines token costs for document operations (create, replace, delete, transfer, purchase) |
+  | `keywords`                           | array    | Up to 50 strings (3–50 characters each) for searchability |
   | [`additionalProperties`](./data-contract.md#additional-properties) | boolean  | Specifies whether additional properties are allowed. Must be set to false, meaning no additional properties are allowed beyond those defined. |
 
 :::

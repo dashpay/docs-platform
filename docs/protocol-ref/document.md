@@ -10,7 +10,7 @@ Once a [data contract](./data-contract.md) has been created, data can be stored 
 
 ## Document State Transition Details
 
-All document transitions include the [document base transition fields](#document-base-transition). Some document transitions (.e.g., [document create](#document-create-transition)) require additional fields to provide their functionality.
+All document transitions include the [document base transition fields](#document-base-transition). Some document transitions (e.g., [document create](#document-create-transition)) require additional fields to provide their functionality.
 
 ### Document Base Transition
 
@@ -50,6 +50,21 @@ pub fn generate_document_id_v0(
 }
 ```
 
+#### Entropy Generation
+
+Dash Platform uses the following entropy generator found in [rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/util/entropy_generator.rs#L9-L14):
+
+```rust
+// From the Rust reference implementation (rs-dpp)
+// entropy_generator.rs
+fn generate(&self) -> anyhow::Result<[u8; 32]> {
+   let mut buffer = [0u8; 32];
+   getrandom::getrandom(&mut buffer)
+      .map_err(|e| anyhow::anyhow!(format!("generating entropy failed: {}", e)))?;
+   Ok(buffer)
+}
+```
+
 #### Document Transition Action
 
 Document transition actions indicate what operation platform should perform with the provided transition data. Documents provide CRUD functionality, ownership transfer, and NFT features as [defined in rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_transition_action_type.rs#L6-L14).
@@ -62,6 +77,7 @@ Document transition actions indicate what operation platform should perform with
 | 3 | [Transfer](#document-transfer-transition) | Transfer the referenced document to a new owner |
 | 4 | [Purchase](#document-purchase-transition) | Purchase the referenced document |
 | 5 | [Update price](#document-update-price-transition) | Update the price for the document |
+| 6 | IgnoreWhileBumpingRevision | Internal action type used to bypass revision bump |
 
 ### Document Create Transition
 
@@ -69,7 +85,7 @@ The document create transition extends the [base transition](#document-base-tran
 
 | Field | Type | Size | Description |
 | - | - | - | - |
-| $entropy | array | 32 bytes | Entropy used in creating the [document ID](#document-id). Generated as [shown here](../protocol-ref/state-transition.md#entropy-generation). |
+| $entropy | array | 32 bytes | Entropy used in creating the [document ID](#document-id). Generated as [shown here](#entropy-generation). |
 | data | | Varies | Document data being submitted. |
 | $prefundedVotingBalance | | Varies | (Optional) Prefunded amount of credits reserved for unique index conflict resolution voting (e.g., [premium DPNS name](../explanations/dpns.md#conflict-resolution)).|
 
@@ -87,6 +103,7 @@ The following example document create transition and subsequent table demonstrat
   "$dataContractId": "5wpZAEWndYcTeuwZpkmSa8s49cHXU5q2DhdibesxFSu8",
   "$id": "6oCKUeLVgjr7VZCyn1LdGbrepqKLmoabaff5WQqyTKYP",
   "$type": "note",
+  "$identityContractNonce": 1,
   "$entropy": "yfo6LnZfJ5koT2YUwtd8PdJa8SXzfQMVDz",
   "message": "Tutorial Test @ Mon, 27 Apr 2020 20:23:35 GMT"
 }
@@ -98,6 +115,7 @@ The following example document create transition and subsequent table demonstrat
 | $dataContractId | Document [base transition](#document-base-transition) |
 | $id | Document [base transition](#document-base-transition) |
 | $type | Document [base transition](#document-base-transition) |
+| $identityContractNonce | Document [base transition](#document-base-transition) |
 | $entropy | Document [create transition](#document-create-transition) |
 | message | Data Contract (the `message` document defined in the referenced data contract -`5wpZAEWndYcTeuwZpkmSa8s49cHXU5q2DhdibesxFSu8`) |
 
@@ -116,7 +134,7 @@ Each document replace transition must comply with the structure defined in [rs-d
 The document replace transition data field must include all [required document properties](./data-contract-document.md#required-properties) specified in the data contract.
 :::
 
-The following example document create transition and subsequent table demonstrate how the document transition base, document create transition, and data contract document definitions are assembled into a complete transition for inclusion in a [state transition](#document-overview):
+The following example document replace transition and subsequent table demonstrate how the document transition base, document replace transition, and data contract document definitions are assembled into a complete transition for inclusion in a [state transition](#document-overview):
 
 ```json
 {
@@ -124,6 +142,7 @@ The following example document create transition and subsequent table demonstrat
   "$dataContractId": "5wpZAEWndYcTeuwZpkmSa8s49cHXU5q2DhdibesxFSu8",
   "$id": "6oCKUeLVgjr7VZCyn1LdGbrepqKLmoabaff5WQqyTKYP",
   "$type": "note",
+  "$identityContractNonce": 1,
   "$revision": 1,
   "message": "Tutorial Test @ Mon, 27 Apr 2020 20:23:35 GMT"
 }
@@ -135,6 +154,7 @@ The following example document create transition and subsequent table demonstrat
 | $dataContractId | Document [base transition](#document-base-transition) |
 | $id | Document [base transition](#document-base-transition) |
 | $type | Document [base transition](#document-base-transition) |
+| $identityContractNonce | Document [base transition](#document-base-transition) |
 | $revision | Document revision |
 | message | Data Contract (the `message` document defined in the referenced data contract -`5wpZAEWndYcTeuwZpkmSa8s49cHXU5q2DhdibesxFSu8`) |
 
@@ -192,9 +212,9 @@ The document object represents the data provided by the platform in response to 
 | $createdAt<br>BlockHeight | unsigned integer (64 bits) |  No | Block height at document creation, if required by the schema |
 | $updatedAt<br>BlockHeight | unsigned integer (64 bits) | No | Block height at the document's last update, if required by the schema |
 | $transferredAt<br>BlockHeight | unsigned integer (64 bits) | No | Block height when document was last transferred, if required by the schema |
-| $createdAt<br>CoreBlockHeight | unsigned integer (64 bits) | No | Core block height at document creation, if required by the schema |
-| $updatedAt<br>CoreBlockHeight | unsigned integer (64 bits) | No |Core block height at the document's last update, if required by the schema |
-| $transferredAt<br>CoreBlockHeight | unsigned integer (64 bits) | No |Core block height when document was last transferred, if required by the schema |
+| $createdAt<br>CoreBlockHeight | unsigned integer (32 bits) | No | Core block height at document creation, if required by the schema |
+| $updatedAt<br>CoreBlockHeight | unsigned integer (32 bits) | No |Core block height at the document's last update, if required by the schema |
+| $transferredAt<br>CoreBlockHeight | unsigned integer (32 bits) | No |Core block height when document was last transferred, if required by the schema |
 | $creatorId | array | No | Identity of the document creator (32 bytes), if required by the document type schema |
 
 ### Example Document Object

@@ -25,6 +25,7 @@ Maximum sizes and limits for various platform components.
 | Max withdrawal amount | 50,000,000,000,000 credits | 500 Dash maximum per withdrawal | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/system_limits/v1.rs#L10) |
 | Max contract group size | 256 | Maximum members per group | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/system_limits/v1.rs#L11) |
 | Max token redemption cycles | 128 | Maximum redemption cycles | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/system_limits/v1.rs#L12) |
+| Max shielded transition actions | 100 | Maximum shielded transitions per batch | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/system_limits/v1.rs#L13) |
 | Max CBOR encoded length | 16,384 bytes (16 KiB) | Maximum CBOR encoding size | [rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/util/cbor_serializer.rs#L8) |
 | Contract deserialization limit | 15,000 | Maximum contract deserialization | [rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/data_contract/serialized_version/mod.rs#L38) |
 
@@ -135,7 +136,7 @@ Fees for cryptographic hash operations.
 | SHA256 (per block) | 5,000 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/fee/hashing/v1.rs) |
 | Blake3 (per block) | 300 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/fee/hashing/v1.rs) |
 | RIPEMD160 (per block) | 5,000 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/fee/hashing/v1.rs) |
-| Sinsemilla (base) | 100 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/fee/hashing/v1.rs) |
+| Sinsemilla (base) | 40,000 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/fee/hashing/v1.rs) |
 
 ### Voting
 
@@ -254,6 +255,8 @@ These limits apply to token perpetual distribution function parameters.
 | Min output amount | 500,000 credits | Minimum output per address | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/dpp_versions/dpp_state_transition_versions/v1.rs#L39) |
 | Min input amount | 100,000 credits | Minimum input per address | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/dpp_versions/dpp_state_transition_versions/v1.rs#L40) |
 | Max fee strategies | 4 | Maximum fee strategy steps | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/dpp_versions/dpp_state_transition_versions/v1.rs#L45) |
+| Max address inputs | 16 | Maximum input addresses per address-based transition | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/dpp_versions/dpp_state_transition_versions/v3.rs#L43) |
+| Max address outputs | 128 | Maximum output addresses per address-based transition | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/dpp_versions/dpp_state_transition_versions/v3.rs#L44) |
 
 ## Epoch and Time Constants
 

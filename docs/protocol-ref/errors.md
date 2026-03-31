@@ -217,9 +217,9 @@ Code range:  10500-10599
 | 10518 | TooManyMasterPublicKeyError                                   |         |
 | 10519 | InvalidIdentityPublicKeySecurityLevelError                    |         |
 | 10520 | InvalidIdentityKeySignatureError                              |         |
-| 10521 | InvalidIdentityCreditWithdrawalTransitionOutputScriptError    |         |
-| 10522 | InvalidIdentityCreditWithdrawalTransitionCoreFeeError         |         |
-| 10523 | NotImplementedIdentityCreditWithdrawalTransitionPoolingError  |         |
+| 10521 | InvalidCreditWithdrawalTransitionOutputScriptError            |         |
+| 10522 | InvalidCreditWithdrawalTransitionCoreFeeError                 |         |
+| 10523 | NotImplementedCreditWithdrawalTransitionPoolingError          |         |
 | 10524 | InvalidIdentityCreditTransferAmountError                      |         |
 | 10525 | InvalidIdentityCreditWithdrawalTransitionAmountError          |         |
 | 10526 | InvalidIdentityUpdateTransitionEmptyError                     |         |
@@ -427,7 +427,7 @@ Code range: 40400-40499
 
 ### Data Trigger State
 
-Code range: 40500-40799
+Code range: 40500-40599
 
 | Code  | Error Description             | Comment |
 | :---: | ----------------------------- | ------- |
