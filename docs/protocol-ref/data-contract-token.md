@@ -115,6 +115,12 @@ The `decimals` property specifies the number of decimal places for token amounts
 
 Token configuration controls behavioral aspects of token operations, including supply management, operational controls, and security features.
 
+### General
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `description` | string | Optional text describing the token's purpose or behavior (3–100 characters) |
+
 ### Supply Management
 
 | Property | Type | Description |

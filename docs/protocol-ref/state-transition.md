@@ -30,6 +30,10 @@ The list of common fields used by multiple state transitions is defined in [rs-d
 | userFeeIncrease | unsigned integer | 16 bits | Extra fee to prioritize processing if the mempool is full. Typically set to zero. |
 | signature       | array of bytes | 65 bytes |Signature of state transition data |
 
+:::{note}
+The [masternode vote](#masternode-vote) transition does not include the `userFeeIncrease` field.
+:::
+
 Additionally, all state transitions except the identity create and topup state transitions include:
 
 | Field           | Type           | Size | Description |
@@ -138,8 +142,10 @@ transition type:
 | Signing Method | State Transitions |
 | -------------- | ----------------- |
 | [Identity](#signing-with-identity)     | Batch, Contract create, Contract update, Identity update, Identity credit transfer, Identity credit transfer to addresses, Identity credit withdrawal, Masternode vote |
-| [Asset lock](#signing-with-asset-lock) | Identity create, Identity topup, Address funding from asset lock |
-| [Address witness](#signing-with-address-witness) | Identity create from addresses, Identity topup from addresses, Address funds transfer, Address credit withdrawal |
+| [Asset lock](#signing-with-asset-lock) | Identity create, Identity topup, Address funding from asset lock* |
+| [Address witness](#signing-with-address-witness) | Identity create from addresses, Identity topup from addresses, Address funds transfer, Address credit withdrawal, Address funding from asset lock* |
+
+\* Address funding from asset lock requires both an asset lock signature and address witnesses (`input_witnesses`).
 
 :::{note}
 Address-based state transitions (types 9-14) were introduced in Protocol Version 11. For detailed information on these transitions, see [Address-Based State Transitions](address-system.md).

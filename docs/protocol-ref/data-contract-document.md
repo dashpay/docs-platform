@@ -4,6 +4,10 @@
 
 The `documents` object defines each type of document in the data contract. At a minimum, a document must consist of 1 or more properties. The `additionalProperties` properties keyword must be included as described in the [constraints](./data-contract.md#additional-properties) section and each property must be [assigned a position](#assigning-position).
 
+:::{note}
+The `$schema` property is required for each document type but is automatically injected by the platform during [contract enrichment](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/data_contract/document_type/schema/enrich_with_base_schema/v0/mod.rs). Do not include it in user-submitted document type definitions — providing it will result in a validation error.
+:::
+
 The following example shows a minimal `documents` object defining a single document (`note`) with one property (`message`).
 
 ```json
