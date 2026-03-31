@@ -134,7 +134,7 @@ Document indices may be defined if indexing on document fields is required. The 
 The `indices` array consists of one or more objects that each contain:
 
 * A unique `name` for the index
-* A `properties` array composed of a `<field name: sort order>` object for each document field that is part of the index
+* A `properties` array composed of a `<field name: sort order>` object for each document field that is part of the index (only `asc` is currently supported)
   
   :::{admonition} Compound Indices
   :class: attention
