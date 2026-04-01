@@ -80,7 +80,7 @@ The data contract object consists of the following fields as defined in the Rust
 | $defs           | object         | Varies       | (Optional) Definitions for `$ref` references used in the `documents` object (if present, must be a non-empty object with \<= 100 valid properties) |
 | [groups](#data-contract-groups) | Group | Varies | (Optional) Groups that allow for specific multiparty actions on the contract. |
 | [tokens](./data-contract-token.md) | object         | Varies    | (Optional \*) Token definitions (see [Contract Tokens](./data-contract-token.md) for details) |
-| keywords | array of strings | Varies | (Optional) Keywords associated with the contract to improve searchability. Maximum of 20 words. |
+| keywords | array of strings | Varies | (Optional) Keywords associated with the contract to improve searchability. Maximum of 20 keywords at creation; contract updates allow up to 50. |
 | description | string | 3-100 characters | (Optional) Brief description of the contract. |
 | createdAt | unsigned integer | 64 bits | (Read-only) Timestamp in milliseconds when the contract was created. Set by platform. |
 | updatedAt | unsigned integer | 64 bits | (Read-only) Timestamp in milliseconds when the contract was last updated. Set by platform. |
@@ -857,10 +857,9 @@ Data contracts are created on the platform by submitting the [data contract obje
 
 | Field           | Type           | Size | Description |
 | --------------- | -------------- | ---- | ----------- |
-| $version        | unsigned integer | 32 bits | The platform protocol version (currently `12`) |
+| $version        | unsigned integer | 32 bits | The state transition format version (currently `0`) |
 | type            | unsigned integer | 8 bits  | State transition type (`0` for data contract create)  |
 | dataContract    | [data contract object](#data-contract-object) | Varies | Object containing the data contract details |
-| identityNonce   | unsigned integer     | 64 bits | Identity nonce for this transition to prevent replay attacks |
 | identityNonce   | unsigned integer | 64 bits | Identity nonce for this transition to prevent replay attacks |
 | userFeeIncrease | unsigned integer | 16 bits | Extra fee to prioritize processing if the mempool is full. Typically set to zero. |
 | signaturePublicKeyId | unsigned integer | 32 bits | The `id` of the [identity public key](../protocol-ref/identity.md#identity-publickeys) that signed the state transition (`=> 0`) |
@@ -882,7 +881,7 @@ object](#data-contract-object) in a data contract update state transition consis
 
 | Field           | Type           | Size | Description |
 | --------------- | -------------- | ---- | ----------- |
-| $version        | unsigned integer | 32 bits | The platform protocol version (currently `12`) |
+| $version        | unsigned integer | 32 bits | The state transition format version (currently `0`) |
 | type            | unsigned integer | 8 bits  | State transition type (`4` for data contract update)  |
 | dataContract    | [data contract object](#data-contract-object) | Varies | Object containing the updated data contract details<br>**Note:** the data contract's [`version` property](#data-contract-version) must be incremented with each update |
 | identityContractNonce | unsigned integer | 64 bits | Identity contract nonce for replay protection |

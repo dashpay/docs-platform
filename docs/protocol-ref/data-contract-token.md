@@ -2,7 +2,11 @@
 
 ## Contract Token Overview
 
-The `tokens` object defines each type of token in the data contract. At a minimum, a token must consist of [conventions](#token-conventions) and [change control rules](#token-change-control-rules). Each token must be assigned a unique [position](#assigning-position) within the contract and follow the [token constraints](#token-constraints).
+The `tokens` object defines each type of token in the data contract. At a minimum, a token must define [conventions](#token-conventions). All other fields have sensible defaults. Each token must be assigned a unique [position](#assigning-position) within the contract and follow the [token constraints](#token-constraints).
+
+:::{note}
+The protocol only requires `conventions`. However, some SDKs (e.g., the JavaScript SDK) may require [change control rules](#token-change-control-rules) to be provided explicitly.
+:::
 
 The following example shows a minimal `tokens` object defining a single token with basic conventions:
 
@@ -611,7 +615,7 @@ For performance and security reasons, tokens have the following constraints:
 
 | Parameter | Value |
 |-----------|-------|
-| Maximum number of keywords | [50](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/data_contract/methods/validate_update/v0/mod.rs#L272-L277) |
+| Maximum number of keywords | [20 at creation; 50 on update](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/data_contract/methods/validate_update/v0/mod.rs#L272-L277) |
 | Keyword length | [3 to 50 characters](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/data_contract/methods/validate_update/v0/mod.rs#L279-L287) |
 | Description length | [3 to 100 characters](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/data_contract/methods/validate_update/v0/mod.rs#L312-L323) |
 | Maximum note length | [2048 bytes](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/tokens/mod.rs#L19) |

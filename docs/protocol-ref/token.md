@@ -160,7 +160,7 @@ The token claim transition extends the [base transition](#token-base-transition)
 
 | Field | Type | Size | Description |
 | ----- | ---- | ---- | ----------- |
-| distributionType | [TokenDistributionType enum](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/data_contract/associated_token/token_distribution_key.rs#L18-L25) | Varies | Type of [token distribution](../explanations/tokens.md#distribution-rules) targeted |
+| distributionType | [TokenDistributionType enum](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/data_contract/associated_token/token_distribution_key.rs#L18-L25) | Varies | Type of [token distribution](../explanations/tokens.md#distribution-rules) targeted (`0` = PreProgrammed, `1` = Perpetual) |
 | publicNote | string | [<= 2048 bytes](#token-notes) | Optional public note (only saved for historical contracts) |
 
 Each token claim transition must comply with the [token claim transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_claim_transition/v0/mod.rs#L18-L26).
@@ -171,7 +171,7 @@ The token emergency action transition extends the [base transition](#token-base-
 
 | Field | Type | Size | Description |
 | ----- | ---- | ---- | ----------- |
-| emergencyAction | [TokenEmergencyAction enum](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/tokens/emergency_action.rs#L14-L18) | Varies | The emergency action to be executed |
+| emergencyAction | [TokenEmergencyAction enum](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/tokens/emergency_action.rs#L14-L18) | Varies | The emergency action to be executed (`0` = Pause, `1` = Resume) |
 | publicNote | string | [<= 2048 bytes](#token-notes) | Optional public note |
 
 Each token emergency action transition must comply with the [token emergency action transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_emergency_action_transition/v0/mod.rs#L16-L24).
@@ -197,7 +197,7 @@ This transition extends the [base transition](#token-base-transition) to include
 
 | Field | Type | Size | Description |
 | ----- | ---- | ---- | ----------- |
-price    | [TokenPricingSchedule](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/tokens/token_pricing_schedule.rs#L29-L45) | Variable | Set the fixed price or tiered price. Tiered pricing entries consists of a *minimum token amount* (unsigned 64-bit) and a *price in credits* (unsigned 64-bit) applicable for purchases of that size or greater. The smallest amount tier also defines the *minimum purchasable amount*. If the lowest tier has amount > 1, users cannot buy less than that amount in a single purchase.  If multiple tiers are provided, they should be ordered by ascending minimum amount.<br>**Note:** An empty pricing schedule indicates direct purchases are disabled for the token. |
+price    | Optional [TokenPricingSchedule](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/tokens/token_pricing_schedule.rs#L29-L45) | Variable | (Optional) Set the fixed price or tiered price. Tiered pricing entries consists of a *minimum token amount* (unsigned 64-bit) and a *price in credits* (unsigned 64-bit) applicable for purchases of that size or greater. The smallest amount tier also defines the *minimum purchasable amount*. If the lowest tier has amount > 1, users cannot buy less than that amount in a single purchase.  If multiple tiers are provided, they should be ordered by ascending minimum amount.<br>**Note:** Setting price to null disables direct purchases for the token. |
 | publicNote | string | [<= 2048 bytes](#token-notes) | Optional public note |
 
 Each token set purchase price transition must comply with the [token set purchase price transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_set_price_for_direct_purchase_transition/v0/mod.rs#L18-L29).

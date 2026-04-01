@@ -138,6 +138,20 @@ Fees for cryptographic hash operations.
 | RIPEMD160 (per block) | 5,000 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/fee/hashing/v1.rs) |
 | Sinsemilla (base) | 40,000 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/fee/hashing/v1.rs) |
 
+#### Data Contract Validation
+
+Fees for validating data contract structure during state transition processing.
+
+| Fee Type | Amount (Credits) | Source |
+|----------|------------------|--------|
+| Document type base fee | 500 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/fee/data_contract_validation/v1.rs#L5) |
+| Schema size fee (per byte) | 10 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/fee/data_contract_validation/v1.rs#L6) |
+| Per property fee | 40 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/fee/data_contract_validation/v1.rs#L7) |
+| Non-unique index base fee | 50 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/fee/data_contract_validation/v1.rs#L8) |
+| Non-unique index per property fee | 30 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/fee/data_contract_validation/v1.rs#L9) |
+| Unique index base fee | 100 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/fee/data_contract_validation/v1.rs#L10) |
+| Unique index per property fee | 60 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/fee/data_contract_validation/v1.rs)#L11 |
+
 ### Voting
 
 Fees related to contested document voting.

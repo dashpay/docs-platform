@@ -14,7 +14,7 @@ Identities consist of multiple objects that are described in the following secti
 | --------------- | -------------- | ------------------------------------------- |
 | [id](#identity-id) | array of bytes | The identity id (32 bytes)  |
 | [publicKeys](#identity-publickeys) | array of keys  | Public key(s) associated with the identity |
-| [balance](#identity-balance) | integer        | Credit balance associated with the identity |
+| [balance](#identity-balance) | unsigned integer (64-bit) | Credit balance associated with the identity |
 | revision        | integer        | Identity update revision                    |
 
 See the [identity implementation in rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/identity/v0/mod.rs#L36-L45) for more details.
@@ -56,7 +56,7 @@ See rs-dpp for examples of using [InstantSend](https://github.com/dashpay/platfo
 The identity `publicKeys` array stores information regarding each public key associated with the identity. Multiple identities may use the same public key.
 
 :::{note}
-Each identity must have at least two public keys: a primary key ([security level](#public-key-securitylevel) `0`) that is only used when updating the identity and an additional one ([security level](#public-key-securitylevel) `1` or `2`) used to sign state transitions. The maximum number of keys is 15000 as [defined by rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/identity/fields.rs#L7).
+Each identity must have exactly one master key ([security level](#public-key-securitylevel) `0`) used for updating the identity. Having an additional key ([security level](#public-key-securitylevel) `1` or `2`) for signing state transitions is strongly recommended but not enforced by the protocol. The maximum number of keys is 15000 as [defined by rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/identity/fields.rs#L7).
 :::
 
 Each item in the `publicKeys` array consists of an object containing:
@@ -148,7 +148,7 @@ The following constants and limits apply to identities:
 | `IDENTITY_MAX_KEYS` | 15,000 | Maximum number of public keys per identity |
 | `MAX_CREDITS` | 9,223,372,036,854,775,807 | Maximum credit balance (i64::MAX) |
 | `max_public_keys_in_creation` | 6 | Maximum keys when creating an identity |
-| `min_identity_funding_amount` | 200,000 credits | Minimum credits for identity creation |
+| `min_identity_funding_amount` | 200,000 credits | Minimum credits for address-based identity transitions |
 | `identity_create_base_cost` | 2,000,000 credits | Base fee for identity creation |
 | `identity_key_in_creation_cost` | 6,500,000 credits | Fee per key during creation |
 | `identity_topup_base_cost` | 500,000 credits | Base fee for identity top-up |
@@ -197,13 +197,13 @@ Identities are created on the platform by submitting the identity information in
 
 | Field           | Type           | Description |
 | --------------- | -------------- | ----------- |
-| $version        | integer        | The protocol version (currently `1`) |
+| $version        | integer        | The state transition format version (currently `0`) |
 | type            | integer        | State transition type (`2` for identity create) |
 | publicKeys | array of [keys](#identity-publickeys) | Public key(s) associated with the identity |
 | assetLockProof  | [proof object](#asset-lock) | Asset lock proof object proving the [asset lock transaction](inv:user:std#ref-txs-assetlocktx) exists on the Core chain and is locked |
 | userFeeIncrease | integer        | Extra fee to prioritize processing if the mempool is full. Typically set to zero. |
 | signature       | array of bytes | Signature of state transition data by the single-use key from the asset lock (65 bytes) |
-| identityId      | array of bytes | An [identity id](#identity-id) for the identity being created (32 bytes) |
+| identityId      | array of bytes | An [identity id](#identity-id) for the identity being created (32 bytes). Computed from the asset lock proof outpoint and excluded from the serialized payload. |
 
 See the [identity create implementation in rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_create_transition/v0/mod.rs#L47-L58) for more details.
 
@@ -213,7 +213,7 @@ Identity credit balances are increased by submitting the topup information in an
 
 | Field           | Type           | Description |
 | --------------- | -------------- | ----------- |
-| $version        | integer        | The protocol version (currently `1`) |
+| $version        | integer        | The state transition format version (currently `0`) |
 | type            | integer        | State transition type (`3` for identity topup) |
 | assetLockProof  | [proof object](#asset-lock) | Asset lock proof object proving the layer 1 locking transaction exists and is locked  |
 | identityId      | array of bytes | An [identity id](#identity-id) for the identity receiving the topup (can be any identity) (32 bytes) |
@@ -228,11 +228,11 @@ Identities are updated on the platform by submitting the identity information in
 
 | Field                | Type                 | Description |
 | -------------------- | -------------------- | ----------- |
-| $version             | integer              | The protocol version (currently `1`) |
+| $version             | integer              | The state transition format version (currently `0`) |
 | type                 | integer              | State transition type (`5` for identity update) |
 | identityId           | array of bytes       | The [identity id](#identity-id) (32 bytes) |
 | revision             | integer              | Identity update revision |
-| nonce                | integer              | Identity nonce for this transition to prevent replay attacks |
+| nonce                | unsigned integer (64 bits) | Identity nonce for this transition to prevent replay attacks |
 | addPublicKeys        | array of public [keys](#identity-publickeys) | (Optional) Array of up to 6 new public keys to add to the identity. Required if adding keys. |
 | disablePublicKeys    | array of integers    | (Optional) Array of up to 10 existing identity public key ID(s) to disable for the identity. Required if disabling keys. |
 | userFeeIncrease | integer        | Extra fee to prioritize processing if the mempool is full. Typically set to zero. |
@@ -247,12 +247,12 @@ Identities can transfer credits on the platform by submitting an identity credit
 
 | Field                | Type           | Description |
 | -------------------- | -------------- | ----------- |
-| $version             | integer        | The protocol version (currently `1`) |
+| $version             | integer        | The state transition format version (currently `0`) |
 | type                 | integer        | State transition type (`7` for identity credit transfer) |
 | identityId           | array of bytes | The [identity id](#identity-id) of the sender (32 bytes) |
 | recipientId          | array of bytes | The [identity id](#identity-id) of the recipient (32 bytes) |
 | amount               | integer        | The credit amount to transfer |
-| nonce                | integer        | Identity nonce for this transition to prevent replay attacks |
+| nonce                | unsigned integer (64 bits) | Identity nonce for this transition to prevent replay attacks |
 | userFeeIncrease      | integer        | Extra fee to prioritize processing if the mempool is full. Typically set to zero. |
 | signaturePublicKeyId | integer        | The ID of public key used to sign the state transition |
 | signature            | array of bytes | Signature of state transition data (65 bytes) |
@@ -272,7 +272,7 @@ Credits can be withdrawn from an identity to an external Core wallet using an id
 | coreFeePerByte       | integer        | Fee per byte for the transaction on Core (32 bits) |
 | pooling              | integer        | Pooling mode for transaction batching |
 | outputScript         | array of bytes | (Optional) The output script for receiving the withdrawal (if not set, defaults to Core address) |
-| nonce                | integer        | Identity nonce for this transition to prevent replay attacks |
+| nonce                | unsigned integer (64 bits) | Identity nonce for this transition to prevent replay attacks |
 | userFeeIncrease      | integer        | Extra fee to prioritize processing if the mempool is full. Typically set to zero. |
 | signaturePublicKeyId | integer        | The ID of public key used to sign the state transition |
 | signature            | array of bytes | Signature of state transition data (65 bytes) |

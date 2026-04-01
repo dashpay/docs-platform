@@ -148,6 +148,10 @@ transition type:
 \* Address funding from asset lock requires both an asset lock signature and address witnesses (`input_witnesses`).
 
 :::{note}
+Shield-related state transitions (types 15-19: Shield, ShieldedTransfer, Unshield, ShieldFromAssetLock, ShieldedWithdrawal) are defined in the protocol but their signing methods are not yet documented here.
+:::
+
+:::{note}
 Address-based state transitions (types 9-14) were introduced in Protocol Version 11. For detailed information on these transitions, see [Address-Based State Transitions](address-system.md).
 :::
 
