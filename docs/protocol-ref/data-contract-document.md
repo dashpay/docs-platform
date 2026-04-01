@@ -292,7 +292,7 @@ The following operation types can each have an independent cost configuration:
   | Property Name | Type | Description |
   |---------------|------|-------------|
   | `type`                               | string   | Specifies the type of the document, constrained to "object". |
-  | `$schema`                            | string   | The schema URL reference for the document. |
+  | `$schema`                            | string   | Platform-injected during enrichment; not accepted in user submissions. |
   | `$defs`                              | object   | References the `documentProperties` definition. |
   | [`indices`](#document-indices)       | array    | Defines indices for the document with properties like `name`, `unique`, `nullSearchable`, and `contested`. |
   | `signatureSecurity`<br>`LevelRequirement`  | integer  | Public key security level:<br>`1` - Critical<br>`2` - High<br>`3` - Medium. Default is High if none specified. |
