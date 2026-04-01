@@ -31,8 +31,8 @@ The table below outlines the current fee structure for various data contract com
 These fees are additive. For example, a contract that defines two document types, each with one unique index, and one token using a perpetual distribution will incur the following total fee:
 
 ```text
-0.1 (base) + 0.02×2 (documents) + 0.01×2 (unique indices) = 0.16 DASH
-0.1 (token) + 0.1 (perpetual) = 0.2 DASH
+0.1 (base contract) + 0.02×2 (document types) + 0.01×2 (1 unique index per document type × 2) = 0.16 DASH
+0.1 (token registration) + 0.1 (perpetual distribution) = 0.2 DASH
 
 Total fee: 0.16 + 0.2 = 0.36 DASH
 ```
@@ -745,7 +745,7 @@ The data contract config defines configuration options for data contracts, contr
 
 | Contract option                         | Default | Description |
 |-----------------------------------------|---------|-------------|
-| `canBeDeleted`                          | `false` | Determines if the contract can be deleted |
+| `canBeDeleted`                          | `false` | Determines if the data contract itself can be deleted. Note: documents have a separate `canBeDeleted` option (default: `true`) defined per document type in [data-contract-document.md](./data-contract-document.md). |
 | `readonly`                              | `false` | Determines if the contract is read-only. Read-only contracts cannot be updated. |
 | `keepsHistory`                          | `false` | Determines if changes to the contract itself are tracked, maintaining a historical record of contract modifications. |
 | `sizedIntegerTypes`                     | `true`  | Enables sized integer types for the contract. |

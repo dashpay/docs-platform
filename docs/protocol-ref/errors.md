@@ -279,6 +279,8 @@ Code range: 10800-10899
 | 10820 | ShieldedEmptyProofError                        |         |
 | 10821 | ShieldedZeroAnchorError                        |         |
 | 10822 | ShieldedInvalidValueBalanceError               |         |
+| 10823 | *(reserved/unassigned)*                        |         |
+| 10824 | *(reserved/unassigned)*                        |         |
 | 10825 | ShieldedTooManyActionsError                    |         |
 
 ## Signature Errors

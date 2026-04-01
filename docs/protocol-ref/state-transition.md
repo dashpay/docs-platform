@@ -94,7 +94,7 @@ More detailed information about the `publicKeys` object can be found in the [ide
 | identityId      | array of bytes       | 32 bytes | The [Identity ID](../protocol-ref/identity.md#identity-id) for the identity being updated |
 | revision        | unsigned integer     | 64 bits | Identity update revision. Used for optimistic concurrency control. Incremented by one with each new update so that the update will fail if the underlying data is modified between reading and writing. |
 | nonce           | unsigned integer     | 64 bits | Identity nonce for this transition to prevent replay attacks |
-| addPublicKeys   | array of public keys | Varies | (Optional) Array of up to 10 new public keys to add to the identity. Required if adding keys. |
+| addPublicKeys   | array of public keys | Varies | (Optional) Array of up to 6 new public keys to add to the identity. Required if adding keys. |
 | disablePublicKeys | array of integers  | Varies | (Optional) Array of up to 10 existing identity public key ID(s) to disable for the identity. Required if disabling keys. |
 
 ### Identity Credit Transfer

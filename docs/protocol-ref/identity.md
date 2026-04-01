@@ -148,7 +148,7 @@ The following constants and limits apply to identities:
 | `IDENTITY_MAX_KEYS` | 15,000 | Maximum number of public keys per identity |
 | `MAX_CREDITS` | 9,223,372,036,854,775,807 | Maximum credit balance (i64::MAX) |
 | `max_public_keys_in_creation` | 6 | Maximum keys when creating an identity |
-| `min_identity_funding_amount` | 200,000 credits | Minimum credits for address-based identity transitions |
+| `min_identity_funding_amount` | 200,000 duffs | Minimum funding for address-based identity create and top-up transitions |
 | `identity_create_base_cost` | 2,000,000 credits | Base fee for identity creation |
 | `identity_key_in_creation_cost` | 6,500,000 credits | Fee per key during creation |
 | `identity_topup_base_cost` | 500,000 credits | Base fee for identity top-up |
