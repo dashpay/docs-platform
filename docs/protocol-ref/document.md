@@ -22,7 +22,7 @@ The following fields are included in all document transitions. Note that `$actio
 | $identityContractNonce | unsigned integer | 64 bits  | Identity contract nonce |
 | $type | string | 1-64 characters | Name of a document type found in the data contract associated with the `dataContractId`|
 | $dataContractId | array | 32 bytes | Data contract ID [generated](../protocol-ref/data-contract.md#data-contract-id) from the data contract's `ownerId` and `identity nonce` |
-| $tokenPaymentInfo | object | Varies | (Optional, V1+) Token-based fee payment information for this transition |
+| [$tokenPaymentInfo](#token-payment-info) | object | Varies | (Optional, V1+) Token-based fee payment information for this transition |
 
 Each document transition must comply with the [document base transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_base_transition/v1/mod.rs#L38-L56).
 
@@ -49,6 +49,22 @@ pub fn generate_document_id_v0(
     Identifier::from_bytes(&hash_double_to_vec(&buf)).unwrap()
 }
 ```
+
+#### Token Payment Info
+
+When a document type requires token payment (configured via [`tokenCost`](./data-contract-document.md#token-costs) in the data contract), the `$tokenPaymentInfo` object specifies which token to use and the cost limits the client is willing to accept. The object is defined in [rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/tokens/token_payment_info/v0/mod.rs#L36-L56).
+
+| Field | Type | Size | Description |
+| - | - | - | - |
+| paymentTokenContractId | array | 32 bytes | (Optional) Identifier of the contract containing the payment token. Defaults to the current contract if omitted. |
+| tokenContractPosition | unsigned integer | 16 bits | Position of the token within the contract to use for payment |
+| minimumTokenCost | unsigned integer | 64 bits | (Optional) Minimum acceptable token cost. Not typically set by clients. |
+| maximumTokenCost | unsigned integer | 64 bits | (Optional) Maximum token cost the client is willing to pay. Recommended when the contract allows prices to be changed, to protect against unexpected cost increases. |
+| gasFeesPaidBy | integer | 8 bits | Who pays the gas fees for the operation:<br>`0` - Document owner (default)<br>`1` - Contract owner<br>`2` - Prefer contract owner (falls back to document owner if insufficient) |
+
+::: {note}
+The `gasFeesPaidBy` value must match what the data contract's `tokenCost` configuration allows for the operation type.
+:::
 
 #### Entropy Generation
 
