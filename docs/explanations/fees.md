@@ -16,7 +16,8 @@ Fees on Dash Platform are divided into two main categories:
 Storage fees cover the costs to store the various types of data throughout the network, while processing fees cover the computational costs incurred by the masternodes to process state transitions. For everyday use, processing fees are minuscule compared to storage fees. However, they are important in the prevention of attacks on the network, in which case they become prohibitively expensive.
 
 :::{tip}
-Comprehensive details regarding fees will be available in an upcoming *Dash Platform Fee System* DIP.
+For the implementation-level constants and limits currently used by Platform, see the
+[protocol constants reference](../protocol-ref/protocol-constants.md).
 :::
 
 ## Costs
@@ -46,7 +47,7 @@ Given fluctuations of the Dash price, a variable *Fee Multiplier* provides a way
     feePaid = initialFee * feeMultiplier
 ```
 
-The Fee Multiplier is subject to change at any time at the discretion of the masternodes via a voting mechanism. Dash Core Group research indicates maintaining fees at approximately 2x the cost of hosting the network is optimal.
+The Fee Multiplier is subject to change at any time via network governance and protocol updates.
 
 <!-- Uncomment once link available
 An in-depth look at the Fee Multiplier can be found at **link**
@@ -58,7 +59,8 @@ In an attempt to minimize Dash Platform's storage requirements, users are incent
 
 ## User Tip
 
-Wallets will be enabled to give users the option to provide a tip to the block proposer in hopes of incentivizing them to include their state transition in the next block. This feature will be especially useful in times of high traffic.
+Platform supports a user tip component that can be used to incentivize inclusion of a state
+transition in the next block, especially during periods of high traffic.
 
 ## Formula
 

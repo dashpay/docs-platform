@@ -67,7 +67,8 @@ After voting ends, the name is either awarded to one of the identities or locked
 Assuming masternodes do not vote to lock, the identity receiving the most votes takes ownership of the name. However, if the vote locks the name, no identity receives it. If only one identity requests the name, they will receive it even if no masternodes vote.
 
 :::{note}
-Locked names can no longer be requested or awarded in Dash Platform v1, but the plan is to change this in future updates.
+Locked-name handling is part of the current DPNS ruleset, but the exact policy can evolve with
+future Platform releases and governance decisions.
 :::
 
 ### Implementation

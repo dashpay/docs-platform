@@ -4,14 +4,7 @@
 
 # Building Dash Platform
 
-The following instructions explain how to create and run a development build of Dash Platform on
-Ubuntu. The instructions have been tested on Ubuntu 22.04 and 24.04.
-
-:::{important}
-This page tracks the current high-level workflow, but the
-[Dash Platform repository](https://github.com/dashpay/platform) is the source of truth for package
-versions and build changes. If a version here ever conflicts with the repo README, follow the repo.
-:::
+The following instructions explain how to create and run a development build of Dash Platform on Ubuntu. The instructions have been tested on Ubuntu 22.04 and 24.04.
 
 ## Install prerequisites
 
@@ -29,23 +22,20 @@ sudo apt install -y build-essential libssl-dev pkg-config clang cmake llvm unzip
 
 ### NodeJS
 
-Install the [Node Version Manager](https://github.com/nvm-sh/nvm) and use it to install Node.js
-v20:
+Install the [Node Version Manager](https://github.com/nvm-sh/nvm) and use it to install NodeJS:
 
 ``` shell
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-nvm install 20
+nvm install 20.18
 ```
 
 ### Docker
 
 :::{warning}
-Only complete the following steps if you do not already have Docker installed. Otherwise, just make
-sure you have Docker v20.10 or newer, as described in the
-[Platform repository README](https://github.com/dashpay/platform?tab=readme-ov-file#how-to-build-and-set-up-a-node-from-the-code-in-this-repo).
+Only complete the following steps if you do not already have Docker installed. Otherwise, just make sure you have a version that meets the requirements in the [Platform repository README](https://github.com/dashpay/platform?tab=readme-ov-file#how-to-build-and-set-up-a-node-from-the-code-in-this-repo).
 :::
 
 ``` shell
@@ -64,7 +54,7 @@ newgrp docker
 ### Protocol buffers
 
 ``` shell
-wget https://github.com/protocolbuffers/protobuf/releases/download/v32.0/protoc-32.0-linux-x86_64.zip
+wget https://github.com/protocolbuffers/protobuf/releases/download/v27.3/protoc-27.3-linux-x86_64.zip
 sudo unzip protoc-*-linux-x86_64.zip -d /usr/local
 ```
 
@@ -75,15 +65,13 @@ Execute the following script to install Rust. Use the default options during the
 ``` shell
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 . "$HOME/.cargo/env"
-rustup default stable
-rustup update
-rustup target add wasm32-unknown-unknown
+rustup default 1.85.0
 ```
 
 ### WASM CLI
 
 ``` shell
-cargo install wasm-bindgen-cli@0.2.103
+cargo install wasm-bindgen-cli@0.2.100
 ```
 
 ### Check versions
@@ -137,12 +125,6 @@ corepack enable
 yarn setup
 ```
 
-After making source changes, rebuild the workspace with:
-
-``` shell
-yarn build
-```
-
 # Running Dash Platform
 
 Run the following command to start Platform. Occasionally, this command will fail on first run. If it fails, run the command again as needed. If the command consistently fails on the same step, further debugging may be required.
@@ -182,12 +164,6 @@ If the node is actively participating in a distributed key generation (DKG) sess
 
 ``` shell
 yarn stop --force
-```
-
-If you rebuilt packages while the local environment was already running, restart it with:
-
-``` shell
-yarn restart
 ```
 
 # Executing tests
