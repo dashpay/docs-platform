@@ -5,8 +5,15 @@
 # Platform docs
 
 Welcome to the Dash Platform developer documentation. You'll find guides and documentation to help
-you start working with Dash Platform and building decentralized applications based on the Dash
-cryptocurrency. Let's jump right in!
+you start working with Dash Platform and building decentralized applications on Dash. This site
+focuses on the developer-facing concepts, tutorials, and API references for working with Platform's
+public network and open-source tooling.
+
+:::{note}
+Looking for the current source tree or lower-level implementation details? See the
+[Dash Platform monorepo](https://github.com/dashpay/platform) and the
+[Dash Platform Book](https://dashpay.github.io/platform/).
+:::
 
 ```{eval-rst}
 .. grid:: 1 2 3 3
@@ -26,8 +33,8 @@ cryptocurrency. Let's jump right in!
         :link-type: ref
         :link: tutorials-intro
         
-        Basics of building with Dash Platform
-        
+        Hands-on guides for connecting to Platform and submitting data
+
         +++
         :ref:`Click to begin <tutorials-intro>`
 
@@ -157,6 +164,8 @@ protocol-ref/errors
 
 resources/faq
 resources/repository-overview
+Dash Platform Monorepo <https://github.com/dashpay/platform>
+Dash Platform Book <https://dashpay.github.io/platform/>
 Platform Bridge <https://bridge.thepasta.org/>
 Platform Explorer <https://platform-explorer.com/>
 Testnet Block Explorer <https://insight.testnet.networks.dash.org/insight/>

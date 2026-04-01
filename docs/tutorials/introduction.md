@@ -4,13 +4,23 @@
 
 # Introduction
 
-The tutorials in this section walk through the steps necessary to begin building on Dash Platform using the Dash JavaScript SDK. As all communication happens via the masternode hosted decentralized API (DAPI), you can begin using Dash Platform immediately without running a local blockchain node.
+The tutorials in this section walk through the steps necessary to begin building on Dash Platform
+using the JavaScript SDK. As all communication happens via the masternode-hosted decentralized API
+(DAPI), you can begin using Dash Platform immediately without running a local blockchain node.
 
 Building on Dash Platform requires first registering an Identity and then registering a Data Contract describing the schema of data to be stored. Once that is done, data can be stored and updated by submitting Documents that comply with the Data Contract.
 
+:::{note}
+These tutorials are intentionally JavaScript-first because they are designed as the quickest path to
+submitting data on Platform. If you are working closer to the current Rust codebase, also see the
+[Rust SDK section](../sdk-rs/overview.md) and the [Dash Platform Book](https://dashpay.github.io/platform/).
+:::
+
 ## Prerequisites
 
-The tutorials in this section are written in JavaScript and use [Node.js](https://nodejs.org/en/about/). The following prerequisites are necessary to complete the tutorials:
+The tutorials in this section are written in JavaScript and use
+[Node.js](https://nodejs.org/en/about/). The following prerequisites are necessary to complete the
+tutorials:
 
 - [Node.js](https://nodejs.org/en/) (v20+)
 - Familiarity with JavaScript asynchronous functions using [async/await](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Async_await)

@@ -4,9 +4,9 @@
 
 # Platform Proofs
 
->❗️ Platform v0.22.0
->
-> Note: As part of the transition from MongoDB to Dash's [GroveDB](https://github.com/dashpay/grovedb), proofs will be not be available for at least the initial version of Platform v0.22.
+Platform proofs are an important part of Dash Platform's trust model. When a response is requested
+with `prove: true`, Platform can return proof data that allows clients to verify that the response
+matches consensus state.
 
 Since data verification is a critical aspect of Dash Platform, all [Platform endpoints](../reference/dapi-endpoints-platform-endpoints.md) can provide an optional proof that the response is correct. Set the optional `prove` parameter (`"prove": true`) in the request to receive a proof that contains the requested data.
 
@@ -57,9 +57,10 @@ Dash Platform 0.21.0 introduced updates to support returning multiple store tree
 - `documentsProof`
 - `stateTransitionProof`
 
-> 🚧
->
-> Dash Platform 0.21.0 introduced a 4 byte [protocol version](https://github.com/dashevo/js-dpp/pull/325) that is prepended to the binary format and is not part of the CBOR-encoded data. When parsing proofs it is necessary to exclude these bytes before decoding the returned data with CBOR.
+:::{note}
+Some proof payloads include a 4-byte protocol version prefix that is not part of the CBOR-encoded
+value. When decoding those values, strip the version prefix before CBOR decoding.
+:::
 
 #### Structure
 

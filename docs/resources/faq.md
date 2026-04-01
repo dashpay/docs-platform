@@ -18,10 +18,11 @@ Dash Platform has numerous significant advantages, including:
   API](../explanations/dapi.md).
 - Verifiable data: Efficient [GroveDB proofs](https://www.grovedb.org/) for query responses provide
   transparent data integrity.
+- Open development: Core Platform components, SDKs, and tooling are developed in public repos and
+  can be inspected directly.
 
-Although the current feature set covers many use cases, future versions will include features like
-smart contracts to make it even more competitive and directly comparable with projects like
-Ethereum, etc.
+The current feature set already supports identities, names, structured application data, proofs,
+and related developer tooling. New capabilities continue to ship in ongoing releases.
 
 :::
 
@@ -31,8 +32,9 @@ It already is! Dash Platform [launched on
 mainnet](https://www.dash.org/news/dash-evolution-v1-0-0-release-announcement/) in Q3 2024 and has
 had multiple releases since then to add features such as [NFTs](../explanations/nft.md).
 
-The next major release, v2.0, includes a flexible token system. Multiple teams are working to
-improve the SDK experience so developers can more easily get to work building their applications.
+To see the current code and implementation work, check the
+[Dash Platform repository](https://github.com/dashpay/platform) and the
+[Dash Platform Book](https://dashpay.github.io/platform/).
 
 :::
 
@@ -45,13 +47,11 @@ Dash Platform Name Service (DPNS).
 
 :::{dropdown} How can I register a name?
 
-Currently, names can be registered using several technical tools; however, the upcoming [DashPay
-Android](https://play.google.com/store/apps/details?id=hashengineering.darkcoin.wallet) update will
-provide a much easier way to do this.
-
+Currently, names can be registered using several technical tools and compatible applications.
 Developers and other technical users may want to experiment with registering names using the [JS
-SDK](https://docs.dash.org/projects/platform/en/stable/docs/tutorials/identities-and-names/register-a-name-for-an-identity.html)
-or [Platform TUI](https://github.com/dashpay/platform-tui/).
+SDK](https://docs.dash.org/projects/platform/en/stable/docs/tutorials/identities-and-names/register-a-name-for-an-identity.html),
+[Platform TUI](https://github.com/dashpay/platform-tui/), or other tools built on the public
+Platform APIs.
 :::
 
 ::::{dropdown} Can I register multiple names?

@@ -6,6 +6,12 @@ based on the Dash Platform Protocol (DPP).
 
 See the [Quick Start page](quick-start.md) for example setup and use of the SDK.
 
+:::{note}
+For the current monorepo layout and lower-level implementation details, see the
+[Dash Platform repository](https://github.com/dashpay/platform) and the
+[Dash Platform Book](https://dashpay.github.io/platform/).
+:::
+
 ## Usage
 
 ### Cargo.toml
@@ -21,16 +27,16 @@ dash-sdk = { git="https://github.com/dashpay/platform" }
 ### Examples
 
 You can inspect tests in the
-[`tests/`](https://github.com/dashpay/platform/tree/v1.0-dev/packages/rs-sdk/tests/) folder for
+[`tests/`](https://github.com/dashpay/platform/tree/master/packages/rs-sdk/tests/) folder for
 detailed examples or see a simple example in the
-[`examples/`](https://github.com/dashpay/platform/tree/v1.0-dev/packages/rs-sdk/examples) folder.
+[`examples/`](https://github.com/dashpay/platform/tree/master/packages/rs-sdk/examples) folder.
 See the [Platform Terminal User Interface (TUI)](https://github.com/dashpay/platform-tui/) for an
 application that uses the SDK to execute various state transitions.
 
-:::{attention}
-SDK documentation will be available on docs.rs once the Dash SDK crate is published. Meanwhile,
-the [pre-release documentation](https://dashpay.github.io/docs-platform/dash_sdk/) is available
-for reference. Please keep in mind that it is incomplete and may be outdated.
+:::{note}
+If you need the latest usage details, examples, or implementation references, prefer the
+[Dash Platform monorepo](https://github.com/dashpay/platform) and the
+[Dash Platform Book](https://dashpay.github.io/platform/) over older hosted snapshots.
 :::
 
 ### Mocking
@@ -39,6 +45,6 @@ The Dash Platform SDK supports mocking through the `mocks` feature which provide
 to define mock expectations and use the SDK without a connection to Platform.
 
 You can see examples of mocking in
-[mock_fetch.rs](https://github.com/dashpay/platform/blob/master/packages/rs-sdk/tests/fetch/mock_fetch.rs)
+[mock_fetch.rs](https://github.com/dashpay/platform/tree/master/packages/rs-sdk/tests/fetch/mock_fetch.rs)
 and
-[mock_fetch_many.rs](https://github.com/dashpay/platform/blob/master/packages/rs-sdk/tests/fetch/mock_fetch_many.rs).
+[mock_fetch_many.rs](https://github.com/dashpay/platform/tree/master/packages/rs-sdk/tests/fetch/mock_fetch_many.rs).

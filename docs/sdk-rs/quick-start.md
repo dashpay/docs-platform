@@ -10,7 +10,7 @@ Several packages are required to use the Dash SDK. Install them by running:
 # Install required packages
 sudo apt-get install clang cmake gcc unzip
 # Install recent protobuf version
-wget https://github.com/protocolbuffers/protobuf/releases/download/v26.1/protoc-26.1-linux-x86_64.zip
+wget https://github.com/protocolbuffers/protobuf/releases/download/v32.0/protoc-32.0-linux-x86_64.zip
 sudo unzip protoc-*-linux-x86_64.zip -d /usr/local
 ```
 
@@ -41,9 +41,11 @@ You should see the installed version of Rust.
 
 ### Install Dash Core
 
-Currently, the SDK is dependent on a Dash Core full node to support proof verification and provide
-wallet access. Follow the instructions below to install Dash Core and run it on Testnet. **Note:**
-it is possible, although not recommended, to retrieve data from Dash Platform without proof
+The Rust SDK is the best fit when you want proof-aware Platform access and tighter integration with
+the current Rust codebase. Many workflows still assume access to a Dash Core full node for proof
+verification and wallet-related operations. Follow the instructions below to install Dash Core and
+run it on testnet. **Note:** it is possible, although not recommended, to retrieve data from Dash
+Platform without proof verification.
 
 - [Dash Core installation instructions](inv:user:std#dashcore-installation)
 - [Running Dash Core on Testnet](inv:user:std#dashcore-testnet)
@@ -170,10 +172,11 @@ Identity balance: 932523994
 
 ## SDK documentation
 
-:::{attention}
-SDK documentation will be available on docs.rs once the Dash SDK crate is published. Meanwhile,
-the [pre-release documentation](https://dashpay.github.io/docs-platform/dash_sdk/) is available
-for reference. Please keep in mind that it is incomplete and may be outdated.
+:::{note}
+For the current code, examples, and package layout, refer to the
+[Dash Platform monorepo](https://github.com/dashpay/platform) and the
+[Dash Platform Book](https://dashpay.github.io/platform/). Hosted API docs may lag behind the
+latest source changes.
 :::
 
 ## DAPI client example

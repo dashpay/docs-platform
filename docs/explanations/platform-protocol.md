@@ -42,14 +42,13 @@ For additional detail, see the [State Transition](../explanations/platform-proto
 
 ## Versions
 
-| Version | Information |
-| :------ | :---------- |
-| 0.25    | See details in the [GitHub release](https://github.com/dashpay/platform/releases/tag/v0.25.0). |
-| 0.24    | See details in the [GitHub release](https://github.com/dashpay/platform/releases/tag/v0.24.0). |
-| 0.23    | See details in the [GitHub release](https://github.com/dashpay/platform/releases/tag/v0.23.0). |
-| 0.22    | See details in the [GitHub release](https://github.com/dashpay/platform/releases/tag/v0.22.0). |
-| 0.21    | See details in the [GitHub release](https://github.com/dashevo/js-dpp/releases/tag/v0.21.0). |
-| 0.20    | This release updated to a newer version of JSON Schema (2020-12 spec) and also switched to a new regex module ([Re2](https://github.com/google/re2)) for improved security. See more details in the [GitHub release](https://github.com/dashevo/js-dpp/releases/tag/v0.20.0). |
+Platform Protocol evolves together with the public Dash Platform codebase. For the latest
+implementation details and release history, see the
+[Dash Platform monorepo](https://github.com/dashpay/platform) and the project's release notes.
+
+Older version-specific notes that referenced pre-mainnet releases have been removed from this page
+because they no longer reflect the current public Platform state as clearly as the source
+repositories do.
 
 ```{toctree}
 :maxdepth: 2

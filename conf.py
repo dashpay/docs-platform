@@ -35,10 +35,14 @@ extensions = [
 templates_path = ['_templates']
 exclude_patterns = [
     '_build',
+    '.venv',
+    'venv',
     'Thumbs.db',
     '.DS_Store',
     'README.md',
+    'CLAUDE.md',
     '.devcontainer',
+    '.codex',
     '.local',
     'scripts',
     'img/dev/gifs/README.md',
