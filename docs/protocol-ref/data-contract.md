@@ -713,7 +713,7 @@ The full schema is [defined is rs-dpp](https://github.com/dashpay/platform/blob/
 
 ### Data Contract id
 
-The data contract `id` is a hash of the `ownerId` and entropy as shown [here](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/data_contract/generate_data_contract.rs).
+The data contract `id` is a hash of the `ownerId` and `identity_nonce` as shown in the [rs-dpp implementation](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/data_contract/generate_data_contract.rs).
 
 ```rust
 // From the Rust reference implementation (rs-dpp)
@@ -798,8 +798,8 @@ Groups can be used to distribute contract configuration and update authorization
 | Constant | Value | Description |
 |----------|-------|-------------|
 | `max_contract_group_size` | 256 | Maximum members per group |
-| Maximum member power | 65,535 (u32, validated max) | Maximum voting power per member |
-| Maximum required power | 65,535 (u32, validated max) | Maximum threshold power |
+| Maximum member power | 65,535 (u32; cap enforced at u16::MAX) | Maximum voting power per member |
+| Maximum required power | 65,535 (u32; cap enforced at u16::MAX) | Maximum threshold power |
 
 #### Group Action Info
 

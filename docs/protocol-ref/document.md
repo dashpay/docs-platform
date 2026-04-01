@@ -14,15 +14,14 @@ All document transitions include the [document base transition fields](#document
 
 ### Document Base Transition
 
-The following fields are included in all document transitions:
+The following fields are included in all document transitions. Note that `$action` is present in the JSON wire format as a type discriminator (see [Document Transition Action](#document-transition-action)) but is not a stored field in the base transition structure — it is derived from the transition variant type.
 
 | Field | Type | Size | Description|
 | ----- | ---- | ---- | ---------- |
 | [$id](#document-id) | array | 32 bytes | The [document ID](#document-id) |
-| [$action](#document-transition-action) | unsigned integer | 8 bits | [Action](#document-transition-action) the platform should take for the associated document |
 | $identityContractNonce | unsigned integer | 64 bits  | Identity contract nonce |
 | $type | string | 1-64 characters | Name of a document type found in the data contract associated with the `dataContractId`|
-| $dataContractId | array | 32 bytes | Data contract ID [generated](../protocol-ref/data-contract.md#data-contract-id) from the data contract's `ownerId` and `entropy` |
+| $dataContractId | array | 32 bytes | Data contract ID [generated](../protocol-ref/data-contract.md#data-contract-id) from the data contract's `ownerId` and `identity nonce` |
 | $tokenPaymentInfo | object | Varies | (Optional, V1+) Token-based fee payment information for this transition |
 
 Each document transition must comply with the [document base transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_base_transition/v1/mod.rs#L38-L56).
@@ -205,7 +204,7 @@ The document object represents the data provided by the platform in response to 
 | $id | array | Yes | The [document ID](#document-id) (32 bytes)|
 | $type | string | Yes  | Document type defined in the referenced contract (1-64 characters) |
 | $revision | unsigned integer (64 bits) | No | Document revision (=>1) if the document is mutable |
-| $dataContractId | array | Yes | Data contract ID [generated](../protocol-ref/data-contract.md#data-contract-id) from the data contract's `ownerId` and `entropy` (32 bytes) |
+| $dataContractId | array | Yes | Data contract ID [generated](../protocol-ref/data-contract.md#data-contract-id) from the data contract's `ownerId` and `identity nonce` (32 bytes) |
 | $ownerId | array | Yes | [Identity](../protocol-ref/identity.md) of the user submitting the document (32 bytes) |
 | $createdAt | unsigned integer (64 bits) | No | Time (in milliseconds) at document creation, if required by the document type schema |
 | $updatedAt | unsigned integer (64 bits) | No | Last document update time in milliseconds, if required by the document type schema |

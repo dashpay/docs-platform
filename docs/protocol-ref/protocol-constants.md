@@ -2,10 +2,6 @@
 .. _protocol-ref-constants:
 ```
 
-:::{attention}
-Draft page - work in progress
-:::
-
 # Protocol Constants
 
 This page provides a comprehensive reference for all constants, limits, and default values defined in the Dash Platform Protocol implementation (rs-dpp).

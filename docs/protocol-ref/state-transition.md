@@ -25,7 +25,7 @@ The list of common fields used by multiple state transitions is defined in [rs-d
 
 | Field           | Type           | Size | Description |
 | --------------- | -------------- | ---- | ----------- |
-| $version        | unsigned integer | 32 bits | The platform protocol version (currently `12`) |
+| $version        | unsigned integer | 32 bits | The state transition format version (FeatureVersion). Currently `0` for most transitions, `1` for Batch. This is not the global platform protocol version, which is negotiated separately. |
 | type            | unsigned integer | 8 bits  | State transition type (defined in [rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/state_transition/state_transition_types.rs#L21)):<br>`0` - [data contract create](../protocol-ref/data-contract.md#data-contract-create)<br>`1` - [batch](#batch)<br>`2` - [identity create](../protocol-ref/identity.md#identity-create)<br>`3` - [identity topup](identity.md#identity-topup)<br>`4` - [data contract update](data-contract.md#data-contract-update)<br>`5` - [identity update](identity.md#identity-update)<br>`6` - [identity credit withdrawal](identity.md#identity-credit-withdrawal)<br>`7` - [identity credit transfer](identity.md#identity-credit-transfer)<br>`8` - [masternode vote](#masternode-vote)<br>`9` - [identity credit transfer to addresses](address-system.md#identity-credit-transfer-to-addresses)<br>`10` - [identity create from addresses](address-system.md#identity-create-from-addresses)<br>`11` - [identity topup from addresses](address-system.md#identity-topup-from-addresses)<br>`12` - [address funds transfer](address-system.md#address-funds-transfer)<br>`13` - [address funding from asset lock](address-system.md#address-funding-from-asset-lock)<br>`14` - [address credit withdrawal](address-system.md#address-credit-withdrawal)<br>`15` - shield<br>`16` - shielded transfer<br>`17` - unshield<br>`18` - shield from asset lock<br>`19` - shielded withdrawal |
 | userFeeIncrease | unsigned integer | 16 bits | Extra fee to prioritize processing if the mempool is full. Typically set to zero. |
 | signature       | array of bytes | 65 bytes |Signature of state transition data |
@@ -191,6 +191,10 @@ The process to sign state transitions using an identity consists of the followin
 ### Signing with Address Witness
 
 Address-based state transitions (types 10-12, 14) use address witnesses to prove ownership of Platform addresses. Unlike identity-signed transitions, these do not require an existing identity. Instead, each input address requires a corresponding witness containing cryptographic proof of address ownership.
+
+:::{note}
+Identity credit transfer to addresses (type 9) is **not** signed with address witnesses — it uses identity signing because it requires an existing identity.
+:::
 
 The process to sign state transitions using address witnesses consists of the following steps:
 
