@@ -111,7 +111,6 @@ The following example document create transition and subsequent table demonstrat
 
 | Field | Required By |
 | - | - |
-| $action | Document [base transition](#document-base-transition) |
 | $dataContractId | Document [base transition](#document-base-transition) |
 | $id | Document [base transition](#document-base-transition) |
 | $type | Document [base transition](#document-base-transition) |
@@ -150,7 +149,6 @@ The following example document replace transition and subsequent table demonstra
 
 | Field | Required By |
 | - | - |
-| $action | Document [base transition](#document-base-transition) |
 | $dataContractId | Document [base transition](#document-base-transition) |
 | $id | Document [base transition](#document-base-transition) |
 | $type | Document [base transition](#document-base-transition) |

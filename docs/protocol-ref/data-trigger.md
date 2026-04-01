@@ -18,7 +18,7 @@ When document state transitions are received, DPP checks if there is a trigger a
 
 ### Example
 
-As an example, DPP contains several data triggers for DPNS as defined in the [data trigger bindings](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/batch/data_triggers/bindings/list/v0/mod.rs). The `domain` document has added constraints for creation. All DPNS document types have constraints on replacing or deleting:
+As an example, DPP contains several data triggers for DPNS as defined in the [data trigger bindings](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/batch/data_triggers/bindings/list/v0/mod.rs). The `domain` document has added constraints for creation, replacement or deletion:
 
 | Data Contract | Document           | Action(s)                                                                                                                            | Trigger Description                                                                                      |
 | ------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
@@ -42,7 +42,7 @@ The following table details the DPNS constraints applied via data triggers. Thes
 | `domain`   | `CREATE`  | `ownerId` matches `records.dashUniqueIdentityId` or `dashAliasIdentityId` (whichever one is present)        |
 | `domain`   | `CREATE`  | Only creating a top-level domain with an authorized identity                                                |
 | `domain`   | `CREATE`  | Referenced `normalizedParentDomainName` must be an existing parent domain                                   |
-| `domain`   | `CREATE`  | Subdomain registration for non top level domains prevented if the new domain's `subdomainRules.allowSubdomains` is true |
+| `domain`   | `CREATE`  | Subdomain registration for non-top-level domains prevented if the new domain's `subdomainRules.allowSubdomains` is true |
 | `domain`   | `CREATE`  | Subdomain registration only allowed by the parent domain owner if the parent domain's `subdomainRules.allowSubdomains` is false |
 | `domain`   | `CREATE`  | Referenced `preorder` document must exist                                                                   |
 | `domain`   | `REPLACE` | Action not allowed                                                                                          |

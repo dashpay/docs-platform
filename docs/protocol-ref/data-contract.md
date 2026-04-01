@@ -93,7 +93,7 @@ The data contract object consists of the following fields as defined in the Rust
 
 ### Data Contract schema
 
-The full schema is [defined is rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/data_contract/document_type/schema/enrich_with_base_schema/v0/mod.rs#L6-L7), hosted on [GitHub](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json), and can be viewed by expanding this dropdown:
+The full schema is [defined in rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/data_contract/document_type/schema/enrich_with_base_schema/v0/mod.rs#L6-L7), hosted on [GitHub](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json), and can be viewed by expanding this dropdown:
 
 ::: {dropdown} Full schema
 

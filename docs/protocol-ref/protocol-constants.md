@@ -146,7 +146,7 @@ Fees for validating data contract structure during state transition processing.
 | Non-unique index base fee | 50 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/fee/data_contract_validation/v1.rs#L8) |
 | Non-unique index per property fee | 30 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/fee/data_contract_validation/v1.rs#L9) |
 | Unique index base fee | 100 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/fee/data_contract_validation/v1.rs#L10) |
-| Unique index per property fee | 60 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/fee/data_contract_validation/v1.rs)#L11 |
+| Unique index per property fee | 60 | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/fee/data_contract_validation/v1.rs#L11) |
 
 ### Voting
 
