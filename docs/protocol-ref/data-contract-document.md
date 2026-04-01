@@ -306,7 +306,7 @@ The following operation types can each have an independent cost configuration:
   | [`requiresIdentity`<br>`DecryptionBoundedKey`](./data-contract.md#key-management) | integer  | Key requirements for identity decryption:<br>`0` - Unique non-replaceable<br>`1` - Multiple<br>`2` - Multiple with reference to latest key |
   | [`properties`](#document-properties) | object   | Defines the properties of the document. |
   | [`transient`](#transient-properties) | array    | An array of strings specifying transient properties that are validated by Platform but not stored. |
-  | `tokenCost`                          | object   | Defines token costs for document operations (create, replace, delete, transfer, purchase) |
+  | `tokenCost`                          | object   | Defines token costs for document operations (create, replace, update_price, delete, transfer, purchase) |
   | `keywords`                           | array    | Up to 20 strings (3–50 characters each) for searchability |
   | [`additionalProperties`](./data-contract.md#additional-properties) | boolean  | Specifies whether additional properties are allowed. Must be set to false, meaning no additional properties are allowed beyond those defined. |
 
