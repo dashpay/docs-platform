@@ -18,21 +18,10 @@ layout can change over time, so treat the monorepo as the source of truth.
 
 | Component | Description |
 | - | - |
-| JavaScript SDK | JavaScript tooling for connecting to Platform, creating identities, and submitting state transitions |
-| Rust SDK (`rs-sdk`) | Rust-first SDK for building applications and verifying Platform data |
-| FFI / mobile SDK layers | Shared components used for Swift and other native integrations |
-| WASM bindings | WebAssembly-oriented bindings for browser and hybrid environments |
-
-## SDK Availability
-
-The current Platform repository README presents SDK support as follows:
-
-| SDK | Status |
-| - | - |
-| Rust (`rs-sdk`) | Available now |
-| JavaScript (`js-evo-sdk`) | Available now |
-| iOS / Swift | Planned in v3.1 |
-| Android | Planned in v3.2 |
+| [js-evo-sdk](https://github.com/dashpay/platform/tree/master/packages/js-evo-sdk) | JavaScript tooling for connecting to Platform, creating identities, and submitting state transitions |
+| [rs-sdk](https://github.com/dashpay/platform/tree/master/packages/rs-sdk) | Rust-first SDK for building applications and verifying Platform data |
+| [rs-sdk-ffi](https://github.com/dashpay/platform/tree/master/packages/rs-sdk-ffi) / [swift-sdk](https://github.com/dashpay/platform/tree/master/packages/swift-sdk) | Shared components used for Swift and other native integrations |
+| [wasm-sdk](https://github.com/dashpay/platform/tree/master/packages/wasm-sdk) | WebAssembly-oriented bindings for browser and hybrid environments |
 
 ## Platform and Supporting Repositories
 
@@ -40,10 +29,10 @@ These run on the network and process data.
 
 | Component | Description |
 | - | - |
-| DAPI / rs-dapi | Decentralized API server implementations |
-| rs-drive | Drive query and indexing layer over GroveDB |
-| rs-dpp | Dash Platform Protocol (data contracts, documents, state transitions, identities) |
-| dashmate | Node management and local development tool |
+| [dapi](https://github.com/dashpay/platform/tree/master/packages/dapi) / [rs-dapi](https://github.com/dashpay/platform/tree/master/packages/rs-dapi) | Decentralized API server implementations |
+| [rs-drive](https://github.com/dashpay/platform/tree/master/packages/rs-drive) | Drive query and indexing layer over GroveDB |
+| [rs-dpp](https://github.com/dashpay/platform/tree/master/packages/rs-dpp) | Dash Platform Protocol (data contracts, documents, state transitions, identities) |
+| [dashmate](https://github.com/dashpay/platform/tree/master/packages/dashmate) | Node management and local development tool |
 | [rs-tenderdash-abci](https://github.com/dashpay/rs-tenderdash-abci) | Tenderdash ABCI application |
 | [grovedb](https://github.com/dashpay/grovedb) | Hierarchical authenticated data structure |
 | [tenderdash](https://github.com/dashpay/tenderdash) | Byzantine fault-tolerant consensus engine |
@@ -55,8 +44,8 @@ Built-in data contracts used by the network.
 
 | Component | Description |
 | - | - |
-| dashpay-contract | DashPay contract documents JSON Schema |
-| dpns-contract | DPNS contract documents JSON Schema |
+| [dashpay-contract](https://github.com/dashpay/platform/tree/master/packages/dashpay-contract) | DashPay contract documents JSON Schema |
+| [dpns-contract](https://github.com/dashpay/platform/tree/master/packages/dpns-contract) | DPNS contract documents JSON Schema |
 
 ## Source Code Location
 

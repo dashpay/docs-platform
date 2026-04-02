@@ -44,7 +44,8 @@ For additional detail, see the [State Transition](../explanations/platform-proto
 
 Platform Protocol evolves together with the public Dash Platform codebase. For the latest
 implementation details and release history, see the
-[Dash Platform monorepo](https://github.com/dashpay/platform) and the project's release notes.
+[Dash Platform monorepo](https://github.com/dashpay/platform) and the
+[GitHub releases page](https://github.com/dashpay/platform/releases).
 
 Older version-specific notes that referenced pre-mainnet releases have been removed from this page
 because they no longer reflect the current public Platform state as clearly as the source

@@ -42,8 +42,7 @@ without relying on a single hosted backend.
 
 ### Client Libraries
 
-Write code and integrate with Dash Platform using client libraries that abstract away much of the
-underlying blockchain and networking complexity.
+Write code and integrate with Dash Platform using the languages that matter to your business. Don't worry about understanding blockchain infrastructure: a growing number of client libraries abstract away the complexity typically associated with working on blockchain-based networks.
 
 ### Instant Data Confirmation
 
@@ -74,7 +73,6 @@ with proofs rather than trusting the node that served them.
 The source for these components is available on GitHub:
 
 - Platform monorepo: <https://github.com/dashpay/platform>
-- Rust SDK docs in this site: [Rust SDK](../sdk-rs/overview.md)
 
 ### Drive - Decentralized Storage
 
@@ -84,4 +82,4 @@ Data created by users of the application is validated and verified against this 
 
 The source is available on GitHub:
 
-- Drive: <https://github.com/dashpay/platform>
+- Drive: <https://github.com/dashpay/platform/tree/master/packages/rs-drive>

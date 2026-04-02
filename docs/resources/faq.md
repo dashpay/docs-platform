@@ -33,8 +33,7 @@ mainnet](https://www.dash.org/news/dash-evolution-v1-0-0-release-announcement/) 
 had multiple releases since then to add features such as [NFTs](../explanations/nft.md).
 
 To see the current code and implementation work, check the
-[Dash Platform repository](https://github.com/dashpay/platform) and the
-[Dash Platform Book](https://dashpay.github.io/platform/).
+[Dash Platform repository](https://github.com/dashpay/platform).
 
 :::
 
@@ -47,11 +46,8 @@ Dash Platform Name Service (DPNS).
 
 :::{dropdown} How can I register a name?
 
-Currently, names can be registered using several technical tools and compatible applications.
-Developers and other technical users may want to experiment with registering names using the [JS
-SDK](https://docs.dash.org/projects/platform/en/stable/docs/tutorials/identities-and-names/register-a-name-for-an-identity.html),
-[Platform TUI](https://github.com/dashpay/platform-tui/), or other tools built on the public
-Platform APIs.
+Currently, names can be registered using the [DashPay Android wallet](https://play.google.com/store/apps/details?id=hashengineering.darkcoin.wallet).
+Developers and other technical users may want to experiment with registering names using the [Dash Evo Tool](https://github.com/dashpay/dash-evo-tool) or the [JavaScript SDK](https://docs.dash.org/projects/platform/en/stable/docs/tutorials/identities-and-names/register-a-name-for-an-identity.html).
 :::
 
 ::::{dropdown} Can I register multiple names?
