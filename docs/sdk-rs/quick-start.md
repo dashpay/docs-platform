@@ -10,7 +10,7 @@ Several packages are required to use the Dash SDK. Install them by running:
 # Install required packages
 sudo apt-get install clang cmake gcc unzip
 # Install recent protobuf version
-wget https://github.com/protocolbuffers/protobuf/releases/download/v32.0/protoc-32.0-linux-x86_64.zip
+wget https://github.com/protocolbuffers/protobuf/releases/download/v34.1/protoc-34.1-linux-x86_64.zip
 sudo unzip protoc-*-linux-x86_64.zip -d /usr/local
 ```
 
