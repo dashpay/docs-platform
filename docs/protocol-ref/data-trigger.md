@@ -34,12 +34,12 @@ As an example, DPP contains several data triggers for DPNS as defined in the [da
 
 The following table details the DPNS constraints applied via data triggers. These constraints are in addition to the ones applied directly by the DPNS data contract.
 
-| Document   | Action    | Constraint                                                                                                  |
-| ---------- | --------- | ----------------------------------------------------------------------------------------------------------- |
+| Document   | Action    | Constraint |
+| ---------- | --------- | ---------- |
 | `domain`   | `CREATE`  | Full domain length \<= 253 characters                                                                       |
 | `domain`   | `CREATE`  | `normalizedLabel` matches homograph-safe conversion of `label` (lowercase with character substitutions: o→0, l/i→1) |
 | `domain`   | `CREATE`  | `normalizedParentDomainName` matches homograph-safe conversion of `parentDomainName` |
-| `domain`   | `CREATE`  | `records.identity` is written to the document but is not validated against `ownerId` at the trigger level. The trigger checks `records.dashUniqueIdentityId`/`records.dashAliasIdentityId`, which are absent from the v1 schema (`additionalProperties: false`), so the check is always a no-op. |
+| `domain`   | `CREATE`  | `ownerId` validation against `records` identity fields is a no-op (see note below) |
 | `domain`   | `CREATE`  | Only creating a top-level domain with an authorized identity                                                |
 | `domain`   | `CREATE`  | Referenced `normalizedParentDomainName` must be an existing parent domain                                   |
 | `domain`   | `CREATE`  | Subdomain registration for non-top-level domains prevented if the new domain's `subdomainRules.allowSubdomains` is true |
@@ -50,6 +50,15 @@ The following table details the DPNS constraints applied via data triggers. Thes
 | `domain`   | `TRANSFER`     | Action not allowed                                                                                          |
 | `domain`   | `PURCHASE`     | Action not allowed                                                                                          |
 | `domain`   | `UPDATE_PRICE` | Action not allowed                                                                                          |
+
+:::{note}
+The trigger for `domain` `CREATE` attempts to validate that `ownerId` matches
+`records.dashUniqueIdentityId` or `records.dashAliasIdentityId`. However, the
+DPNS v1 schema defines only `records.identity` and sets `additionalProperties:
+false`, so neither field can exist in a valid document. Both checks are
+therefore permanent no-ops and `records.identity` is not validated against
+`ownerId` at the trigger level.
+:::
 
 ### Other System Contract Triggers
 
