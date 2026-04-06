@@ -373,8 +373,8 @@ Emits tokens following a linear function that can increase or decrease over time
   - Parameters
     - `a`: slope numerator (positive = increase, negative = decrease)
     - `d`: slope divisor (enables fractional precision)
-    - `s`: optional start period offset (defaults to contract creation)
-    - `b`: starting emission amount
+    - `s` (`start_step`): optional start period offset (defaults to contract creation)
+    - `b` (`starting_amount`): starting emission amount
     - `min_value` / `max_value`: optional emission bounds
   - Behavior
     - If `a > 0`, emissions increase linearly over time
@@ -402,7 +402,7 @@ A polynomial function using fixed-point arithmetic for fractional or integer exp
   - `a`: coefficient scaling the curve (positive for growth, negative for decay)  
   - `m` and `n`: exponent numerator and denominator, allowing fractional powers (e.g., `m = 1`, `n = 2` → square root)
   - `d`: divisor to scale the result
-  - `s`: optional start period offset
+  - `s` (`start_moment`): optional start period offset
   - `o`: offset inside the exponent input
   - `b`: amount added after the curve is computed
   - `min_value` / `max_value`: optional boundaries to clamp emissions
@@ -449,7 +449,7 @@ Emits tokens following an inverted logarithmic decay curve.
   - `d`: divisor to scale the final result
   - `m` and `n`: Control the logarithmic inversion
   - `o`: offset applied inside the logarithm
-  - `s`: optional start period offset (defaults to contract creation time if not provided)
+  - `s` (`start_moment`): optional start period offset (defaults to contract creation time if not provided)
   - `b`: offset added after scaling
   - `min_value` / `max_value`: optional bounds to constrain emissions
 
@@ -596,6 +596,10 @@ The distribution functions use the following parameters defined across various i
 | `denominator` | integer | - | Reduction factor denominator |
 | `interval` | integer | - | Time interval in milliseconds |
 
+:::{note}
+Parameter sign types vary by function: `a` is unsigned (u64) for `Exponential` but signed (i64) for all other functions. `m` is unsigned (u64) for `Logarithmic` and `InvertedLogarithmic` but signed (i64) for `Polynomial` and `Exponential`.
+:::
+
 ### Distribution Recipients
 
 | Recipient | Description |
@@ -726,6 +730,19 @@ This example shows the complete structure of a token definition with all major c
         "changeDirectPurchasePricingRules": {
           "V0": {
             "authorized_to_make_change": "ContractOwner",
+            "admin_action_takers": "NoOne",
+            "changing_authorized_action_takers_to_no_one_allowed": false,
+            "changing_admin_action_takers_to_no_one_allowed": false,
+            "self_changing_admin_action_takers_allowed": false
+          }
+        }
+      },
+      "marketplaceRules": {
+        "$format_version": "0",
+        "tradeMode": "NotTradeable",
+        "tradeModeChangeRules": {
+          "V0": {
+            "authorized_to_make_change": "NoOne",
             "admin_action_takers": "NoOne",
             "changing_authorized_action_takers_to_no_one_allowed": false,
             "changing_admin_action_takers_to_no_one_allowed": false,

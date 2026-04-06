@@ -107,7 +107,7 @@ Transfer credits from an existing identity to one or more Platform addresses.
 | signature            | array of bytes   | 65 bytes | Signature of state transition data                                                            |
 
 :::{note}
-Minimum recipients: 1. Maximum recipients: `max_address_outputs`. Minimum per recipient: 500,000 credits. Minimum fee: 500,000 credits.
+Minimum recipients: 1. Maximum recipients: `max_address_outputs`. Minimum per recipient: 500,000 credits. Fee: 500,000 credits base + 6,000,000 credits per recipient (example: 1 recipient = 6,500,000 credits minimum fee).
 :::
 
 See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_credit_transfer_to_addresses_transition/).

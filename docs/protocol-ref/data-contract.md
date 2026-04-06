@@ -858,7 +858,7 @@ Data contracts are created on the platform by submitting the [data contract obje
 
 | Field           | Type           | Size | Description |
 | --------------- | -------------- | ---- | ----------- |
-| $version        | unsigned integer | 32 bits | The state transition format version (currently `0`) |
+| $version        | unsigned integer | 16 bits | The state transition format version (currently `0`) |
 | type            | unsigned integer | 8 bits  | State transition type (`0` for data contract create)  |
 | dataContract    | [data contract object](#data-contract-object) | Varies | Object containing the data contract details |
 | identityNonce   | unsigned integer | 64 bits | Identity nonce for this transition to prevent replay attacks |
@@ -882,7 +882,7 @@ object](#data-contract-object) in a data contract update state transition consis
 
 | Field           | Type           | Size | Description |
 | --------------- | -------------- | ---- | ----------- |
-| $version        | unsigned integer | 32 bits | The state transition format version (currently `0`) |
+| $version        | unsigned integer | 16 bits | The state transition format version (currently `0`) |
 | type            | unsigned integer | 8 bits  | State transition type (`4` for data contract update)  |
 | dataContract    | [data contract object](#data-contract-object) | Varies | Object containing the updated data contract details<br>**Note:** the data contract's [`version` property](#data-contract-version) must be incremented with each update |
 | identityContractNonce | unsigned integer | 64 bits | Identity contract nonce for replay protection |
