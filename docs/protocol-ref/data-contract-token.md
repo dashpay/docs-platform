@@ -249,6 +249,7 @@ Distribution rules govern how tokens are created, allocated, and priced within t
 | `newTokensDestinationIdentityRules` | object | Change control rules for destination identity |
 | `mintingAllowChoosingDestination` | boolean | Whether minting operations can specify custom destinations |
 | `mintingAllowChoosingDestinationRules` | object | Change control rules for destination choice |
+| `preProgrammedDistribution` | object | Scheduled token allocations at predetermined timestamps |
 | `changeDirectPurchasePricingRules` | object | Change control rules for direct purchase pricing |
 
 ### Perpetual Distribution
@@ -615,7 +616,7 @@ For performance and security reasons, tokens have the following constraints:
 
 | Parameter | Value |
 |-----------|-------|
-| Maximum number of keywords | [20 at creation; 50 on update](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/data_contract/methods/validate_update/v0/mod.rs#L272-L277) |
+| Maximum number of keywords | [50](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/data_contract/methods/validate_update/v0/mod.rs#L272-L277) |
 | Keyword length | [3 to 50 characters](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/data_contract/methods/validate_update/v0/mod.rs#L279-L287) |
 | Description length | [3 to 100 characters](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/data_contract/methods/validate_update/v0/mod.rs#L312-L323) |
 | Maximum note length | [2048 bytes](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/tokens/mod.rs#L19) |

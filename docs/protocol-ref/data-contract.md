@@ -80,7 +80,7 @@ The data contract object consists of the following fields as defined in the Rust
 | $defs           | object         | Varies       | (Optional) Definitions for `$ref` references used in the `documents` object (if present, must be a non-empty object with \<= 100 valid properties) |
 | [groups](#data-contract-groups) | Group | Varies | (Optional) Groups that allow for specific multiparty actions on the contract. |
 | [tokens](./data-contract-token.md) | object         | Varies    | (Optional \*) Token definitions (see [Contract Tokens](./data-contract-token.md) for details) |
-| keywords | array of strings | Varies | (Optional) Keywords associated with the contract to improve searchability. Maximum of 20 keywords at creation; contract updates allow up to 50. |
+| keywords | array of strings | Varies | (Optional) Keywords associated with the contract to improve searchability. Maximum of 50 keywords. |
 | description | string | 3-100 characters | (Optional) Brief description of the contract. |
 | createdAt | unsigned integer | 64 bits | (Read-only) Timestamp in milliseconds when the contract was created. Set by platform. |
 | updatedAt | unsigned integer | 64 bits | (Read-only) Timestamp in milliseconds when the contract was last updated. Set by platform. |
@@ -797,8 +797,9 @@ Groups can be used to distribute contract configuration and update authorization
 
 | Constant | Value | Description |
 |----------|-------|-------------|
+| Minimum group size | [2](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/data_contract/group/v0/mod.rs#L107-L110) | Minimum members per group |
 | `max_contract_group_size` | 256 | Maximum members per group |
-| Maximum member power | 65,535 (u32; cap enforced at u16::MAX) | Maximum voting power per member |
+| Maximum member power | 65,535 (u32; cap enforced at u16::MAX) | Maximum voting power per member. Each member's power must also not exceed the group's [`requiredPower`](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/data_contract/group/v0/mod.rs#L129-L134) value. |
 | Maximum required power | 65,535 (u32; cap enforced at u16::MAX) | Maximum threshold power |
 
 #### Group Action Info
@@ -807,9 +808,9 @@ When submitting a group-authorized action, the transition includes:
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `groupContractPosition` | u16 | Position of the group in the contract |
-| `actionId` | Identifier (32 bytes) | The action identifier |
-| `actionIsProposer` | bool | Whether the signer is the action proposer |
+| `$groupContractPosition` | u16 | Position of the group in the contract |
+| `$groupActionId` | Identifier (32 bytes) | The action identifier |
+| `$groupActionIsProposer` | bool | Whether the signer is the action proposer |
 
 #### Use Cases
 

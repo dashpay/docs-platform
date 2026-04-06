@@ -262,9 +262,9 @@ These limits apply to token perpetual distribution function parameters.
 
 | Limit | Value | Description | Source |
 |-------|-------|-------------|--------|
-| Min output amount | 500,000 credits | Minimum output per address | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/dpp_versions/dpp_state_transition_versions/v1.rs#L39) |
-| Min input amount | 100,000 credits | Minimum input per address | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/dpp_versions/dpp_state_transition_versions/v1.rs#L40) |
-| Max fee strategies | 4 | Maximum fee strategy steps | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/dpp_versions/dpp_state_transition_versions/v1.rs#L45) |
+| Min output amount | 500,000 credits | Minimum output per address | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/dpp_versions/dpp_state_transition_versions/v3.rs#L39) |
+| Min input amount | 100,000 credits | Minimum input per address | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/dpp_versions/dpp_state_transition_versions/v3.rs#L40) |
+| Max fee strategies | 4 | Maximum fee strategy steps | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/dpp_versions/dpp_state_transition_versions/v3.rs#L45) |
 | Max address inputs | 16 | Maximum input addresses per address-based transition | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/dpp_versions/dpp_state_transition_versions/v3.rs#L43) |
 | Max address outputs | 128 | Maximum output addresses per address-based transition | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/dpp_versions/dpp_state_transition_versions/v3.rs#L44) |
 
@@ -288,5 +288,5 @@ These limits apply to token perpetual distribution function parameters.
 
 | Constant | Value | Description | Source |
 |----------|-------|-------------|--------|
-| Min withdrawal amount | ~181,000 credits | Based on unlock tx size | [rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_credit_withdrawal_transition/mod.rs#L44-L45) |
+| Min withdrawal amount | 190,000 credits | ASSET_UNLOCK_TX_SIZE (190) × MIN_CORE_FEE_PER_BYTE (1) × CREDITS_PER_DUFF (1,000) | [rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_credit_withdrawal_transition/mod.rs#L44-L45) |
 | Min core fee per byte | 1 | Must be Fibonacci number | [rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_credit_withdrawal_transition/mod.rs#L41) |

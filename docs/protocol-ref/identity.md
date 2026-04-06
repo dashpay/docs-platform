@@ -64,13 +64,13 @@ Each item in the `publicKeys` array consists of an object containing:
 | Field         | Type           | Description |
 | ------------- | -------------- | ----------- |
 | [id](#public-key-id) | integer        | The key id (all public keys must be unique) |
-| [type](#public-key-type) | integer        | Type of key (default: `0` - ECDSA) |
-| [data](#public-key-data)          | array of bytes | Public key (`0` - ECDSA: 33 bytes, `1` - BLS: 48 bytes, `2` - ECDSA Hash160: 20 bytes, `3` - [BIP13](https://github.com/bitcoin/bips/blob/master/bip-0013.mediawiki) Hash160: 20 bytes, `4` - EDDSA_25519_HASH160: 20 bytes) |
 | [purpose](#public-key-purpose) | integer        | Public key purpose (`0` - Authentication, `1` - Encryption, `2` - Decryption, `3` - Transfer) |
 | [securityLevel](#public-key-securitylevel) | integer        | Public key security level (`0` - Master, `1` - Critical, `2` - High, `3` - Medium) |
-| [readonly](#public-key-readonly) | boolean        | Identity public key can't be modified with `readOnly` set to `true`. This can’t be changed after adding a key. |
-| [disabledAt](#public-key-disabledat) | integer        | Timestamp indicating that the key was disabled at a specified time |
 | contractBounds | object (optional) | Restricts this key to a specific data contract or document type context |
+| [type](#public-key-type) | integer        | Type of key (default: `0` - ECDSA) |
+| [readonly](#public-key-readonly) | boolean        | Identity public key can’t be modified with `readOnly` set to `true`. This can’t be changed after adding a key. |
+| [data](#public-key-data)          | array of bytes | Public key (`0` - ECDSA: 33 bytes, `1` - BLS: 48 bytes, `2` - ECDSA Hash160: 20 bytes, `3` - [BIP13](https://github.com/bitcoin/bips/blob/master/bip-0013.mediawiki) Hash160: 20 bytes, `4` - EDDSA_25519_HASH160: 20 bytes) |
+| [disabledAt](#public-key-disabledat) | integer        | Timestamp indicating that the key was disabled at a specified time |
 | signature     | array of bytes | Signature of the signable identity create or topup state transition by the private key associated with this public key |
 
 See the [public key implementation in rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/identity/identity_public_key/v0/mod.rs#L42-L53) for more details.

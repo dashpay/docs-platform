@@ -5,7 +5,7 @@
 # Platform Address System
 
 :::{attention}
-Address-based state transitions were introduced in **Protocol Version 11**. These transitions enable direct operations using Platform addresses without requiring a pre-existing identity for some operations.
+Address-based state transitions were [enabled in Protocol Version 11](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/feature_initial_protocol_versions.rs). These transitions enable direct operations using Platform addresses without requiring a pre-existing identity for some operations.
 :::
 
 ## Overview

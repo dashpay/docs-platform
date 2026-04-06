@@ -93,7 +93,7 @@ The token burn transition extends the [base transition](#token-base-transition) 
 | burnAmount | unsigned integer | 64 bits | Number of tokens to be burned |
 | publicNote | string | [<= 2048 bytes](#token-notes) | Optional public note |
 
-Each token burn transition must comply with the [token burn transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_burn_transition/v0/mod.rs#L22-L38).
+Each token burn transition must comply with the [token burn transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_burn_transition/v0/mod.rs#L22-L32).
 
 ### Token Mint Transition
 
@@ -130,7 +130,7 @@ The token freeze transition extends the [base transition](#token-base-transition
 | frozenIdentityId | array | 32 bytes | Identity ID of the account to be frozen |
 | publicNote | string | [<= 2048 bytes](#token-notes) | Optional public note |
 
-Each token freeze transition must comply with the [token freeze transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_freeze_transition/v0/mod.rs#L19-L35).
+Each token freeze transition must comply with the [token freeze transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_freeze_transition/v0/mod.rs#L19-L29).
 
 ### Token Unfreeze Transition
 

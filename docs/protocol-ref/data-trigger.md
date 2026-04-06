@@ -39,7 +39,7 @@ The following table details the DPNS constraints applied via data triggers. Thes
 | `domain`   | `CREATE`  | Full domain length \<= 253 characters                                                                       |
 | `domain`   | `CREATE`  | `normalizedLabel` matches homograph-safe conversion of `label` (lowercase with character substitutions: o→0, l/i→1) |
 | `domain`   | `CREATE`  | `normalizedParentDomainName` matches homograph-safe conversion of `parentDomainName` |
-| `domain`   | `CREATE`  | `ownerId` matches `records.dashUniqueIdentityId` or `dashAliasIdentityId` (whichever one is present)        |
+| `domain`   | `CREATE`  | `ownerId` matches `records.identity` (if present)        |
 | `domain`   | `CREATE`  | Only creating a top-level domain with an authorized identity                                                |
 | `domain`   | `CREATE`  | Referenced `normalizedParentDomainName` must be an existing parent domain                                   |
 | `domain`   | `CREATE`  | Subdomain registration for non-top-level domains prevented if the new domain's `subdomainRules.allowSubdomains` is true |

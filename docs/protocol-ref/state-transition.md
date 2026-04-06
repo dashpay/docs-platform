@@ -25,7 +25,7 @@ The list of common fields used by multiple state transitions is defined in [rs-d
 
 | Field           | Type           | Size | Description |
 | --------------- | -------------- | ---- | ----------- |
-| $version        | unsigned integer | 32 bits | The state transition format version (FeatureVersion). Currently `0` for most transitions, `1` for Batch. This is not the global platform protocol version, which is negotiated separately. |
+| $version        | unsigned integer | 16 bits | The state transition format version (FeatureVersion). Currently `0` for most transitions, `1` for Batch. This is not the global platform protocol version, which is negotiated separately. |
 | type            | unsigned integer | 8 bits  | State transition type (defined in [rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/state_transition/state_transition_types.rs#L21)):<br>`0` - [data contract create](../protocol-ref/data-contract.md#data-contract-create)<br>`1` - [batch](#batch)<br>`2` - [identity create](../protocol-ref/identity.md#identity-create)<br>`3` - [identity topup](identity.md#identity-topup)<br>`4` - [data contract update](data-contract.md#data-contract-update)<br>`5` - [identity update](identity.md#identity-update)<br>`6` - [identity credit withdrawal](identity.md#identity-credit-withdrawal)<br>`7` - [identity credit transfer](identity.md#identity-credit-transfer)<br>`8` - [masternode vote](#masternode-vote)<br>`9` - [identity credit transfer to addresses](address-system.md#identity-credit-transfer-to-addresses)<br>`10` - [identity create from addresses](address-system.md#identity-create-from-addresses)<br>`11` - [identity topup from addresses](address-system.md#identity-topup-from-addresses)<br>`12` - [address funds transfer](address-system.md#address-funds-transfer)<br>`13` - [address funding from asset lock](address-system.md#address-funding-from-asset-lock)<br>`14` - [address credit withdrawal](address-system.md#address-credit-withdrawal)<br>`15` - shield<br>`16` - shielded transfer<br>`17` - unshield<br>`18` - shield from asset lock<br>`19` - shielded withdrawal |
 | userFeeIncrease | unsigned integer | 16 bits | Extra fee to prioritize processing if the mempool is full. Typically set to zero. |
 | signature       | array of bytes | 65 bytes |Signature of state transition data |
@@ -49,7 +49,7 @@ Dash Platform Protocol defines the [state transition types](https://github.com/d
 | Field       | Type           | Size | Description |
 | ----------- | -------------- | ---- | ----------- |
 | ownerId     | array of bytes | 32 bytes | [Identity](../protocol-ref/identity.md) submitting the document(s) |
-| transitions | array of transition objects | Varies | A batch of [document](../protocol-ref/document.md#document-overview) or token actions (currently limited to 1 object per batch) |
+| transitions | array of transition objects | Varies | A batch of [document](../protocol-ref/document.md#document-overview) or token actions (currently limited to [1 object per batch](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/system_limits/v1.rs#L7)) |
 
 More detailed information about the `transitions` array can be found in the [document section](../protocol-ref/document.md). See the implementation in [rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/v1/mod.rs#L31-L39).
 
@@ -64,10 +64,10 @@ More detailed information about the `dataContract` object can be found in the [d
 
 ### Data Contract Update
 
-| Field           | Type           | Description |
-| --------------- | -------------- | ----------- |
-| dataContract | [data contract object](../protocol-ref/data-contract.md#data-contract-object) | Object containing valid [data contract](../protocol-ref/data-contract.md) details |
-| identityContractNonce | unsigned integer (64 bits) | Identity contract nonce for replay protection |
+| Field           | Type           | Size | Description |
+| --------------- | -------------- | ---- | ----------- |
+| dataContract | [data contract object](../protocol-ref/data-contract.md#data-contract-object) | Varies | Object containing valid [data contract](../protocol-ref/data-contract.md) details |
+| identityContractNonce | unsigned integer | 64 bits | Identity contract nonce for replay protection |
 
 More detailed information about the `dataContract` object can be found in the [data contract section](../protocol-ref/data-contract.md).
 
