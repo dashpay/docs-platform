@@ -10,7 +10,7 @@ The gRPC endpoints provide access to information from Dash Platform as well as s
 
 ### Auto-generated Clients
 
-Clients for a number of languages are built automatically from the protocol definitions and are available in the `packages/dapi-grpc/clients` folder of the [platform](https://github.com/dashpay/platform/) repository. The protocol definitions are available in the [`packages/dapi-grpc/protos` folder]. Pull requests are welcome to add support for additional languages that are not currently being built.
+Clients for a number of languages are built automatically from the protocol definitions and are available in the `packages/dapi-grpc/clients` folder of the [platform](https://github.com/dashpay/platform/) repository. The protocol definitions are available in the [`packages/dapi-grpc/protos` folder](https://github.com/dashpay/platform/tree/master/packages/dapi-grpc/protos). Pull requests are welcome to add support for additional languages that are not currently being built.
 
 ### Command Line Examples
 

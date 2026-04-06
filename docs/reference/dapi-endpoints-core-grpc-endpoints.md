@@ -666,7 +666,7 @@ client.core.getBlockByHeight(1)
 ```
 :::
 
-:::{tab-item} JavaScript (dapi-grpc)
+:::{tab-item} JavaScript (dapi-grpc, by height)
 :sync: js-dapi-gprc
 ```javascript
 const {
@@ -682,7 +682,7 @@ corePromiseClient.client.getBlock({ height: 1 })
 ```
 :::
 
-:::{tab-item} JavaScript (dapi-grpc)
+:::{tab-item} JavaScript (dapi-grpc, by hash)
 ```javascript
 const {
   v0: {
@@ -821,6 +821,16 @@ Note: The gRPCurl response `proTxHash` data is Base64 encoded.
 ```
 :::
 ::::
+
+```{eval-rst}
+..
+  Commented out info
+  [block:html]
+  {
+    "html": "<div></div>\n<!--\nDefined in proto but never implemented server-side - getEstimatedTransactionFee\n-->\n<style></style>"
+  }
+  [/block]
+```
 
 ## Deprecated Endpoints
 
