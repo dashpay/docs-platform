@@ -4287,7 +4287,7 @@ Returns address balance changes starting from a specified block height. Supports
 
 | Name                     | Type    | Required | Description |
 |--------------------------|---------|----------|-------------|
-| `start_height`           | Integer | Yes      | Block height to start from (as a string due to uint64 size) |
+| `start_height`           | String (uint64) | Yes      | Block height to start from (as a string due to uint64 size) |
 | `prove`                  | Boolean | No       | Set to `true` to receive a proof that contains the requested changes |
 | `start_height_exclusive` | Boolean | No       | When `true`, use exclusive start (excludes the start height block); when `false` or omitted, the start height block is included |
 
@@ -4360,7 +4360,7 @@ Returns compacted address balance changes from a specified block height. Compact
 
 | Name                 | Type    | Required | Description |
 |----------------------|---------|----------|-------------|
-| `start_block_height` | Integer | Yes      | Block height to start from (as a string due to uint64 size) |
+| `start_block_height` | String (uint64) | Yes      | Block height to start from (as a string due to uint64 size) |
 | `prove`              | Boolean | No       | Set to `true` to receive a proof that contains the requested changes |
 
 **Example Request and Response**
@@ -4512,8 +4512,8 @@ Returns nullifier additions starting from a specified block height, indicating w
 
 | Name           | Type    | Required | Description |
 |----------------|---------|----------|-------------|
-| `start_height` | Integer | Yes      | Block height to start from (as a string due to uint64 size) |
-| `prove`        | Boolean | No       | Set to `true` to receive a proof that contains the requested changes |
+| `start_height` | String (uint64) | Yes | Block height to start from (as a string due to uint64 size) |
+| `prove`        | Boolean         | No  | Set to `true` to receive a proof that contains the requested changes |
 
 ### getRecentCompactedNullifierChanges
 
@@ -4525,8 +4525,8 @@ Returns compacted nullifier additions from a specified block height. Compacted c
 
 | Name                 | Type    | Required | Description |
 |----------------------|---------|----------|-------------|
-| `start_block_height` | Integer | Yes      | Block height to start from (as a string due to uint64 size) |
-| `prove`              | Boolean | No       | Set to `true` to receive a proof that contains the requested changes |
+| `start_block_height` | String (uint64) | Yes | Block height to start from (as a string due to uint64 size) |
+| `prove`              | Boolean         | No  | Set to `true` to receive a proof that contains the requested changes |
 
 ## Deprecated Endpoints
 
