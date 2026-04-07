@@ -107,6 +107,20 @@ Security groups provide a way to distribute token configuration and update autho
 | [`getTokenStatuses`](../reference/dapi-endpoints-platform-endpoints.md#gettokenstatuses) | Retrieves the statuses of specified tokens. |
 | [`getTokenTotalSupply`](../reference/dapi-endpoints-platform-endpoints.md#gettokentotalsupply) | Retrieves the total supply of a specified token, including aggregated user accounts and system-held amounts. |
 
+### Address Info
+
+:::{versionadded} 3.1.0
+:::
+
+| Endpoint | Description |
+| -------- | ----------- |
+| [`getAddressInfo`](../reference/dapi-endpoints-platform-endpoints.md#getaddressinfo) | Returns balance and nonce information for a specified address. |
+| [`getAddressesInfos`](../reference/dapi-endpoints-platform-endpoints.md#getaddressesinfos) | Returns balance and nonce information for multiple addresses. |
+| [`getAddressesTrunkState`](../reference/dapi-endpoints-platform-endpoints.md#getaddressestrunkstate) | Returns a proof of the trunk state of the address tree. |
+| [`getAddressesBranchState`](../reference/dapi-endpoints-platform-endpoints.md#getaddressesbranchstate) | Returns a Merkle proof for a branch of the address tree. |
+| [`getRecentAddressBalanceChanges`](../reference/dapi-endpoints-platform-endpoints.md#getrecentaddressbalancechanges) | Returns recent address balance changes starting from a specified block height. |
+| [`getRecentCompactedAddressBalanceChanges`](../reference/dapi-endpoints-platform-endpoints.md#getrecentcompactedaddressbalancechanges) | Returns compacted address balance changes from a specified block height. |
+
 ```{eval-rst}
 ..
   Commented out info

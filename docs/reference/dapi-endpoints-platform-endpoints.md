@@ -4051,6 +4051,357 @@ grpcurl -proto protos/platform/v0/platform.proto \
 :::
 ::::
 
+## Address Info Endpoints
+
+:::{versionadded} 3.1.0
+:::
+
+### getAddressInfo
+
+Returns balance and nonce information for a specified address.
+
+**Returns**: An address info entry or a cryptographic proof.
+
+**Parameters**:
+
+| Name      | Type    | Required | Description |
+|-----------|---------|----------|-------------|
+| `address` | Bytes   | Yes      | The address to query |
+| `prove`   | Boolean | No       | Set to `true` to receive a proof that contains the requested address info |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "address": "AGMKU+A583xy+MWA8kFpOkxFrDlA",
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getAddressInfo
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "addressInfoEntry": {
+      "address": "AGMKU+A583xy+MWA8kFpOkxFrDlA",
+      "balanceAndNonce": {
+        "balance": "99388684960",
+        "nonce": 10
+      }
+    },
+    "metadata": {
+      "height": "307493",
+      "coreChainLockedHeight": 1453973,
+      "epoch": 15063,
+      "timeMs": "1775581907797",
+      "protocolVersion": 11,
+      "chainId": "dash-testnet-51"
+    }
+  }
+}
+```
+:::
+::::
+
+### getAddressesInfos
+
+Returns balance and nonce information for multiple addresses.
+
+**Returns**: A list of address info entries or a cryptographic proof.
+
+**Parameters**:
+
+| Name        | Type             | Required | Description |
+|-------------|------------------|----------|-------------|
+| `addresses` | Array of Bytes   | Yes      | The addresses to query |
+| `prove`     | Boolean          | No       | Set to `true` to receive a proof that contains the requested address info |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "addresses": [
+        "AGMKU+A583xy+MWA8kFpOkxFrDlA",
+        "AHEBwunnlfvW0zylnqC6rokXwANq"
+      ],
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getAddressesInfos
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "addressInfoEntries": {
+      "addressInfoEntries": [
+        {
+          "address": "AGMKU+A583xy+MWA8kFpOkxFrDlA",
+          "balanceAndNonce": {
+            "balance": "99388684960",
+            "nonce": 10
+          }
+        },
+        {
+          "address": "AHEBwunnlfvW0zylnqC6rokXwANq",
+          "balanceAndNonce": {
+            "balance": "500000000"
+          }
+        }
+      ]
+    },
+    "metadata": {
+      "height": "307493",
+      "coreChainLockedHeight": 1453973,
+      "epoch": 15063,
+      "timeMs": "1775581907797",
+      "protocolVersion": 11,
+      "chainId": "dash-testnet-51"
+    }
+  }
+}
+```
+:::
+::::
+
+### getAddressesTrunkState
+
+Returns a cryptographic proof of the trunk state of the address balance tree. Used with `getAddressesBranchState` to perform incremental sync of address balances.
+
+**Returns**: A cryptographic proof of the address tree trunk state.
+
+**Parameters**:
+
+None.
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{ "v0": {} }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getAddressesTrunkState
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "proof": {
+      "grovedbProof": "APsA/wGQtKE8gXoPHBaBJWO/39M63DsnEkx4Lah9...(truncated)",
+      "quorumHash": "AAAAN0ggLzkGuHl7bJM48baKuEs/b3rhSMSF5kIw14g=",
+      "signature": "oc8EMH7WkoZhv06iPvP4HjTlleaRLOfDRvWg30hjXL3z83DpNigk1/8mZwC1jrEDFymkkftcoE+DcPhZu/R8wlP2yxWcWo+605lLqU/FIb29nOt0q6hUbuX+eZL39mdb",
+      "blockIdHash": "Eq24v2aaWwDXN41oCmduKOYnDRsvoAJwDk8BEHZRDaU=",
+      "quorumType": 6
+    },
+    "metadata": {
+      "height": "307493",
+      "coreChainLockedHeight": 1453973,
+      "epoch": 15063,
+      "timeMs": "1775581907797",
+      "protocolVersion": 11,
+      "chainId": "dash-testnet-51"
+    }
+  }
+}
+```
+:::
+::::
+
+### getAddressesBranchState
+
+Returns a Merkle proof for a branch of the address balance tree. The `key` must be a valid node key from the address tree, obtained by parsing a `getAddressesTrunkState` proof. Use the `height` from that response's metadata as `checkpoint_height` to ensure consistency.
+
+**Returns**: A Merkle proof for the specified branch.
+
+**Parameters**:
+
+| Name                | Type    | Required | Description |
+|---------------------|---------|----------|-------------|
+| `key`               | Bytes   | Yes      | A valid node key from the address tree (obtained by parsing a trunk proof) |
+| `depth`             | Integer | Yes      | The depth of the branch (valid range: 6–9) |
+| `checkpoint_height` | Integer | Yes      | Block height from a `getAddressesTrunkState` response `metadata.height`, for consistency |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "key": "<node key from trunk proof>",
+      "depth": 6,
+      "checkpointHeight": "<height from getAddressesTrunkState metadata>"
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getAddressesBranchState
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "merkProof": "AAEC..."
+  }
+}
+```
+:::
+::::
+
+### getRecentAddressBalanceChanges
+
+Returns address balance changes starting from a specified block height. Supports both inclusive and exclusive start heights for incremental sync.
+
+**Returns**: A list of address balance changes grouped by block, or a cryptographic proof.
+
+**Parameters**:
+
+| Name                     | Type    | Required | Description |
+|--------------------------|---------|----------|-------------|
+| `start_height`           | Integer | Yes      | Block height to start from (as a string due to uint64 size) |
+| `prove`                  | Boolean | No       | Set to `true` to receive a proof that contains the requested changes |
+| `start_height_exclusive` | Boolean | No       | When `true`, use exclusive start (excludes the start height block); when `false` or omitted, the start height block is included |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "startHeight": "305000",
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getRecentAddressBalanceChanges
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "addressBalanceUpdateEntries": {
+      "blockChanges": [
+        {
+          "blockHeight": "305590",
+          "changes": [
+            {
+              "address": "AGMKU+A583xy+MWA8kFpOkxFrDlA",
+              "addToBalance": "800000000000"
+            }
+          ]
+        },
+        {
+          "blockHeight": "305591",
+          "changes": [
+            {
+              "address": "AGMKU+A583xy+MWA8kFpOkxFrDlA",
+              "setBalance": "99388684960"
+            }
+          ]
+        }
+      ]
+    },
+    "metadata": {
+      "height": "307487",
+      "coreChainLockedHeight": 1453964,
+      "epoch": 15063,
+      "timeMs": "1775580820548",
+      "protocolVersion": 11,
+      "chainId": "dash-testnet-51"
+    }
+  }
+}
+```
+:::
+::::
+
+### getRecentCompactedAddressBalanceChanges
+
+Returns compacted address balance changes from a specified block height. Compacted changes merge multiple operations per address into a single entry per block range, reducing response size for bulk sync.
+
+**Returns**: A list of compacted address balance changes grouped by block range, or a cryptographic proof.
+
+**Parameters**:
+
+| Name                 | Type    | Required | Description |
+|----------------------|---------|----------|-------------|
+| `start_block_height` | Integer | Yes      | Block height to start from (as a string due to uint64 size) |
+| `prove`              | Boolean | No       | Set to `true` to receive a proof that contains the requested changes |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "startBlockHeight": "307400",
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getRecentCompactedAddressBalanceChanges
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+```json
+{
+  "v0": {
+    "compactedAddressBalanceUpdateEntries": {},
+    "metadata": {
+      "height": "307489",
+      "coreChainLockedHeight": 1453968,
+      "epoch": 15063,
+      "timeMs": "1775581182645",
+      "protocolVersion": 11,
+      "chainId": "dash-testnet-51"
+    }
+  }
+}
+```
+:::
+::::
+
+
 ## Deprecated Endpoints
 
 The following endpoints were recently deprecated. See the [previous version of documentation](https://docs.dash.org/projects/platform/en/2.0.0/docs/reference/dapi-endpoints-platform-endpoints.html) for additional information on these endpoints.
