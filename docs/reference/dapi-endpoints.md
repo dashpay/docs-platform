@@ -121,6 +121,27 @@ Security groups provide a way to distribute token configuration and update autho
 | [`getRecentAddressBalanceChanges`](../reference/dapi-endpoints-platform-endpoints.md#getrecentaddressbalancechanges) | Returns recent address balance changes starting from a specified block height. |
 | [`getRecentCompactedAddressBalanceChanges`](../reference/dapi-endpoints-platform-endpoints.md#getrecentcompactedaddressbalancechanges) | Returns compacted address balance changes from a specified block height. |
 
+### Shielded Transactions
+
+:::{attention}
+Shielded Transaction endpoints are defined in the protocol but are not yet available on public nodes.
+:::
+
+:::{versionadded} 3.1.0
+:::
+
+| Endpoint | Description |
+| -------- | ----------- |
+| [`getShieldedEncryptedNotes`](../reference/dapi-endpoints-platform-endpoints.md#getshieldedencryptednotes) | Returns encrypted notes from the shielded pool for a specified range. |
+| [`getShieldedAnchors`](../reference/dapi-endpoints-platform-endpoints.md#getshieldedanchors) | Returns all commitment tree anchors for the shielded pool. |
+| [`getMostRecentShieldedAnchor`](../reference/dapi-endpoints-platform-endpoints.md#getmostrecentshieldedanchor) | Returns the most recent commitment tree anchor. |
+| [`getShieldedPoolState`](../reference/dapi-endpoints-platform-endpoints.md#getshieldedpoolstate) | Returns the total balance held in the shielded pool. |
+| [`getShieldedNullifiers`](../reference/dapi-endpoints-platform-endpoints.md#getshieldednullifiers) | Returns the spent status of specified nullifiers. |
+| [`getNullifiersTrunkState`](../reference/dapi-endpoints-platform-endpoints.md#getnullifierstrunkstate) | Returns a proof of the trunk state of a nullifier tree. |
+| [`getNullifiersBranchState`](../reference/dapi-endpoints-platform-endpoints.md#getnullifiersbranchstate) | Returns a Merkle proof for a branch of the nullifier tree. |
+| [`getRecentNullifierChanges`](../reference/dapi-endpoints-platform-endpoints.md#getrecentnullifierchanges) | Returns recent nullifier additions starting from a specified block height. |
+| [`getRecentCompactedNullifierChanges`](../reference/dapi-endpoints-platform-endpoints.md#getrecentcompactednullifierchanges) | Returns compacted nullifier additions from a specified block height. |
+
 ```{eval-rst}
 ..
   Commented out info

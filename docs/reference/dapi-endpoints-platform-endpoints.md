@@ -4401,6 +4401,132 @@ grpcurl -proto protos/platform/v0/platform.proto \
 :::
 ::::
 
+## Shielded Transaction Endpoints
+
+:::{versionadded} 3.1.0
+:::
+
+:::{attention}
+These endpoints are defined in the protocol but are not yet available on public nodes.
+:::
+
+### getShieldedEncryptedNotes
+
+Returns encrypted notes from the shielded pool for a specified range. Clients use these notes for trial decryption to identify notes belonging to their viewing key.
+
+**Returns**: A list of encrypted notes or a cryptographic proof.
+
+**Parameters**:
+
+| Name          | Type    | Required | Description |
+|---------------|---------|----------|-------------|
+| `start_index` | Integer | Yes      | The index of the first note to retrieve |
+| `count`       | Integer | Yes      | The number of notes to retrieve |
+| `prove`       | Boolean | No       | Set to `true` to receive a proof that contains the requested notes |
+
+### getShieldedAnchors
+
+Returns all commitment tree anchors for the shielded pool. Anchors are used by shielded transaction provers to reference a valid state of the commitment tree.
+
+**Returns**: A list of commitment tree anchors or a cryptographic proof.
+
+**Parameters**:
+
+| Name    | Type    | Required | Description |
+|---------|---------|----------|-------------|
+| `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested anchors |
+
+### getMostRecentShieldedAnchor
+
+Returns the most recent commitment tree anchor for the shielded pool.
+
+**Returns**: The most recent anchor or a cryptographic proof.
+
+**Parameters**:
+
+| Name    | Type    | Required | Description |
+|---------|---------|----------|-------------|
+| `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested anchor |
+
+### getShieldedPoolState
+
+Returns the total balance held in the shielded pool.
+
+**Returns**: The total shielded pool balance (in credits) or a cryptographic proof.
+
+**Parameters**:
+
+| Name    | Type    | Required | Description |
+|---------|---------|----------|-------------|
+| `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested pool state |
+
+### getShieldedNullifiers
+
+Returns the spent status of specified nullifiers. Clients use this to determine whether notes have already been spent.
+
+**Returns**: A list of nullifier statuses or a cryptographic proof.
+
+**Parameters**:
+
+| Name         | Type           | Required | Description |
+|--------------|----------------|----------|-------------|
+| `nullifiers` | Array of Bytes | Yes      | The nullifiers to query (each 32 bytes) |
+| `prove`      | Boolean        | No       | Set to `true` to receive a proof that contains the requested nullifier statuses |
+
+### getNullifiersTrunkState
+
+Returns a cryptographic proof of the trunk state of a nullifier tree. Used with `getNullifiersBranchState` to perform incremental sync of nullifier sets.
+
+**Returns**: A cryptographic proof of the nullifier tree trunk state.
+
+**Parameters**:
+
+| Name              | Type    | Required | Description |
+|-------------------|---------|----------|-------------|
+| `pool_type`       | Integer | Yes      | The shielded pool type: `0` = credit pool, `1` = main token pool, `2` = individual token pool |
+| `pool_identifier` | Bytes   | No       | 32-byte token identifier; required when `pool_type` is `2` |
+
+### getNullifiersBranchState
+
+Returns a Merkle proof for a branch of the nullifier tree. Use `checkpoint_height` from the metadata of a `getNullifiersTrunkState` response to ensure consistency.
+
+**Returns**: A Merkle proof for the specified branch.
+
+**Parameters**:
+
+| Name                | Type    | Required | Description |
+|---------------------|---------|----------|-------------|
+| `pool_type`         | Integer | Yes      | The shielded pool type: `0` = credit pool, `1` = main token pool, `2` = individual token pool |
+| `pool_identifier`   | Bytes   | No       | 32-byte token identifier; required when `pool_type` is `2` |
+| `key`               | Bytes   | Yes      | The branch key to query |
+| `depth`             | Integer | Yes      | The depth of the branch |
+| `checkpoint_height` | Integer | Yes      | Block height from a `getNullifiersTrunkState` response metadata, for consistency |
+
+### getRecentNullifierChanges
+
+Returns nullifier additions starting from a specified block height, indicating which notes were spent per block.
+
+**Returns**: A list of nullifier additions grouped by block, or a cryptographic proof.
+
+**Parameters**:
+
+| Name           | Type    | Required | Description |
+|----------------|---------|----------|-------------|
+| `start_height` | Integer | Yes      | Block height to start from (as a string due to uint64 size) |
+| `prove`        | Boolean | No       | Set to `true` to receive a proof that contains the requested changes |
+
+### getRecentCompactedNullifierChanges
+
+Returns compacted nullifier additions from a specified block height. Compacted changes merge multiple blocks into ranges, reducing response size for bulk sync.
+
+**Returns**: A list of compacted nullifier additions grouped by block range, or a cryptographic proof.
+
+**Parameters**:
+
+| Name                 | Type    | Required | Description |
+|----------------------|---------|----------|-------------|
+| `start_block_height` | Integer | Yes      | Block height to start from (as a string due to uint64 size) |
+| `prove`              | Boolean | No       | Set to `true` to receive a proof that contains the requested changes |
 
 ## Deprecated Endpoints
 
