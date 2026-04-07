@@ -4051,9 +4051,9 @@ grpcurl -proto protos/platform/v0/platform.proto \
 :::
 ::::
 
-## Address Info Endpoints
+## Address System Endpoints
 
-:::{versionadded} 3.1.0
+:::{versionadded} 3.0.0
 :::
 
 ### getAddressInfo

@@ -107,9 +107,9 @@ Security groups provide a way to distribute token configuration and update autho
 | [`getTokenStatuses`](../reference/dapi-endpoints-platform-endpoints.md#gettokenstatuses) | Retrieves the statuses of specified tokens. |
 | [`getTokenTotalSupply`](../reference/dapi-endpoints-platform-endpoints.md#gettokentotalsupply) | Retrieves the total supply of a specified token, including aggregated user accounts and system-held amounts. |
 
-### Address Info
+### Address System
 
-:::{versionadded} 3.1.0
+:::{versionadded} 3.0.0
 :::
 
 | Endpoint | Description |
