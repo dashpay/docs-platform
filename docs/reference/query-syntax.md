@@ -10,7 +10,7 @@ Generally queries will consist of a `where` clause plus optional [modifiers](#qu
 
 ## Where Clause
 
-The Where clause must be a non-empty array containing not more than 10 conditions. For some operators, `value` will be an array. All fields referenced in a query's where clause must be defined in the same index. This includes `$createdAt` and `$updatedAt`. See the following general syntax example:
+The Where clause is an optional array of conditions. If omitted or empty, all documents of the queried type are returned (subject to `limit`). For some operators, `value` will be an array. All fields referenced in a query's where clause must be defined in the same index. This includes system timestamp fields (e.g., `$createdAt`, `$updatedAt`, `$transferredAt`, and their block-height variants such as `$createdAtBlockHeight`). See the following general syntax example:
 
 ```json Syntax
 {
@@ -27,7 +27,7 @@ Valid fields consist of the indices defined for the document being queried. For 
 
 | Index Field(s) | Index Type | Unique |
 | - | - | :-: |
-| [normalizedParentDomainName, normalizedLabel](https://github.com/dashpay/platform/blob/master/packages/dpns-contract/schema/v1/dpns-contract-documents.json#L5-L16) | Compound | Yes |
+| [normalizedParentDomainName, normalizedLabel](https://github.com/dashpay/platform/blob/master/packages/dpns-contract/schema/v1/dpns-contract-documents.json#L11-L18) | Compound | Yes |
 | [records.identity](https://github.com/dashpay/platform/blob/master/packages/dpns-contract/schema/v1/dpns-contract-documents.json#L31-L39) | Single Field | No |
 
 ```{eval-rst}
@@ -57,9 +57,13 @@ Valid fields consist of the indices defined for the document being queried. For 
 | >= | Matches values that are greater than or equal to a specified value |
 | > | Matches values that are greater than a specified value |
 | in | Matches all document(s) where the value of the field equals any value in the specified array <br>Array may include up to 100 (unique) elements |
+| Between | Matches values between two bounds (inclusive on both sides) — value must be a two-element array `[lower, upper]` with `lower < upper` |
+| BetweenExcludeBounds | Matches values strictly between two bounds (exclusive on both sides) |
+| BetweenExcludeLeft | Matches values between two bounds, excluding the lower bound |
+| BetweenExcludeRight | Matches values between two bounds, excluding the upper bound |
 
 :::{tip}
-- Only one range operator is allowed in a query (except for between behavior)
+- Only one range operator is allowed in a query. `Between` and its variants are single operators that replace a `>=`/`<=` pair — the engine also normalizes two range operators on the same field into the equivalent `Between*` form automatically
 - The `in` operator is only allowed for last two indexed properties
 - Range operators are only allowed after `==` and `in` operators
 - Range operators are only allowed for the last two fields used in the where condition
@@ -81,6 +85,21 @@ Valid fields consist of the indices defined for the document being queried. For 
   where: [
     ["nameHash", "<", "56116861626961756e6176657a382e64617368"],
   ],
+}
+```
+:::
+
+:::{tab-item} Between
+```json
+{
+  where: [
+    ["normalizedParentDomainName", "==", "dash"],
+    // Return names between "alice" and "carol" (inclusive)
+    ["normalizedLabel", "Between", ["alice", "carol"]],
+  ],
+  orderBy: [
+    ["normalizedLabel", "asc"],
+  ]
 }
 ```
 :::
@@ -120,9 +139,10 @@ The query modifiers described here determine how query results will be sorted an
 | Modifier | Effect | Example |
 | - | - | - |
 | `limit` | Restricts the number of results returned (maximum: 100) | `limit: 10` |
-| `orderBy` | Returns records sorted by the field(s) provided (maximum: 2). Sorting must be by the last indexed property. Can only be used with `>`, `<`, `>=`, `<=`, and `startsWith` queries. | `orderBy: [['normalizedLabel', 'asc']]` |
-| `startAt` | Returns records beginning with the document ID provided | `startAt: Buffer.from(Identifier.from(<document ID>))` |
-| `startAfter` | Returns records beginning after the document ID provided | `startAfter: Buffer.from(Identifier.from(<document ID>))` |
+| `orderBy` | Returns records sorted by the field(s) provided (maximum: 2). Sorting must be by the last indexed property. Can only be used with `>`, `<`, `>=`, `<=`, `Between`, `BetweenExcludeBounds`, `BetweenExcludeLeft`, `BetweenExcludeRight`, and `startsWith` queries. | `orderBy: [['normalizedLabel', 'asc']]` |
+| `startAt` | Returns records beginning with the document ID provided | `startAt: '<document ID>'` |
+| `startAfter` | Returns records beginning after the document ID provided | `startAfter: '<document ID>'` |
+| `offset` | Skips the first N matching results (available at the CBOR/DAPI layer; not exposed in the JS SDK) | `offset: 10` |
 
 :::{attention}
 For indices composed of multiple fields ([example from the DPNS data contract](https://github.com/dashpay/platform/blob/master/packages/dpns-contract/schema/v1/dpns-contract-documents.json)), the sort order in an `orderBy` must either match the order defined in the data contract OR be the inverse order.
