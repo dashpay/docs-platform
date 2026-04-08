@@ -83,7 +83,6 @@ Security groups provide a way to distribute token configuration and update autho
 | [`getFinalizedEpochInfos`](../reference/dapi-endpoints-platform-endpoints.md#getfinalizedepochinfos) | **Added in Dash Platform v2.0.0**<br>Retrieves finalized epoch information within a specified index range |
 | [`getPathElements`](../reference/dapi-endpoints-platform-endpoints.md#getpathelements) | *Added in Dash Platform v1.0.0*<br>Returns elements for a specified path in the Platform |
 | [`getPrefundedSpecializedBalance`](../reference/dapi-endpoints-platform-endpoints.md#getprefundedspecializedbalance) | *Added in Dash Platform v1.0.0*<br>Returns the pre-funded specialized balance for a specific identity |
-| `getProofs` | **Disabled for external use in Dash Platform v1.0.0**<br>Returns proof information for the requested identities, contracts, and/or document(s) |
 | [`getProtocolVersionUpgradeState`](../reference/dapi-endpoints-platform-endpoints.md#getprotocolversionupgradestate) | Returns the number of votes cast for each protocol version |
 | [`getProtocolVersionUpgradeVoteStatus`](../reference/dapi-endpoints-platform-endpoints.md#getprotocolversionupgradevotestatus) | Returns protocol version upgrade status |
 | [`getStatus`](../reference/dapi-endpoints-platform-endpoints.md#getstatus) | *Added in Dash Platform v1.2.0*<br>Retrieves status information related to Dash Platform |
