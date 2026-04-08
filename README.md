@@ -28,6 +28,13 @@ Tutorial code blocks in `docs/tutorials/` are synced from the
 `python3 scripts/tutorial-sync/sync_tutorial_code.py --check --source /path/to/platform-tutorials`
 to check for drift, or without `--check` to update the docs in-place.
 
+### Auditing Documentation
+
+Use the doc-audit skill with [Claude Code](https://claude.ai/code) to check documentation against
+the Platform codebase. For best results, have a local clone of the
+[platform](https://github.com/dashpay/platform) repository available. See
+[.claude/skills/doc-audit/SKILL.md](.claude/skills/doc-audit/SKILL.md) for details.
+
 ## License
 
 [MIT](/LICENSE) © Dash Core Group, Inc.
