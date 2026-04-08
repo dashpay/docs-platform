@@ -15,7 +15,7 @@ issues for API consumers.
 
 ### Data Proofs and Metadata
 
-Platform gRPC endpoints can provide [proofs](https://github.com/dashpay/platform/blob/master/packages/dapi-grpc/protos/platform/v0/platform.proto#L142-L149) so the data returned for a request can be verified as being valid. When requesting proofs, the data requested will be encoded as part of the proof in the response. Proofs are supported in the JavaScript client, and can also be used via the low level [dapi-grpc library](https://github.com/dashpay/platform/tree/master/packages/dapi-grpc).
+Platform gRPC endpoints can provide [proofs](https://github.com/dashpay/platform/blob/master/packages/dapi-grpc/protos/platform/v0/platform.proto#L142-L149) so the data returned for a request can be verified as being valid. When requesting proofs, the data requested will be encoded as part of the proof in the response. Proofs are supported in the [js-evo-sdk](https://github.com/dashpay/platform/tree/master/packages/js-evo-sdk) and via the low-level [dapi-grpc library](https://github.com/dashpay/platform/tree/master/packages/dapi-grpc).
 
 Some [additional metadata](https://github.com/dashpay/platform/blob/master/packages/dapi-grpc/protos/platform/v0/platform.proto#L153-L160) is also provided with responses:
 
