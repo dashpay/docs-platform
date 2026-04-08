@@ -152,14 +152,12 @@ For indices composed of multiple fields ([example from the DPNS data contract](h
 
 The following query combines both a where clause and query modifiers.
 
+::::{tab-set}
+:::{tab-item} Query object
 ```javascript
-import Dash from "dash"
-
-const { Essentials: { Buffer }, PlatformProtocol: { Identifier } } = Dash;
-
 const query = {
   limit: 5,
-  startAt: Buffer.from(Identifier.from('4Qp3menV9QjE92hc3BzkUCusAmHLxh1AU6gsVsPF4L2q')),
+  startAt: '4Qp3menV9QjE92hc3BzkUCusAmHLxh1AU6gsVsPF4L2q',
   where: [
     ['normalizedParentDomainName', '==', 'dash'],
     ['normalizedLabel', 'startsWith', 'test'],
@@ -169,3 +167,32 @@ const query = {
   ],
 }
 ```
+:::
+
+:::{tab-item} Evo SDK example
+```javascript
+import { EvoSDK } from '@dashevo/evo-sdk';
+
+const sdk = EvoSDK.testnetTrusted();
+await sdk.connect();
+
+const results = await sdk.documents.query({
+  dataContractId: 'GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec',
+  documentTypeName: 'domain',
+  limit: 5,
+  startAt: '4etYFuWbXRXB74gTDp53eLUqjLEAtNSfUX2XtrQ1uMdT',
+  where: [
+    ['normalizedParentDomainName', '==', 'dash'],
+    ['normalizedLabel', 'startsWith', 'test'],
+  ],
+  orderBy: [
+    ['normalizedLabel', 'asc'],
+  ],
+});
+
+for (const [id, doc] of results) {
+  console.log(id.toString(), doc.toJSON());
+}
+```
+:::
+::::
