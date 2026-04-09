@@ -10,7 +10,7 @@ Generally queries will consist of a `where` clause plus optional [modifiers](#qu
 
 ## Where Clause
 
-The Where clause is an optional array of conditions. If omitted or empty, all documents of the queried type are returned (subject to `limit`). For some operators, `value` will be an array. All fields referenced in a query's where clause must be defined in the same index. This includes system timestamp fields (e.g., `$createdAt`, `$updatedAt`, `$transferredAt`, and their block-height variants such as `$createdAtBlockHeight`). See the following general syntax example:
+The Where clause is an optional array of conditions. If omitted or empty, all documents of the queried type are returned (subject to `limit`). For some operators, `value` will be an array. All fields referenced in a query's where clause must be defined in the same index. This includes system timestamp fields (e.g., `$createdAt`, `$updatedAt`, `$transferredAt`, and their block-height variants such as `$createdAtBlockHeight` and `$createdAtCoreBlockHeight`). See the following general syntax example:
 
 ```json Syntax
 {
@@ -46,7 +46,7 @@ Valid fields consist of the indices defined for the document being queried. For 
 
 | Name | Description |
 | :-: | - |
-| == | Matches values that are equal to a specified value |
+| == (or =) | Matches values that are equal to a specified value |
 
 #### Range
 
@@ -74,7 +74,7 @@ Valid fields consist of the indices defined for the document being queried. For 
 
 | Name | Description |
 | :-: | - |
-| startsWith | Selects documents where the value of a field begins with the specified characters (string, <= 255 characters). Must include an `orderBy` statement. |
+| startsWith | Selects documents where the value of a field begins with the specified characters. Must include an `orderBy` statement. |
 
 ### Operator Examples
 
@@ -139,7 +139,7 @@ The query modifiers described here determine how query results will be sorted an
 | Modifier | Effect | Example |
 | - | - | - |
 | `limit` | Restricts the number of results returned (maximum: 100) | `limit: 10` |
-| `orderBy` | Returns records sorted by the field(s) provided (maximum: 2). Sorting must be by the last indexed property. Can only be used with `>`, `<`, `>=`, `<=`, `Between`, `BetweenExcludeBounds`, `BetweenExcludeLeft`, `BetweenExcludeRight`, and `startsWith` queries. | `orderBy: [['normalizedLabel', 'asc']]` |
+| `orderBy` | Returns records sorted by the field(s) provided. Sorting must be by the last indexed property. Can only be used with `>`, `<`, `>=`, `<=`, `Between`, `BetweenExcludeBounds`, `BetweenExcludeLeft`, `BetweenExcludeRight`, and `startsWith` queries. | `orderBy: [['normalizedLabel', 'asc']]` |
 | `startAt` | Returns records beginning with the document ID provided | `startAt: '<document ID>'` |
 | `startAfter` | Returns records beginning after the document ID provided | `startAfter: '<document ID>'` |
 | `offset` | Skips the first N matching results (available at the CBOR/DAPI layer; not exposed in the JS SDK) | `offset: 10` |
@@ -191,7 +191,7 @@ const results = await sdk.documents.query({
 });
 
 for (const [id, doc] of results) {
-  console.log(id.toString(), doc.toJSON());
+  console.log(id.toString(), doc?.toJSON());
 }
 ```
 :::
