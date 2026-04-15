@@ -40,7 +40,7 @@ In the registration phase, the domain name (e.g. `alice.dash`) is once again sub
 Since some names may be popular, the registration process includes a voting mechanism to resolve conflicts when multiple identities request the same name. Identities requesting premium names must pay a fee (0.2 DASH) to cover the masternode voting costs.
 
 :::{note}
-This process only applies to names that meet the following conditions:
+This process only applies to valid names that meet the following conditions:
 
 * Less than 20 characters long (i.e. "alice", "quantumexplorer") AND
 * Contain no numbers or only contain the number(s) 0 and/or 1 (i.e. "bob", "carol01")
@@ -74,13 +74,14 @@ Locked names cannot currently be re-requested or awarded. This policy may be rev
 
 DPNS names have several constraints as defined in the [DPNS data contract](https://github.com/dashpay/platform/blob/master/packages/dpns-contract/schema/v1/dpns-contract-documents.json). The constraints provide compatibility with DNS and protection from homograph attacks:
 
+1. Minimum length - 3 characters
 1. Maximum length - 63 characters
 1. Usable characters - `0-9`, `-` (hyphen), `a-z`, and `A-Z` (case sensitive)
-    * Note: Use of `-` as a prefix/suffix to a name is _not_ allowed (e.g. `-name` or `name-`). This constraint is defined by this JSON-Schema [pattern](https://github.com/dashpay/platform/blob/master/packages/dpns-contract/schema/v1/dpns-contract-documents.json#L44) in the DPNS data contract: `"^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]$`
+    * Note: Use of `-` as a prefix/suffix to a name is _not_ allowed (e.g. `-name` or `name-`). This constraint is defined by this JSON-Schema [pattern](https://github.com/dashpay/platform/blob/master/packages/dpns-contract/schema/v1/dpns-contract-documents.json#L44) in the DPNS data contract: `"^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]$"`
 1. Domain labels are converted to lowercase for case-insensitive uniqueness validation.
 1. To mitigate [homograph attacks](https://en.wikipedia.org/wiki/IDN_homograph_attack), `o` is replaced with `0` and `i`/`l` are replaced with `1`. For example, "Alice" is normalized to "a11ce".
 
-Additional validation rules related to the `domain` document are enforced by the DPNS [data triggers](../explanations/platform-protocol-data-trigger.md) defined in [rs-drive-abci](https://github.com/dashpay/platform/tree/master/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/documents_batch/data_triggers/triggers).
+Additional validation rules related to the `domain` document are enforced by the DPNS [data triggers](../explanations/platform-protocol-data-trigger.md) defined in [rs-drive-abci](https://github.com/dashpay/platform/tree/master/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/batch/data_triggers/triggers/dpns).
 
 ```{eval-rst}
 ..
