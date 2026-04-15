@@ -231,7 +231,7 @@ Groups can be used to distribute token configuration and update authorization ac
 
 - Each group member is assigned an integer power.
 - The group itself has a required power threshold to authorize an action.
-- Groups can have up to 256 members, each with a maximum power of 2^16 - 1 (65536).
+- Groups can have up to 256 members, each with a maximum power of 2^16 - 1 (65535).
 - Changes to a token (e.g., mint, burn, freeze) can be configured so they require group authorization. This is done by assigning the group under the [token rule configuration](#rules).
 
 **Example**

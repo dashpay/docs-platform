@@ -43,7 +43,7 @@ Each application defines its own fields via document definitions in its data con
 
 | Document Type | Field Name | Data Type |
 | - | - | - |
-| preorder | saltedDomainHash | string |
+| preorder | saltedDomainHash | array (32 bytes) |
 | --- | --- | --- |
 | domain | label | string |
 | domain | normalizedLabel | string |
