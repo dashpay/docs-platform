@@ -30,11 +30,11 @@ For additional detail, see the [Document](../explanations/platform-protocol-docu
 
 A state transition represents a change made by a user to the application and platform states. It consists of:
 
-* Either:
-  * An array of documents, or
-  * One data contract
-* The contract ID of the application to which the change is made
-* The user's signature.
+* A header (version and payload type)
+* A payload
+* The user's signature
+
+The payload varies by type and covers a range of operations including document and token updates, data contract creation, identity management, credit transfers, and masternode voting.
 
 The user signature is made for the binary representation of the state transition using a private key associated with an [identity](../explanations/identity.md). A state transition is constructed by a client-side library when the user creates documents and submits them to the platform API.
 
