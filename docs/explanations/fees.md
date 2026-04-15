@@ -26,14 +26,13 @@ The current cost schedule is outlined in the table below:
 
 | Operation | Cost (credits) |
 | - | - |
-| Permanent storage | 40000 / byte |
-| Base processing fee | 100000 |
-| Write to storage | 750 / byte |
-| Load from storage | 3500 / byte |
+| Permanent storage | 27000 / byte |
+| Base processing fee | 10000 |
+| Write to storage | 400 / byte |
+| Load from storage | 20 / byte |
 | Seek storage | 2000 |
-| Query | 75 / byte |
-| Load from memory | 20 / byte |
-| Blake3 hash function | 400 + 64 / 64-byte block |
+| Load from memory | 10 / byte |
+| Blake3 hash function | 100 base + 300 / 64-byte block |
 
 :::{note}
 Refer to the [Identity explanation](../explanations/identity.md) section for information regarding how credits are created.

@@ -21,13 +21,20 @@ Dash Platform Protocol (DPP) defines a set of base fields that must be present i
 | $id | The document ID (32 bytes) |
 | $type | Document type defined in the referenced contract |
 | $revision | Document revision (=>1) |
-| $dataContract | Data contract the document is associated with |
+| $dataContractId | Data contract the document is associated with (32 bytes) |
 | $ownerId | [Identity](../explanations/identity.md) of the user submitting the document (32 bytes) |
 | $createdAt | Time (in milliseconds) the document was created |
 | $updatedAt | Time (in milliseconds) the document was last updated |
+| $transferredAt | Time (in milliseconds) the document was last transferred |
+| $createdAtBlockHeight | Platform block height when the document was created |
+| $updatedAtBlockHeight | Platform block height when the document was last updated |
+| $transferredAtBlockHeight | Platform block height when the document was last transferred |
+| $createdAtCoreBlockHeight | Core block height when the document was created |
+| $updatedAtCoreBlockHeight | Core block height when the document was last updated |
+| $transferredAtCoreBlockHeight | Core block height when the document was last transferred |
 
 :::{attention}
-The `$createdAt` and `$updatedAt` fields will only be present in documents that add them to the list of [required properties](../reference/data-contracts.md#required-properties).
+The timestamp and block height fields will only be present in documents that add them to the list of [required properties](../reference/data-contracts.md#required-properties).
 :::
 
 ### Data Contract Fields
@@ -44,8 +51,7 @@ Each application defines its own fields via document definitions in its data con
 | domain | normalizedParentDomainName | string |
 | domain | preorderSalt | array (bytes) |
 | domain | records | object |
-| domain | records.dashUniqueIdentityId | array (bytes) |
-| domain | records.dashAliasIdentityId | array (bytes) |
+| domain | records.identity | array (32 bytes) |
 | domain | subdomainRules | object |
 | domain | subdomainRules.allowSubdomains | boolean |
 
@@ -63,7 +69,7 @@ The following example shows the structure of a DPNS `domain` document as output 
   "parentDomainName": "dash",
   "preorderSalt": "bcCSdtGqqZdXBQB4DDBIU2RPAwFDFt9tMr0LX6m5qCQ=",
   "records": {
-    "dashUniqueIdentityId": "UQTRY+wqPyL27V7YjJadJdyXVBETj6CfzvqUg5aY5E4="
+    "identity": "UQTRY+wqPyL27V7YjJadJdyXVBETj6CfzvqUg5aY5E4="
   },
   "subdomainRules": {
     "allowSubdomains": false
@@ -71,7 +77,7 @@ The following example shows the structure of a DPNS `domain` document as output 
   "$revision": 1,
   "$createdAt": null,
   "$updatedAt": null,
-  "$dataContract": {
+  "$dataContractId": {
     // Truncated ...
    },
   "$type": "domain"
