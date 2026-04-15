@@ -65,6 +65,15 @@ The site uses a hierarchical structure with:
 - Google Analytics tracking configured
 - Uses pydata-sphinx-theme with custom CSS overrides
 
+## Editing Guidelines
+
+When updating documentation values that include GitHub source links:
+
+- Preserve the existing link markup — do not replace `[value](url#Lnn)` with plain text
+- Update the URL if the file path has changed (e.g. directory renames)
+- Update the line anchor (`#L`) to match the correct line **in the branch the link points to**
+- When available, use the local platform repository checkout to verify line numbers against the correct branch
+
 ## File Patterns
 
 - Documentation files: `docs/**/*.md`
