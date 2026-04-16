@@ -59,15 +59,15 @@ In an attempt to minimize Dash Platform's storage requirements, users are incent
 ## User Fee Increase
 
 Platform supports a user fee increase that can be used to incentivize inclusion of a state
-transition in the next block, especially during periods of high traffic. This is expressed as a
-multiplier on the processing fee.
+transition in the next block, especially during periods of high traffic. This is expressed as an
+integer percentage increase applied to the processing fee.
 
 ## Formula
 
 The high level formula for a state transition's fee is:
 
 ```text
-    fee = storageFee + processingFee * feeMultiplier - storageRefund
+    fee = storageFee + processingFee + (processingFee * userFeeIncrease / 100) - storageRefund
 ```
 
 <!-- Uncomment once DIP available

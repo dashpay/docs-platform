@@ -18,7 +18,7 @@ Given a number of technical considerations (security, masternode processing capa
 
 Since all application data is submitted in the form of documents, data triggers are defined in the context of documents. To provide even more granularity, they also incorporate the document `action` so separate triggers can be created for the `CREATE`, `REPLACE`, or `DELETE` actions.
 
-As an example, DPP contains several [data triggers for DPNS](https://github.com/dashpay/platform/tree/master/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/batch/data_triggers/triggers/dpns). The `domain` document has added constraints for creation. All DPNS document types have constraints on replacing, deleting, transferring, purchasing, or updating prices:
+As an example, DPP contains several [data triggers for DPNS](https://github.com/dashpay/platform/tree/master/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/batch/data_triggers/triggers/dpns). The `domain` document has added constraints for creation, replacing, deleting, transferring, purchasing, and updating prices:
 
 | Data Contract | Document | Action(s) | Trigger Description |
 | - | - | - | - |
