@@ -28,6 +28,11 @@ mappings:
     block_id:
       caption: send-funds.mjs
 
+  - source: setupDashClient-core.mjs
+    doc: setup-sdk-client.md
+    block_id:
+      caption: setupDashClient-core.mjs
+
   - source: setupDashClient.mjs
     doc: setup-sdk-client.md
     block_id:

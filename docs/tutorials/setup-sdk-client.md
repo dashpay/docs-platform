@@ -9,26 +9,53 @@ tutorials.
 
 ## Code
 
-Save the following module in a file named `setupDashClient.mjs`. Later tutorials import from this file.
+Save the following two modules side-by-side — `setupDashClient-core.mjs` and
+`setupDashClient.mjs` — in the same directory. Later Node tutorials import from
+`setupDashClient.mjs`; browser apps can import from `setupDashClient-core.mjs`
+directly.
 
-| Export | Purpose |
-| ------ | -------- |
-| `setupDashClient()` | Connects and creates key managers from `clientConfig` |
-| `createClient()` | Connects to the network |
-| `IdentityKeyManager` | Derives identity keys and provides signers for write operations |
-| `AddressKeyManager` | Derives platform address keys for address operations |
-| `clientConfig` | Shared network and mnemonic configuration |
+| Export | File | Purpose |
+| ------ | ---- | ------- |
+| `createClient()` | `setupDashClient-core.mjs` | Connects to the network |
+| `IdentityKeyManager` | `setupDashClient-core.mjs` | Derives identity keys and provides signers for write operations |
+| `AddressKeyManager` | `setupDashClient-core.mjs` | Derives platform address keys for address operations |
+| `dip13KeyPath()` / `KEY_SPECS` | `setupDashClient-core.mjs` | DIP-13 path helper and the 5 standard identity key specs |
+| `setupDashClient()` | `setupDashClient.mjs` | Node convenience wrapper — connects and creates key managers from `clientConfig` |
+| `clientConfig` | `setupDashClient.mjs` | Network and mnemonic configuration, sourced from `process.env` |
 
 :::{important}
-After saving, open `setupDashClient.mjs` and set your mnemonic in the `clientConfig` section near the top
-of the file — either edit the value directly or create a `.env` file with `PLATFORM_MNEMONIC`.
+After saving, open `setupDashClient.mjs` (the wrapper) and set your mnemonic in
+the `clientConfig` section near the top of the file — either edit the value
+directly or create a `.env` file with `PLATFORM_MNEMONIC`. The core file has no
+configuration to edit.
 :::
 
+### Browser-safe core
+
+`setupDashClient-core.mjs` holds everything that works in any JS runtime: the
+SDK client factory, DIP-13 path helper, and the two key manager classes.
+Browser apps import from this file directly.
+
 ```{code-block} javascript
-:caption: setupDashClient.mjs
-:name: setupDashClient.mjs
+:caption: setupDashClient-core.mjs
+:name: setupDashClient-core.mjs
 
 /* eslint-disable max-classes-per-file */
+//
+// Browser-safe core of setupDashClient.
+//
+// This file contains the parts of setupDashClient that work in any JS runtime:
+//   - createClient(network)
+//   - dip13KeyPath(network, identityIndex, keyIndex)
+//   - IdentityKeyManager
+//   - AddressKeyManager
+//   - KEY_SPECS
+//
+// The Node-only convenience layer (dotenv loading, process.env-driven
+// clientConfig, and the setupDashClient() wrapper) lives in setupDashClient.mjs
+// alongside this file. Both Node tutorials and browser apps import the same
+// IdentityKeyManager from here so there is no copy-paste drift.
+//
 import {
   EvoSDK,
   IdentityPublicKeyInCreation,
@@ -40,16 +67,6 @@ import {
   SecurityLevel,
   wallet,
 } from '@dashevo/evo-sdk';
-
-// Load .env if dotenv is installed (optional — not needed for tutorials).
-// Top-level await requires ESM — .mjs extension ensures this.
-// eslint-disable-next-line import/no-extraneous-dependencies
-try {
-  const { config } = await import('dotenv');
-  config();
-} catch {
-  /* dotenv not installed */
-}
 
 /** @typedef {import('@dashevo/evo-sdk').Identity} Identity */
 /** @typedef {import('@dashevo/evo-sdk').IdentityPublicKey} IdentityPublicKey */
@@ -75,21 +92,35 @@ try {
 // ⚠️ Tutorial helper — holds WIFs in memory for convenience.
 // Do not use this pattern as-is for production key management.
 
-// ###########################################################################
-// #  CONFIGURATION — edit these values for your environment               #
-// ###########################################################################
-// Option 1: Edit the values below directly
-// Option 2: Create a .env file with PLATFORM_MNEMONIC and NETWORK
+// ---------------------------------------------------------------------------
+// Browser-safe hex → bytes (replaces Buffer.from(hex, 'hex'))
+// ---------------------------------------------------------------------------
 
-const clientConfig = {
-  // The network to connect to ('testnet' or 'mainnet')
-  network: process.env.NETWORK || 'testnet',
+/**
+ * Decode a hex string to a Uint8Array. Browser-safe replacement for
+ * Buffer.from(hex, 'hex'). Throws on odd-length or non-hex input.
+ *
+ * @param {string} hex
+ * @returns {Uint8Array}
+ */
+function hexToBytes(hex) {
+  if (typeof hex !== 'string' || hex.length % 2 !== 0) {
+    throw new Error('hexToBytes: expected even-length hex string');
+  }
+  const out = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < out.length; i += 1) {
+    const byte = parseInt(hex.substr(i * 2, 2), 16);
+    if (Number.isNaN(byte)) {
+      throw new Error(`hexToBytes: invalid hex at offset ${i * 2}`);
+    }
+    out[i] = byte;
+  }
+  return out;
+}
 
-  // BIP39 mnemonic for wallet operations (identity & address tutorials).
-  // Leave as null for read-only tutorials.
-  mnemonic: process.env.PLATFORM_MNEMONIC || null,
-  // mnemonic: 'your twelve word mnemonic phrase goes here ...',
-};
+// ---------------------------------------------------------------------------
+// DIP-13 key path
+// ---------------------------------------------------------------------------
 
 /**
  * Build a DIP-13 identity key derivation path.
@@ -142,7 +173,7 @@ export async function createClient(network = 'testnet') {
 // ---------------------------------------------------------------------------
 
 /** Key specs for the 5 standard identity keys (DIP-9). */
-const KEY_SPECS = [
+export const KEY_SPECS = [
   {
     keyId: 0,
     purpose: Purpose.AUTHENTICATION,
@@ -379,7 +410,7 @@ class IdentityKeyManager {
           `Public key data not available for key ${spec.keyId}. Use createForNewIdentity().`,
         );
       }
-      const pubKeyData = Uint8Array.from(Buffer.from(key.publicKey, 'hex'));
+      const pubKeyData = hexToBytes(key.publicKey);
       return new IdentityPublicKeyInCreation({
         keyId: spec.keyId,
         purpose: spec.purpose,
@@ -604,6 +635,76 @@ class AddressKeyManager {
   }
 }
 
+export { IdentityKeyManager, AddressKeyManager };
+```
+
+### Node wrapper
+
+`setupDashClient.mjs` is a thin Node-only wrapper that loads `.env`, builds
+`clientConfig` from `process.env`, exposes the one-call `setupDashClient()`
+helper, and re-exports everything from the core so Node tutorials can import
+`IdentityKeyManager`, `AddressKeyManager`, `clientConfig`, and friends from a
+single module.
+
+```{code-block} javascript
+:caption: setupDashClient.mjs
+:name: setupDashClient.mjs
+
+//
+// Node-only convenience wrapper around setupDashClient-core.mjs.
+//
+// This file adds the bits that only make sense in Node tutorials:
+//   - dotenv loading (PLATFORM_MNEMONIC / NETWORK from .env)
+//   - clientConfig (network + mnemonic, sourced from process.env)
+//   - setupDashClient() — the one-call wrapper used by tutorial scripts
+//
+// Everything browser-safe (createClient, IdentityKeyManager, AddressKeyManager,
+// dip13KeyPath, KEY_SPECS) is re-exported from setupDashClient-core.mjs so a
+// Node tutorial that imports from this file sees an identical API surface.
+//
+// Browser apps should import from setupDashClient-core.mjs directly.
+//
+import { wallet } from '@dashevo/evo-sdk';
+
+import {
+  createClient,
+  dip13KeyPath,
+  KEY_SPECS,
+  IdentityKeyManager,
+  AddressKeyManager,
+} from './setupDashClient-core.mjs';
+
+// Load .env if dotenv is installed (optional — not needed for tutorials).
+// Top-level await requires ESM — .mjs extension ensures this.
+// eslint-disable-next-line import/no-extraneous-dependencies
+try {
+  const { config } = await import('dotenv');
+  config();
+} catch {
+  /* dotenv not installed */
+}
+
+/** @typedef {import('@dashevo/evo-sdk').EvoSDK} EvoSDK */
+
+// ⚠️ Tutorial helper — holds WIFs in memory for convenience.
+// Do not use this pattern as-is for production key management.
+
+// ###########################################################################
+// #  CONFIGURATION — edit these values for your environment               #
+// ###########################################################################
+// Option 1: Edit the values below directly
+// Option 2: Create a .env file with PLATFORM_MNEMONIC and NETWORK
+
+const clientConfig = {
+  // The network to connect to ('testnet' or 'mainnet')
+  network: process.env.NETWORK || 'testnet',
+
+  // BIP39 mnemonic for wallet operations (identity & address tutorials).
+  // Leave as null for read-only tutorials.
+  mnemonic: process.env.PLATFORM_MNEMONIC || null,
+  // mnemonic: 'your twelve word mnemonic phrase goes here ...',
+};
+
 // ---------------------------------------------------------------------------
 // setupDashClient — convenience wrapper
 // ---------------------------------------------------------------------------
@@ -657,27 +758,50 @@ export async function setupDashClient({
   return { sdk, keyManager, addressKeyManager };
 }
 
-export { IdentityKeyManager, AddressKeyManager, clientConfig };
+// Re-export everything from the core so existing imports
+// (e.g. `import { IdentityKeyManager } from './setupDashClient.mjs'`) keep working.
+export {
+  createClient,
+  dip13KeyPath,
+  KEY_SPECS,
+  IdentityKeyManager,
+  AddressKeyManager,
+  clientConfig,
+};
 ```
 
 ## What's Happening
 
-The `setupDashClient.mjs` module is a single-file setup that subsequent tutorials import. It handles:
+The setup is split across two files so the same code can run under Node and in
+the browser without copy-paste drift. Node tutorials import from
+`setupDashClient.mjs` (the wrapper); browser apps import from
+`setupDashClient-core.mjs` directly.
 
-- **`clientConfig`** — your network and mnemonic, defined once. Set values directly or use a `.env`
-  file with `NETWORK` and `PLATFORM_MNEMONIC`.
+**`setupDashClient-core.mjs` (browser-safe)** provides the substantive pieces:
 
-- **`setupDashClient()`** — the main entry point for most tutorials. Connects to the network and
-  creates key managers from `clientConfig`, returning `{ sdk, keyManager, addressKeyManager }`.
+- **`createClient()`** — creates a connected SDK instance for a given network
+  (testnet, mainnet, or local).
 
-- **`createClient()`** — creates a connected SDK instance for a given network (testnet, mainnet, or
-  local).
+- **`IdentityKeyManager`** — derives 5 standard identity keys from your mnemonic
+  using DIP-9 key paths. Each key serves a specific purpose (authentication,
+  transfers, encryption). Call methods like `getAuth()` to get
+  `{ identity, identityKey, signer }` — everything the SDK needs to sign and
+  submit a transaction.
 
-- **`IdentityKeyManager`** — derives 5 standard identity keys from your mnemonic using DIP-9 key
-  paths. Each key serves a specific purpose (authentication, transfers, encryption). Call methods
-  like `getAuth()` to get `{ identity, identityKey, signer }` — everything the SDK needs to sign
-  and submit a transaction.
+- **`AddressKeyManager`** — derives platform address keys from your mnemonic
+  using BIP44 paths. These addresses hold credits on the L2 platform layer and
+  are used for identity creation, top-ups, and credit transfers between
+  addresses.
 
-- **`AddressKeyManager`** — derives platform address keys from your mnemonic using BIP44 paths.
-  These addresses hold credits on the L2 platform layer and are used for identity creation, top-ups,
-  and credit transfers between addresses.
+- **`dip13KeyPath()`** / **`KEY_SPECS`** — the DIP-13 path helper and the
+  5-entry spec table used to build identity public keys.
+
+**`setupDashClient.mjs` (Node wrapper)** adds the Node-only conveniences and
+re-exports everything from core:
+
+- **`clientConfig`** — your network and mnemonic, defined once. Set values
+  directly or use a `.env` file with `NETWORK` and `PLATFORM_MNEMONIC`.
+
+- **`setupDashClient()`** — the main entry point for most tutorials. Connects
+  to the network and creates key managers from `clientConfig`, returning
+  `{ sdk, keyManager, addressKeyManager }`.
