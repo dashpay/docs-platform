@@ -44,7 +44,7 @@ The following table contains a list of currently defined payload types:
 | [Identity Update](../protocol-ref/identity.md#identity-update) (`5`) | A set of one or more new public keys to add to the [identity](../explanations/identity.md) or a list of existing keys to disable |
 | [Identity Credit Withdrawal](../protocol-ref/identity.md) (`6`) | Information required to withdraw credits from Dash Platform |
 | [Identity Credit Transfer](../protocol-ref/identity.md) (`7`) | Information required to transfer credits |
-| Masternode Vote | Contested resource vote details (e.g., [DPNS premium name vote](../explanations/dpns.md#conflict-resolution)) |
+| Masternode Vote (`8`) | Contested resource vote details (e.g., [DPNS premium name vote](../explanations/dpns.md#conflict-resolution)) |
 | [Identity Credit Transfer To Addresses](../protocol-ref/address-system.md#identity-credit-transfer-to-addresses) (`9`) | Transfer identity credits to one or more Platform addresses |
 | [Identity Create From Addresses](../protocol-ref/address-system.md#identity-create-from-addresses) (`10`) | Create a new identity funded from Platform addresses |
 | [Identity Top Up From Addresses](../protocol-ref/address-system.md#identity-top-up-from-addresses) (`11`) | Add credits to an existing identity from Platform addresses |

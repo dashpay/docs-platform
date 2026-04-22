@@ -64,6 +64,6 @@ Note: the payout key is associated with the masternode owner identity, so both t
 
 ## Credits
 
-Credits provide the mechanism for paying fees that cover the cost of platform usage. Once a user locks Dash on the core blockchain and proves ownership of the locked value in an identity create or topup transaction, their credit balance increases by that amount. As they perform platform actions, these credits are deducted to pay the associated fees.
+Credits provide the mechanism for paying fees that cover the cost of platform usage. Once a user locks Dash on the core blockchain and proves ownership of the locked value in an identity create or topup state transition, their credit balance increases by that amount. As they perform platform actions, these credits are deducted to pay the associated fees.
 
 Credits can be converted back to Dash using the identity credit withdrawal state transition, subject to a daily network-wide limit.

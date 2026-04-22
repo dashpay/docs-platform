@@ -270,7 +270,7 @@ This allows for:
 
 Creating a token on Dash Platform consists of creating a data contract, registering it on the network, and then creating tokens based on the schema defined in the data contract.
 
-When a contract that declares a token is registered, Platform automatically mints the token's configured `base_supply` to the contract owner (or to the destination identity configured by `new_tokens_destination_identity`). A single contract may declare more than one token; each token is identified by its position within the contract and configured independently. Ongoing changes to token balances - including further minting, burning, transfers, freezes, and claims - are performed through the [token state transitions](#actions).
+When a contract that declares a token is registered, Platform automatically mints the token's configured base supply to the contract owner (or to the destination configured for new tokens). A single contract may declare more than one token; each token is identified by its position within the contract and configured independently. Ongoing changes to token balances - including further minting, burning, transfers, freezes, and claims - are performed through the [token state transitions](#actions).
 
 ### Contract Setup
 
@@ -290,7 +290,7 @@ When enabled, the authorized party can set the token price using a state transit
 
 ### Marketplace
 
-Token contracts already expose `marketplace_rules` in their configuration, which declares a `TokenTradeMode` that governs how tokens may be traded on Platform. The currently supported trade modes are:
+Token contracts already expose marketplace rules in their configuration, which declares a  trade mode that governs how tokens may be traded on Platform. The currently supported trade modes are:
 
 - **`NotTradeable`** - the token cannot be traded on Platform (default).
 - **`TradeableOnMarketplace`** - the token is eligible for trading via Platform's marketplace mechanism.
