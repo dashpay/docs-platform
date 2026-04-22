@@ -70,7 +70,9 @@ The initial token implementation includes all actions required to create, use, a
 
 #### Claim
 
-- Claim tokens that have been created by a distribution method (e.g., preprogrammed). Tokens created this way are not directly assigned to the authorized identity, but must be claimed to take ownership.
+- Claim tokens that have been allocated to an identity by a [distribution rule](#distribution-rules) but not yet credited to its balance. Claim covers both:
+  - **Perpetual distributions** - tokens continuously emitted on a block or time schedule that recipients must pull in order to take ownership.
+  - **Pre-programmed distributions** - tokens scheduled for specific recipients at specific heights or times that recipients must claim to receive.
 
 #### Emergency Action
 
@@ -114,6 +116,7 @@ When creating a token, you define its configuration using the following paramete
 | [Main control group](#main-control-group)| Yes | None |
 | Main control group can be modified       | Yes | NoOne |
 | Marketplace rules                        | Yes | None |
+| [Distribution rules](#distribution-rules)| Yes | None |
 
 #### Display Conventions
 
@@ -233,7 +236,7 @@ Groups can be used to distribute token configuration and update authorization ac
 
 - Each group member is assigned an integer power.
 - The group itself has a required power threshold to authorize an action.
-- Groups can have up to 256 members, each with a maximum power of 2^16 - 1 (65535).
+- Groups can currently have up to 256 members, each with a maximum power of 65535 (2^16 - 1).
 - Changes to a token (e.g., mint, burn, freeze) can be configured so they require group authorization. This is done by assigning the group under the [token rule configuration](#rules).
 
 **Example**
@@ -267,6 +270,8 @@ This allows for:
 
 Creating a token on Dash Platform consists of creating a data contract, registering it on the network, and then creating tokens based on the schema defined in the data contract.
 
+When a contract that declares a token is registered, Platform automatically mints the token's configured `base_supply` to the contract owner (or to the destination identity configured by `new_tokens_destination_identity`). A single contract may declare more than one token; each token is identified by its position within the contract and configured independently. Ongoing changes to token balances - including further minting, burning, transfers, freezes, and claims - are performed through the [token state transitions](#actions).
+
 ### Contract Setup
 
 Structurally, there is no difference between contracts incorporating tokens and non-token contracts. While token contracts have a large set of token-specific options, there is no other difference.
@@ -285,4 +290,9 @@ When enabled, the authorized party can set the token price using a state transit
 
 ### Marketplace
 
-A planned token marketplace will support the trading of tokens.
+Token contracts already expose `marketplace_rules` in their configuration, which declares a `TokenTradeMode` that governs how tokens may be traded on Platform. The currently supported trade modes are:
+
+- **`NotTradeable`** - the token cannot be traded on Platform (default).
+- **`TradeableOnMarketplace`** - the token is eligible for trading via Platform's marketplace mechanism.
+
+The protocol-level marketplace rules are in place, but broader client tooling and user-facing marketplace experiences are expected to continue evolving in future releases.

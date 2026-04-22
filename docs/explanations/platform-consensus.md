@@ -31,7 +31,7 @@ Tendermint has been mainly designed to enable efficient verification and authent
 
 :::{note}
 
-- Block execution only occurs after a block is committed. So, cryptographic proofs for the latest state are only available in the subsequent block.
+- In classic Tendermint, block execution occurs after commit, so state proofs appear in the subsequent block. Tenderdash (used by Dash Platform) performs same-block execution, so the committed block's AppHash already commits to the post-execution state.
 - Information like the transaction results and the validator set is never directly included in the block - only their Merkle roots are.
 - Verification of a block requires a separate data structure to store this information. We call this the “State.”
 - Block verification also requires access to the previous block.
@@ -41,7 +41,7 @@ Additional information about Tendermint is available in the <a href="https://doc
 
 ### Tendermint Limitations
 
-While Tendermint provided a great starting point, implementing the classic version of the algorithm would have required us to start from scratch. For example, Tendermint validators use [EdDSA](https://en.wikipedia.org/wiki/EdDSA) cryptographic keys to sign votes during the consensus process.
+While Tendermint provided a great starting point, implementing the classic version of the algorithm would have required us to start from scratch. For example, Tendermint validators use [Ed25519](https://en.wikipedia.org/wiki/EdDSA#Ed25519) cryptographic keys to sign votes during the consensus process.
 
 However, Dash already has a well-established network of Masternodes that use BLS keys and a [BLS threshold signing mechanism](https://blog.dash.org/secret-sharing-and-threshold-signatures-with-bls-954d1587b5f) to produce a single signature that mobile wallets and other light clients can easily verify. In addition, subsets of masternodes, called [Long-living Masternode Quorums (LLMQ)](https://github.com/dashpay/dips/blob/master/dip-0006.md), can perform BLS threshold signing on arbitrary messages.
 
@@ -65,7 +65,7 @@ This allows Dash Platform to leverage the best of both worlds – the speed and 
 
 Rather than having a static validator set, Tenderdash periodically changes to a new set of validator nodes. These validator sets are a subset of masternodes that belong to the LLMQs.
 
-The validator set is assigned to a new masternode quorum every 15 blocks (~2 mins). To determine the next quorum, the BLS threshold signature of the previous block is used as a [verifiable random function](https://en.wikipedia.org/wiki/Verifiable_random_function) to choose one of the available quorums.
+The validator set is assigned to a currently active masternode quorum. Rotation to a new quorum happens when the current quorum completes a proposer cycle (proposer duty reaches the last member) or when the current quorum is no longer in the active set.
 
 There are many advantages to adopting this dynamic rotation approach:
 

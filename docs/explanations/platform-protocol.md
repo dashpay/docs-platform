@@ -6,7 +6,7 @@
 
 ## Overview
 
-To ensure the consistency and integrity of data stored on Layer 2, all data is governed by the Dash Platform Protocol (DPP). Dash Platform Protocol describes serialization and validation rules for the platform's 3 core data structures: data contracts, documents, and state transitions. Each of these structures are briefly described below.
+To ensure the consistency and integrity of data stored on Layer 2, all data is governed by the Dash Platform Protocol (DPP). Dash Platform Protocol describes serialization and validation rules for the platform's core data structures: data contracts (including tokens, groups, and keywords), documents, and state transitions. Each of these structures are briefly described below.
 
 ## Structure Descriptions
 
@@ -39,6 +39,16 @@ The payload varies by type and covers a range of operations including document a
 The user signature is made for the binary representation of the state transition using a private key associated with an [identity](../explanations/identity.md). A state transition is constructed by a client-side library when the user creates documents and submits them to the platform API.
 
 For additional detail, see the [State Transition](../explanations/platform-protocol-state-transition.md) explanation.
+
+### Contract-level features
+
+In addition to documents, a data contract may declare:
+
+* **Tokens** - fungible token definitions with their own configuration, distribution, and authorization rules. See the [Tokens](../explanations/tokens.md) explanation.
+* **Groups** - sets of identities with assigned power that can jointly authorize token and other privileged actions on the contract.
+* **Keywords** - contract-level discovery terms that allow contracts to be searched and surfaced by clients.
+
+For additional detail, see the [Data Contract](../explanations/platform-protocol-data-contract.md) explanation.
 
 ## Versions
 

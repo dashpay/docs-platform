@@ -39,7 +39,7 @@ NFTs can be directly transferred or traded without the need for a marketplace:
 
 To preserve the authenticity of NFTs, Dash Platform includes creation restriction options. This ensures that only authorized entities can create certain types of NFTs. For example, in the case of land ownership NFTs, a designated authority may be the only one that can issue tokens. Restriction options are:
 
-* **Owner Only**: Only the contract owner can create NFTs (**_Note: this is the only option implemented for the initial release_**)
+* **Owner Only**: Only the contract owner can create NFTs
 * **No Creation Allowed**: NFT creation is disabled for this contract
 * **No Restrictions**: Anyone can create NFTs for the contract
 
@@ -77,7 +77,7 @@ Once the data contract design is completed, the contract can be registered on th
 
 ### Minting NFTs
 
-Tokens are minted by creating new documents under the data contract. Each token is an instance of one of the document types defined in the contract.
+NFTs are minted by creating new documents under the data contract. Each NFT is an instance of one of the document types defined in the contract.
 
 ```{eval-rst}
 .. _explanations-nft-trade:

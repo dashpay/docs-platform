@@ -60,9 +60,14 @@ Each application defines its own fields via document definitions in its data con
 The following example shows the structure of a DPNS `domain` document as output from `JSON.stringify()`. Note the `$` prefix indicating the base fields.
 
 ```json
- {
+{
   "$id": "3AhZ5h63ZrFJXfE3YP3iEFVxyndYWPMxR9fSEaMo67QJ",
+  "$type": "domain",
+  "$dataContractId": "GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec",
   "$ownerId": "6TGHW8WBcNzFrWwAueGtqtAah7w98EELFZ7xdTHegnvH",
+  "$revision": 1,
+  "$createdAt": 1712872800000,
+  "$updatedAt": 1712872800000,
   "label": "DQ-Jasen-82083",
   "normalizedLabel": "dq-jasen-82083",
   "normalizedParentDomainName": "dash",
@@ -73,29 +78,23 @@ The following example shows the structure of a DPNS `domain` document as output 
   },
   "subdomainRules": {
     "allowSubdomains": false
-  },
-  "$revision": 1,
-  "$createdAt": null,
-  "$updatedAt": null,
-  "$dataContractId": {
-    // Truncated ...
-   },
-  "$type": "domain"
+  }
 }
 ```
 
 ## Document Submission
 
-Once a document has been created, it must be encapsulated in a State Transition to be sent to the platform. The structure of a document state transition is shown below. For additional details, see the [State Transition](../explanations/platform-protocol-state-transition.md) explanation.
+Once a document has been created, it must be encapsulated in a Batch state transition to be sent to the platform. Batch state transitions (type `1`) bundle one or more document and/or token transitions submitted together by the same identity. For additional details, see the [State Transition](../explanations/platform-protocol-state-transition.md) explanation.
 
 | Field Name | Description |
 | - | - |
-| protocolVersion | Dash Platform Protocol version (currently `1`) |
-| type | State transition type (`1` for documents) |
-| ownerId | Identity submitting the document(s) |
-| transitions |  Document `create`, `replace`, or `delete` transitions (up to 10 objects) |
+| type | State transition type (`1` for a Batch) |
+| ownerId | Identity submitting the batch |
+| transitions | Document and token transitions bundled in the batch (e.g. document `create`, `replace`, `delete`, `transfer`, `purchase`, `updatePrice`) |
 | signaturePublicKeyId | The `id` of the identity public key that signed the state transition |
 | signature | Signature of state transition data |
+
+State transitions are versioned through their serialized enum representation rather than a top-level `protocolVersion` field.
 
 ### Document Create
 
@@ -119,6 +118,37 @@ The document replace transition is used to update the data in an existing Dash P
 ### Document Delete
 
 The document delete transition is used to delete an existing Dash Platform document. It only requires the fields found in the base document transition.
+
+### Document Transfer
+
+The document transfer transition is used to transfer ownership of an existing document to another identity. It extends the [base schema](#base-fields) with the recipient identifier:
+
+| Field | Type | Description |
+| - | - | - |
+| $revision | integer | Document revision (=> 1) |
+| recipientOwnerId | array (32 bytes) | The identity receiving ownership of the document |
+
+Document transfers are only allowed for document types that are marked transferable in the data contract.
+
+### Document Purchase
+
+The document purchase transition is used to buy a document that the current owner has listed for sale. It extends the [base schema](#base-fields) with the agreed price:
+
+| Field | Type | Description |
+| - | - | - |
+| $revision | integer | Document revision (=> 1) |
+| price | integer | Price (in credits) the buyer is paying, which must match the document's current listed price |
+
+Document purchases are only allowed for document types whose trade mode permits sale.
+
+### Document Update Price
+
+The document update price transition is used by the current owner to list a document for sale (or change its listed price). It extends the [base schema](#base-fields) with the new price:
+
+| Field | Type | Description |
+| - | - | - |
+| $revision | integer | Document revision (=> 1) |
+| price | integer | New price (in credits) at which the document is offered for sale |
 
 :::{note}
 For more detailed information, see the [Platform Protocol Reference - Document](../protocol-ref/document.md) page.

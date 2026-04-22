@@ -37,14 +37,14 @@ The following table contains a list of currently defined payload types:
 | Payload Type | Payload Description |
 | - | - |
 | [Data Contract Create](../protocol-ref/data-contract.md#data-contract-create) (`0`) | [Database schema](../explanations/platform-protocol-data-contract.md) for a single application |
-| [Batch](../protocol-ref/document.md#document-overview) (`1`) | An array of 1 or more [document](../explanations/platform-protocol-document.md) or token transition objects |
+| [Batch](../protocol-ref/document.md#document-overview) (`1`) | An array of 1 or more [document](../explanations/platform-protocol-document.md) (`create`, `replace`, `delete`, `transfer`, `purchase`, `updatePrice`) or [token](../explanations/tokens.md) (e.g. mint, burn, transfer, freeze/unfreeze, claim, direct purchase, set price) transition objects |
 | [Identity Create](../protocol-ref/identity.md#identity-create) (`2`) | Information including the public keys required to create a new [Identity](../explanations/identity.md) |
 | [Identity Topup](../protocol-ref/identity.md#identity-topup) (`3`) | Information including proof of a transaction containing an amount to add to the provided identity's balance |
 | [Data Contract Update](../protocol-ref/data-contract.md#data-contract-update) (`4`) | An updated [database schema](../explanations/platform-protocol-data-contract.md) to modify an existing application |
 | [Identity Update](../protocol-ref/identity.md#identity-update) (`5`) | A set of one or more new public keys to add to the [identity](../explanations/identity.md) or a list of existing keys to disable |
 | [Identity Credit Withdrawal](../protocol-ref/identity.md) (`6`) | Information required to withdraw credits from Dash Platform |
 | [Identity Credit Transfer](../protocol-ref/identity.md) (`7`) | Information required to transfer credits |
-| Masternode Vote (`8`) | Contested resource vote details (e.g., [DPNS premium name vote](../explanations/dpns.md#conflict-resolution)) |
+| Masternode Vote | Contested resource vote details (e.g., [DPNS premium name vote](../explanations/dpns.md#conflict-resolution)) |
 | [Identity Credit Transfer To Addresses](../protocol-ref/address-system.md#identity-credit-transfer-to-addresses) (`9`) | Transfer identity credits to one or more Platform addresses |
 | [Identity Create From Addresses](../protocol-ref/address-system.md#identity-create-from-addresses) (`10`) | Create a new identity funded from Platform addresses |
 | [Identity Top Up From Addresses](../protocol-ref/address-system.md#identity-top-up-from-addresses) (`11`) | Add credits to an existing identity from Platform addresses |

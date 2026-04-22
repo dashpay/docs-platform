@@ -34,6 +34,8 @@ The current cost schedule is outlined in the table below:
 | Load from memory | 10 / byte |
 | Blake3 hash function | 100 base + 300 / 64-byte block |
 
+Processing fees vary by operation. The value shown is a representative base cost; the total processing fee for a state transition is the sum of the individual per-operation costs incurred while validating and applying it. See the [protocol constants reference](../protocol-ref/protocol-constants.md) for the full cost schedule.
+
 :::{note}
 Refer to the [Identity explanation](../explanations/identity.md) section for information regarding how credits are created.
 :::

@@ -30,4 +30,17 @@ As an example, DPP contains several [data triggers for DPNS](https://github.com/
 | DPNS | `domain` | [`PURCHASE`](https://github.com/dashpay/platform/blob/master/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/batch/data_triggers/triggers/reject/v0/mod.rs) | Prevents purchase of any DPNS document type |
 | DPNS | `domain` | [`UPDATE_PRICE`](https://github.com/dashpay/platform/blob/master/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/batch/data_triggers/triggers/reject/v0/mod.rs) | Prevents price updates on any DPNS document type |
 
+:::{note}
+The `REPLACE`, `DELETE`, `TRANSFER`, `PURCHASE`, and `UPDATE_PRICE` rows for DPNS all link to the same shared `reject` trigger, which DPNS reuses to disallow those actions on `domain` documents.
+:::
+
+In addition to DPNS, DPP ships data triggers for a small set of other system contracts:
+
+| Data Contract | Document | Action(s) | Trigger Description |
+| - | - | - | - |
+| DashPay | `contactRequest` | [`CREATE`](https://github.com/dashpay/platform/tree/master/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/batch/data_triggers/triggers/dashpay) | Enforces DashPay-specific rules on outgoing contact requests |
+| ---- | ---- | ---- | ---- |
+| Withdrawals | `withdrawal` | [`CREATE`/`REPLACE`/`DELETE`](https://github.com/dashpay/platform/tree/master/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/batch/data_triggers/triggers/withdrawals) | Enforces withdrawal status transitions and prevents direct external mutation of withdrawal documents |
+| Feature flags | (various) | [Protocol-version updates](https://github.com/dashpay/platform/tree/master/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/batch/data_triggers/triggers/feature_flags) | Restricts feature flag changes to the authorized feature-flag identity |
+
 When document state transitions are received, DPP checks if there is a trigger associated with the document type and action. If a trigger is found, DPP executes the trigger logic. Successful execution of the trigger logic is necessary for the document to be accepted and applied to the [platform state](../explanations/drive-platform-state.md).

@@ -31,6 +31,9 @@ Each data contract must define several fields. When using the [reference impleme
 * The platform protocol schema it uses
 * A contract ID (generated from a hash of the data contract's owner identity plus some entropy)
 * One or more [documents](../explanations/platform-protocol-document.md)
+* Optional [tokens](../explanations/tokens.md) with their own configuration, distribution, and authorization rules
+* Optional groups (sets of identities with assigned power) used to jointly authorize privileged contract actions such as token minting, burning, or configuration changes
+* Optional keywords used to surface the contract through discovery features, plus an optional contract description
 
 For a practical example, see the [DashPay contract](#example-contract).
 
@@ -52,17 +55,19 @@ The drawing below illustrates the steps an application developer follows to comp
 
 ### Updates
 
-#### Contract revision history
+Existing data contracts can be updated by their owner in backwards-compatible ways. Updates are applied by submitting a data contract update state transition and are validated to preserve compatibility with previously stored documents.
 
-Dash Platform v0.25 added optional contract revision history storage. Contracts using this feature maintain a record of contract revisions which can be retrieved and verified as needed.
+Permitted changes include:
 
-#### Identity key binding
+* Adding new document types
+* Adding new optional properties to existing document types
+* Adding non-unique indices for newly added properties
+* Updating token configuration where the contract's rules authorize changes (for example via the configured main control group)
+* Updating contract keywords and description
 
-Dash Platform v0.25 added key access rules that enable adding an encryption or decryption identity key that can only be used for the specific contract (or document) designated when the key is added. This provides a more granular and secure approach to key management.
+Restricted changes include modifications that would break existing stored documents - for example, removing or renaming existing properties, changing their types, or altering existing unique indices.
 
-#### Contract updates
-
-Dash Platform v0.22 added the ability to update existing data contracts in certain backwards-compatible ways. This includes adding new documents, adding new optional properties to existing documents, and adding non-unique indices for properties added in the update.
+Optional contract revision history storage allows contracts to retain a record of their revisions that can be retrieved and verified. Identity key access rules also allow an encryption or decryption key to be bound to a specific contract or document type for more granular key management.
 
 :::{note}
 For more detailed information, see the [Platform Protocol Reference - Data Contract](../protocol-ref/data-contract.md) page.

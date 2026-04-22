@@ -52,6 +52,8 @@ Proofs are especially valuable for:
 Dash Platform requires queries to use indexes defined in the data contract for the relevant document
 type. If a field is not indexed, it cannot be used for filtering or sorting.
 
+System fields are recognized by the query engine without being declared as normal schema properties. `$id` is implicitly queryable as the primary key. Other system fields like `$ownerId`, `$createdAt`, `$updatedAt`, and `$transferredAt` are built-in field names, but document queries still need to match an appropriate contract index. Querying and sorting on indexed fields also follows compound-index prefix and range/`orderBy` rules - see the [query syntax reference](../reference/query-syntax.md) for details.
+
 Benefits of indexed querying include:
 
 - Predictable performance
@@ -59,5 +61,5 @@ Benefits of indexed querying include:
 
 :::{important}
 Indexes should be planned during contract design since there are [limited index update
-options](./platform-protocol-data-contract.md#contract-updates) for already registered contracts.
+options](./platform-protocol-data-contract.md#updates) for already registered contracts.
 :::

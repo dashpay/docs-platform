@@ -22,7 +22,7 @@ In order to support Dash Platform's performance requirements, the platform chain
 - Hosted exclusively on masternodes
 - Uses a [practical Byzantine Fault Tolerance (pBFT)](../reference/glossary.md#practical-byzantine-fault-tolerance-pbft) consensus algorithm
 - Has a deterministic fee structure
-- Provides fast (< 10 seconds) and absolute block finality (no reorgs)
+- Provides fast (~5 second target block spacing) and absolute block finality (no reorgs)
 
 ### Blocks and Transitions
 

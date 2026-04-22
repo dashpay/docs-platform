@@ -16,7 +16,7 @@ The [Identities Dash Improvement Proposal (DIP)](https://github.com/dashpay/dips
 
 ## Identity Management
 
-In order to [create an identity](#identity-create-process), a user pays the network to store their public key(s) on the platform chain. Since new users may not have existing Dash funds, an invitation process will allow users to create an identity despite lacking their own funds. The invitation process will effectively separate the funding and registration steps that are required for any new identity to be created.
+In order to [create an identity](#identity-create-process), a user pays the network to store their public key(s) on the platform chain. This is done by locking Dash on the Core chain in an asset lock transaction and then submitting an identity create state transition that references a proof of that lock.
 
 Once an identity is created, its credit balance is used to pay for activity (e.g. use of applications). The [topup process](#identity-balance-topup-process) provides a way to add additional funds to the balance when necessary.
 
@@ -26,11 +26,11 @@ Once an identity is created, its credit balance is used to pay for activity (e.g
 On Testnet, a [test Dash faucet](https://faucet.testnet.networks.dash.org/) is available. It dispenses small amounts to enable all users to directly acquire the funds necessary to create an identity and username.
 :::
 
-First, a sponsor (which could be a business, another person, or even the same user who is creating the identity) spends Dash in a transaction to create an invitation. The transaction contains one or more outputs which lock some Dash funds to establish credits within Dash platform.
+First, the user creates an asset lock transaction on the Core chain with one or more outputs that lock Dash funds for use on Platform. An asset lock proof is then obtained for that transaction - either an InstantSend lock proof (for fast confirmation) or a ChainLock-based proof once the transaction is included in a ChainLocked block.
 
-After the transaction is broadcast and confirmed, the sponsor sends information about the invitation to the new user. This may be done as a hyperlink that the core wallet understands, or as a QR code that a mobile wallet can scan. Once the user has the transaction data from the sponsor, they can use it to fund an [identity create state transition](https://github.com/dashpay/dips/blob/master/dip-0011.md#identity-create-transition) within Dash platform.
+The user then submits an [identity create state transition](https://github.com/dashpay/dips/blob/master/dip-0011.md#identity-create-transition) referencing the asset lock proof and the public keys to register for the new identity. The locked value (minus fees) becomes the new identity's initial credit balance.
 
-Users who already have Dash funds can act as their own sponsor if they wish, using the same steps listed here.
+Application-layer flows where a third party funds an identity on behalf of another user are possible by having that third party create the asset lock transaction and share the resulting proof, but this is a client-side convention rather than a protocol-level invitation mechanism.
 
 ### Identity Balance Topup Process
 
@@ -64,6 +64,6 @@ Note: the payout key is associated with the masternode owner identity, so both t
 
 ## Credits
 
-DPP v0.13 introduced the initial implementation of credits. As mentioned above, credits provide the mechanism for paying fees that cover the cost of platform usage. Once a user locks Dash on the core blockchain and proves ownership of the locked value in an identity create or topup transaction, their credit balance increases by that amount. As they perform platform actions, these credits are deducted to pay the associated fees.
+Credits provide the mechanism for paying fees that cover the cost of platform usage. Once a user locks Dash on the core blockchain and proves ownership of the locked value in an identity create or topup transaction, their credit balance increases by that amount. As they perform platform actions, these credits are deducted to pay the associated fees.
 
 Credits can be converted back to Dash using the identity credit withdrawal state transition, subject to a daily network-wide limit.
