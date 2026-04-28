@@ -4,7 +4,7 @@
 
 # DashMint Lab — NFT marketplace
 
-DashMint Lab is a React + TypeScript + Vite single-page app that exercises every Dash Platform NFT operation: mint, transfer, price, purchase, burn, and query. This walkthrough shows how those SDK calls are organized inside a real UI.
+[DashMint Lab](https://dashpay.github.io/platform-tutorials/dashmint-lab/) is a React + TypeScript + Vite single-page app that exercises every Dash Platform NFT operation: mint, transfer, price, purchase, burn, and query. This walkthrough shows how those SDK calls are organized inside a real UI.
 
 ![DashMint Lab - Collection](./img/dashmint-collection.png)
 
