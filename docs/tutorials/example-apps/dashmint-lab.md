@@ -6,6 +6,8 @@
 
 DashMint Lab is a React + TypeScript + Vite single-page app that exercises every Dash Platform NFT operation: mint, transfer, price, purchase, burn, and query. This walkthrough shows how those SDK calls are organized inside a real UI.
 
+![DashMint Lab - Collection](./img/dashmint-collection.png)
+
 ## What this app does
 
 The app lets users log in with a BIP-39 mnemonic, mint "card" NFTs with random attack/defense stats, browse cards across the network, set sale prices, purchase cards from other identities, transfer cards as gifts, and burn cards they no longer want. Read-only browsing works without any credentials.
