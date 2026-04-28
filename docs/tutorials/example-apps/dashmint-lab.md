@@ -92,7 +92,6 @@ Every mutation on an existing card — transfer, set price, purchase, burn — r
 ```{code-block} typescript
 :caption: withAuthedCard.ts
 :name: dashmint-withAuthedCard.ts
-:emphasize-lines: 72,82-83,87
 
 /**
  * Shared prelude for card mutations (transfer / setPrice / purchase / burn).
@@ -194,7 +193,7 @@ If you want to understand how data shows up in the UI, start with `src/dash/quer
 ```{code-block} typescript
 :caption: queries.ts
 :name: dashmint-queries.ts
-:emphasize-lines: 48-54,73-78,91-95,108-113
+:emphasize-lines: 53-58,75-80,93-97,110-115
 
 /**
  * Read queries over the card data contract.
@@ -327,7 +326,7 @@ Minting is the simplest write operation: build a `Document` with the card proper
 ```{code-block} typescript
 :caption: mintCard.ts
 :name: dashmint-mintCard.ts
-:emphasize-lines: 52,57-64
+:emphasize-lines: 51,56-63
 
 /**
  * Mint a new card (create a document against the card data contract).
@@ -403,7 +402,7 @@ Transfer hands ownership of an existing card to another identity without a price
 ```{code-block} typescript
 :caption: transferCard.ts
 :name: dashmint-transferCard.ts
-:emphasize-lines: 35,37-43
+:emphasize-lines: 37-42
 
 /**
  * Transfer a card (NFT document) to another identity.
@@ -460,7 +459,7 @@ Pricing a card adds a `$price` field to its document on-chain. That's what the M
 ```{code-block} typescript
 :caption: setPrice.ts
 :name: dashmint-setPrice.ts
-:emphasize-lines: 33-34,42-48,51-57
+:emphasize-lines: 32-33,51-56
 
 /**
  * Set (or remove) the sale price on a card.
@@ -531,7 +530,7 @@ The buying identity pays `price` credits and becomes the new owner in a single s
 ```{code-block} typescript
 :caption: purchaseCard.ts
 :name: dashmint-purchaseCard.ts
-:emphasize-lines: 32,35-41,44-51
+:emphasize-lines: 31,44-50
 
 /**
  * Purchase a priced card from another identity.
@@ -596,7 +595,7 @@ Burn permanently deletes the document from Platform. Unlike the other mutations,
 ```{code-block} typescript
 :caption: burnCard.ts
 :name: dashmint-burnCard.ts
-:emphasize-lines: 32-39,42-52
+:emphasize-lines: 42-51
 
 /**
  * Burn a card — permanently delete the document from the Platform.
@@ -668,7 +667,6 @@ The card data contract defines one document type (`card`) with four fields and t
 ```{code-block} typescript
 :caption: contract.ts
 :name: dashmint-contract.ts
-:emphasize-lines: 21-28,55-58,125-141,167-172
 
 /**
  * NFT card data contract schema + ensureContract().
