@@ -167,3 +167,10 @@ sphinx search extension interface.
 .search-button__wrapper.show .search-button__search-container {
   width: 15%;
 }
+
+/* Cap tall code blocks and make them scrollable. Short blocks are unaffected
+   since max-height only kicks in when content exceeds it. */
+.highlight pre {
+  max-height: 60rem;
+  overflow: auto;
+}

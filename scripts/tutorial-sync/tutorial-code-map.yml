@@ -178,3 +178,56 @@ mappings:
     doc: contracts-and-documents/delete-documents.md
     block_id:
       caption: document-delete.mjs
+
+  # -- Example apps --
+
+  # DashMint Lab — React + TypeScript NFT app. Every SDK operation lives in
+  # its own file under src/dash/; each one has a matching code block in the
+  # walkthrough with a :caption: equal to the bare filename.
+  - source: example-apps/dashmint-lab/src/dash/contract.ts
+    doc: example-apps/dashmint-lab.md
+    block_id:
+      caption: contract.ts
+    language: typescript
+
+  - source: example-apps/dashmint-lab/src/dash/withAuthedCard.ts
+    doc: example-apps/dashmint-lab.md
+    block_id:
+      caption: withAuthedCard.ts
+    language: typescript
+
+  - source: example-apps/dashmint-lab/src/dash/mintCard.ts
+    doc: example-apps/dashmint-lab.md
+    block_id:
+      caption: mintCard.ts
+    language: typescript
+
+  - source: example-apps/dashmint-lab/src/dash/transferCard.ts
+    doc: example-apps/dashmint-lab.md
+    block_id:
+      caption: transferCard.ts
+    language: typescript
+
+  - source: example-apps/dashmint-lab/src/dash/setPrice.ts
+    doc: example-apps/dashmint-lab.md
+    block_id:
+      caption: setPrice.ts
+    language: typescript
+
+  - source: example-apps/dashmint-lab/src/dash/purchaseCard.ts
+    doc: example-apps/dashmint-lab.md
+    block_id:
+      caption: purchaseCard.ts
+    language: typescript
+
+  - source: example-apps/dashmint-lab/src/dash/burnCard.ts
+    doc: example-apps/dashmint-lab.md
+    block_id:
+      caption: burnCard.ts
+    language: typescript
+
+  - source: example-apps/dashmint-lab/src/dash/queries.ts
+    doc: example-apps/dashmint-lab.md
+    block_id:
+      caption: queries.ts
+    language: typescript
