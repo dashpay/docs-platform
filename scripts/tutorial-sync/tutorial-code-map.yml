@@ -241,6 +241,39 @@ mappings:
       caption: queries.ts
     language: typescript
 
+  # Dashnote — React + TypeScript notes app. Same per-operation file
+  # convention as DashMint Lab; each src/dash/*.ts file has a matching
+  # code block in the walkthrough with a :caption: equal to the bare filename.
+  - source: example-apps/dashnote/src/dash/contract.ts
+    doc: example-apps/dashnote.md
+    block_id:
+      caption: contract.ts
+    language: typescript
+
+  - source: example-apps/dashnote/src/dash/queries.ts
+    doc: example-apps/dashnote.md
+    block_id:
+      caption: queries.ts
+    language: typescript
+
+  - source: example-apps/dashnote/src/dash/createNote.ts
+    doc: example-apps/dashnote.md
+    block_id:
+      caption: createNote.ts
+    language: typescript
+
+  - source: example-apps/dashnote/src/dash/updateNote.ts
+    doc: example-apps/dashnote.md
+    block_id:
+      caption: updateNote.ts
+    language: typescript
+
+  - source: example-apps/dashnote/src/dash/deleteNote.ts
+    doc: example-apps/dashnote.md
+    block_id:
+      caption: deleteNote.ts
+    language: typescript
+
   # -- Standalone embed apps (whole-file copy, no inline block surgery) --
 
   - kind: copy
@@ -250,3 +283,7 @@ mappings:
   - kind: copy
     source: example-apps/dashproof-lab/public/dashproof-lite.html
     dest: _static/dashproof-lite.html
+
+  - kind: copy
+    source: example-apps/dashnote/public/dashnote-lite.html
+    dest: _static/dashnote-lite.html
