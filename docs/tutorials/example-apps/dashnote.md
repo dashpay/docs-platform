@@ -8,6 +8,8 @@
 
 Where [DashMint Lab](dashmint-lab.md) covers the NFT-shaped operations (mint, transfer, price, purchase, burn), Dashnote covers the everyday document lifecycle: create, query, update, delete — plus the **fetch-then-bump-revision** pattern that every Platform document update has to follow.
 
+![Dashnote](./img/dashnote.png)
+
 ## What this app does
 
 The app ships with a bundled note contract so the read path works on a fresh install without registering anything. After login, users can create notes (optional `title`, required `message`), edit them in place, and delete them. The editor reports field length in **UTF-8 bytes** rather than characters, because that's what Platform's `maxLength` constraint actually checks. A localStorage-backed cache paints the recent-notes list instantly on reload while a background query revalidates against the network.
