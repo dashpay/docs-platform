@@ -1,5 +1,5 @@
 ```{eval-rst}
-.. tutorials-example-apps-dashnote:
+.. _tutorials-example-apps-dashnote:
 ```
 
 # Dashnote
