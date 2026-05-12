@@ -2,7 +2,7 @@
 .. tutorials-example-apps-dashnote:
 ```
 
-# Dashnote — Personal notes on Platform
+# Dashnote
 
 [Dashnote](https://dashpay.github.io/platform-tutorials/dashnote/) is a React + TypeScript + Vite single-page app that demonstrates full mutable-document CRUD on Dash Platform. Users log in with a BIP-39 mnemonic, create notes with an optional title and required message body, edit and delete their own notes, and browse any identity's notes in read-only mode without credentials.
 

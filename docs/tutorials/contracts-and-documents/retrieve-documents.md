@@ -82,3 +82,7 @@ After we initialize the Client, we request documents using `sdk.documents.query(
 Results are returned as a `Map` where each key is a document ID and each value is the document object. We iterate over the entries using `for (const [id, doc] of results)`.
 
 If you need more than the default number of documents, use the `startAt` or `startAfter` parameters for pagination.
+
+:::{tip}
+See this in an example app: [Dashnote — Read path: queries first](../example-apps/dashnote.md#read-path-queries-first) and [DashMint Lab — Read path: queries first](../example-apps/dashmint-lab.md#read-path-queries-first).
+:::

@@ -80,3 +80,7 @@ The `sdk.documents.replace()` method takes the document and signing credentials.
 :::{note}
 The SDK requires constructing a complete replacement `Document` with all fields — including the document `id` and incremented `revision`. The example above queries the existing document first to determine the current revision.
 :::
+
+:::{tip}
+See this in an example app: [Dashnote — Update a note](../example-apps/dashnote.md#update-a-note) is the canonical fetch → bump revision → replace example.
+:::

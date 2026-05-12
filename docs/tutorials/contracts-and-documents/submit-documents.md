@@ -59,3 +59,7 @@ try {
 After we initialize the Client via `setupDashClient()`, we get the auth key signer from the key manager. We then create a `Document` object with the properties defined by the data contract (e.g. a `message` for the `note` document type), along with the contract ID and document type name.
 
 The `sdk.documents.create()` method takes the document and signing credentials. Internally, it creates a [State Transition](../../explanations/platform-protocol-state-transition.md) containing the document, signs the state transition, and submits it to DAPI.
+
+:::{tip}
+See this in an example app: [Dashnote — Create a note](../example-apps/dashnote.md#create-a-note) and [DashMint Lab — Mint a card](../example-apps/dashmint-lab.md#mint-a-card).
+:::

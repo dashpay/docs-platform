@@ -61,3 +61,7 @@ Internally, the method creates a [State Transition](../../explanations/platform-
 :::{note}
 You do not need to retrieve the full document before deleting it. The `sdk.documents.delete()` method only requires the document's identifying fields (`id`, `ownerId`, `dataContractId`, `documentTypeName`).
 :::
+
+:::{tip}
+See this in an example app: [Dashnote — Delete a note](../example-apps/dashnote.md#delete-a-note) and [DashMint Lab — Burn a card](../example-apps/dashmint-lab.md#burn-a-card).
+:::

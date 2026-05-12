@@ -618,3 +618,7 @@ Make a note of the returned data contract ID as it will be used in subsequent tu
 After we initialize the client, we get the auth key signer from the key manager. We then define the document schemas for our contract (e.g. a `note` document).
 
 To create the contract, we first fetch the identity's current nonce and increment it. We then create a `DataContract` object with the owner identity, nonce, and document schemas. Finally, we call `sdk.contracts.publish()` with the contract and signing credentials to submit it to the network.
+
+:::{tip}
+See this in an example app: [Dashnote — Contract schema](../example-apps/dashnote.md#contract-schema) and [DashMint Lab — Contract schema](../example-apps/dashmint-lab.md#contract-schema).
+:::

@@ -29,3 +29,12 @@ While going through each tutorial is advantageous, the subset of tutorials liste
 - [Registering an Identity](../tutorials/identities-and-names/register-an-identity.md)
 - [Registering a Data Contract](../tutorials/contracts-and-documents/register-a-data-contract.md)
 - [Submitting data](../tutorials/contracts-and-documents/submit-documents.md)
+
+## Example apps
+
+For end-to-end walkthroughs of example apps built on the SDK, see:
+
+- [DashMint Lab](example-apps/dashmint-lab.md) — NFT marketplace exercising mint / transfer / price / purchase / burn
+- [Dashnote](example-apps/dashnote.md) — personal notes app demonstrating the document CRUD lifecycle
+
+Each app's source lives in the [`platform-tutorials`](https://github.com/dashpay/platform-tutorials/tree/main/example-apps) repo.

@@ -77,6 +77,16 @@ Looking for the current source tree or lower-level implementation details? See t
         
         +++
         :ref:`Click to begin <resources-faq>`
+
+    .. grid-item-card:: 🧩 Example apps
+        :margin: 2 2 auto auto
+        :link-type: ref
+        :link: tutorials-example-apps
+
+        End-to-end SDK walkthroughs (DashMint Lab, Dashnote)
+
+        +++
+        :ref:`Browse apps <tutorials-example-apps>`
 ```
 
 ```{toctree}
