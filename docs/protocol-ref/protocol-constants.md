@@ -255,7 +255,7 @@ These limits apply to token perpetual distribution function parameters.
 |----------|-------|-------------|--------|
 | Address hash size | 20 bytes | Size of address hash | [rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/address_funds/platform_address.rs#L22) |
 | Platform HRP (mainnet) | "dash" | Human-readable prefix | [rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/address_funds/platform_address.rs#L184) |
-| Platform HRP (testnet) | "tdash" | Testnet human-readable prefix | [rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/address_funds/platform_address.rs#L186) |
+| Platform HRP (non-mainnet) | "tdash" | Human-readable prefix used for testnet, devnet, and regtest | [rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/address_funds/platform_address.rs#L186) |
 | P2PKH address type (bech32m) | 0xb0 (176) | Pay-to-public-key-hash bech32m encoding type byte | [rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/address_funds/platform_address.rs#L190) |
 | P2SH address type (bech32m) | 0x80 (128) | Pay-to-script-hash bech32m encoding type byte | [rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/address_funds/platform_address.rs#L192) |
 
