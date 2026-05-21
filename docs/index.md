@@ -134,6 +134,7 @@ explanations/dashpay
 explanations/fees
 explanations/tokens
 explanations/nft
+explanations/proofs
 explanations/query
 ```
 
