@@ -44,12 +44,6 @@ Example (partial) output of the setup wizard showing important information:
     › Dashpay contract ID: EAv8ePXREdJ719ntcRiKuEYxv9XooMwL1mJmPHMGuW9r
   ✔ Obtain Dashpay contract commit block height
     › Dashpay contract block height: 15
-  ✔ Register Feature Flags identity
-    › Feature Flags identity: 8BsvV4RCbW7srWj81kgjJCykRBF2rzyigys8XkBchY96
-  ✔ Register Feature Flags contract
-    › Feature Flags contract ID: JDrDAGVqTWsM9k7KGBsSjcyC11Vd2UdPxPoPf4NzyyrP
-  ✔ Obtain Feature Flags contract commit block height
-    › Feature Flags contract block height: 20
 
 ```
 

@@ -27,19 +27,16 @@ There are six address-based state transition types:
 
 ### Platform Address
 
-Platform addresses are derived from standard Bitcoin/Dash address formats and encoded using bech32m per [DIP-0018](https://github.com/dashpay/dips/blob/master/dip-0018.md).
+Platform addresses are derived from standard Bitcoin/Dash address formats and encoded as bech32m strings per [DIP-0018](https://github.com/dashpay/dips/blob/master/dip-0018.md). The human-readable part (HRP) is `dash` on mainnet and `tdash` on testnet, devnet, and regtest. The 21-byte payload is `type_byte || Hash160(compressed_pubkey)`, where `Hash160 = RIPEMD160(SHA256(x))`. The checksum is bech32m ([BIP-350](https://github.com/bitcoin/bips/blob/master/bip-0350.mediawiki)).
 
-| Variant  | Type Byte | Size     | Description                                          |
-| ------- | ---- | -------- | ---------------------------------------------------- |
-| `P2PKH` | 0xb0 | 21 bytes | Pay-to-Public-Key-Hash (1 type byte + 20 hash bytes) |
-| `P2SH`  | 0x80 | 21 bytes | Pay-to-Script-Hash (1 type byte + 20 hash bytes)     |
+| Variant | Type Byte | Description |
+| ------- | --------- | ----------- |
+| `P2PKH` | 0xb0 | Pay-to-Public-Key-Hash |
+| `P2SH`  | 0x80 | Pay-to-Script-Hash |
 
-**Encoding:**
-
-- **Mainnet HRP:** `dash`
-- **Testnet HRP:** `tdash` (also used for Devnet and Regtest)
-
-**Derivation:** Standard Bitcoin derivation using `Hash160(compressed_pubkey)` where Hash160 = RIPEMD160(SHA256(x)).
+:::{note}
+A `PlatformAddress` has two distinct byte encodings depending on context. The type bytes above (`0xb0` / `0x80`) apply to the user-facing bech32m encoding — what appears in address strings like `dash1k...`. Internal GroveDB storage keys use bincode variant indices `0x00` / `0x01` instead. Decoding one through the other's code path will fail.
+:::
 
 See the [Platform address implementation in rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/address_funds/platform_address.rs).
 
