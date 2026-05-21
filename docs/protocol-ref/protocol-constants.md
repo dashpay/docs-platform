@@ -177,6 +177,7 @@ Fees related to contested document voting.
 | Min top-up balance | 50,000 duffs | 0.0005 Dash minimum | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/dpp_versions/dpp_state_transition_versions/v1.rs#L21) |
 | Min address funding balance | 50,000 duffs | 0.0005 Dash minimum | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/dpp_versions/dpp_state_transition_versions/v1.rs#L22) |
 | Min identity funding amount | 200,000 credits | Minimum for address-based creation | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/dpp_versions/dpp_state_transition_versions/v1.rs#L41) |
+| Max asset-lock transaction inputs | 100 | Maximum Core inputs in an asset-lock transaction used to fund an identity or top-up (introduced in protocol v3 to prevent stuck funds; v1/v2 had no effective limit) | [rs-platform-version](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/dpp_versions/dpp_state_transition_versions/v3.rs#L25) |
 
 ## Document & Data Contract Model
 
