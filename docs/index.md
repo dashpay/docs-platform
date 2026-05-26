@@ -131,6 +131,7 @@ explanations/dpns
 explanations/drive
 explanations/platform-consensus
 explanations/dashpay
+explanations/shielded-pool
 explanations/fees
 explanations/tokens
 explanations/nft
