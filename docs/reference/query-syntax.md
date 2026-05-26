@@ -148,6 +148,30 @@ The query modifiers described here determine how query results will be sorted an
 For indices composed of multiple fields ([example from the DPNS data contract](https://github.com/dashpay/platform/blob/master/packages/dpns-contract/schema/v1/dpns-contract-documents.json)), the sort order in an `orderBy` must either match the order defined in the data contract OR be the inverse order.
 :::
 
+## Aggregate Queries
+
+:::{versionadded} 3.1.0
+:::
+
+The [getDocuments](../reference/dapi-endpoints-platform-endpoints.md#getdocuments) v1 surface adds an aggregate-query mode. The same `where` / `orderBy` clauses described above still apply; an additional `select` projection (and optional `groupBy`) determines whether the request returns documents or aggregate values over the matched set.
+
+| `select`         | Returns |
+| ---------------- | ------- |
+| `DOCUMENTS`      | Matched documents (same as v0). |
+| `COUNT(*)`       | Number of documents matching the query. |
+| `SUM(<field>)`   | Sum of `<field>` across matching documents. |
+| `AVG(<field>)`   | `(count, sum)` pair the client divides to compute the average. |
+
+`groupBy` is optional. With an empty `groupBy`, the response carries a single aggregate value; with a `groupBy` of one or two fields, the response carries one entry per group.
+
+Aggregate queries impose extra schema requirements on the document type — `COUNT` needs `documentsCountable`, `SUM` needs `documentsSummable`, `AVG` needs `documentsAverageable` (or both base flags). Range-grouped aggregates additionally need the `range*` variants. See the [doctype-level aggregate flags](../protocol-ref/data-contract-document.md#aggregate-query-flags) for the schema annotations and the [`getDocuments` reference](../reference/dapi-endpoints-platform-endpoints.md#getdocuments) for the full `select` × `groupBy` shape table.
+
+`SUM` / `AVG` integer values are returned as JS strings so JavaScript clients don't lose precision on values larger than `Number.MAX_SAFE_INTEGER`.
+
+:::{note}
+`HAVING`, `OFFSET`, `COUNT(<field>)`, `MIN`, `MAX`, and multi-projection `SELECT` are present on the wire but currently return `Unsupported`. Callers can encode them in builders ahead of server support landing, but evaluation rejects them today.
+:::
+
 ## Example query
 
 The following query combines both a where clause and query modifiers.

@@ -984,32 +984,89 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ### getDocuments
 
-**Returns**: [Document](../explanations/platform-protocol-document.md) information for the requested document(s)  
-**Parameters**:
-
-:::{note}
-The `where`, `order_by`, `limit`, `start_at`, and `start_after` parameters must comply with the limits defined on the [Query Syntax](../reference/query-syntax.md) page.
+:::{versionchanged} 3.1.0
+Adds a typed v1 request surface (`WhereClause` / `OrderClause` / `Select`) and four aggregate modes — `DOCUMENTS`, `COUNT`, `SUM`, `AVG`. The legacy v0 CBOR surface is still supported.
 :::
 
-| Name                    | Type    | Required | Description                                                                                      |
-| ----------------------- | ------- | -------- | ------------------------------------------------------------------------------------------------ |
-| `data_contract_id`      | Bytes   | Yes      | A data contract `id`                                                                             |
-| `document_type`         | String  | Yes      | A document type defined by the data contract (e.g. `preorder` or `domain` for the DPNS contract) |
-| `where` \*              | Bytes   | No       | Where clause to filter the results |
-| `order_by` \*           | Bytes   | No       | Sort records by the field(s) provided |
-| `limit`                 | Integer | No       | Maximum number of results to return                                                              |
-| ----------              |         |          |                                                                                                  |
-| _One_ of the following: |         |          |                                                                                                  |
-| `start_at`              | Integer | No       | Return records beginning with the index provided                                                 |
-| `start_after`           | Integer | No       | Return records beginning after the index provided                                                |
-| ----------              |         |          |                                                                                                  |
-| `prove`                 | Boolean | No       | Set to `true` to receive a proof that contains the requested document(s). The data requested will be encoded as part of the proof in the response. |
+**Returns**: [Document](../explanations/platform-protocol-document.md) information for the requested document(s), or an aggregate count/sum/average over the matched document set.
 
-**Example Request and Response**
+The request envelope is `oneof version { v0; v1; }`. Pick a version per call:
+
+- **v1** (default for new code, v3.1+) — typed request fields and aggregate `select` modes.
+- **v0** (legacy) — CBOR-encoded `where` / `order_by` byte strings. Fetch only.
+
+**Common request fields** (apply to every variant below)
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `data_contract_id` | Bytes | Yes | A data contract `id`. |
+| `document_type` | String | Yes | A document type defined by the data contract. |
+| `where_clauses` (v1) / `where` (v0) | Typed (v1) or CBOR bytes (v0) | No | Filter clauses. See [Query Syntax](../reference/query-syntax.md). |
+| `order_by` | Typed (v1) or CBOR bytes (v0) | No | Sort order. See [Query Syntax](../reference/query-syntax.md). |
+| `prove` | Boolean | No | Return a proof instead of data. See [Platform proofs](../reference/platform-proofs.md). |
+
+For v1, see also the [doctype-level aggregate flags](../protocol-ref/data-contract-document.md#aggregate-query-flags), which control whether a document type supports the `COUNT` / `SUM` / `AVG` modes below.
+
+#### Fetch documents
+
+Returns matched documents.
+
+**Mode-specific request fields**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `limit` | Integer | No | Maximum number of documents to return. |
+| `start_at` _or_ `start_after` | Bytes | No | Cursor — start at / after this document ID. |
+
+For v1, `selects` may be omitted (defaults to `[Select{ function: DOCUMENTS }]`) or set explicitly.
+
+**Example Request**
 
 ::::{tab-set}
+:::{tab-item} v1 (gRPCurl)
+:sync: v1-grpcurl
+
+```shell
+# `data_contract_id` must be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v1": {
+      "data_contract_id": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
+      "document_type": "domain",
+      "where_clauses": [
+        { "field": "normalizedParentDomainName", "operator": "EQUAL", "value": { "text": "dash" } }
+      ],
+      "limit": 1
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getDocuments
+```
+
+:::
+
+:::{tab-item} v0 (gRPCurl)
+:sync: v0-grpcurl
+
+```shell
+# `data_contract_id` must be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "data_contract_id": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
+      "document_type": "domain",
+      "limit": 1
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getDocuments
+```
+
+:::
+
 :::{tab-item} JavaScript (dapi-client)
 :sync: js-dapi-client
+
 ```javascript
 const DAPIClient = require('@dashevo/dapi-client');
 const {
@@ -1029,11 +1086,8 @@ client.platform.getDataContract(contractId).then((contractResponse) => {
   dpp.dataContract
     .createFromBuffer(contractResponse.getDataContract())
     .then((contract) => {
-      // Get document(s)
       client.platform
-        .getDocuments(contractId, type, {
-          limit,
-        })
+        .getDocuments(contractId, type, { limit })
         .then((response) => {
           for (const document of response.documents) {
             const doc = dpp.document.createExtendedDocumentFromDocumentBuffer(
@@ -1047,133 +1101,43 @@ client.platform.getDataContract(contractId).then((contractResponse) => {
     });
 });
 ```
-:::
 
-:::{tab-item} JavaScript (dapi-grpc)
-:sync: js-dapi-grpc
-```javascript
-const {
-  v0: { PlatformPromiseClient, GetDataContractRequest, GetDocumentsRequest },
-} = require('@dashevo/dapi-grpc');
-const { default: loadDpp, DashPlatformProtocol, Identifier } = require('@dashevo/wasm-dpp');
-
-loadDpp();
-const dpp = new DashPlatformProtocol(null);
-const platformPromiseClient = new PlatformPromiseClient(
-  'https://seed-1.testnet.networks.dash.org:1443',
-);
-
-const contractId = Identifier.from('GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec');
-const contractIdBuffer = Buffer.from(contractId);
-const getDataContractRequest = new GetDataContractRequest();
-getDataContractRequest.setId(contractIdBuffer);
-
-platformPromiseClient
-  .getDataContract(getDataContractRequest)
-  .then((contractResponse) => {
-    dpp.dataContract.createFromBuffer(contractResponse.getDataContract()).then((contract) => {
-      // Get documents
-      const getDocumentsRequest = new GetDocumentsRequest();
-      const type = 'domain';
-      const limit = 10;
-
-      getDocumentsRequest.setDataContractId(contractIdBuffer);
-      getDocumentsRequest.setDocumentType(type);
-      // getDocumentsRequest.setWhere(whereSerialized);
-      // getDocumentsRequest.setOrderBy(orderBySerialized);
-      getDocumentsRequest.setLimit(limit);
-      // getDocumentsRequest.setStartAfter(startAfter);
-      // getDocumentsRequest.setStartAt(startAt);
-
-      platformPromiseClient.getDocuments(getDocumentsRequest).then((response) => {
-        for (const document of response.getDocuments().getDocumentsList()) {
-          const documentBuffer = Buffer.from(document);
-          const doc = dpp.document.createExtendedDocumentFromDocumentBuffer(
-            documentBuffer,
-            type,
-            contract,
-          );
-          console.log(doc.toJSON());
-        }
-      });
-    });
-  })
-  .catch((e) => console.error(e));
-```
-:::
-
-:::{tab-item} Request (gRPCurl)
-:sync: grpcurl
-```shell
-# Request documents
-# `id` must be represented in base64
-grpcurl -proto protos/platform/v0/platform.proto \
-  -d '{
-    "v0": {
-      "data_contract_id":"5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
-      "document_type":"domain",
-      "limit":1
-    }
-  }' \
-  seed-1.testnet.networks.dash.org:1443 \
-  org.dash.platform.dapi.v0.Platform/getDocuments
-```
 :::
 ::::
 
+**Example Response**
+
 ::::{tab-set}
-:::{tab-item} Response (JavaScript)
-:sync: js-dapi-client
+:::{tab-item} v1 (gRPCurl)
+:sync: v1-grpcurl
+
 ```json
 {
-  "$id":"Do3YtBPJG72zG4tCbN5VE8djJ6rLpvx7yvtMWEy89HC",
-  "$ownerId":"4pk6ZhgDtxn9yN2bbB6kfsYLRmUBH7PKUq275cjyzepT",
-  "label":"Chronic",
-  "normalizedLabel":"chr0n1c",
-  "normalizedParentDomainName":"dash",
-  "parentDomainName":"dash",
-  "preorderSalt":"1P9N5qv1Ww2xkv6/XXpsvymyGYychRsLXMhCqvW79Jo=",
-  "records":{
-    "dashUniqueIdentityId":"OM4WaCQNLedQ0rpbl1UMTZhEbnVeMfL4941ZD08iyFw="
-  },
-  "subdomainRules":{
-    "allowSubdomains":false
-  },
-  "$revision":1,
-  "$createdAt":null,
-  "$updatedAt":null,
-  "$dataContract":{
-    "$format_version":"0",
-    "id":"GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec",
-    "config":{
-      "$format_version":"0",
-      "canBeDeleted":false,
-      "readonly":false,
-      "keepsHistory":false,
-      "documentsKeepHistoryContractDefault":false,
-      "documentsMutableContractDefault":true,
-      "requiresIdentityEncryptionBoundedKey":null,
-      "requiresIdentityDecryptionBoundedKey":null
+  "v1": {
+    "data": {
+      "documents": {
+        "documents": [
+          "AAZ1S7dbhY4VJrSCvjs2Z1DIwa9Qt9MAyjbJdh7gPu6oDsGC/h1Ayf+ZzXp2zLWDF4XB2qMLWZ0brsAKo0r/0sYBAAcAAAGRivixugAAAZGK+LG6AAABkYr4sboAF2F1ZzI1LTEyMzQ1Njc4OTAxMjM0NTY3F2F1ZzI1LTEyMzQ1Njc4OTAxMjM0NTY3AQRkYXNoBGRhc2gAIQEOwYL+HUDJ/5nNenbMtYMXhcHaowtZnRuuwAqjSv/SxgEA"
+        ]
+      }
     },
-    "version":1,
-    "ownerId":"EuzJmuZdBSJs2eTrxHEp6QqJztbp6FKDNGMeb4W2Ds7h",
-    "schemaDefs":null,
-    "documentSchemas":{
-      "domain":[
-        "Object"
-      ],
-      "preorder":[
-        "Object"
-      ]
+    "metadata": {
+      "height": "5991",
+      "coreChainLockedHeight": 1097384,
+      "epoch": 1170,
+      "timeMs": "1725567845055",
+      "protocolVersion": 1,
+      "chainId": "dash-testnet-51"
     }
-  },
-  "$type":"domain"
+  }
 }
 ```
+
 :::
 
-:::{tab-item} Response (gRPCurl)
-:sync: grpcurl
+:::{tab-item} v0 (gRPCurl)
+:sync: v0-grpcurl
+
 ```json
 {
   "v0": {
@@ -1193,8 +1157,234 @@ grpcurl -proto protos/platform/v0/platform.proto \
   }
 }
 ```
+
+:::
+
+:::{tab-item} JavaScript (decoded document)
+:sync: js-dapi-client
+
+```json
+{
+  "$id": "Do3YtBPJG72zG4tCbN5VE8djJ6rLpvx7yvtMWEy89HC",
+  "$ownerId": "4pk6ZhgDtxn9yN2bbB6kfsYLRmUBH7PKUq275cjyzepT",
+  "label": "Chronic",
+  "normalizedLabel": "chr0n1c",
+  "normalizedParentDomainName": "dash",
+  "parentDomainName": "dash",
+  "records": {
+    "dashUniqueIdentityId": "OM4WaCQNLedQ0rpbl1UMTZhEbnVeMfL4941ZD08iyFw="
+  },
+  "subdomainRules": { "allowSubdomains": false },
+  "$revision": 1,
+  "$type": "domain"
+}
+```
+
 :::
 ::::
+
+#### Count documents
+
+:::{versionadded} 3.1.0
+:::
+
+Returns one aggregate count, or per-group counts when `group_by` is set. Requires the doctype to set `documentsCountable: true` (and `rangeCountable: true` for range-grouped queries). See [aggregate query flags](../protocol-ref/data-contract-document.md#aggregate-query-flags).
+
+**Mode-specific request fields**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `selects` | `[Select{ function: COUNT }]` | Yes | Projection. |
+| `group_by` | Repeated string | No | `[]`, `[in_field]`, `[range_field]`, or `[in_field, range_field]`. |
+
+`limit` is rejected for `group_by=[]` and `group_by=[in_field]` (the result is bounded by construction). `start_at` / `start_after` are not valid in this mode — paginate by narrowing the where clause.
+
+**Response shape**
+
+- `group_by = []` → `counts.aggregate_count` (single integer).
+- `group_by = [...]` → `counts.entries[]` of `{ in_key?, key, count }`.
+
+`IN` values that match no documents are omitted from `counts.entries` rather than returned with `count: 0`. Diff your request's `IN` array against the returned `key` values to detect "queried but absent."
+
+**Example Request**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+:sync: grpcurl
+
+```shell
+# TODO: Replace with a real example once a contract using
+# `documentsCountable` is published on testnet. The contract id,
+# document type, and field name below are illustrative only.
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v1": {
+      "data_contract_id": "<base64-of-countable-contract-id>",
+      "document_type": "shipments",
+      "selects": [{ "function": "COUNT" }],
+      "where_clauses": [
+        { "field": "status", "operator": "EQUAL", "value": { "text": "delivered" } }
+      ]
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getDocuments
+```
+
+:::
+::::
+
+**Example Response**
+
+```json
+{
+  "v1": {
+    "data": {
+      "counts": {
+        "aggregateCount": "1234"
+      }
+    },
+    "metadata": { "height": "5991", "coreChainLockedHeight": 1097384 }
+  }
+}
+```
+
+Count values use `[jstype = JS_STRING]` on the proto, so JavaScript clients receive strings to avoid precision loss above `Number.MAX_SAFE_INTEGER`.
+
+#### Sum documents
+
+:::{versionadded} 3.1.0
+:::
+
+Returns the sum of an integer field across matched documents, or per-group sums when `group_by` is set. Requires the doctype to set `documentsSummable: "<property>"` (and `rangeSummable: true` for range-grouped queries). See [aggregate query flags](../protocol-ref/data-contract-document.md#aggregate-query-flags).
+
+**Mode-specific request fields**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `selects` | `[Select{ function: SUM, field: "<prop>" }]` | Yes | `field` must name the summable property. |
+| `group_by` | Repeated string | No | Same shape rules as Count above. |
+
+`start_at` / `start_after` are not valid.
+
+**Response shape**
+
+- `group_by = []` → `sums.aggregate_sum` (signed integer).
+- `group_by = [...]` → `sums.entries[]` of `{ in_key?, key, sum }`.
+
+**Example Request**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+:sync: grpcurl
+
+```shell
+# TODO: Replace with a real example once a contract using
+# `documentsSummable` is published on testnet. The contract id,
+# document type, and field name below are illustrative only.
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v1": {
+      "data_contract_id": "<base64-of-summable-contract-id>",
+      "document_type": "inventory",
+      "selects": [{ "function": "SUM", "field": "quantity" }],
+      "where_clauses": [
+        { "field": "warehouse", "operator": "EQUAL", "value": { "text": "north" } }
+      ]
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getDocuments
+```
+
+:::
+::::
+
+**Example Response**
+
+```json
+{
+  "v1": {
+    "data": {
+      "sums": {
+        "aggregateSum": "42000"
+      }
+    },
+    "metadata": { "height": "5991", "coreChainLockedHeight": 1097384 }
+  }
+}
+```
+
+#### Average documents
+
+:::{versionadded} 3.1.0
+:::
+
+Returns a `(count, sum)` pair the client divides to compute the average, or per-group `(count, sum)` pairs when `group_by` is set. Requires the doctype to set `documentsAverageable: "<property>"` (and `rangeAverageable: true` for range-grouped queries). See [aggregate query flags](../protocol-ref/data-contract-document.md#aggregate-query-flags).
+
+Why `(count, sum)` instead of a single `average`? Returning the pair preserves full precision and lets the client pick how to represent the result (integer division, floating-point, decimal).
+
+**Mode-specific request fields**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `selects` | `[Select{ function: AVG, field: "<prop>" }]` | Yes | `field` must name the averageable property. |
+| `group_by` | Repeated string | No | Same shape rules as Count above. |
+
+`start_at` / `start_after` are not valid.
+
+**Response shape**
+
+- `group_by = []` → `averages.aggregate_average` of `{ count, sum }`.
+- `group_by = [...]` → `averages.entries[]` of `{ in_key?, key, count, sum }`.
+
+**Example Request**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+:sync: grpcurl
+
+```shell
+# TODO: Replace with a real example once a contract using
+# `documentsAverageable` is published on testnet. The contract id,
+# document type, and field name below are illustrative only.
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v1": {
+      "data_contract_id": "<base64-of-averageable-contract-id>",
+      "document_type": "ratings",
+      "selects": [{ "function": "AVG", "field": "score" }],
+      "where_clauses": [
+        { "field": "productId", "operator": "EQUAL", "value": { "text": "abc123" } }
+      ]
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getDocuments
+```
+
+:::
+::::
+
+**Example Response**
+
+```json
+{
+  "v1": {
+    "data": {
+      "averages": {
+        "aggregateAverage": {
+          "count": "50",
+          "sum": "215"
+        }
+      }
+    },
+    "metadata": { "height": "5991", "coreChainLockedHeight": 1097384 }
+  }
+}
+```
+
+Client computes `avg = 215 / 50 = 4.3`.
 
 ## Identity Endpoints
 

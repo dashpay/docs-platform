@@ -740,7 +740,7 @@ property must be incremented if the contract is updated.
 
 ### Data Contract documents
 
-See the [data contract documents](./data-contract-document.md) page for details.
+See the [data contract documents](./data-contract-document.md) page for details, including the [aggregate query flags](./data-contract-document.md#aggregate-query-flags) that opt document types into count/sum/average queries.
 
 ### Data Contract config
 

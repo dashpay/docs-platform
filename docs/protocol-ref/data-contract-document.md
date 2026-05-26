@@ -328,6 +328,33 @@ The following example (from the [DPNS contract's `domain` document](https://gith
 }
 ```
 
+## Aggregate Query Flags
+
+:::{versionadded} 3.1.0
+:::
+
+Document types can opt into aggregate query support (count / sum / average) by setting flags at the document-type level. These flags control the underlying storage layout — once set on a published contract they cannot be changed by a contract update.
+
+There are two axes:
+
+* **Doctype-wide** (`documents*`) — applies the aggregate over the entire document type. Set at the document type root, alongside other doctype options like `documentsKeepHistory`.
+* **Per-index range** (`range*`) — extends the corresponding aggregate to range queries on indexed properties. Set on the index's property entry. Requires the matching base flag.
+
+| Flag | Type | Purpose | Required for |
+| - | - | - | - |
+| `documentsCountable` | Boolean | Doctype-wide counts (empty `where` or `==`/`IN` clauses on indexed fields). | `SELECT COUNT(*)` without a range clause. |
+| `rangeCountable` | Boolean | Per-index counts over a range. Requires `documentsCountable`. | `SELECT COUNT(*)` with a range clause or `GROUP BY <range_field>`. |
+| `documentsSummable` | String | Doctype-wide sums of the named integer property. | `SELECT SUM(<that property>)`. |
+| `rangeSummable` | Boolean | Per-index sums over a range. Requires `documentsSummable`. | `SELECT SUM(<field>)` with a range clause. |
+| `documentsAverageable` | String | Syntactic sugar for `documentsCountable: true` + `documentsSummable: "<prop>"`. | `SELECT AVG(<that property>)`. |
+| `rangeAverageable` | Boolean | Syntactic sugar for `rangeCountable: true` + `rangeSummable: true`. Requires `documentsAverageable`. | `SELECT AVG(<field>)` with a range clause. |
+
+The averageable flags desugar to the underlying count + sum flags during contract parsing — same on-disk layout — so authors who think in terms of averages get a single flag and downstream code paths (insert, query, estimation) stay unchanged. If both `documentsAverageable` and `documentsSummable` are set, they must name the same property.
+
+These flags are validated against the v1 document meta-schema and are rejected when applied to pre-v12 contracts. The full v1 meta-schema, including these flags, is defined [in rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/schema/meta_schemas/document/v1/document-meta.json).
+
+See the [`getDocuments` reference](../reference/dapi-endpoints-platform-endpoints.md#getdocuments) for the request/response shapes that consume these flags.
+
 ## Keyword Constraints
 
 There are a variety of keyword constraints currently defined for performance and security reasons. The
