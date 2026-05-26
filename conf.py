@@ -41,6 +41,7 @@ exclude_patterns = [
     '.DS_Store',
     'README.md',
     'CLAUDE.md',
+    'RELEASE.md',
     '.devcontainer',
     '.codex',
     '.local',

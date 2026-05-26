@@ -74,6 +74,18 @@ When updating documentation values that include GitHub source links:
 - Update the line anchor (`#L`) to match the correct line **in the branch the link points to**
 - When available, use the local platform repository checkout to verify line numbers against the correct branch
 
+## DAPI endpoint reference
+
+The DAPI endpoint reference is split between an overview page (`docs/reference/dapi-endpoints.md`) and per-section detail pages (`docs/reference/dapi-endpoints-*.md`). The authoritative list of endpoints lives in the platform proto at `https://github.com/dashpay/platform/tree/<branch>/packages/dapi-grpc/protos` — check the proto when adding or modifying entries.
+
+When you add or materially update an entry on a detail page, also update the matching row on `dapi-endpoints.md`:
+
+- Keep the description in sync between the two pages.
+- Prefix the overview row's description with `**Added in Dash Platform vX.Y.Z**` (new endpoints) or `**Updated in Dash Platform vX.Y.Z**` (modified endpoints), followed by `<br>` and the description. Use **bold** for the current release's annotations; older releases use *italics*.
+- For a whole new endpoint group, wrap the new section in a `:::{versionadded} X.Y.Z` admonition above its table — see Security Groups, Tokens, Address System, and Shielded Transactions for the pattern.
+
+For the full per-release endpoint review process (proto diff, example refresh, demoting annotations to italics), see [RELEASE.md](RELEASE.md).
+
 ## File Patterns
 
 - Documentation files: `docs/**/*.md`
