@@ -165,6 +165,7 @@ protocol-ref/document
 protocol-ref/token
 protocol-ref/data-trigger
 protocol-ref/address-system
+protocol-ref/shielded-pool
 protocol-ref/protocol-constants
 protocol-ref/errors
 ```
