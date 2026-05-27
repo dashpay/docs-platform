@@ -26,7 +26,7 @@ The list of common fields used by multiple state transitions is defined in [rs-d
 | Field           | Type           | Size | Description |
 | --------------- | -------------- | ---- | ----------- |
 | $version        | unsigned integer | 16 bits | The state transition format version (FeatureVersion). Currently `0` for most transitions, `1` for Batch. This is not the global platform protocol version, which is negotiated separately. |
-| type            | unsigned integer | 8 bits  | State transition type (defined in [rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/state_transition/state_transition_types.rs#L21)):<br>`0` - [data contract create](../protocol-ref/data-contract.md#data-contract-create)<br>`1` - [batch](#batch)<br>`2` - [identity create](../protocol-ref/identity.md#identity-create)<br>`3` - [identity topup](identity.md#identity-topup)<br>`4` - [data contract update](data-contract.md#data-contract-update)<br>`5` - [identity update](identity.md#identity-update)<br>`6` - [identity credit withdrawal](identity.md#identity-credit-withdrawal)<br>`7` - [identity credit transfer](identity.md#identity-credit-transfer)<br>`8` - [masternode vote](#masternode-vote)<br>`9` - [identity credit transfer to addresses](address-system.md#identity-credit-transfer-to-addresses)<br>`10` - [identity create from addresses](address-system.md#identity-create-from-addresses)<br>`11` - [identity topup from addresses](address-system.md#identity-topup-from-addresses)<br>`12` - [address funds transfer](address-system.md#address-funds-transfer)<br>`13` - [address funding from asset lock](address-system.md#address-funding-from-asset-lock)<br>`14` - [address credit withdrawal](address-system.md#address-credit-withdrawal)<br>`15` - [shield](shielded-pool.md#shield)<br>`16` - [shielded transfer](shielded-pool.md#shielded-transfer)<br>`17` - [unshield](shielded-pool.md#unshield)<br>`18` - [shield from asset lock](shielded-pool.md#shield-from-asset-lock)<br>`19` - [shielded withdrawal](shielded-pool.md#shielded-withdrawal) |
+| type            | unsigned integer | 8 bits  | State transition type discriminator (defined in [rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/state_transition/state_transition_types.rs#L21)). See [State Transition Types](#state-transition-types) for the full list. |
 | userFeeIncrease | unsigned integer | 16 bits | Extra fee to prioritize processing if the mempool is full. Typically set to zero. |
 | signature       | array of bytes | 65 bytes |Signature of state transition data |
 
@@ -42,84 +42,39 @@ Additionally, all state transitions except the identity create and topup state t
 
 ## State Transition Types
 
-Dash Platform Protocol defines the [state transition types](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/state_transition/state_transition_types.rs#L21-L43) that perform identity, contract, document, and token operations. See the subsections below for details on each state transition type.
+Dash Platform Protocol defines the following [state transition types](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/state_transition/state_transition_types.rs#L21-L43). Most are documented in detail on the protocol reference page for the feature they operate on. Batch and Masternode Vote do not have a dedicated feature page; their formats are documented inline below.
+
+| Type | Name | Documented in |
+| --- | --- | --- |
+| 0 | Data Contract Create | [Data Contract Create](data-contract.md#data-contract-create) |
+| 1 | Batch | [Batch](#batch) (below) |
+| 2 | Identity Create | [Identity Create](identity.md#identity-create) |
+| 3 | Identity TopUp | [Identity TopUp](identity.md#identity-topup) |
+| 4 | Data Contract Update | [Data Contract Update](data-contract.md#data-contract-update) |
+| 5 | Identity Update | [Identity Update](identity.md#identity-update) |
+| 6 | Identity Credit Withdrawal | [Identity Credit Withdrawal](identity.md#identity-credit-withdrawal) |
+| 7 | Identity Credit Transfer | [Identity Credit Transfer](identity.md#identity-credit-transfer) |
+| 8 | Masternode Vote | [Masternode Vote](#masternode-vote) (below) |
+| 9 | Identity Credit Transfer to Addresses | [Identity Credit Transfer to Addresses](address-system.md#identity-credit-transfer-to-addresses) |
+| 10 | Identity Create from Addresses | [Identity Create from Addresses](address-system.md#identity-create-from-addresses) |
+| 11 | Identity TopUp from Addresses | [Identity TopUp from Addresses](address-system.md#identity-topup-from-addresses) |
+| 12 | Address Funds Transfer | [Address Funds Transfer](address-system.md#address-funds-transfer) |
+| 13 | Address Funding from Asset Lock | [Address Funding from Asset Lock](address-system.md#address-funding-from-asset-lock) |
+| 14 | Address Credit Withdrawal | [Address Credit Withdrawal](address-system.md#address-credit-withdrawal) |
+| 15 | Shield | [Shield](shielded-pool.md#shield) |
+| 16 | Shielded Transfer | [Shielded Transfer](shielded-pool.md#shielded-transfer) |
+| 17 | Unshield | [Unshield](shielded-pool.md#unshield) |
+| 18 | Shield from Asset Lock | [Shield from Asset Lock](shielded-pool.md#shield-from-asset-lock) |
+| 19 | Shielded Withdrawal | [Shielded Withdrawal](shielded-pool.md#shielded-withdrawal) |
 
 ### Batch
 
 | Field       | Type           | Size | Description |
 | ----------- | -------------- | ---- | ----------- |
-| ownerId     | array of bytes | 32 bytes | [Identity](../protocol-ref/identity.md) submitting the document(s) |
+| ownerId     | array of bytes | 32 bytes | [Identity](../protocol-ref/identity.md) submitting the document(s) or token action(s) |
 | transitions | array of transition objects | Varies | A batch of [document](../protocol-ref/document.md#document-overview) or token actions (currently limited to [1 object per batch](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/system_limits/v1.rs#L7)) |
 
 More detailed information about the `transitions` array can be found in the [document section](../protocol-ref/document.md). See the implementation in [rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/v1/mod.rs#L31-L39).
-
-### Data Contract Create
-
-| Field           | Type           | Size | Description |
-| --------------- | -------------- | ---- | ----------- |
-| dataContract | [data contract object](../protocol-ref/data-contract.md#data-contract-object) | Varies | Object containing valid [data contract](../protocol-ref/data-contract.md) details |
-| identityNonce | unsigned integer | 64 bits | Identity nonce for this transition to prevent replay attacks |
-
-More detailed information about the `dataContract` object can be found in the [data contract section](../protocol-ref/data-contract.md).
-
-### Data Contract Update
-
-| Field           | Type           | Size | Description |
-| --------------- | -------------- | ---- | ----------- |
-| dataContract | [data contract object](../protocol-ref/data-contract.md#data-contract-object) | Varies | Object containing valid [data contract](../protocol-ref/data-contract.md) details |
-| identityContractNonce | unsigned integer | 64 bits | Identity contract nonce for replay protection |
-
-More detailed information about the `dataContract` object can be found in the [data contract section](../protocol-ref/data-contract.md).
-
-### Identity Create
-
-| Field           | Type           | Size | Description |
-| --------------- | -------------- | ---- | ----------- |
-| assetLockProof | array of bytes | 36 bytes | Lock [outpoint](https://docs.dash.org/en/stable/docs/core/resources/glossary.html#outpoint) from the layer 1 locking transaction (36 bytes) |
-| publicKeys     | array of keys  | Varies | [Public key(s)](../protocol-ref/identity.md#identity-publickeys) associated with the identity (maximum number of keys: `6`) |
-
-More detailed information about the `publicKeys` object can be found in the [identity section](../protocol-ref/identity.md).
-
-### Identity TopUp
-
-| Field           | Type           | Size | Description |
-| --------------- | -------------- | ---- | ----------- |
-| assetLockProof | array of bytes | 36 bytes | Lock [outpoint](https://docs.dash.org/en/stable/docs/core/resources/glossary.html#outpoint) from the layer 1 locking transaction (36 bytes) |
-| identityId     | array of bytes | 32 bytes | An [Identity ID](../protocol-ref/identity.md#identity-id) for the identity receiving the topup (can be any identity) (32 bytes) |
-
-### Identity Update
-
-| Field           | Type           | Size | Description |
-| --------------- | -------------- | ---- | ----------- |
-| identityId      | array of bytes       | 32 bytes | The [Identity ID](../protocol-ref/identity.md#identity-id) for the identity being updated |
-| revision        | unsigned integer     | 64 bits | Identity update revision. Used for optimistic concurrency control. Incremented by one with each new update so that the update will fail if the underlying data is modified between reading and writing. |
-| nonce           | unsigned integer     | 64 bits | Identity nonce for this transition to prevent replay attacks |
-| addPublicKeys   | array of public keys | Varies | (Optional) Array of up to 6 new public keys to add to the identity. Required if adding keys. |
-| disablePublicKeys | array of integers  | Varies | (Optional) Array of up to 10 existing identity public key ID(s) to disable for the identity. Required if disabling keys. |
-
-### Identity Credit Transfer
-
-| Field           | Type           | Size | Description |
-| --------------- | -------------- | ---- | ----------- |
-| identityId      | array of bytes | 32 bytes | An [Identity ID](../protocol-ref/identity.md#identity-id) for the identity sending the credits |
-| recipientId     | array of bytes | 32 bytes | An [Identity ID](../protocol-ref/identity.md#identity-id) for the identity receiving the credits |
-| amount          | unsigned integer | 64 bits | Number of credits being transferred |
-| nonce           | unsigned integer | 64 bits | Identity nonce for this transition to prevent replay attacks |
-
-See the implementation in [rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_credit_transfer_transition/v0/mod.rs#L42-L53).
-
-### Identity Credit Withdrawal
-
-| Field           | Type           | Size | Description |
-| --------------- | -------------- | ---- | ----------- |
-| identityId      | array of bytes | 32 bytes | An [Identity ID](../protocol-ref/identity.md#identity-id) for the identity sending the credits |
-| amount          | unsigned integer | 64 bits | Number of credits being transferred |
-| coreFeePerByte  | unsigned integer | 32 bits |  |
-| pooling         | unsigned integer | 8 bits | 0 = Never, 1 = If Available, 2 = Standard |
-| outputScript    | script | Varies | If None, the withdrawal is sent to the address set by Core |
-| nonce           | unsigned integer | 64 bits | Identity nonce for this transition to prevent replay attacks |
-
-See the implementation in [rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_credit_withdrawal_transition/v1/mod.rs#L35-L48).
 
 ### Masternode Vote
 

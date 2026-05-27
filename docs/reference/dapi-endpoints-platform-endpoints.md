@@ -4627,39 +4627,6 @@ Returns compacted nullifier additions from a specified block height. Compacted c
 | `start_block_height` | String (uint64) | Yes | Block height to start from (as a string due to uint64 size) |
 | `prove`              | Boolean         | No  | Set to `true` to receive a proof that contains the requested changes |
 
-## Deprecated Endpoints
-
-The following endpoints were recently deprecated. See the [previous version of documentation](https://docs.dash.org/projects/platform/en/2.0.0/docs/reference/dapi-endpoints-platform-endpoints.html) for additional information on these endpoints.
-
-### getIdentities
-
-:::{attention}
-Deprecated in Dash Platform v1.0.0
-:::
-
-**Returns**: [Identity](../explanations/identity.md) information for the requested identities  
-
-**Parameters**:
-
-| Name    | Type    | Required | Description |
-| ------- | ------- | -------- | ------------ |
-| `ids`   | Array   | Yes      | An array of identity IDs
-| `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested identity
-
-### getIdentitiesByPublicKeyHashes
-
-:::{attention}
-Deprecated in Dash Platform v1.0.0
-:::
-
-**Returns**: An array of [identities](../explanations/identity.md) associated with the provided public key hashes  
-**Parameters**:
-
-| Name                | Type    | Required | Description                                                             |
-| ------------------- | ------- | -------- | ----------------------------------------------------------------------- |
-| `public_key_hashes` | Bytes   | Yes      | Public key hashes (sha256-ripemd160) of identity public keys            |
-| `prove`             | Boolean | No       | Set to `true` to receive a proof that contains the requested identities |
-
 ## Code Reference
 
 Implementation details related to the information on this page can be found in:
