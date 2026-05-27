@@ -74,6 +74,14 @@ When updating documentation values that include GitHub source links:
 - Update the line anchor (`#L`) to match the correct line **in the branch the link points to**
 - When available, use the local platform repository checkout to verify line numbers against the correct branch
 
+## Adding a new doc page
+
+A new page is only visible in the rendered site if it appears in a Sphinx toctree. Sphinx will emit a `document isn't included in any toctree` warning at build time for any orphaned page, and the page won't show up in the sidebar.
+
+Top-level toctrees live in [docs/index.md](docs/index.md), grouped by section caption (`Tutorials`, `Explanations`, `Reference`, `Platform Protocol Reference`, `Resources`). When you add a new page under `docs/<section>/`, add its path (without the `.md` extension) to the matching toctree in `docs/index.md`. After editing the toctree, run `python scripts/sync_sidebar.py` so the custom sidebar template picks up the new entry.
+
+Tutorials and the TUI section use nested `index.md` files with their own toctrees — check the parent `index.md` of the directory you're adding to.
+
 ## DAPI endpoint reference
 
 The DAPI endpoint reference is split between an overview page (`docs/reference/dapi-endpoints.md`) and per-section detail pages (`docs/reference/dapi-endpoints-*.md`). The authoritative list of endpoints lives in the platform proto at `https://github.com/dashpay/platform/tree/<branch>/packages/dapi-grpc/protos` — check the proto when adding or modifying entries.
