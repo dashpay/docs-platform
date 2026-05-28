@@ -249,14 +249,16 @@ The `indices` array consists of one or more objects that each contain:
 * An optional `nullSearchable` element that indicates whether the index allows searching for NULL values. If nullSearchable is false (default: true) and all properties of the index are null then no reference is added.
 * An optional `contested` element that determines if duplicate values are allowed for the document
 
-```json
-"indices": [ 
+:::{code-block} json
+:force:
+
+"indices": [
   {
     "name": "<index name a>",
     "properties": [
       { "<field name a>": "<asc"|"desc>" },
       { "<field name b>": "<asc"|"desc>" }
-    ], 
+    ],
     "unique": true|false,
     "nullSearchable": true|false,
     "contested": {
@@ -273,10 +275,10 @@ The `indices` array consists of one or more objects that each contain:
     "name": "<index name b>",
     "properties": [
       { "<field name c>": "<asc"|"desc>" },
-    ], 
-  }    
+    ],
+  }
 ]
-```
+:::
 
 #### Contested indices
 
@@ -343,10 +345,12 @@ The following example (excerpt from the DPNS contract's `preorder` document) cre
 
 This example syntax shows the structure of a document object including all optional properties.
 
-:::{dropdown} Document schema
+::::{dropdown} Document schema
 :open:
 
-```json
+:::{code-block} json
+:force:
+
 {
   "<document name a>": {
     "documentsKeepHistory": true|false,
@@ -411,8 +415,8 @@ This example syntax shows the structure of a document object including all optio
     "additionalProperties": false
   },  
 }
-```
 :::
+::::
 
 ## General Constraints
 

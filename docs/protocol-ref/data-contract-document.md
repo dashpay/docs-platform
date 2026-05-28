@@ -144,7 +144,9 @@ The `indices` array consists of one or more objects that each contain:
 * An optional `nullSearchable` element that indicates whether the index allows searching for NULL values. If nullSearchable is false (default: true) and all properties of the index are null then no reference is added.
 * An optional `contested` element that determines if duplicate values are allowed for the document
 
-```json
+:::{code-block} json
+:force:
+
 "indices": [
   {
     "name": "<index name a>",
@@ -171,7 +173,7 @@ The `indices` array consists of one or more objects that each contain:
     ],
   }
 ]
-```
+:::
 
 ### Contested Indices
 
@@ -380,7 +382,9 @@ schema](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/schema
 
 This example syntax shows the structure of a documents object that defines two documents, an index, and a required field.
 
-```json
+:::{code-block} json
+:force:
+
 {
   "<document name a>": {
     "type": "object",
@@ -425,7 +429,7 @@ This example syntax shows the structure of a documents object that defines two d
     "additionalProperties": false
   },    
 }
-```
+:::
 
 ## Document Schema
 

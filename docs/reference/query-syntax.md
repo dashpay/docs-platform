@@ -12,14 +12,17 @@ Generally queries will consist of a `where` clause plus optional [modifiers](#qu
 
 The Where clause is an optional array of conditions. If omitted or empty, all documents of the queried type are returned (subject to `limit`). For some operators, `value` will be an array. All fields referenced in a query's where clause must be defined in the same index. This includes system timestamp fields (e.g., `$createdAt`, `$updatedAt`, `$transferredAt`, and their block-height variants such as `$createdAtBlockHeight` and `$createdAtCoreBlockHeight`). See the following general syntax example:
 
-```json Syntax
+:::{code-block} json
+:force:
+:caption: Syntax
+
 {
   where: [
     [<fieldName>, <operator>, <value>],
     [<fieldName>, <array operator>, [<value1>, <value2>]] 
-  ] 
+  ]
 }
-```
+:::
 
 ### Fields
 
@@ -78,19 +81,23 @@ Valid fields consist of the indices defined for the document being queried. For 
 
 ### Operator Examples
 
-::::{tab-set}
-:::{tab-item} Range
-```json
+:::::{tab-set}
+::::{tab-item} Range
+:::{code-block} json
+:force:
+
 {
   where: [
     ["nameHash", "<", "56116861626961756e6176657a382e64617368"],
   ],
 }
-```
 :::
+::::
 
-:::{tab-item} Between
-```json
+::::{tab-item} Between
+:::{code-block} json
+:force:
+
 {
   where: [
     ["normalizedParentDomainName", "==", "dash"],
@@ -101,11 +108,14 @@ Valid fields consist of the indices defined for the document being queried. For 
     ["normalizedLabel", "asc"],
   ]
 }
-```
 :::
+::::
 
-:::{tab-item} in
-```json in
+::::{tab-item} in
+:::{code-block} json
+:force:
+:caption: in
+
 {
   where: [
       ["normalizedParentDomainName", "==", "dash"],
@@ -113,11 +123,14 @@ Valid fields consist of the indices defined for the document being queried. For 
       ["normalizedLabel", "in", ["alice", "bob"]],
     ]
 }
-```
 :::
+::::
 
-:::{tab-item} startsWith
-```json startsWith
+::::{tab-item} startsWith
+:::{code-block} json
+:force:
+:caption: startsWith
+
 {
   where: [
       ["normalizedParentDomainName", "==", "dash"],
@@ -128,9 +141,9 @@ Valid fields consist of the indices defined for the document being queried. For 
     ["normalizedLabel", "asc"],
   ]
 }
-```
 :::
 ::::
+:::::
 
 ## Query Modifiers
 
