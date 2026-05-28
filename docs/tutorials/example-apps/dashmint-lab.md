@@ -660,7 +660,7 @@ export async function burnCard({
 
 ### What makes this an NFT contract
 
-The card data contract defines one document type (`card`) with four fields and three indices. Three top-level flags turn it into an NFT contract: `transferable: 1` lets owners send cards to other identities, `tradeMode: 1` enables the built-in price/purchase flow, and `creationRestrictionMode: 1` controls who can mint. See the [NFT explanation](../../explanations/nft.md#explanations-dash-nfts) for what each flag does, and the [NFT tab in Register a Data Contract](../contracts-and-documents/register-a-data-contract.md) for the schema in JSON form.
+The card data contract defines one document type (`card`) with four fields and three indices. Three top-level flags turn it into an NFT contract: `transferable: 1` lets owners send cards to other identities, `tradeMode: 1` enables the built-in price/purchase flow, and `creationRestrictionMode: 1` controls who can mint. See the {ref}`NFT explanation <explanations-dash-nfts>` for what each flag does, and the [NFT tab in Register a Data Contract](../contracts-and-documents/register-a-data-contract.md) for the schema in JSON form.
 
 ### How the app registers or reuses the contract
 

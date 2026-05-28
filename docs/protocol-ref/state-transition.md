@@ -57,7 +57,7 @@ Dash Platform Protocol defines the following [state transition types](https://gi
 | 8 | Masternode Vote | [Masternode Vote](#masternode-vote) (below) |
 | 9 | Identity Credit Transfer to Addresses | [Identity Credit Transfer to Addresses](address-system.md#identity-credit-transfer-to-addresses) |
 | 10 | Identity Create from Addresses | [Identity Create from Addresses](address-system.md#identity-create-from-addresses) |
-| 11 | Identity TopUp from Addresses | [Identity TopUp from Addresses](address-system.md#identity-topup-from-addresses) |
+| 11 | Identity TopUp from Addresses | [Identity TopUp from Addresses](address-system.md#identity-top-up-from-addresses) |
 | 12 | Address Funds Transfer | [Address Funds Transfer](address-system.md#address-funds-transfer) |
 | 13 | Address Funding from Asset Lock | [Address Funding from Asset Lock](address-system.md#address-funding-from-asset-lock) |
 | 14 | Address Credit Withdrawal | [Address Credit Withdrawal](address-system.md#address-credit-withdrawal) |
