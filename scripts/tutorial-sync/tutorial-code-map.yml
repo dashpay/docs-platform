@@ -199,6 +199,12 @@ mappings:
       caption: contract.ts
     language: typescript
 
+  - source: example-apps/dashmint-lab/src/dash/dashMintToken.ts
+    doc: example-apps/dashmint-lab.md
+    block_id:
+      caption: dashMintToken.ts
+    language: typescript
+
   - source: example-apps/dashmint-lab/src/dash/withAuthedCard.ts
     doc: example-apps/dashmint-lab.md
     block_id:
@@ -215,6 +221,12 @@ mappings:
     doc: example-apps/dashmint-lab.md
     block_id:
       caption: transferCard.ts
+    language: typescript
+
+  - source: example-apps/dashmint-lab/src/dash/transferDashMintTokens.ts
+    doc: example-apps/dashmint-lab.md
+    block_id:
+      caption: transferDashMintTokens.ts
     language: typescript
 
   - source: example-apps/dashmint-lab/src/dash/setPrice.ts

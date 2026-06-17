@@ -4,13 +4,13 @@
 
 # DashMint Lab — NFT marketplace
 
-[DashMint Lab](https://dashpay.github.io/platform-tutorials/dashmint-lab/) is a React + TypeScript + Vite single-page app that exercises every Dash Platform NFT operation: mint, transfer, price, purchase, burn, and query. This walkthrough shows how those SDK calls are organized inside a real UI.
+[DashMint Lab](https://dashpay.github.io/platform-tutorials/dashmint-lab/) is a React + TypeScript + Vite single-page app that exercises every Dash Platform NFT operation: mint, transfer, price, purchase, burn, and query. Minting is gated by a fixed-supply DashMint token, so the walkthrough also shows how token balances, token transfers, and token-paid document creation fit into a real UI.
 
 ![DashMint Lab - Collection](./img/dashmint-collection.png)
 
 ## What this app does
 
-The app lets users log in with a BIP-39 mnemonic, mint "card" NFTs with random attack/defense stats, browse cards across the network, set sale prices, purchase cards from other identities, transfer cards as gifts, and burn cards they no longer want. Read-only browsing works without any credentials.
+The app lets users log in with a BIP-39 mnemonic, mint "card" NFTs with random attack/defense stats by burning DashMint tokens, browse cards across the network, set sale prices, purchase cards from other identities, transfer cards or DashMint tokens as gifts, and burn cards they no longer want. Read-only browsing works without any credentials.
 
 For background on Dash Platform NFT features such as transfer, trade, delete, and creation restrictions, see the [NFT explanation](../../explanations/nft.md).
 
@@ -21,12 +21,13 @@ Every Platform SDK call lives in its own file under `src/dash/`. The React UI is
 ## TL;DR
 
 - Each NFT operation lives in its own `src/dash/*.ts` file.
-- The easiest entry points are `src/dash/queries.ts`, `src/dash/mintCard.ts`, and `src/dash/transferCard.ts`.
+- The easiest entry points are `src/dash/queries.ts`, `src/dash/contract.ts`, `src/dash/dashMintToken.ts`, and `src/dash/mintCard.ts`.
+- Minting costs 1 DashMint token. The contract burns that token through `card.tokenCost.create`, so the fixed token supply caps the card supply.
 - Most mutations share one helper: `src/dash/withAuthedCard.ts`.
 - The UI mostly passes form input into those functions and renders the results.
 - `client.ts` and `keyManager.ts` are thin re-exports of `setupDashClient-core.mjs`.
 
-If you just want the mental model: read the architecture table, then `withAuthedCard.ts`, then whichever operation you care about.
+If you just want the mental model: read the architecture table, then `contract.ts`, `dashMintToken.ts`, `mintCard.ts`, and whichever operation you care about.
 
 ## Prerequisites
 
@@ -34,7 +35,8 @@ If you just want the mental model: read the architecture table, then `withAuthed
 - A configured client: [Setup SDK Client](../setup-sdk-client.md) — DashMint re-uses `setupDashClient-core.mjs`
 - A registered identity: [Register an Identity](../identities-and-names/register-an-identity.md)
 - Familiarity with data contracts: [Register a Data Contract](../contracts-and-documents/register-a-data-contract.md) — particularly the NFT tab
-- Node >= 20 and a funded testnet identity (BIP-39 mnemonic + identity index)
+- Node >= 22 and a funded testnet identity (BIP-39 mnemonic + identity index)
+- DashMint tokens on the active contract if you want to mint on an existing contract. Registering a fresh contract starts it with 100 DashMint tokens owned by the registering identity.
 - (Optional) A second funded identity to test cross-profile transfer and purchase
 
 ## Clone and run
@@ -46,7 +48,7 @@ npm install
 npm run dev
 ```
 
-The dev server runs on `http://localhost:5173`. Open it in a browser, click **Login**, paste your testnet mnemonic, and start minting. The app ships with a default contract ID so browse-only mode works on a fresh install.
+The dev server runs on `http://localhost:5173`. Open it in a browser, click **Login**, and paste your testnet mnemonic. The app ships with a default contract ID so browse-only mode works on a fresh install. To mint, use an identity that already has DashMint tokens for the active contract, transfer tokens from another identity, or register a fresh contract from the login modal.
 
 Production build: `npm run build && npm run preview`.
 
@@ -60,15 +62,18 @@ Every Platform SDK call lives in its own file under `src/dash/`:
 | Derive identity keys | `src/dash/keyManager.ts` | `wallet.deriveKeyFromSeedWithPath` |
 | Deploy card contract | `src/dash/contract.ts` | `sdk.contracts.publish` |
 | Query cards | `src/dash/queries.ts` | `sdk.documents.query` |
-| Mint a card | `src/dash/mintCard.ts` | `sdk.documents.create` |
+| Token balance / supply | `src/dash/dashMintToken.ts` | `sdk.tokens.calculateId`, `sdk.tokens.identityBalances`, `sdk.tokens.totalSupply` |
+| Mint a card | `src/dash/mintCard.ts` | `sdk.documents.create` + `tokenPaymentInfo` |
+| Transfer DashMint tokens | `src/dash/transferDashMintTokens.ts` | `sdk.tokens.transfer` |
 | Transfer a card | `src/dash/transferCard.ts` | `sdk.documents.transfer` |
 | Set / remove price | `src/dash/setPrice.ts` | `sdk.documents.setPrice` |
 | Purchase a card | `src/dash/purchaseCard.ts` | `sdk.documents.purchase` |
 | Burn (delete) a card | `src/dash/burnCard.ts` | `sdk.documents.delete` |
 
-Two supporting files glue the operations together:
+A few supporting files glue the operations together:
 
 - `src/dash/withAuthedCard.ts` — shared mutation prelude used by transfer, setPrice, purchase, and burn. Fetches the document, bumps its revision, and resolves the auth signer.
+- `src/dash/dashMintToken.ts` — fixed-supply DashMint token constants, `tokenPaymentInfo`, token balance lookup, and minted-count calculation.
 - `src/dash/logger.ts` — shared `Logger` type so every operation can stream progress to the UI activity log.
 
 `client.ts` and `keyManager.ts` are just re-exports:
@@ -79,6 +84,78 @@ export { IdentityKeyManager } from '../../../../setupDashClient-core.mjs';
 ```
 
 That means the connection and key-derivation behavior are the same as in the Node tutorials. Read [Setup SDK Client](../setup-sdk-client.md) for the full client setup details.
+
+## DashMint token flow
+
+DashMint Lab uses a token to make minting scarce without adding a separate minting service. The data contract defines token position `0` as a fixed-supply DashMint token with a supply of 100. The `card` document type charges 1 token on create and burns it, so every successful card mint reduces the remaining mint capacity.
+
+The token helper file centralizes the constants, the `tokenPaymentInfo` passed to `sdk.documents.create`, and the read helpers used by the Mint and Tokens tabs.
+
+```{code-block} typescript
+:caption: dashMintToken.ts
+:name: dashmint-token.ts
+
+/**
+ * DashMint token constants and helpers.
+ *
+ * The data contract defines token position 0 as a fixed-supply DashMint token.
+ * Creating a `card` document burns one token via `card.tokenCost.create`.
+ * UI code uses this file to build tokenPaymentInfo and display the signed-in
+ * identity's remaining DashMint token balance.
+ */
+import type { DashSdk } from "./types";
+
+export const DASHMINT_TOKEN_POSITION = 0;
+export const DASHMINT_TOKEN_COST = 1n;
+export const DASHMINT_TOKEN_SUPPLY = 100n;
+export const DASHMINT_TOKEN_NAME = "DashMint";
+export const DASHMINT_TOKEN_PLURAL = "DashMint";
+
+// Agreement passed to sdk.documents.create() to satisfy the contract's
+// one-token burn requirement for card creation.
+export const DASHMINT_TOKEN_PAYMENT_INFO = {
+  tokenContractPosition: DASHMINT_TOKEN_POSITION,
+  maximumTokenCost: DASHMINT_TOKEN_COST,
+  gasFeesPaidBy: "documentOwner" as const,
+};
+
+export async function fetchDashMintTokenBalance({
+  sdk,
+  contractId,
+  identityId,
+}: {
+  sdk: DashSdk;
+  contractId: string;
+  identityId: string;
+}): Promise<bigint> {
+  const tokenId = await sdk.tokens.calculateId(
+    contractId,
+    DASHMINT_TOKEN_POSITION,
+  );
+  const balances = await sdk.tokens.identityBalances(identityId, [tokenId]);
+  return balances.get(tokenId) ?? 0n;
+}
+
+// Every mint burns exactly one DashMint token (manual burns/mints are locked
+// in the contract), so cards minted = SUPPLY - current circulating supply.
+export async function fetchCardsMintedCount({
+  sdk,
+  contractId,
+}: {
+  sdk: DashSdk;
+  contractId: string;
+}): Promise<bigint> {
+  const tokenId = await sdk.tokens.calculateId(
+    contractId,
+    DASHMINT_TOKEN_POSITION,
+  );
+  const supply = await sdk.tokens.totalSupply(tokenId);
+  const remaining = supply?.totalSupply ?? DASHMINT_TOKEN_SUPPLY;
+  return DASHMINT_TOKEN_SUPPLY - remaining;
+}
+```
+
+The Mint tab uses `fetchDashMintTokenBalance()` to disable minting when the signed-in identity has no DashMint tokens. It uses `fetchCardsMintedCount()` to show the supply meter, hide the mint form when all 100 cards have been minted, and disable the Starter Pack button when fewer than three mints remain.
 
 ## Shared mutation pattern
 
@@ -327,12 +404,14 @@ Each operation file is intentionally small. The app-level pattern is: validate i
 
 ### Mint a card
 
-Minting is the simplest write operation: build a `Document` with the card properties and owner, then call `sdk.documents.create`. No existing document to fetch, no revision to bump.
+Minting builds a `Document` with the card properties and owner, then calls `sdk.documents.create`. There is no existing document to fetch and no revision to bump. The `card` document type has `tokenCost.create` configured, so the call also passes `tokenPaymentInfo` to burn one DashMint token. That token burn is what enforces the fixed card supply.
+
+The UI exposes this in two ways: a single-card form that burns 1 token, and a Starter Pack button that calls `mintCard()` repeatedly for multiple predefined cards. Both paths use the same SDK helper, so each card still costs 1 DashMint token and each successful create burns one token.
 
 ```{code-block} typescript
 :caption: mintCard.ts
 :name: dashmint-mintCard.ts
-:emphasize-lines: 51,56-63
+:emphasize-lines: 56-58,72-77
 
 /**
  * Mint a new card (create a document against the card data contract).
@@ -674,11 +753,89 @@ export async function burnCard({
 }
 ```
 
+### Transfer DashMint tokens
+
+DashMint tokens are ordinary Platform tokens on the active app contract. The Tokens tab lets a signed-in identity send whole DashMint token amounts to another identity, which is useful for testing scarcity across multiple profiles. Unlike card document operations, explicit token sends use the transfer key returned by `keyManager.getTransfer()`.
+
+```{code-block} typescript
+:caption: transferDashMintTokens.ts
+:name: dashmint-transfer-dashmint-tokens.ts
+:emphasize-lines: 44-64
+
+/**
+ * Transfer DashMint tokens from the signed-in identity to another identity.
+ *
+ * DashMint lives at token position 0 on the active app contract. Token
+ * single-transfer transitions can be signed by a critical auth or transfer
+ * purpose key; this app keeps explicit token sends on the transfer key.
+ *
+ * SDK method: sdk.tokens.transfer({ dataContractId, tokenPosition, amount, senderId, recipientId, identityKey, signer })
+ */
+import { DASHMINT_TOKEN_NAME, DASHMINT_TOKEN_POSITION } from "./dashMintToken";
+import type { Logger } from "./logger";
+import type { DashKeyManager, DashSdk } from "./types";
+
+export interface TransferDashMintTokensInput {
+  sdk: DashSdk;
+  keyManager: DashKeyManager;
+  contractId: string;
+  recipientId: string;
+  amount: bigint;
+  log?: Logger;
+}
+
+export async function transferDashMintTokens({
+  sdk,
+  keyManager,
+  contractId,
+  recipientId,
+  amount,
+  log,
+}: TransferDashMintTokensInput): Promise<void> {
+  const trimmedRecipientId = recipientId.trim();
+  if (!trimmedRecipientId) {
+    throw new Error("Recipient identity ID is required.");
+  }
+  if (amount <= 0n) {
+    throw new Error("Amount must be greater than 0.");
+  }
+
+  const knownSenderId = keyManager.identityId?.toString();
+  if (knownSenderId && trimmedRecipientId === knownSenderId) {
+    throw new Error("Cannot transfer tokens to yourself.");
+  }
+
+  const { identity, identityKey, signer } = await keyManager.getTransfer();
+  const senderId = identity.id.toString();
+  if (trimmedRecipientId === senderId) {
+    throw new Error("Cannot transfer tokens to yourself.");
+  }
+
+  log?.(
+    `Transferring ${amount.toString()} ${DASHMINT_TOKEN_NAME} token${
+      amount === 1n ? "" : "s"
+    }...`,
+  );
+
+  await sdk.tokens.transfer({
+    dataContractId: contractId,
+    tokenPosition: DASHMINT_TOKEN_POSITION,
+    amount,
+    senderId,
+    recipientId: trimmedRecipientId,
+    identityKey,
+    signer,
+  });
+
+  log?.(`${DASHMINT_TOKEN_NAME} tokens transferred.`, "success");
+}
+```
+
 ## Contract schema
 
 ### What makes this an NFT contract
 
-The card data contract defines one document type (`card`) with four fields and three indices. Three top-level flags turn it into an NFT contract: `transferable: 1` lets owners send cards to other identities, `tradeMode: 1` enables the built-in price/purchase flow, and `creationRestrictionMode: 1` controls who can mint. See the {ref}`NFT explanation <explanations-dash-nfts>` for what each flag does, and the [NFT tab in Register a Data Contract](../contracts-and-documents/register-a-data-contract.md) for the schema in JSON form.
+The card data contract defines one document type (`card`) with four fields and three indices. Three top-level settings control its NFT behavior: `transferable: 1` lets owners send cards to other identities, `tradeMode: 1` enables the built-in price/purchase flow, and `creationRestrictionMode: 0` leaves creation open. Scarcity comes from `tokenCost.create`, so any identity can mint when it can pay and burn 1 DashMint token. See the {ref}`NFT explanation <explanations-dash-nfts>` for what each flag does, and the [NFT tab in Register a Data Contract](../contracts-and-documents/register-a-data-contract.md) for the schema in JSON form.
 
 ### How the app registers or reuses the contract
 
