@@ -233,6 +233,10 @@ export interface Card {
   $price?: number | bigint;
 }
 
+function hasSalePrice(card: Card): boolean {
+  return card.$price != null && card.$price !== 0 && card.$price !== 0n;
+}
+
 function toCard(id: string | null, raw: DashCardQueryDocument): Card {
   const j: Record<string, unknown> =
     typeof raw?.toJSON === "function" ? raw.toJSON() : raw;
@@ -311,7 +315,7 @@ export async function listMarketplaceCards({
     documentTypeName: "card",
     limit,
   });
-  const cards = normalizeCards(results).filter((c) => c.$price);
+  const cards = normalizeCards(results).filter(hasSalePrice);
   log?.(`Found ${cards.length} card(s) for sale.`);
   return cards;
 }
@@ -336,11 +340,18 @@ Minting is the simplest write operation: build a `Document` with the card proper
  * Attack and defense are rolled client-side (1-10 each). Name is required,
  * description is optional.
  *
- * SDK method: sdk.documents.create({ document, identityKey, signer })
+ * Scarcity comes from the contract, not this function: the `card` document
+ * type has `tokenCost.create` configured to burn 1 token at position 0.
+ * Passing `tokenPaymentInfo` below is the caller's agreement to spend that
+ * DashMint token, so each successful document create consumes one fixed-supply
+ * token and reduces the remaining mint capacity.
+ *
+ * SDK method: sdk.documents.create({ document, identityKey, signer, tokenPaymentInfo })
  */
 import { Document } from "@dashevo/evo-sdk";
 
 import type { Logger } from "./logger";
+import { DASHMINT_TOKEN_PAYMENT_INFO } from "./dashMintToken";
 import type { DashKeyManager, DashSdk } from "./types";
 
 export interface MintCardInput {
@@ -378,7 +389,9 @@ export async function mintCard({
   const defense = card.defense ?? rollStat();
   const description = card.description?.trim();
 
-  log?.(`Minting "${name}" (ATK ${attack} / DEF ${defense})…`);
+  log?.(
+    `Burning 1 DashMint token to mint "${name}" (ATK ${attack} / DEF ${defense})…`,
+  );
 
   const { identity, identityKey, signer } = await keyManager.getAuth();
 
@@ -392,7 +405,12 @@ export async function mintCard({
     ownerId: identity.id,
   });
 
-  await sdk.documents.create({ document: doc, identityKey, signer });
+  await sdk.documents.create({
+    document: doc,
+    identityKey,
+    signer,
+    tokenPaymentInfo: DASHMINT_TOKEN_PAYMENT_INFO,
+  });
   log?.(`Card "${name}" minted!`, "success");
 }
 ```
@@ -681,7 +699,10 @@ The card data contract defines one document type (`card`) with four fields and t
  * The three flags at the top of the schema are what make this an NFT:
  *   transferable: 1         — documents can be sent to another identity (0 to disable)
  *   tradeMode: 1            — documents can be priced and purchased (0 to disable)
- *   creationRestrictionMode: 1 — (1 - only the contract owner can mint; 0 - anyone can mint)
+ *   creationRestrictionMode: 0 — anyone can create when they can pay tokenCost.create
+ *
+ * tokenCost.create burns 1 DashMint token, turning the fixed token
+ * supply into the maximum number of cards that can ever be minted.
  *
  * Storage helpers (loadStoredContractId, saveContractId, …) and the owner
  * lookup live in contractStorage.ts so they can be imported without
@@ -689,10 +710,27 @@ The card data contract defines one document type (`card`) with four fields and t
  *
  * SDK methods: new DataContract({ ... }), sdk.contracts.publish(...)
  */
-import { DataContract } from "@dashevo/evo-sdk";
+import {
+  AuthorizedActionTakers,
+  ChangeControlRules,
+  DataContract,
+  TokenConfiguration,
+  TokenConfigurationConvention,
+  TokenConfigurationLocalization,
+  TokenDistributionRules,
+  TokenKeepsHistoryRules,
+  TokenMarketplaceRules,
+  TokenTradeMode,
+} from "@dashevo/evo-sdk";
 
 import { loadStoredContractId, saveContractId } from "./contractStorage";
 import type { Logger } from "./logger";
+import {
+  DASHMINT_TOKEN_NAME,
+  DASHMINT_TOKEN_PLURAL,
+  DASHMINT_TOKEN_POSITION,
+  DASHMINT_TOKEN_SUPPLY,
+} from "./dashMintToken";
 import type { DashKeyManager, DashSdk } from "./types";
 
 export {
@@ -710,7 +748,15 @@ export const CARD_SCHEMAS = {
     canBeDeleted: true,
     transferable: 1,
     tradeMode: 1,
-    creationRestrictionMode: 1,
+    creationRestrictionMode: 0,
+    tokenCost: {
+      create: {
+        tokenPosition: DASHMINT_TOKEN_POSITION,
+        amount: 1,
+        effect: 1,
+        gasFeesPaidBy: 0,
+      },
+    },
     properties: {
       name: {
         type: "string",
@@ -747,6 +793,64 @@ export const CARD_SCHEMAS = {
   },
 } as const;
 
+export function createDashMintTokenConfiguration(ownerId: string) {
+  const contractOwner = AuthorizedActionTakers.ContractOwner();
+  const noOne = AuthorizedActionTakers.NoOne();
+
+  const ownerRules = new ChangeControlRules({
+    authorizedToMakeChange: contractOwner,
+    adminActionTakers: contractOwner,
+    isChangingAuthorizedActionTakersToNoOneAllowed: true,
+    isChangingAdminActionTakersToNoOneAllowed: true,
+    isSelfChangingAdminActionTakersAllowed: true,
+  });
+  const lockedRules = new ChangeControlRules({
+    authorizedToMakeChange: noOne,
+    adminActionTakers: noOne,
+  });
+
+  return new TokenConfiguration({
+    conventions: new TokenConfigurationConvention(
+      {
+        en: new TokenConfigurationLocalization(
+          false,
+          DASHMINT_TOKEN_NAME,
+          DASHMINT_TOKEN_PLURAL,
+        ),
+      },
+      0,
+    ),
+    conventionsChangeRules: ownerRules,
+    baseSupply: DASHMINT_TOKEN_SUPPLY,
+    maxSupply: DASHMINT_TOKEN_SUPPLY,
+    keepsHistory: new TokenKeepsHistoryRules({
+      isKeepingBurningHistory: true,
+      isKeepingTransferHistory: true,
+    }),
+    maxSupplyChangeRules: lockedRules,
+    distributionRules: new TokenDistributionRules({
+      newTokensDestinationIdentity: ownerId,
+      newTokensDestinationIdentityRules: ownerRules,
+      mintingAllowChoosingDestination: false,
+      mintingAllowChoosingDestinationRules: ownerRules,
+      perpetualDistributionRules: lockedRules,
+      changeDirectPurchasePricingRules: lockedRules,
+    }),
+    marketplaceRules: new TokenMarketplaceRules(
+      TokenTradeMode.NotTradeable(),
+      lockedRules,
+    ),
+    manualMintingRules: lockedRules,
+    manualBurningRules: lockedRules,
+    freezeRules: lockedRules,
+    unfreezeRules: lockedRules,
+    destroyFrozenFundsRules: lockedRules,
+    emergencyActionRules: lockedRules,
+    mainControlGroupCanBeModified: noOne,
+    description: "Fixed-supply DashMint token burned to mint demo cards.",
+  });
+}
+
 /**
  * Register a fresh NFT card data contract on Platform and persist its ID.
  *
@@ -768,6 +872,11 @@ export async function registerContract({
     ownerId: identity.id,
     identityNonce: (identityNonce || 0n) + 1n,
     schemas: CARD_SCHEMAS,
+    tokens: {
+      [DASHMINT_TOKEN_POSITION]: createDashMintTokenConfiguration(
+        identity.id.toString(),
+      ),
+    },
     fullValidation: true,
   });
 

@@ -12,7 +12,7 @@ Building on Dash Platform requires first registering an Identity and then regist
 
 The tutorials in this section are written in JavaScript and use [Node.js](https://nodejs.org/en/about/). The following prerequisites are necessary to complete the tutorials:
 
-- [Node.js](https://nodejs.org/en/) (v20+)
+- [Node.js](https://nodejs.org/en/) (v22+)
 - Familiarity with JavaScript asynchronous functions using [async/await](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Async_await)
 - The [Dash JavaScript SDK](https://www.npmjs.com/package/@dashevo/evo-sdk) (see [Connecting to a Network](../tutorials/connecting-to-testnet.md#1-install-the-dash-sdk))
 
