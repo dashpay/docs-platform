@@ -111,6 +111,7 @@ tutorials/create-and-fund-a-wallet
 tutorials/setup-sdk-client
 tutorials/identities-and-names
 tutorials/contracts-and-documents
+tutorials/tokens
 tutorials/example-apps
 tutorials/send-funds
 tutorials/setup-a-node

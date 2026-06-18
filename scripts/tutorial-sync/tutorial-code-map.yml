@@ -188,6 +188,33 @@ mappings:
     block_id:
       caption: document-delete.mjs
 
+  # -- Tokens --
+
+  - source: 3-Tokens/token-register.mjs
+    doc: tokens/register-a-token-contract.md
+    block_id:
+      caption: token-register.mjs
+
+  - source: 3-Tokens/token-info.mjs
+    doc: tokens/retrieve-token-info.md
+    block_id:
+      caption: token-info.mjs
+
+  - source: 3-Tokens/token-mint.mjs
+    doc: tokens/mint-tokens.md
+    block_id:
+      caption: token-mint.mjs
+
+  - source: 3-Tokens/token-burn.mjs
+    doc: tokens/burn-tokens.md
+    block_id:
+      caption: token-burn.mjs
+
+  - source: 3-Tokens/token-transfer.mjs
+    doc: tokens/transfer-tokens-to-an-identity.md
+    block_id:
+      caption: token-transfer.mjs
+
   # -- Example apps --
 
   # DashMint Lab — React + TypeScript NFT app. Every SDK operation lives in
