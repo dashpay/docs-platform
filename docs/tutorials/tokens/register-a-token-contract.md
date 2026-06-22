@@ -191,3 +191,7 @@ The main groups:
 
 See the [tokens explanation](../../explanations/tokens.md) and the [token protocol reference](../../protocol-ref/token.md) for the full set of configuration fields.
 :::
+
+:::{tip}
+See this in an example app: [DashMint Lab — Contract schema](../example-apps/dashmint-lab.md#contract-schema) defines a token alongside its NFT documents, and [DashMint Lab — DashMint token flow](../example-apps/dashmint-lab.md#dashmint-token-flow) shows how the token is used.
+:::

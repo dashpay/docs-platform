@@ -82,3 +82,7 @@ After connecting to the client, we derive the token ID from the contract ID and 
 - `sdk.tokens.identityBalances()` returns each identity's token balance, keyed by token ID.
 
 The recipient defaults to a testnet identity and can be overridden with the `RECIPIENT_ID` environment variable.
+
+:::{tip}
+See this in an example app: [DashMint Lab — DashMint token flow](../example-apps/dashmint-lab.md#dashmint-token-flow) reads the signed-in identity's token balance to display remaining mint capacity.
+:::
