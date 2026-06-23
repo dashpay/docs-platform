@@ -10,7 +10,7 @@ The purpose of this tutorial is to walk through the steps necessary to register 
 
 Tokens on Dash Platform are defined inside a [data contract](../../explanations/platform-protocol-data-contract.md). A single contract can carry one or more tokens alongside its document types, and each token is identified by its position within the contract. Registering the contract creates the token, sets its supply limits, and establishes the rules that control who may mint, burn, transfer, or otherwise manage it.
 
-This tutorial registers an issuer-managed token: the contract owner controls minting and burning, so the remaining token tutorials can demonstrate the normal token lifecycle. Additional details are available in the [tokens explanation](../../explanations/tokens.md) and the [token protocol reference](../../protocol-ref/token.md).
+This tutorial registers an issuer-managed token: the contract owner controls minting and burning, and newly minted tokens always go to the owner identity. The token is not configured with advanced options. That keeps this tutorial focused on the normal token lifecycle used by the remaining token tutorials. Additional details are available in the [tokens explanation](../../explanations/tokens.md) and the [token protocol reference](../../protocol-ref/token.md).
 
 ## Prerequisites
 
@@ -163,7 +163,13 @@ try {
 ```
 
 :::{attention}
-Make a note of the returned token contract ID. The remaining token tutorials read it from the `TOKEN_CONTRACT_ID` environment variable, so set it before running them.
+Make a note of the returned contract ID. The remaining token tutorials read it from the `TOKEN_CONTRACT_ID` environment variable, so set it before running them.
+
+Use the contract ID from the published contract output, not the token ID printed at the end:
+
+```text
+TOKEN_CONTRACT_ID=<contract-id-from-token-register-output>
+```
 :::
 
 ## What's Happening

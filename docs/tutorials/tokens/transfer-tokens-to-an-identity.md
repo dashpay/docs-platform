@@ -89,7 +89,7 @@ After connecting to the client, we get the transfer key signer with `keyManager.
 
 We derive the token ID with `sdk.tokens.calculateId()` and read the recipient's balance before the transfer so the change is visible. A guard rejects transfers where the recipient matches the sender, since an identity cannot transfer tokens to itself.
 
-We then call `sdk.tokens.transfer()` with the contract ID, token position, amount, sender ID, recipient ID, and signing credentials to move 1 token. After the transfer, we read the recipient's balance again with `sdk.tokens.identityBalances()` to confirm it increased. The recipient defaults to a testnet identity and can be overridden with the `RECIPIENT_ID` environment variable.
+We then call `sdk.tokens.transfer()` with the contract ID, token position, amount, sender ID, recipient ID, and signing credentials to move 1 token. After the transfer, we read the recipient's balance again with `sdk.tokens.identityBalances()` to confirm it increased. The recipient defaults to a demo testnet identity, but set `RECIPIENT_ID` in the .env file to your own second identity when you want to verify a transfer to an identity you control.
 
 :::{tip}
 See this in an example app: [DashMint Lab — Transfer DashMint tokens](../example-apps/dashmint-lab.md#transfer-dashmint-tokens).

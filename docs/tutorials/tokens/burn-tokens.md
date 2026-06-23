@@ -65,4 +65,4 @@ try {
 
 After connecting to the client, we get the auth key signer with `keyManager.getAuth()`. We then call `sdk.tokens.burn()` with the contract ID, token position, amount, and signing credentials to destroy 1 token from our balance. Token amounts are `bigint` values, which is why `1n` is written with the `n` suffix.
 
-After burning, we read back the identity's balance with `sdk.tokens.identityBalances()` and the new total supply with `sdk.tokens.totalSupply()` to confirm both have decreased. Burning reduces the supply permanently, so the maximum number of tokens that can ever exist is lowered as well.
+After burning, we read back the identity's balance with `sdk.tokens.identityBalances()` and the new total supply with `sdk.tokens.totalSupply()` to confirm both have decreased.

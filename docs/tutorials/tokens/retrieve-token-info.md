@@ -81,7 +81,7 @@ After connecting to the client, we derive the token ID from the contract ID and 
 - `sdk.tokens.statuses()` returns a Map of token statuses. A status record only exists once one is published on-chain (for example, after an emergency pause), so the Map is empty for a freshly registered token. We fall back to `(no status published)` in that case.
 - `sdk.tokens.identityBalances()` returns each identity's token balance, keyed by token ID.
 
-The recipient defaults to a testnet identity and can be overridden with the `RECIPIENT_ID` environment variable.
+The recipient defaults to a demo testnet identity so the script can run without extra setup. Set `RECIPIENT_ID` in the .env file to your own second identity when you want the recipient balance check to reflect an identity you control.
 
 :::{tip}
 See this in an example app: [DashMint Lab — DashMint token flow](../example-apps/dashmint-lab.md#dashmint-token-flow) reads the signed-in identity's token balance to display remaining mint capacity.
