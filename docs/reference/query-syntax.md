@@ -68,9 +68,9 @@ Valid fields consist of the indices defined for the document being queried. For 
 :::{tip}
 - Only one range operator is allowed in a query. `Between` and its variants are single operators that replace a `>=`/`<=` pair — the engine also normalizes two range operators on the same field into the equivalent `Between*` form automatically
 - The `in` operator is only allowed for last two indexed properties
-- Range operators are only allowed after `==` and `in` operators
+- Range operators apply to an indexed field that follows any `==` and `in` clauses in the index. A standalone range (with no preceding `==`/`in` clause) is valid when a matching index exists
 - Range operators are only allowed for the last two fields used in the where condition
-- Queries using range operators must also include an `orderBy` statement
+- Queries using range operators (including `in`, which is treated as a range) must also include an `orderBy` statement
 :::
 
 ### Evaluation Operators
@@ -89,6 +89,9 @@ Valid fields consist of the indices defined for the document being queried. For 
 {
   where: [
     ["nameHash", "<", "56116861626961756e6176657a382e64617368"],
+  ],
+  orderBy: [
+    ["nameHash", "asc"],
   ],
 }
 :::
@@ -121,7 +124,10 @@ Valid fields consist of the indices defined for the document being queried. For 
       ["normalizedParentDomainName", "==", "dash"],
       // Return all matching names from the provided array
       ["normalizedLabel", "in", ["alice", "bob"]],
-    ]
+    ],
+  orderBy: [
+    ["normalizedLabel", "asc"],
+  ]
 }
 :::
 ::::
@@ -152,7 +158,7 @@ The query modifiers described here determine how query results will be sorted an
 | Modifier | Effect | Example |
 | - | - | - |
 | `limit` | Restricts the number of results returned (maximum: 100) | `limit: 10` |
-| `orderBy` | Returns records sorted by the field(s) provided. Sorting must be by the last indexed property. Can only be used with `>`, `<`, `>=`, `<=`, `Between`, `BetweenExcludeBounds`, `BetweenExcludeLeft`, `BetweenExcludeRight`, and `startsWith` queries. | `orderBy: [['normalizedLabel', 'asc']]` |
+| `orderBy` | Returns records sorted by the field(s) provided. The `orderBy` fields must match a consecutive run of the index's properties, read from the end of the index (for a compound index, sort by one or more of its trailing fields). Can only be used with `>`, `<`, `>=`, `<=`, `Between`, `BetweenExcludeBounds`, `BetweenExcludeLeft`, `BetweenExcludeRight`, and `startsWith` queries. | `orderBy: [['normalizedLabel', 'asc']]` |
 | `startAt` | Returns records beginning with the document ID provided | `startAt: '<document ID>'` |
 | `startAfter` | Returns records beginning after the document ID provided | `startAfter: '<document ID>'` |
 | `offset` | Skips the first N matching results (available at the CBOR/DAPI layer; not exposed in the JS SDK) | `offset: 10` |
