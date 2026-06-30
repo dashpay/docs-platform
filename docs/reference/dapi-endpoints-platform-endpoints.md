@@ -826,9 +826,9 @@ grpcurl -proto protos/platform/v0/platform.proto \
 | Name    | Type     | Required | Description                              |
 | ------- | -------- | -------- | ---------------------------------------- |
 | `id`    | Bytes    | Yes      | A data contract `id`                     |
-| `start_at_ms` | Integer | Yes | Request revisions starting at this timestamp |
-| `limit` | Integer  | Yes      | The maximum number of revisions to return |
-| `offset` | Integer | Yes      | The offset of the first revision to return |
+| `start_at_ms` | Integer | No | Request revisions starting at this timestamp |
+| `limit` | Integer  | No      | The maximum number of revisions to return |
+| `offset` | Integer | No      | The offset of the first revision to return |
 | `prove` | Boolean  | No       | Set to `true` to receive a proof that contains the requested data contract. The data requested will be encoded as part of the proof in the response.|
 
 **Example Request and Response**
@@ -1386,6 +1386,78 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 Client computes `avg = 215 / 50 = 4.3`.
 
+### getDocumentHistory
+
+**Returns**: The revision history for a single document on a contract that keeps document history  
+**Parameters**:
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `data_contract_id` | Bytes | Yes | A data contract `id` |
+| `document_type_name` | String | Yes | A document type defined by the data contract |
+| `document_id` | Bytes | Yes | The `id` of the document whose history is requested |
+| `limit` | Integer | No | The maximum number of history entries to return |
+| `offset` | Integer | No | The offset for pagination through the document history |
+| `start_at_ms` | Integer | No | Only return results starting at this time in milliseconds |
+| `prove` | Boolean | No | Set to `true` to receive a proof that contains the requested document history. The data requested will be encoded as part of the proof in the response.|
+
+**Example Request**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+:sync: grpcurl
+```shell
+# `data_contract_id` and `document_id` must be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "data_contract_id": "nfpmJoj9R+rFTYLo/ddAuhHA4Si2YlK6BAAvEGmUIdo=",
+      "document_type_name": "review",
+      "document_id": "wZiWoQCwYKPVjAZ8NDXpbSMb7IEh++hGXzB38niWrIg=",
+      "limit": 2,
+      "offset": 0,
+      "start_at_ms": 0,
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getDocumentHistory
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+:sync: grpcurl
+```json
+{
+  "v0": {
+    "documentHistory": {
+      "documentEntries": [
+        {
+          "date": "1782423220252",
+          "value": "AsGYlqEAsGCj1YwGfDQ16W0jG+yBIfvoRl8wd/J4lqyIM1bHElsMayy0ZD9WkprWAf6lYDIwqyC8dsdzc++MmRsBAAMAAAGfALPwHAAAAZ8As/AcCGRhc2hub3RlBQEuV2Fsa3Rocm91Z2ggcmV2aWV3IGNyZWF0ZSAyMDI2LTA2LTI1VDIxOjMzOjM1Wg=="
+        },
+        {
+          "date": "1782423230374",
+          "value": "AsGYlqEAsGCj1YwGfDQ16W0jG+yBIfvoRl8wd/J4lqyIM1bHElsMayy0ZD9WkprWAf6lYDIwqyC8dsdzc++MmRsCAAMAAAGfALPwHAAAAZ8AtBemCGRhc2hub3RlBQEsV2Fsa3Rocm91Z2ggcmV2aWV3IGVkaXQgMjAyNi0wNi0yNVQyMTozMzo0NVo="
+        }
+      ]
+    },
+    "metadata": {
+      "height": "375045",
+      "coreChainLockedHeight": 1506013,
+      "epoch": 17082,
+      "timeMs": "1782851061688",
+      "protocolVersion": 12,
+      "chainId": "dash-testnet-51"
+    }
+  }
+}
+```
+:::
+::::
+
 ## Identity Endpoints
 
 ### getIdentity
@@ -1846,10 +1918,10 @@ Current identity contract nonce: 0
 
 | Name    | Type    | Required | Description |
 | ------- | ------- | -------- | ------------ |
-| `identity_td`  | String | Yes | An identity ID<br>Note: masternode IDs are created uniquely as described in the [masternode identity IDs section](#masternode-identity-ids)
+| `identity_id`  | Bytes | Yes | An identity ID<br>Note: masternode IDs are created uniquely as described in the [masternode identity IDs section](#masternode-identity-ids)
 | `request_type` | [KeyRequestType](#request-types) | Yes | Request all keys (`all_keys`), specific keys (`specific_keys`), search for keys (`search_key`)
-| `limit` | Integer  | Yes     | The maximum number of revisions to return |
-| `offset` | Integer | Yes     | The offset of the first revision to return |
+| `limit` | Integer  | No      | The maximum number of keys to return |
+| `offset` | Integer | No      | The offset for pagination through the keys |
 | `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested identity
 
 #### Request Types
@@ -2151,7 +2223,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 | Name                 | Type                    | Required | Description |
 |----------------------|-------------------------|----------|-------------|
 | `identities_ids`     | Array                   | Yes      | An array of identity IDs<br>Note: masternode IDs are created uniquely as described in the [masternode identity IDs section](#masternode-identity-ids) |
-| `contract_id`        | String                  | Yes      | The ID of the contract |
+| `contract_id`        | Bytes                   | Yes      | The ID of the contract |
 | `document_type_name` | String                  | No       | Name of the document type |
 | `purposes`           | Array of [KeyPurpose](#key-purposes) | No | Array of purposes for which keys are requested |
 | `prove`              | Boolean                 | No       | Set to `true` to receive a proof that contains the requested identity keys |
@@ -2404,6 +2476,7 @@ Retrieves a list of actions performed by a specific group within a contract.
 |                   | `destroy_frozen_funds`     | Destroys frozen funds for a specified entity. |
 |                   | `emergency_action`         | Performs emergency actions like pausing or resuming the contract. |
 |                   | `token_config_update`      | Updates token configuration settings. |
+|                   | `update_price`             | Updates the token's direct purchase price (fixed or tiered). |
 | **DocumentEvent** | `create`                   | Represents the creation of a document. |
 | **ContractEvent** | `update`                   | Represents updates to a contract. |
 
@@ -2433,6 +2506,7 @@ Retrieves a list of actions performed by a specific group within a contract.
 |          | `recipient_id` | Bytes | Identity ID of the recipient. |
 |          | `public_note` | String (Optional) | A public note for the mint event. |
 | `burn`   | `amount` | UInt64 | Amount of tokens to burn. |
+|          | `burn_from_id` | Bytes | Identity ID the tokens are burned from. |
 |          | `public_note` | String (Optional) | A public note for the burn event. |
 | `freeze` | `frozen_id` | Bytes | Identifier of the entity being frozen. |
 |          | `public_note` | String (Optional) | A public note for the freeze event. |
@@ -2443,8 +2517,11 @@ Retrieves a list of actions performed by a specific group within a contract.
 |          | `public_note` | String (Optional) | A public note for the destruction event. |
 | `emergency_action` | `action_type` | Enum (`PAUSE = 0`, `RESUME = 1`) | Type of emergency action performed. |
 |           | `public_note` | String (Optional) | A public note for the emergency action. |
-| `token_config_update` | `token_config_update_item` | Bytes | Configuration update details. |
+| `token_config_update` | `token_config_`<br>`update_item` | Bytes | Configuration update details. |
 |           | `public_note` | String (Optional) | A public note for the configuration update. |
+| `update_price` | `fixed_price` | UInt64 | Fixed direct purchase price (present when a fixed price is set). |
+|           | `variable_price` | Object | Tiered pricing schedule (`price_for_quantity` array of `{quantity, price}`), present when tiered pricing is set. |
+|           | `public_note` | String (Optional) | A public note for the price update event. |
 
 **Example Request and Response**
 
@@ -2695,13 +2772,11 @@ grpcurl -proto protos/platform/v0/platform.proto \
 Retrieves current quorum details, including validator sets and metadata for each quorum.
 
 **Returns**: Information about current quorums, including quorum hashes, validator sets, and
-cryptographic proof.
+the last block proposer.
 
 **Parameters**:
 
-| Name          | Type   | Required | Description |
-| ------------- | ------ | -------- | ----------- |
-| `version`     | Object | No       | Version object containing request parameters |
+This endpoint does not require any parameters.
 
 **Example Request and Response**
 
@@ -2908,7 +2983,6 @@ grpcurl -proto protos/platform/v0/platform.proto \
 :::{tab-item} gRPCurl
 :sync: grpcurl
 ```shell
-# `id` must be represented in base64
 grpcurl -proto protos/platform/v0/platform.proto \
   -d '{
     "v0": {
@@ -3232,7 +3306,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 | Name    | Type    | Required | Description |
 | ------- | ------- | -------- | ------------ |
-| `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested identity
+| `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested protocol version state
 
 **Example Request and Response**
 
@@ -3286,9 +3360,9 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 | Name    | Type    | Required | Description |
 | ------- | ------- | -------- | ------------ |
-| `start_pro_tx_hash` | String | No | Protx hash of an evonode
+| `start_pro_tx_hash` | Bytes | No | Protx hash of an evonode
 | `count` | Integer | No       | Number of records to request
-| `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested identity
+| `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested protocol version vote status
 
 **Example Request and Response**
 
@@ -3767,7 +3841,8 @@ grpcurl -proto protos/platform/v0/platform.proto \
 {
   "v0": {
     "data": {
-      "contractId": "L+2jKoiBdmhzIAg82a3nnOn8/K5sQiaIW/Tinw0ypNM="
+      "contractId": "L+2jKoiBdmhzIAg82a3nnOn8/K5sQiaIW/Tinw0ypNM=",
+      "tokenContractPosition": 0
     },
     "metadata": {
       "height": "157984",
@@ -3894,6 +3969,8 @@ grpcurl -proto protos/platform/v0/platform.proto \
 Retrieves the last-claim timestamp for a token’s perpetual distribution for a specific identity.
 
 **Returns**: A timestamp indicating the last successful claim, or a cryptographic proof.
+
+The returned `last_claim` value takes one of several forms depending on the token’s distribution interval: `timestamp_ms` (milliseconds since epoch), `block_height`, `epoch`, or `raw_bytes`.
 
 **Parameters**:
 
@@ -4559,6 +4636,18 @@ Returns the total balance held in the shielded pool.
 |---------|---------|----------|-------------|
 | `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested pool state |
 
+### getShieldedNotesCount
+
+Returns the count of leaves in the shielded notes commitment tree. Wallets use this at the start of a shielded sync to seed a determinate progress indicator.
+
+**Returns**: The total shielded notes count or a cryptographic proof.
+
+**Parameters**:
+
+| Name    | Type    | Required | Description |
+|---------|---------|----------|-------------|
+| `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested count |
+
 ### getShieldedNullifiers
 
 Returns the spent status of specified nullifiers. Clients use this to determine whether notes have already been spent.
@@ -4571,61 +4660,6 @@ Returns the spent status of specified nullifiers. Clients use this to determine 
 |--------------|----------------|----------|-------------|
 | `nullifiers` | Array of Bytes | Yes      | The nullifiers to query (each 32 bytes) |
 | `prove`      | Boolean        | No       | Set to `true` to receive a proof that contains the requested nullifier statuses |
-
-### getNullifiersTrunkState
-
-Returns a cryptographic proof of the trunk state of a nullifier tree. Used with `getNullifiersBranchState` to perform incremental sync of nullifier sets.
-
-**Returns**: A cryptographic proof of the nullifier tree trunk state.
-
-**Parameters**:
-
-| Name              | Type    | Required | Description |
-|-------------------|---------|----------|-------------|
-| `pool_type`       | Integer | Yes      | The shielded pool type: `0` = credit pool, `1` = main token pool, `2` = individual token pool |
-| `pool_identifier` | Bytes   | No       | 32-byte token identifier; required when `pool_type` is `2` |
-
-### getNullifiersBranchState
-
-Returns a Merkle proof for a branch of the nullifier tree. Use `checkpoint_height` from the metadata of a `getNullifiersTrunkState` response to ensure consistency.
-
-**Returns**: A Merkle proof for the specified branch.
-
-**Parameters**:
-
-| Name                | Type    | Required | Description |
-|---------------------|---------|----------|-------------|
-| `pool_type`         | Integer | Yes      | The shielded pool type: `0` = credit pool, `1` = main token pool, `2` = individual token pool |
-| `pool_identifier`   | Bytes   | No       | 32-byte token identifier; required when `pool_type` is `2` |
-| `key`               | Bytes   | Yes      | The branch key to query |
-| `depth`             | Integer | Yes      | The depth of the branch |
-| `checkpoint_height` | Integer | Yes      | Block height from a `getNullifiersTrunkState` response metadata, for consistency |
-
-### getRecentNullifierChanges
-
-Returns nullifier additions starting from a specified block height, indicating which notes were spent per block.
-
-**Returns**: A list of nullifier additions grouped by block, or a cryptographic proof.
-
-**Parameters**:
-
-| Name           | Type    | Required | Description |
-|----------------|---------|----------|-------------|
-| `start_height` | String (uint64) | Yes | Block height to start from (as a string due to uint64 size) |
-| `prove`        | Boolean         | No  | Set to `true` to receive a proof that contains the requested changes |
-
-### getRecentCompactedNullifierChanges
-
-Returns compacted nullifier additions from a specified block height. Compacted changes merge multiple blocks into ranges, reducing response size for bulk sync.
-
-**Returns**: A list of compacted nullifier additions grouped by block range, or a cryptographic proof.
-
-**Parameters**:
-
-| Name                 | Type    | Required | Description |
-|----------------------|---------|----------|-------------|
-| `start_block_height` | String (uint64) | Yes | Block height to start from (as a string due to uint64 size) |
-| `prove`              | Boolean         | No  | Set to `true` to receive a proof that contains the requested changes |
 
 ## Code Reference
 

@@ -498,7 +498,7 @@ the update messages following a new block.
 | `from_block_height`          | Integer | No       | Return records beginning with the block height provided                                                  |
 | ----------                   |         |          |                                                                                                          |
 | `count`                      | Integer | No       | Number of blocks to sync. If set to 0, syncing continuously sends new data as well (default: 0)        |
-| `send_transaction_hashes` \* | Boolean | No       |                                                                                                          |
+| `send_transaction_hashes`  | Boolean | No       | When `true`, includes transaction hashes in the response stream |
 
 **Example Request and Response**
 
