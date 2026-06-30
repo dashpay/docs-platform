@@ -4582,10 +4582,6 @@ grpcurl -proto protos/platform/v0/platform.proto \
 :::{versionadded} 3.1.0
 :::
 
-:::{attention}
-These endpoints are defined in the protocol but are not yet available on public nodes.
-:::
-
 ### getShieldedEncryptedNotes
 
 Returns encrypted notes from the shielded pool for a specified range. Clients use these notes for trial decryption to identify notes belonging to their viewing key.
@@ -4600,6 +4596,62 @@ Returns encrypted notes from the shielded pool for a specified range. Clients us
 | `count`       | Integer | Yes      | The number of notes to retrieve |
 | `prove`       | Boolean | No       | Set to `true` to receive a proof that contains the requested notes |
 
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+:sync: grpcurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "start_index": 0,
+      "count": 2,
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getShieldedEncryptedNotes
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+:sync: grpcurl
+```json
+{
+  "v0": {
+    "encryptedNotes": {
+      "entries": [
+        {
+          "nullifier": "ACLc9k5HtKNM//KyTT/iWa+MIA8f1Ya3HDIsURjUYRc=",
+          "cmx": "ecV1F/WDoBa8CfL2Fwdlq3gcBrrZqnvgI+NwtsJZ6Ss=",
+          "encryptedNote": "WhToIlQhpze9cE45wNRsmxukpDPVOQ5k2Ws5FW2WYIjJiNctiIDc0CvGIKA49tJu8Z0lwjhp8RTUPmLdGShZgSTIp7W/dO2emMRUtPxb1TWUVU8EYd1lBnIXOATGmuV35oUQbt94GeX2PLp5rEOmm0o5rtgqiDyJ305AiLRSwZeOPPRrFrly/XQX90nacrqVBVg7vNvLlTKQazFPAcyjG1O/DpYh82W4jzXWakCn5XQYnMkRHv/u+YxK87viIG5C6XLpxOkxBgeONeYFBBGz8YlTnCnOBIkp",
+          "cvNet": "3Z5DAoE4aC3roM3Qh4U+wuCndC1WiASsxer1oSIMIIY="
+        },
+        {
+          "nullifier": "5ShcfdX68dfTfdZZ4nAXwfooPvd+1XHLXFP4D5hUzS4=",
+          "cmx": "CEa3w+gR7bMftk6XcIA1/1JT27UqxZYGmfO7gP7fWwg=",
+          "encryptedNote": "JzRWtHVnO5x4Ijn4M2URM4ojlY9W9mPV2Qz/Rz2TeA6hz5s63bYlTzy/eAQuJStsjCYQwq5H9OtN/EqFov/f1CqtwRTEWnro/3H+QAwMW+hYW982lBNImsPZhLk533fG2f0QD3yuu+BQXAryxNg4jHFBb70wEDF+m9ZklhNH5Bdyl0KoTXjEZqL2mUcY6zcb5gjU6DkozwNOFuiVjMCRVjzRdwUVNLNQhZqqLFIeWUCo37GZbN8oC6p24Lb9phnYNu53Km2d4c74nLdOVdSMeAzTIjle+woH",
+          "cvNet": "TuY3Si9ojWn1BbX4oHLQ+ZDZ/eFlHpMNV5vh3rzd+jU="
+        }
+      ]
+    },
+    "metadata": {
+      "height": "375055",
+      "coreChainLockedHeight": 1506025,
+      "epoch": 17083,
+      "timeMs": "1782852695259",
+      "protocolVersion": 12,
+      "chainId": "dash-testnet-51"
+    }
+  }
+}
+```
+:::
+::::
+
 ### getShieldedAnchors
 
 Returns all commitment tree anchors for the shielded pool. Anchors are used by shielded transaction provers to reference a valid state of the commitment tree.
@@ -4611,6 +4663,51 @@ Returns all commitment tree anchors for the shielded pool. Anchors are used by s
 | Name    | Type    | Required | Description |
 |---------|---------|----------|-------------|
 | `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested anchors |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+:sync: grpcurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getShieldedAnchors
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+:sync: grpcurl
+```json
+{
+  "v0": {
+    "anchors": {
+      "anchors": [
+        "Ahh3yHTlv9H1vhEGVFRbRquziIuG7is28el/VpCv7jk=",
+        "JeaJEco0ewcWxwIudW6TX/GQQQ+muiLIMwn8S3cbNw8=",
+        "Li/voQtJmL93TZfi/j3ht81uXY4TfPB2iPkRpfnfhhw="
+      ]
+    },
+    "metadata": {
+      "height": "375055",
+      "coreChainLockedHeight": 1506025,
+      "epoch": 17083,
+      "timeMs": "1782852695259",
+      "protocolVersion": 12,
+      "chainId": "dash-testnet-51"
+    }
+  }
+}
+```
+:::
+::::
 
 ### getMostRecentShieldedAnchor
 
@@ -4624,6 +4721,45 @@ Returns the most recent commitment tree anchor for the shielded pool.
 |---------|---------|----------|-------------|
 | `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested anchor |
 
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+:sync: grpcurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getMostRecentShieldedAnchor
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+:sync: grpcurl
+```json
+{
+  "v0": {
+    "anchor": "Li/voQtJmL93TZfi/j3ht81uXY4TfPB2iPkRpfnfhhw=",
+    "metadata": {
+      "height": "375055",
+      "coreChainLockedHeight": 1506025,
+      "epoch": 17083,
+      "timeMs": "1782852695259",
+      "protocolVersion": 12,
+      "chainId": "dash-testnet-51"
+    }
+  }
+}
+```
+:::
+::::
+
 ### getShieldedPoolState
 
 Returns the total balance held in the shielded pool.
@@ -4635,6 +4771,45 @@ Returns the total balance held in the shielded pool.
 | Name    | Type    | Required | Description |
 |---------|---------|----------|-------------|
 | `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested pool state |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+:sync: grpcurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getShieldedPoolState
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+:sync: grpcurl
+```json
+{
+  "v0": {
+    "totalBalance": "1831893452700",
+    "metadata": {
+      "height": "375055",
+      "coreChainLockedHeight": 1506025,
+      "epoch": 17083,
+      "timeMs": "1782852695259",
+      "protocolVersion": 12,
+      "chainId": "dash-testnet-51"
+    }
+  }
+}
+```
+:::
+::::
 
 ### getShieldedNotesCount
 
@@ -4648,6 +4823,45 @@ Returns the count of leaves in the shielded notes commitment tree. Wallets use t
 |---------|---------|----------|-------------|
 | `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested count |
 
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+:sync: grpcurl
+```shell
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getShieldedNotesCount
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+:sync: grpcurl
+```json
+{
+  "v0": {
+    "totalNotesCount": "622",
+    "metadata": {
+      "height": "375055",
+      "coreChainLockedHeight": 1506025,
+      "epoch": 17083,
+      "timeMs": "1782852695259",
+      "protocolVersion": 12,
+      "chainId": "dash-testnet-51"
+    }
+  }
+}
+```
+:::
+::::
+
 ### getShieldedNullifiers
 
 Returns the spent status of specified nullifiers. Clients use this to determine whether notes have already been spent.
@@ -4660,6 +4874,57 @@ Returns the spent status of specified nullifiers. Clients use this to determine 
 |--------------|----------------|----------|-------------|
 | `nullifiers` | Array of Bytes | Yes      | The nullifiers to query (each 32 bytes) |
 | `prove`      | Boolean        | No       | Set to `true` to receive a proof that contains the requested nullifier statuses |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+:sync: grpcurl
+```shell
+# Each nullifier must be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "nullifiers": [
+        "ACLc9k5HtKNM//KyTT/iWa+MIA8f1Ya3HDIsURjUYRc="
+      ],
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getShieldedNullifiers
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+:sync: grpcurl
+```json
+{
+  "v0": {
+    "nullifierStatuses": {
+      "entries": [
+        {
+          "nullifier": "ACLc9k5HtKNM//KyTT/iWa+MIA8f1Ya3HDIsURjUYRc="
+        }
+      ]
+    },
+    "metadata": {
+      "height": "375055",
+      "coreChainLockedHeight": 1506025,
+      "epoch": 17083,
+      "timeMs": "1782852695259",
+      "protocolVersion": 12,
+      "chainId": "dash-testnet-51"
+    }
+  }
+}
+```
+:::
+::::
+
+A nullifier's `is_spent` field is omitted from the response when `false` (proto3 default), so an entry without `is_spent` indicates the nullifier has not been spent.
 
 ## Code Reference
 
