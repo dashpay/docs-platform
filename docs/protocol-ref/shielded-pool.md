@@ -200,14 +200,11 @@ Shielded Transfer, Unshield, and Shielded Withdrawal have no transparent signatu
 
 ## Querying shielded state
 
-DAPI exposes a set of read-only endpoints for clients that need to fetch anchors, scan encrypted notes, verify nullifier status, or sync incremental nullifier updates. See the [DAPI Platform endpoints reference](../reference/dapi-endpoints-platform-endpoints.md) for request and response shapes:
+DAPI exposes a set of read-only endpoints for clients that need to fetch anchors, scan encrypted notes, verify nullifier status, or track shielded sync progress. See the [DAPI Platform endpoints reference](../reference/dapi-endpoints-platform-endpoints.md) for request and response shapes:
 
 - [`getShieldedPoolState`](../reference/dapi-endpoints-platform-endpoints.md#getshieldedpoolstate)
 - [`getShieldedAnchors`](../reference/dapi-endpoints-platform-endpoints.md#getshieldedanchors)
 - [`getMostRecentShieldedAnchor`](../reference/dapi-endpoints-platform-endpoints.md#getmostrecentshieldedanchor)
 - [`getShieldedEncryptedNotes`](../reference/dapi-endpoints-platform-endpoints.md#getshieldedencryptednotes)
+- [`getShieldedNotesCount`](../reference/dapi-endpoints-platform-endpoints.md#getshieldednotescount)
 - [`getShieldedNullifiers`](../reference/dapi-endpoints-platform-endpoints.md#getshieldednullifiers)
-- [`getNullifiersTrunkState`](../reference/dapi-endpoints-platform-endpoints.md#getnullifierstrunkstate)
-- [`getNullifiersBranchState`](../reference/dapi-endpoints-platform-endpoints.md#getnullifiersbranchstate)
-- [`getRecentNullifierChanges`](../reference/dapi-endpoints-platform-endpoints.md#getrecentnullifierchanges)
-- [`getRecentCompactedNullifierChanges`](../reference/dapi-endpoints-platform-endpoints.md#getrecentcompactednullifierchanges)
