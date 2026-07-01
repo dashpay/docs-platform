@@ -169,7 +169,7 @@ For indices composed of multiple fields ([example from the DPNS data contract](h
 
 ## Aggregate Queries
 
-:::{versionadded} 3.1.0
+:::{versionadded} 4.0.0
 :::
 
 The [getDocuments](../reference/dapi-endpoints-platform-endpoints.md#getdocuments) v1 surface adds an aggregate-query mode. The same `where` / `orderBy` clauses described above still apply; an additional `select` projection (and optional `groupBy`) determines whether the request returns documents or aggregate values over the matched set.

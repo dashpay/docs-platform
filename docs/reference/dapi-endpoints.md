@@ -34,7 +34,7 @@ without introducing issues for endpoint consumers.
 | [`getDataContract`](../reference/dapi-endpoints-platform-endpoints.md#getdatacontract) | Returns the requested data contract |
 | [`getDataContracts`](../reference/dapi-endpoints-platform-endpoints.md#getdatacontracts) | Returns the requested data contracts |
 | [`getDataContractHistory`](../reference/dapi-endpoints-platform-endpoints.md#getdatacontracthistory) | Returns the requested data contract history |
-| [`getDocuments`](../reference/dapi-endpoints-platform-endpoints.md#getdocuments) | **Updated in Dash Platform v3.1.0**<br>Returns the requested document(s), or an aggregate count/sum/average over the matched document set. |
+| [`getDocuments`](../reference/dapi-endpoints-platform-endpoints.md#getdocuments) | **Updated in Dash Platform v4.0.0**<br>Returns the requested document(s), or an aggregate count/sum/average over the matched document set. |
 
 ### Identities
 
@@ -126,7 +126,7 @@ Security groups provide a way to distribute token configuration and update autho
 Shielded Transaction endpoints are defined in the protocol but are not yet available on public nodes.
 :::
 
-:::{versionadded} 3.1.0
+:::{versionadded} 4.0.0
 :::
 
 | Endpoint | Description |

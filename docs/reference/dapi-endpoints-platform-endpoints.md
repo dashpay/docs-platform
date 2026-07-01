@@ -984,7 +984,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ### getDocuments
 
-:::{versionchanged} 3.1.0
+:::{versionchanged} 4.0.0
 Adds a typed v1 request surface (`WhereClause` / `OrderClause` / `Select`) and four aggregate modes — `DOCUMENTS`, `COUNT`, `SUM`, `AVG`. The legacy v0 CBOR surface is still supported.
 :::
 
@@ -992,7 +992,7 @@ Adds a typed v1 request surface (`WhereClause` / `OrderClause` / `Select`) and f
 
 The request envelope is `oneof version { v0; v1; }`. Pick a version per call:
 
-- **v1** (default for new code, v3.1+) — typed request fields and aggregate `select` modes.
+- **v1** (default for new code, v4.0+) — typed request fields and aggregate `select` modes.
 - **v0** (legacy) — CBOR-encoded `where` / `order_by` byte strings. Fetch only.
 
 **Common request fields** (apply to every variant below)
@@ -1185,7 +1185,7 @@ client.platform.getDataContract(contractId).then((contractResponse) => {
 
 #### Count documents
 
-:::{versionadded} 3.1.0
+:::{versionadded} 4.0.0
 :::
 
 Returns one aggregate count, or per-group counts when `group_by` is set. Requires the doctype to set `documentsCountable: true` (and `rangeCountable: true` for range-grouped queries). See [aggregate query flags](../protocol-ref/data-contract-document.md#aggregate-query-flags).
@@ -1253,7 +1253,7 @@ Count values use `[jstype = JS_STRING]` on the proto, so JavaScript clients rece
 
 #### Sum documents
 
-:::{versionadded} 3.1.0
+:::{versionadded} 4.0.0
 :::
 
 Returns the sum of an integer field across matched documents, or per-group sums when `group_by` is set. Requires the doctype to set `documentsSummable: "<property>"` (and `rangeSummable: true` for range-grouped queries). See [aggregate query flags](../protocol-ref/data-contract-document.md#aggregate-query-flags).
@@ -1317,7 +1317,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 #### Average documents
 
-:::{versionadded} 3.1.0
+:::{versionadded} 4.0.0
 :::
 
 Returns a `(count, sum)` pair the client divides to compute the average, or per-group `(count, sum)` pairs when `group_by` is set. Requires the doctype to set `documentsAverageable: "<property>"` (and `rangeAverageable: true` for range-grouped queries). See [aggregate query flags](../protocol-ref/data-contract-document.md#aggregate-query-flags).
@@ -4579,7 +4579,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ## Shielded Transaction Endpoints
 
-:::{versionadded} 3.1.0
+:::{versionadded} 4.0.0
 :::
 
 ### getShieldedEncryptedNotes

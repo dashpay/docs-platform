@@ -332,7 +332,7 @@ The following example (from the [DPNS contract's `domain` document](https://gith
 
 ## Aggregate Query Flags
 
-:::{versionadded} 3.1.0
+:::{versionadded} 4.0.0
 :::
 
 Document types can opt into aggregate query support (count / sum / average) by setting flags at the document-type level. These flags control the underlying storage layout — once set on a published contract they cannot be changed by a contract update.
