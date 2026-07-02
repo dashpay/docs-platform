@@ -61,7 +61,7 @@ verification, making it practical for light clients and user-facing applications
 
 ### DAPI - A decentralized API
 
-DAPI is a _decentralized_ HTTP API exposing [JSON-RPC](https://www.jsonrpc.org/) and [gRPC](https://grpc.io/) endpoints. Through these endpoints, developers can send and retrieve application data and query the Dash blockchain.
+DAPI is a _decentralized_ HTTP API exposing [gRPC](https://grpc.io/) and [JSON-RPC](https://www.jsonrpc.org/) endpoints. Developers send and retrieve Dash Platform application data over the gRPC endpoints, while the JSON-RPC endpoints expose some layer 1 (Dash Core blockchain) information.
 
 DAPI provides developers the same access and security as running their own Dash node without the cost and maintenance overhead. Unlike traditional APIs which have a single point of failure, DAPI allows clients to connect to different instances depending on resource availability in the Dash network.
 
