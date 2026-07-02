@@ -12,7 +12,7 @@ For the conceptual overview of how the pool works and when to use it, see [Shiel
 
 ## Overview
 
-The shielded pool is implemented through five state transition types that share a common Orchard bundle structure:
+The shielded pool is implemented through state transition types that share a common Orchard bundle structure:
 
 | Type | Name | Description |
 | --- | --- | --- |
@@ -21,8 +21,9 @@ The shielded pool is implemented through five state transition types that share 
 | 17 | [Unshield](#unshield) | Move credits from the pool to a Platform address |
 | 18 | [Shield from Asset Lock](#shield-from-asset-lock) | Move credits from an L1 asset lock directly into the pool |
 | 19 | [Shielded Withdrawal](#shielded-withdrawal) | Move credits from the pool back to Dash Core (L1) |
+| 20 | [Identity Create From Shielded Pool](#identity-create-from-shielded-pool) | Create a new identity funded from the shielded pool |
 
-All five transitions share a common Orchard bundle (anchor, actions, proof, binding signature). Transitions that touch the transparent side (Shield, Unshield, Shield from Asset Lock, Shielded Withdrawal) layer the transparent fields on top of that bundle. Shielded Transfer has no transparent surface beyond the bundle itself.
+All transitions share a common Orchard bundle (anchor, actions, proof, binding signature). Transitions that touch the transparent side (Shield, Unshield, Shield from Asset Lock, Shielded Withdrawal, Identity Create From Shielded Pool) layer the transparent fields on top of that bundle. Shielded Transfer has no transparent surface beyond the bundle itself.
 
 ## Common Components
 
@@ -173,6 +174,27 @@ Transparent fields (`coreFeePerByte`, `pooling`, `outputScript`) are bound to th
 :::
 
 See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-dpp/src/state_transition/state_transitions/shielded/shielded_withdrawal_transition/).
+
+### Identity Create From Shielded Pool
+
+Create a new identity funded directly from the shielded pool. The spend nullifiers fund a fixed exit denomination; any change re-enters the pool as an ordinary output note. The new identity carries the same public keys as an ordinary [Identity Create](identity.md#identity-create).
+
+| Field | Type | Size | Description |
+| --- | --- | --- | --- |
+| publicKeys | array | Varies | The public keys of the new identity (1..=`max_public_keys_in_creation`), carried exactly as in [Identity Create](identity.md#identity-create) |
+| denomination | unsigned integer | 64 bits | The fixed exit denomination (in credits) leaving the pool. Must equal the Orchard bundle's value balance exactly and be a member of the versioned denomination set |
+| actions | array | Varies | Orchard [actions](#actions) (spend-output pairs); the spend nullifiers fund the exit |
+| anchor | array of bytes | 32 bytes | [Anchor](#anchors) |
+| proof | array of bytes | Varies | Halo 2 proof |
+| bindingSignature | array of bytes | 64 bytes | RedPallas binding signature |
+| sendToAddressOnCreationFailure | Platform address | Varies | Fallback [Platform address](address-system.md#platform-address) credited (minus a penalty) if identity creation fails a stateful check. The spend is still final — the denomination leaves the pool regardless |
+| identityId | array of bytes | 32 bytes | The id of the new identity, derived as `double_sha256` over the sorted spend nullifiers, then re-derived and checked at consensus |
+
+:::{note}
+The new identity's id is derived from the sorted set of spend nullifiers, making it unique and single-use. The public keys, `denomination`, `sendToAddressOnCreationFailure`, and `identityId` are committed into the Orchard bundle (via `extra_sighash_data`), so the bundle cannot be redirected to a different identity. Maximum actions per transition: [`max_shielded_transition_actions`](protocol-constants.md).
+:::
+
+See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-dpp/src/state_transition/state_transitions/shielded/identity_create_from_shielded_pool_transition/).
 
 ## Shielded Transition Signing
 

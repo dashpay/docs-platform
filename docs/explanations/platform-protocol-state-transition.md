@@ -51,6 +51,12 @@ The following table contains a list of currently defined payload types:
 | [Address Funds Transfer](../protocol-ref/address-system.md#address-funds-transfer) (`12`) | Transfer funds between Platform addresses |
 | [Address Funding From Asset Lock](../protocol-ref/address-system.md#address-funding-from-asset-lock) (`13`) | Fund a Platform address using an asset lock proof |
 | [Address Credit Withdrawal](../protocol-ref/address-system.md#address-credit-withdrawal) (`14`) | Withdraw credits from a Platform address |
+| [Shield](../protocol-ref/shielded-pool.md#shield) (`15`) | Move transparent Platform funds into the [shielded pool](../explanations/shielded-pool.md) |
+| [Shielded Transfer](../protocol-ref/shielded-pool.md#shielded-transfer) (`16`) | Transfer value privately between shielded notes |
+| [Unshield](../protocol-ref/shielded-pool.md#unshield) (`17`) | Move funds from the shielded pool back to a Platform address |
+| [Shield From Asset Lock](../protocol-ref/shielded-pool.md#shield-from-asset-lock) (`18`) | Fund the shielded pool directly from an asset lock proof |
+| [Shielded Withdrawal](../protocol-ref/shielded-pool.md#shielded-withdrawal) (`19`) | Withdraw funds from the shielded pool to Dash Core (L1) |
+| [Identity Create From Shielded Pool](../protocol-ref/shielded-pool.md#identity-create-from-shielded-pool) (`20`) | Create a new identity funded from the shielded pool |
 
 ### Application Usage
 

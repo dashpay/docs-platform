@@ -6,9 +6,9 @@
 
 ## Overview
 
-The shielded pool is an optional privacy layer on Dash Platform that lets users hold and move credits without revealing balances, sender, or recipient on-chain. Funds move *into* the pool through a shield transition, move *within* the pool privately, and exit through an unshield or shielded withdrawal. While funds remain inside the pool, only their owner can see them.
+The shielded pool is an optional privacy layer on Dash Platform that lets users hold and move credits without revealing balances, sender, or recipient on-chain. Funds move *into* the pool through a shield transition, move *within* the pool privately, and exit through an unshield, a shielded withdrawal, or by funding a newly created identity. While funds remain inside the pool, only their owner can see them.
 
-The pool uses the [Orchard](https://zips.z.cash/protocol/protocol.pdf) shielded protocol — the same zk-SNARK-based design used by Zcash for its current shielded pool. Transactions inside the pool prove their own validity without disclosing the amounts or parties involved.
+The pool uses the [Orchard](https://zips.z.cash/protocol/protocol.pdf) shielded protocol — the same zero-knowledge design (Halo 2 proofs, with no trusted setup) used by Zcash for its current shielded pool. Transactions inside the pool prove their own validity without disclosing the amounts or parties involved.
 
 ## When to use the shielded pool
 
@@ -40,11 +40,11 @@ When a note is created for a recipient, the platform stores an **encrypted note 
 
 ### Actions and the action-count limit
 
-A shielded transition is composed of one or more **actions**. Each action structurally pairs one spend (consuming a prior note) with one output (creating a new note), bundled together so observers cannot tell which spend funded which output. A single shielded transition is limited to **16 actions** to keep transitions within the platform's 20 KB state-transition size budget.
+A shielded transition is composed of one or more **actions**. Each action structurally pairs one spend (consuming a prior note) with one output (creating a new note), bundled together so observers cannot tell which spend funded which output. The consensus rules cap a single shielded transition at **16 actions**. In practice the ~20 KiB (20,480-byte) state-transition size budget is the binding limit: because the Halo 2 proof grows with each action, a real transition fits only around 6 actions well before it reaches the 16-action cap.
 
 ## Transition types
 
-Five state transition types interact with the shielded pool. The wire-level structure of each — including field-by-field tables and source links — is documented in the [Shielded Pool protocol reference](../protocol-ref/shielded-pool.md).
+Six state transition types interact with the shielded pool. The wire-level structure of each — including field-by-field tables and source links — is documented in the [Shielded Pool protocol reference](../protocol-ref/shielded-pool.md).
 
 ### Shield
 
@@ -65,6 +65,10 @@ Moves credits *out of* the pool to a [Platform address](../protocol-ref/address-
 ### Shielded withdrawal
 
 Moves credits *out of* the pool back to Dash Core (L1) via the platform's withdrawal mechanism. Like an unshield, it reveals an amount and an L1 destination, but the funds leave Platform entirely rather than landing in a Platform address.
+
+### Identity create from shielded pool
+
+Creates a new identity funded directly from the pool by spending one or more notes. Like an unshield, this moves credits *out of* the pool — here into a freshly created identity rather than a Platform address. The new identity's ID is derived from the sorted set of spend nullifiers, making it unique and single-use.
 
 ## What the pool does not provide
 

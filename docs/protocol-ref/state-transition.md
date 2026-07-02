@@ -66,6 +66,7 @@ Dash Platform Protocol defines the following [state transition types](https://gi
 | 17 | Unshield | [Unshield](shielded-pool.md#unshield) |
 | 18 | Shield from Asset Lock | [Shield from Asset Lock](shielded-pool.md#shield-from-asset-lock) |
 | 19 | Shielded Withdrawal | [Shielded Withdrawal](shielded-pool.md#shielded-withdrawal) |
+| 20 | Identity Create From Shielded Pool | [Identity Create From Shielded Pool](shielded-pool.md#identity-create-from-shielded-pool) |
 
 ### Batch
 
@@ -99,7 +100,7 @@ transition type:
 | [Identity](#signing-with-identity)     | Batch, Contract create, Contract update, Identity update, Identity credit transfer, Identity credit transfer to addresses, Identity credit withdrawal, Masternode vote |
 | [Asset lock](#signing-with-asset-lock) | Identity create, Identity topup, Address funding from asset lock\*, Shield from asset lock\*\* |
 | [Address witness](#signing-with-address-witness) | Identity create from addresses, Identity topup from addresses, Address funds transfer, Address credit withdrawal, Address funding from asset lock\*, Shield\*\* |
-| [Shielded (Orchard)](shielded-pool.md#shielded-transition-signing) | Shield\*\*, Shielded transfer, Unshield, Shield from asset lock\*\*, Shielded withdrawal |
+| [Shielded (Orchard)](shielded-pool.md#shielded-transition-signing) | Shield\*\*, Shielded transfer, Unshield, Shield from asset lock\*\*, Shielded withdrawal, Identity create from shielded pool |
 
 \* Address funding from asset lock requires both an asset lock signature and address witnesses (`input_witnesses`).
 
