@@ -10,7 +10,7 @@ Although [data contracts](../protocol-ref/data-contract.md) provide much needed 
 
 ## Details
 
-Since all application data is submitted in the form of documents, data triggers are defined in the context of documents. To provide even more granularity, they also incorporate the [document transition action](../protocol-ref/document.md#document-transition-action) so separate triggers can be created for the CREATE, REPLACE, or DELETE actions.
+Since all application data is submitted in the form of documents, data triggers are defined in the context of documents. To provide even more granularity, they also incorporate the [document transition action](../protocol-ref/document.md#document-transition-action) so separate triggers can be created for any document transition action (for example, CREATE, REPLACE, DELETE, TRANSFER, PURCHASE, or UPDATE_PRICE).
 
 When document state transitions are received, DPP checks if there is a trigger associated with the document transition type and action. If there is, it then executes the trigger logic.
 
@@ -22,7 +22,7 @@ As an example, DPP contains several data triggers for DPNS as defined in the [da
 
 | Data Contract | Document           | Action(s)                                                                                                                            | Trigger Description                                                                                      |
 | ------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
-| DPNS          | `domain`           | [`CREATE`](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/batch/data_triggers/triggers/dpns/v0/mod.rs#L55) | Enforces DNS compatibility, validates provided hashes, and restricts top-level domain (TLD) registration |
+| DPNS          | `domain`           | [`CREATE`](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/batch/data_triggers/triggers/dpns/v1/mod.rs#L48) | Enforces DNS compatibility, validates provided hashes, and restricts top-level domain (TLD) registration |
 | ----          | ----               | ----                                                                                                                                 | ----                                                                                                     |
 | DPNS          | `domain`           | [`REPLACE`](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/batch/data_triggers/triggers/reject/v0/mod.rs#L25)                | Prevents updates to existing documents                                                                   |
 | DPNS          | `domain`           | [`DELETE`](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/batch/data_triggers/triggers/reject/v0/mod.rs#L25)                 | Prevents deletion of existing documents                                                                  |

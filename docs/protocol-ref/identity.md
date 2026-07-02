@@ -265,7 +265,7 @@ Credits can be withdrawn from an identity to an external Core wallet using an id
 
 | Field                | Type           | Description |
 | -------------------- | -------------- | ----------- |
-| $version             | integer        | The protocol version (currently `1`) |
+| $version             | integer        | The state transition format version (currently `1`) |
 | type                 | integer        | State transition type (`6` for identity credit withdrawal) |
 | identityId           | array of bytes | An [identity id](#identity-id) (32 bytes) |
 | amount               | integer        | The amount of credits to withdraw (64 bits) |

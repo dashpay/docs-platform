@@ -121,10 +121,10 @@ There are a variety of constraints currently defined for performance and securit
 
 | Description | Value |
 | ----------- | ----- |
-| Minimum number of properties | [1](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L23) |
-| Maximum number of properties | [100](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L24) |
-| Minimum property name length | [1](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L21) |
-| Maximum property name length | [64](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L21) |
+| Minimum number of properties | [1](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-dpp/schema/meta_schemas/document/v1/document-meta.json#L23) |
+| Maximum number of properties | [100](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-dpp/schema/meta_schemas/document/v1/document-meta.json#L24) |
+| Minimum property name length | [1](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-dpp/schema/meta_schemas/document/v1/document-meta.json#L21) |
+| Maximum property name length | [64](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-dpp/schema/meta_schemas/document/v1/document-meta.json#L21) |
 | Property name characters     | Alphanumeric (`A-Z`, `a-z`, `0-9`)<br>Hyphen (`-`) <br>Underscore (`_`) |
 
 ## Document Indices
@@ -213,11 +213,11 @@ For performance and security reasons, indices have the following constraints. Th
 
 | Description | Value |
 | ----------- | ----- |
-| Minimum/maximum length of index `name` | [1](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L358) / [32](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L359) |
-| Maximum number of indices | [10](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L443) |
+| Minimum/maximum length of index `name` | [1](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-dpp/schema/meta_schemas/document/v1/document-meta.json#L358) / [32](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-dpp/schema/meta_schemas/document/v1/document-meta.json#L359) |
+| Maximum number of indices | [10](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-dpp/schema/meta_schemas/document/v1/document-meta.json#L482) |
 | Maximum number of unique indices | [10](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-platform-version/src/version/dpp_versions/dpp_validation_versions/v2.rs#L27) |
 | Maximum number of contested indices | [1](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-platform-version/src/version/dpp_versions/dpp_validation_versions/v2.rs#L26) |
-| Maximum number of properties in a single index | [10](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L378) |
+| Maximum number of properties in a single index | [10](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-dpp/schema/meta_schemas/document/v1/document-meta.json#L378) |
 | Maximum length of indexed string property | [63](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/mod.rs#L24) |
 | Usage of `$id` in an index [disallowed](https://github.com/dashpay/platform/pull/178) | N/A |
 | **Note: Dash Platform [does not allow indices for arrays](https://github.com/dashpay/platform/pull/225).**<br>Maximum length of indexed byte array property | [255](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/mod.rs#L25) |
@@ -256,7 +256,6 @@ Documents support the following configuration options to provide flexibility in 
 | `transferable`                       | integer  | Transferable without a marketplace sell:<br>`0` - Never<br>`1` - Always<br>See the [NFT page](../explanations/nft.md#transfer-and-trade) for more details |
 | `tradeMode`                          | integer  | Built-in marketplace system:<br>`0` - None<br>`1` - Direct purchase (the purchaser can buy the item without requiring approval)<br>See the [NFT page](../explanations/nft.md#transfer-and-trade) for more details |
 | `creationRestrictionMode`            | integer  | Restriction of document creation:<br>`0` - No restrictions<br>`1` - Contract owner only<br>`2` - No Creation Allowed<br>See the [NFT page](../explanations/nft.md#creation-restrictions) for more details |
-| `keywords`                           | array of strings | Up to 20 strings (3–50 characters each) describing the document type for searchability |
 
 | Security option | Type | Description |
 |-----------------|------|-------------|
@@ -289,7 +288,7 @@ The following operation types can each have an independent cost configuration:
 
 :::{dropdown} List of all usable document properties
 
-  This list of properties is defined in the [Rust DPP implementation](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/src/data_contract/document_type/mod.rs#L41) and the [document meta-schema](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json).
+  This list of properties is defined in the [Rust DPP implementation](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-dpp/src/data_contract/document_type/mod.rs#L41) and the [document meta-schema](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-dpp/schema/meta_schemas/document/v1/document-meta.json).
 
   | Property Name | Type | Description |
   |---------------|------|-------------|
@@ -309,7 +308,18 @@ The following operation types can each have an independent cost configuration:
   | [`properties`](#document-properties) | object   | Defines the properties of the document. |
   | [`transient`](#transient-properties) | array    | An array of strings specifying transient properties that are validated by Platform but not stored. |
   | `tokenCost`                          | object   | Defines token costs for document operations (create, replace, update_price, delete, transfer, purchase) |
-  | `keywords`                           | array    | Up to 20 strings (3–50 characters each) for searchability |
+  | [`documentsCountable`](#aggregate-query-flags) | boolean | Doctype-wide count support. See [Aggregate Query Flags](#aggregate-query-flags). |
+  | [`rangeCountable`](#aggregate-query-flags) | boolean | Per-index range counts. See [Aggregate Query Flags](#aggregate-query-flags). |
+  | [`documentsSummable`](#aggregate-query-flags) | string | Doctype-wide sums of the named integer property. See [Aggregate Query Flags](#aggregate-query-flags). |
+  | [`rangeSummable`](#aggregate-query-flags) | boolean | Per-index range sums. See [Aggregate Query Flags](#aggregate-query-flags). |
+  | [`documentsAverageable`](#aggregate-query-flags) | string | Doctype-wide averages of the named integer property. See [Aggregate Query Flags](#aggregate-query-flags). |
+  | [`rangeAverageable`](#aggregate-query-flags) | boolean | Per-index range averages. See [Aggregate Query Flags](#aggregate-query-flags). |
+  | `required`                           | array    | Standard JSON Schema keyword listing required property names. |
+  | `description`                        | string   | Standard JSON Schema keyword describing the document type. |
+  | `$comment`                           | string   | Standard JSON Schema keyword for a schema comment. |
+  | `minProperties`                      | integer  | Standard JSON Schema keyword bounding the minimum number of properties. |
+  | `maxProperties`                      | integer  | Standard JSON Schema keyword bounding the maximum number of properties. |
+  | `dependentRequired`                  | object   | Standard JSON Schema keyword declaring conditionally required properties. |
   | [`additionalProperties`](./data-contract.md#additional-properties) | boolean  | Specifies whether additional properties are allowed. Must be set to false, meaning no additional properties are allowed beyond those defined. |
 
 :::
@@ -340,7 +350,7 @@ Document types can opt into aggregate query support (count / sum / average) by s
 There are two axes:
 
 * **Doctype-wide** (`documents*`) — applies the aggregate over the entire document type. Set at the document type root, alongside other doctype options like `documentsKeepHistory`.
-* **Per-index range** (`range*`) — extends the corresponding aggregate to range queries on indexed properties. Set on the index's property entry. Requires the matching base flag.
+* **Per-index range** (`range*`) — extends the corresponding aggregate to range queries on indexed properties. Set on the index object (alongside `name`, `properties`, `unique`, and `contested`), using the index-level `countable`/`summable`/`averageable` flags and their `range*` variants — not on the individual `{ "field": "asc" }` property entry. Requires the matching base flag.
 
 | Flag | Type | Purpose | Required for |
 | - | - | - | - |

@@ -189,6 +189,7 @@ Code range: 10450-10499
 | 10458 | InvalidTokenAmountError                                |         |
 | 10459 | InvalidTokenNoteTooBigError                            |         |
 | 10460 | TokenNoteOnlyAllowedWhenProposerError                  |         |
+| 10461 | TokenPricingScheduleEmptyError                         |         |
 
 ### Identity
 
@@ -230,6 +231,7 @@ Code range:  10500-10599
 | 10531 | IdentityAssetLockStateTransitionReplayError                   |         |
 | 10532 | WithdrawalOutputScriptNotAllowedWhenSigningWithOwnerKeyError  |         |
 | 10533 | InvalidKeyPurposeForContractBoundsError                       |         |
+| 10534 | IdentityAssetLockTransactionTooManyInputsError                |         |
 
 ### State Transition
 
@@ -279,9 +281,11 @@ Code range: 10800-10899
 | 10820 | ShieldedEmptyProofError                        |         |
 | 10821 | ShieldedZeroAnchorError                        |         |
 | 10822 | ShieldedInvalidValueBalanceError               |         |
-| 10823 | *(reserved/unassigned)*                        |         |
+| 10823 | ShieldedEncryptedNoteSizeMismatchError         |         |
 | 10824 | *(reserved/unassigned)*                        |         |
 | 10825 | ShieldedTooManyActionsError                    |         |
+| 10826 | ShieldedImplicitFeeCapExceededError            |         |
+| 10827 | ShieldedInvalidDenominationError               |         |
 
 ## Signature Errors
 

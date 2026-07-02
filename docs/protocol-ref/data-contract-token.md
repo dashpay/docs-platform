@@ -144,7 +144,7 @@ Token configuration controls behavioral aspects of token operations, including s
 | Property | Type | Description |
 |----------|------|-------------|
 | `mainControlGroup` | unsigned integer | Position assigned to the main control group |
-| `mainControlGroupCanBeModified` | string | Authorization level for modifying the main control group |
+| `mainControlGroupCanBeModified` | string | Who is authorized to modify the main control group. Valid values are listed in the [authorized parties table](#authorized-parties). |
 
 **Example:**
 
@@ -279,11 +279,11 @@ The `distributionType` field accepts one of three schedule types:
 
 | Type | Interval Unit | Description |
 |------|---------------|-------------|
-| `BlockBasedDistribution` | Block height | Emits tokens every N blocks. If `start` is not set, begins at the block when the data contract is registered. |
-| `TimeBasedDistribution` | Milliseconds | Emits tokens every N milliseconds. If `start` is not set, begins at the time of the block when the data contract is registered. |
-| `EpochBasedDistribution` | Epochs | Emits tokens every N epochs. If `start` is not set, begins at the epoch of the block when the data contract is registered. Distribution happens at the start of the following epoch. Required when using `EvonodesByParticipation` as the distribution recipient. |
+| `BlockBasedDistribution` | Block height | Emits tokens every N blocks. By default begins at the block when the data contract is registered. |
+| `TimeBasedDistribution` | Milliseconds | Emits tokens every N milliseconds. By default begins at the time of the block when the data contract is registered. |
+| `EpochBasedDistribution` | Epochs | Emits tokens every N epochs. By default begins at the epoch of the block when the data contract is registered. Distribution happens at the start of the following epoch. Required when using `EvonodesByParticipation` as the distribution recipient. |
 
-Each type wraps an `interval` (the period length) and a `function` (the emission pattern from the options below).
+Each type wraps an `interval` (the period length) and a `function` (the emission pattern from the options below). There is no separate `start` field on the distribution type; the schedule begins at contract registration by default and a later start can be set through the function's start offset parameter (`start_step`, `start_moment`, or `start_decreasing_offset`, depending on the function).
 
 #### Perpetual Distribution Options
 
@@ -314,6 +314,10 @@ Emits a constant (fixed) number of tokens for every period.
 ##### Random
 
 Emits a random number of tokens within a specified range.
+
+:::{note}
+The Random distribution function is not supported in the current release. Contract validation rejects it with an `UnsupportedFeatureError`, so a contract using it cannot be registered.
+:::
 
 - **Formula**: `f(x) ∈ [min, max]`
   - Constraints:
@@ -355,7 +359,7 @@ Emits tokens that decrease in discrete steps at fixed intervals.
   - `decrease_per_interval_denominator` (u16): reduction factor denominator
   - `start_decreasing_offset` (optional u64): start period offset. If not provided, the contract creation start is used. Before this offset, `distribution_start_amount` is emitted every interval.
   - `distribution_start_amount` (TokenAmount): initial token emission amount
-  - `max_interval_count` (optional u16): maximum number of decreasing intervals. **Defaults to 128 if not set.** After this many cycles, `trailing_distribution_interval_amount` is emitted per interval. Maximum value: 1024.
+  - `max_interval_count` (optional u16): maximum number of decreasing intervals. **Defaults to 128 if not set.** After this many cycles, `trailing_distribution_interval_amount` is emitted per interval. When provided, it must be between 2 and 1024 inclusive.
   - `trailing_distribution_interval_amount` (TokenAmount): token emission after all decreasing intervals are exhausted
   - `min_value` (optional u64): minimum emission floor
 - **Use Case:** Reward systems with predictable decay—ideal for Bitcoin-style halvings or Dash-style gradual reductions
@@ -583,7 +587,6 @@ The distribution functions use the following parameters defined across various i
 |-----------|------|---------|-------------|
 | `a` | integer | - | Coefficient/scaling factor |
 | `b` | integer | - | Base offset or constant term |
-| `c` | integer | - | Additional offset |
 | `d` | integer | 1 | Divisor for precision control |
 | `m` | integer | - | Exponent numerator |
 | `n` | integer | 1 | Exponent denominator |
@@ -594,10 +597,12 @@ The distribution functions use the following parameters defined across various i
 | `step_count` | integer | - | Periods between steps |
 | `numerator` | integer | - | Reduction factor numerator |
 | `denominator` | integer | - | Reduction factor denominator |
-| `interval` | integer | - | Time interval in milliseconds |
+| `interval` | integer | - | Period length; unit depends on the distribution type (blocks, milliseconds, or epochs) |
 
 :::{note}
 Parameter sign types vary by function: `a` is unsigned (u64) for `Exponential` but signed (i64) for all other functions. `m` is unsigned (u64) for `Logarithmic` and `InvertedLogarithmic` but signed (i64) for `Polynomial` and `Exponential`.
+
+The **Default** column shows typical values rather than code-enforced defaults. In the underlying structs, `a`, `b`, `d`, `m`, `n`, and `o` are required fields with no default — they must be supplied for the functions that use them. Only the start offset (`s`) and the emission bounds (`min_value`, `max_value`) are optional; the start offset defaults to contract registration.
 :::
 
 ### Distribution Recipients

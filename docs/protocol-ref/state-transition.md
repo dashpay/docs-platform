@@ -127,11 +127,21 @@ process consists of the following steps:
 ### Signing with Identity
 
 Most state transitions must be signed by a private key associated with the identity creating the
-state transition. Each identity must have at least two keys: a primary key ([security
-level](./identity.md#public-key-securitylevel) `0`) that is only used when signing [identity
-update](identity.md#identity-update) state transitions and an additional key ([security
-level](./identity.md#public-key-securitylevel) `2`) that is used to sign all other state
-transitions.
+state transition. Each transition requires a key of a minimum [security
+level](./identity.md#public-key-securitylevel); some accept a range of levels. Only [identity
+update](identity.md#identity-update) requires a MASTER key (level `0`); every other transition
+requires at least a CRITICAL key (level `1`).
+
+| State transition | Accepted security level(s) |
+| ---------------- | -------------------------- |
+| Identity update | MASTER (`0`) |
+| Identity credit transfer, Identity credit withdrawal, Data contract update | CRITICAL (`1`) |
+| Data contract create | CRITICAL or HIGH (`1`-`2`) |
+| Batch (document/token), Masternode vote | CRITICAL, HIGH, or MEDIUM (`1`-`3`) |
+
+Within a batch, token transfers are restricted to a CRITICAL (`1`) key. An identity must therefore
+hold a MASTER key for identity updates and, for the other transitions it will sign, a key meeting
+that transition's minimum level.
 
 The process to sign state transitions using an identity consists of the following steps:
 

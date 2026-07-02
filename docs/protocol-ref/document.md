@@ -216,9 +216,9 @@ The document object represents the data provided by the platform in response to 
 | Property | Type | Required | Description |
 | - | - | - | - |
 | $id | array | Yes | The [document ID](#document-id) (32 bytes)|
-| $type | string | Yes  | Document type defined in the referenced contract (1-64 characters) |
+| $type | string | Yes  | Document type defined in the referenced contract (1-64 characters). Supplied by the query context; not a stored field of the `DocumentV0` struct. |
 | $revision | unsigned integer (64 bits) | No | Document revision (=>1) if the document is mutable |
-| $dataContractId | array | Yes | Data contract ID [generated](../protocol-ref/data-contract.md#data-contract-id) from the data contract's `ownerId` and `identity nonce` (32 bytes) |
+| $dataContractId | array | Yes | Data contract ID [generated](../protocol-ref/data-contract.md#data-contract-id) from the data contract's `ownerId` and `identity nonce` (32 bytes). Supplied by the query context; not a stored field of the `DocumentV0` struct. |
 | $ownerId | array | Yes | [Identity](../protocol-ref/identity.md) of the user submitting the document (32 bytes) |
 | $createdAt | unsigned integer (64 bits) | No | Time (in milliseconds) at document creation, if required by the document type schema |
 | $updatedAt | unsigned integer (64 bits) | No | Last document update time in milliseconds, if required by the document type schema |

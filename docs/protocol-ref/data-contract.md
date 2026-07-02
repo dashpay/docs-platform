@@ -92,14 +92,15 @@ The data contract object consists of the following fields as defined in the Rust
 
 ### Document type meta-schema
 
-Each document type defined within a data contract is validated against the document meta-schema. The full schema is [defined in rs-dpp](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-dpp/src/data_contract/document_type/schema/enrich_with_base_schema/v0/mod.rs#L6-L7), hosted on [GitHub](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json), and can be viewed by expanding this dropdown:
+Each document type defined within a data contract is validated against the document meta-schema. This page reflects the v1 meta-schema used since protocol version 12 (Dash Platform v4.0.0); earlier protocol versions validated against the v0 meta-schema. The full schema is [defined in rs-dpp](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-dpp/schema/meta_schemas/document/v1/document-meta.json), hosted on [GitHub](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-dpp/schema/meta_schemas/document/v1/document-meta.json), and can be viewed by expanding this dropdown:
 
 ::: {dropdown} Full schema
 
 ```json
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/dashpay/platform/blob/master/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json",
+  "$id": "https://github.com/dashpay/platform/blob/master/packages/rs-dpp/schema/meta_schemas/document/v1/document-meta.json",
+  "$comment": "EDITABLE UNTIL 3.1 RELEASE — FROZEN AFTER. This v1 document meta-schema activates with protocol v12 (CONTRACT_VERSIONS_V4) and admits every v12+ contract written to disk. Once Platform 3.1 ships, mutating it would change historical validation results and break consensus replay. After release, any new top-level property or rule MUST go in a newer meta-schema version (v2+).",
   "type": "object",
   "$defs": {
     "documentProperties": {
@@ -441,7 +442,7 @@ Each document type defined within a data contract is validated against the docum
     },
     "$schema": {
       "type": "string",
-      "const": "https://github.com/dashpay/platform/blob/master/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json"
+      "const": "https://github.com/dashpay/platform/blob/master/packages/rs-dpp/schema/meta_schemas/document/v1/document-meta.json"
     },
     "$defs": {
       "$ref": "#/$defs/documentProperties"
@@ -525,12 +526,55 @@ Each document type defined within a data contract is validated against the docum
               "resolution"
             ],
             "additionalProperties": false
+          },
+          "countable": {
+            "oneOf": [
+              {
+                "type": "boolean",
+                "description": "Legacy form. true == \"countable\", false == \"notCountable\". Kept for back-compat with contracts written before the enum form was introduced."
+              },
+              {
+                "type": "string",
+                "enum": ["notCountable", "countable", "countableAllowingOffset"],
+                "description": "\"countable\" — index uses a CountTree (O(1) totals). \"countableAllowingOffset\" — index uses a ProvableCountTree (totals + future O(log n) range / offset queries). \"notCountable\" — plain NormalTree (no count fast path)."
+              }
+            ],
+            "description": "Whether and how the index supports count fast paths. Adds extra storage cost for non-default values."
+          },
+          "rangeCountable": {
+            "type": "boolean",
+            "description": "When true, the property-name level becomes a ProvableCountTree and value trees become CountTrees so range-count queries on the indexed property are O(log n). Requires `countable` to be \"countable\" or \"countableAllowingOffset\"."
+          },
+          "summable": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Name of an integer document property whose values are aggregated into a sum at the index. When set, the index's value trees become SumTrees and each per-document index reference is a ReferenceWithSumItem contributing the named property's value to ancestor sum-bearing trees. The property must exist on the document type, be in `required`, and have an integer type."
+          },
+          "rangeSummable": {
+            "type": "boolean",
+            "description": "When true, the property-name level becomes a ProvableSumTree (or ProvableCountProvableSumTree when paired with `rangeCountable: true`) so range-sum queries on the indexed property are O(log n) via the `AggregateSumOnRange` proof primitive. Requires `summable` to be set."
+          },
+          "averageable": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Syntactic sugar: `averageable: \"<prop>\"` is shorthand for `countable: \"countable\"` + `summable: \"<prop>\"`. Enables average queries (which return `(count, sum)` pairs the client divides) without forcing authors to think in terms of count + sum. Same on-disk layout as setting both underlying flags. If you set both `averageable` and `summable`, they must name the same property."
+          },
+          "rangeAverageable": {
+            "type": "boolean",
+            "description": "Syntactic sugar: `rangeAverageable: true` is shorthand for `rangeCountable: true` + `rangeSummable: true`. Requires `averageable` to be set."
           }
         },
         "required": [
           "properties",
           "name"
         ],
+        "dependentRequired": {
+          "rangeCountable": ["countable"],
+          "rangeSummable": ["summable"],
+          "rangeAverageable": ["averageable"]
+        },
         "additionalProperties": false
       },
       "minItems": 1,
@@ -599,6 +643,34 @@ Each document type defined within a data contract is validated against the docum
         2
       ],
       "description": "Key requirements. 0 - Unique Non Replaceable, 1 - Multiple, 2 - Multiple with reference to latest key."
+    },
+    "documentsCountable": {
+      "type": "boolean",
+      "description": "When true, the primary key tree uses a CountTree enabling O(1) total document count queries."
+    },
+    "rangeCountable": {
+      "type": "boolean",
+      "description": "When true, the primary key tree uses a ProvableCountTree enabling range countable. Implies documentsCountable."
+    },
+    "documentsSummable": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "description": "Name of an integer document property aggregated into the primary-key SumTree (one sum per document type). Stores documents as `ItemWithSumItem` so the primary-key tree's root sum is the total of the named property across all docs of this type. Property must exist on the document type, be in `required`, and have an integer type. Composes with `documentsKeepHistory: true` — keep-history doctypes get a `SumTree` per-document subtree with a `ReferenceWithSumItem` on the `0`-key carrying the current version's value, so the doctype-level root aggregate reflects current versions only (historical versions don't double-count)."
+    },
+    "rangeSummable": {
+      "type": "boolean",
+      "description": "When true, the primary key tree uses a ProvableSumTree (or ProvableCountProvableSumTree paired with rangeCountable: true) enabling O(log n) range-sum queries over the primary axis. Requires `documentsSummable` to be set. Rarely useful — range-sum on the primary key with no where-clause filter is unusual; most callers want per-index `rangeSummable` instead. Set this only when you need a provable global range-sum tree."
+    },
+    "documentsAverageable": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "description": "Syntactic sugar: `documentsAverageable: \"<prop>\"` is shorthand for `documentsCountable: true` + `documentsSummable: \"<prop>\"`. Enables doctype-wide average queries (returns `(count, sum)` the client divides) without authors having to compose the count + sum flags. Same on-disk layout. If you set both `documentsAverageable` and `documentsSummable`, they must name the same property. Composes with `documentsKeepHistory: true` via the per-doc SumTree + ReferenceWithSumItem layout described under `documentsSummable`."
+    },
+    "rangeAverageable": {
+      "type": "boolean",
+      "description": "Syntactic sugar: `rangeAverageable: true` is shorthand for `rangeCountable: true` + `rangeSummable: true`. Requires `documentsAverageable` to be set. Same caveat as `rangeSummable` — rarely useful on the primary key; per-index `rangeAverageable` is what most callers want."
     },
     "tokenCost": {
       "type": "object",
@@ -683,20 +755,40 @@ Each document type defined within a data contract is validated against the docum
         "type": "string"
       }
     },
-    "keywords": {
-      "type": "array",
-      "description": "List of up to 20 descriptive keywords for the contract, used in the Keyword Search contract",
-      "items": {
-        "type": "string",
-        "minLength": 3,
-        "maxLength": 50
-      },
-      "maxItems": 20,
-      "uniqueItems": true
-    },
     "additionalProperties": {
       "type": "boolean",
       "const": false
+    },
+    "required": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "$comment": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "minProperties": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "maxProperties": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "dependentRequired": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "uniqueItems": true
+      }
     }
   },
   "required": [
@@ -704,14 +796,19 @@ Each document type defined within a data contract is validated against the docum
     "type",
     "properties",
     "additionalProperties"
-  ]
+  ],
+  "dependentRequired": {
+    "rangeSummable": ["documentsSummable"],
+    "rangeAverageable": ["documentsAverageable"]
+  },
+  "additionalProperties": false
 }
 ```
 
 :::
 
 :::{note}
-The `keywords` field appears at two levels with different limits. The document meta-schema above defines per-document-type keywords with a maximum of 20. The contract-level `keywords` field (shown in the [data contract object table](#data-contract-object)) has a separate maximum of 50 enforced by Rust validation.
+`keywords` is a contract-level field (shown in the [data contract object table](#data-contract-object)), with a maximum of 50 enforced by Rust validation. It is not a document-type property.
 :::
 
 ### Data Contract id

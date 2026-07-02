@@ -55,7 +55,7 @@ Each action publishes:
 | cvNet | array of bytes | 32 bytes | Net value commitment (Pedersen commitment to the action's value contribution) |
 | spendAuthSig | array of bytes | 64 bytes | Per-action spend authorization signature — see [Shielded Transition Signing](#shielded-transition-signing) |
 
-Permanent storage cost per action is [312 bytes](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-dpp/src/shielded/mod.rs#L34-L37) (280 bytes in the note commitment tree + 32 bytes in the nullifier tree).
+Permanent storage cost per action is [344 bytes](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-dpp/src/shielded/mod.rs#L32-L58) (312 bytes in the note commitment tree + 32 bytes in the nullifier tree).
 
 See the [serialized action implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-dpp/src/shielded/mod.rs).
 
@@ -146,6 +146,7 @@ Move credits from a Dash Core (L1) asset-lock transaction directly into the shie
 | anchor | array of bytes | 32 bytes | [Anchor](#anchors) |
 | proof | array of bytes | Varies | Halo 2 proof |
 | bindingSignature | array of bytes | 64 bytes | RedPallas binding signature |
+| surplusOutput | Platform address | Varies | (Optional) Platform address that receives the asset-lock surplus (`asset_lock_value − value_balance − fee`). When omitted, the surplus is added to the fee pools, capped at `shielded_implicit_fee_cap`. Bound to the ECDSA signature so it cannot be redirected |
 | signature | array of bytes | 65 bytes | ECDSA signature over the signable bytes proving control of the asset-locked output |
 
 :::{note}
@@ -198,7 +199,7 @@ See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.0
 
 ## Shielded Transition Signing
 
-Shielded transitions are not signed by an identity public key. The 65-byte `signature` and the `signaturePublicKeyId` fields listed in the [common fields](state-transition.md#common-fields) for identity-signed transitions do not appear on Unshield, Shielded Transfer, or Shielded Withdrawal. Authorization is instead carried by cryptographic primitives attached to the Orchard bundle and, where applicable, to the transparent side of the transition.
+Shielded transitions are not signed by an identity public key. The 65-byte `signature` and the `signaturePublicKeyId` fields listed in the [common fields](state-transition.md#common-fields) for identity-signed transitions do not appear on any shielded transition. Authorization is instead carried by cryptographic primitives attached to the Orchard bundle and, where applicable, to the transparent side of the transition.
 
 ### Orchard bundle signatures
 
@@ -209,7 +210,7 @@ Every shielded transition includes:
 
 ### Platform sighash
 
-Transitions that include transparent fields (Shield, Unshield, Shield from Asset Lock, Shielded Withdrawal) bind those fields to the Orchard bundle through the [platform sighash](#platform-sighash). Any modification to the transparent fields invalidates the Orchard signatures, preventing replay attacks that substitute transparent fields while reusing a valid bundle.
+Unshield, Shielded Withdrawal, and Identity Create From Shielded Pool bind their transparent fields to the Orchard bundle through the [platform sighash](#platform-sighash) (non-empty `extra_sighash_data`). Any modification to those transparent fields invalidates the Orchard signatures, preventing replay attacks that substitute transparent fields while reusing a valid bundle. Shield and Shield from Asset Lock use empty `extra_sighash_data`; their transparent side is authorized by address witnesses (Shield) or the asset-lock ECDSA signature (Shield from Asset Lock) over the signable bytes instead.
 
 ### Transparent signatures (Shield, Shield from Asset Lock)
 
