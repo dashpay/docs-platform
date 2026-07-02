@@ -5,7 +5,7 @@
 # Shielded Pool
 
 :::{attention}
-Shielded state transitions were [enabled in Protocol Version 12](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-platform-version/src/version/feature_initial_protocol_versions.rs#L4). They use the [Orchard](https://zips.z.cash/protocol/protocol.pdf) shielded protocol to move credits into, within, and out of a pool that hides amounts, senders, and recipients.
+Shielded state transitions were [enabled in Protocol Version 12](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-platform-version/src/version/feature_initial_protocol_versions.rs#L4). They use the [Orchard](https://zips.z.cash/protocol/protocol.pdf) shielded protocol to move credits into, within, and out of a pool that hides amounts, senders, and recipients.
 
 For the conceptual overview of how the pool works and when to use it, see [Shielded Pool](../explanations/shielded-pool.md).
 :::
@@ -37,7 +37,7 @@ Every shielded transition includes an Orchard bundle proving that a set of note 
 | proof | array of bytes | Varies | Halo 2 zero-knowledge proof that the actions are valid |
 | bindingSignature | array of bytes | 64 bytes | RedPallas signature binding the bundle's actions to its net value balance |
 
-See the [Orchard bundle primitives in rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/shielded/mod.rs).
+See the [Orchard bundle primitives in rs-dpp](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-dpp/src/shielded/mod.rs).
 
 ### Actions
 
@@ -54,9 +54,9 @@ Each action publishes:
 | cvNet | array of bytes | 32 bytes | Net value commitment (Pedersen commitment to the action's value contribution) |
 | spendAuthSig | array of bytes | 64 bytes | Per-action spend authorization signature — see [Shielded Transition Signing](#shielded-transition-signing) |
 
-Permanent storage cost per action is [312 bytes](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/shielded/mod.rs#L13-L16) (280 bytes in the note commitment tree + 32 bytes in the nullifier tree).
+Permanent storage cost per action is [312 bytes](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-dpp/src/shielded/mod.rs#L34-L37) (280 bytes in the note commitment tree + 32 bytes in the nullifier tree).
 
-See the [serialized action implementation in rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/shielded/mod.rs).
+See the [serialized action implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-dpp/src/shielded/mod.rs).
 
 ### Anchors
 
@@ -70,7 +70,7 @@ Transitions with transparent fields (Unshield, Shielded Withdrawal, etc.) bind t
 SHA-256(SIGHASH_DOMAIN || bundle_commitment || extra_data)
 ```
 
-This prevents replay attacks where an attacker substitutes transparent fields while reusing a valid Orchard bundle. See the [platform sighash implementation in rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/shielded/mod.rs#L20-L40).
+This prevents replay attacks where an attacker substitutes transparent fields while reusing a valid Orchard bundle. See the [platform sighash implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-dpp/src/shielded/sighash.rs#L21-L41).
 
 ## Shielded State Transition Details
 
@@ -94,7 +94,7 @@ Move credits from one or more [Platform addresses](address-system.md#platform-ad
 Maximum actions per transition: [`max_shielded_transition_actions`](protocol-constants.md). Address witness signatures are excluded from the signable bytes used by the platform sighash.
 :::
 
-See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/state_transition/state_transitions/shielded/shield_transition/).
+See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-dpp/src/state_transition/state_transitions/shielded/shield_transition/).
 
 ### Shielded Transfer
 
@@ -112,7 +112,7 @@ Move credits within the pool between notes. There is no transparent surface — 
 Maximum actions per transition: [`max_shielded_transition_actions`](protocol-constants.md).
 :::
 
-See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/state_transition/state_transitions/shielded/shielded_transfer_transition/).
+See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-dpp/src/state_transition/state_transitions/shielded/shielded_transfer_transition/).
 
 ### Unshield
 
@@ -131,7 +131,7 @@ Move credits from the pool to a [Platform address](address-system.md#platform-ad
 The `outputAddress` is bound to the Orchard bundle through the [platform sighash](#platform-sighash) to prevent substitution attacks. Maximum actions per transition: [`max_shielded_transition_actions`](protocol-constants.md).
 :::
 
-See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/state_transition/state_transitions/shielded/unshield_transition/).
+See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-dpp/src/state_transition/state_transitions/shielded/unshield_transition/).
 
 ### Shield from Asset Lock
 
@@ -151,7 +151,7 @@ Move credits from a Dash Core (L1) asset-lock transaction directly into the shie
 `valueBalance` must be greater than zero and at most `i64::MAX`. The ECDSA signature is excluded from the signable bytes used by the platform sighash. Maximum actions per transition: [`max_shielded_transition_actions`](protocol-constants.md).
 :::
 
-See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/state_transition/state_transitions/shielded/shield_from_asset_lock_transition/).
+See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-dpp/src/state_transition/state_transitions/shielded/shield_from_asset_lock_transition/).
 
 ### Shielded Withdrawal
 
@@ -172,7 +172,7 @@ Move credits from the pool back to Dash Core (L1). The funds leave Platform enti
 Transparent fields (`coreFeePerByte`, `pooling`, `outputScript`) are bound to the Orchard bundle through the [platform sighash](#platform-sighash). Maximum actions per transition: [`max_shielded_transition_actions`](protocol-constants.md).
 :::
 
-See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v3.1-dev/packages/rs-dpp/src/state_transition/state_transitions/shielded/shielded_withdrawal_transition/).
+See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-dpp/src/state_transition/state_transitions/shielded/shielded_withdrawal_transition/).
 
 ## Shielded Transition Signing
 
