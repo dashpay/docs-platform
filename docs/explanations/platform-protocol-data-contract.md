@@ -75,7 +75,7 @@ For more detailed information, see the [Platform Protocol Reference - Data Contr
 
 ## Example Contract
 
-The [DashPay contract](https://github.com/dashpay/platform/blob/master/packages/dashpay-contract/schema/dashpay.schema.json) is included below for reference. It defines a `contact` document and a `profile` document. Each of these documents then defines the properties and indices they require:
+The [DashPay contract](https://github.com/dashpay/platform/blob/master/packages/dashpay-contract/schema/v1/dashpay.schema.json) is included below for reference. It defines a `contactRequest` document, a `profile` document, and a `contactInfo` document. Each of these documents then defines the properties and indices they require:
 
 :::{dropdown} DashPay contract
   ```json

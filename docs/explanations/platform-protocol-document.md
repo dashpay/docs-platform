@@ -14,7 +14,7 @@ Documents are defined in an application's [Data Contract](../explanations/platfo
 
 ### Base Fields
 
-Dash Platform Protocol (DPP) defines a set of base fields that must be present in all documents. For the [reference implementation](https://github.com/dashpay/platform/tree/master/packages/rs-dpp), the base fields shown below are defined in the [document base schema](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/src/schema/document/v0/documentBase.json).
+Dash Platform Protocol (DPP) defines a set of base fields that must be present in all documents. For the [reference implementation](https://github.com/dashpay/platform/tree/master/packages/rs-dpp), the base fields shown below are defined in the [document base fields](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/src/document/fields.rs).
 
 | Field Name | Description |
 | - | - |

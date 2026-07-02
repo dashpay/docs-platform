@@ -290,9 +290,8 @@ When enabled, the authorized party can set the token price using a state transit
 
 ### Marketplace
 
-Token contracts already expose marketplace rules in their configuration, which declares a trade mode that governs how tokens may be traded on Platform. The currently supported trade modes are:
+Token contracts already expose marketplace rules in their configuration, which declares a trade mode that governs how tokens may be traded on Platform. The only trade mode currently defined is:
 
-- **`NotTradeable`** - the token cannot be traded on Platform (default).
-- **`TradeableOnMarketplace`** - the token is eligible for trading via Platform's marketplace mechanism.
+- **`NotTradeable`** - the token cannot be traded on Platform. This is the default and, at present, the only available value.
 
-The protocol-level marketplace rules are in place, but broader client tooling and user-facing marketplace experiences are expected to continue evolving in future releases.
+A dedicated marketplace trade mode is reserved for a future release. The protocol-level marketplace rules exist to support this, but the trade mode itself, along with broader client tooling and user-facing marketplace experiences, is expected to continue evolving in future releases.

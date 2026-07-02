@@ -18,6 +18,8 @@ Given a number of technical considerations (security, masternode processing capa
 
 Since all application data is submitted in the form of documents, data triggers are defined in the context of documents. To provide even more granularity, they also incorporate the document `action` so separate triggers can be created for the `CREATE`, `REPLACE`, or `DELETE` actions.
 
+Which trigger runs for a given contract, document type, and action is defined in the data trigger [binding list](https://github.com/dashpay/platform/blob/master/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/batch/data_triggers/bindings/list/v0/mod.rs). The trigger implementations linked in the tables below (for example the shared `reject` trigger) are generic and do not name the contracts that use them - the binding list is what associates each action with its trigger.
+
 As an example, DPP contains several [data triggers for DPNS](https://github.com/dashpay/platform/tree/master/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/batch/data_triggers/triggers/dpns). The `domain` document has added constraints for creation, replacing, deleting, transferring, purchasing, and updating prices:
 
 | Data Contract | Document | Action(s) | Trigger Description |
@@ -40,6 +42,6 @@ In addition to DPNS, DPP ships data triggers for a small set of other system con
 | - | - | - | - |
 | DashPay | `contactRequest` | [`CREATE`](https://github.com/dashpay/platform/tree/master/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/batch/data_triggers/triggers/dashpay) | Enforces DashPay-specific rules on outgoing contact requests |
 | ---- | ---- | ---- | ---- |
-| Withdrawals | `withdrawal` | [`CREATE`/`REPLACE`/`DELETE`](https://github.com/dashpay/platform/tree/master/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/batch/data_triggers/triggers/withdrawals) | Enforces withdrawal status transitions and prevents direct external mutation of withdrawal documents |
+| Withdrawals | `withdrawal` | [`REPLACE`/`DELETE`](https://github.com/dashpay/platform/tree/master/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/batch/data_triggers/triggers/withdrawals) | Enforces withdrawal status transitions and prevents direct external mutation of withdrawal documents |
 
 When document state transitions are received, DPP checks if there is a trigger associated with the document type and action. If a trigger is found, DPP executes the trigger logic. Successful execution of the trigger logic is necessary for the document to be accepted and applied to the [platform state](../explanations/drive-platform-state.md).
