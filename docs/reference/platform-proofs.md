@@ -37,6 +37,7 @@ consensus signature that authenticates it. It has six fields:
     "grovedbProof": "APsA/wGQtKE8gXoPHBaBJWO/39M63DsnEkx4Lah9...",
     "quorumHash": "AAAAN0ggLzkGuHl7bJM48baKuEs/b3rhSMSF5kIw14g=",
     "signature": "oc8EMH7WkoZhv06iPvP4HjTlleaRLOfDRvWg30hjXL3z83DpNigk1/8mZwC1jrEDFymkkftcoE+DcPhZu/R8wlP2yxWcWo+605lLqU/FIb29nOt0q6hUbuX+eZL39mdb",
+    "round": 0,
     "blockIdHash": "Eq24v2aaWwDXN41oCmduKOYnDRsvoAJwDk8BEHZRDaU=",
     "quorumType": 6
   }
@@ -47,7 +48,7 @@ consensus signature that authenticates it. It has six fields:
 
 Clients do not parse proofs manually. Verification is performed by the
 `rs-drive-proof-verifier` crate, which checks the quorum's BLS threshold signature (the
-Tenderdash consensus half) and decodes the unified `grovedb_proof` to recover the requested data
+Tenderdash consensus half) and decodes the unified `grovedbProof` to recover the requested data
 and the state root hash. This logic is exposed to JavaScript and browser clients through the
 `wasm-drive-verify` package, so the SDKs verify proofs automatically whenever one is requested.
 
