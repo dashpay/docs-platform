@@ -366,8 +366,8 @@ GetTransactionResponse {
   ],
   height: 416450,
   confirmations: 386421,
-  instantLocked: false,
-  chainLocked: true
+  isInstantLocked: false,
+  isChainLocked: true
 }
 ```
 :::

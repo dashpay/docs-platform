@@ -146,7 +146,7 @@ Layer 2 blockchain that propagates platform data among masternodes, propagates p
 
 ## Platform State
 
-All layer 2 data including contracts, documents (user data), credit balance, identity (username)
+All layer 2 data including contracts, documents (user data), tokens, groups, credit balance, identity (username), and masternode voting/contested resource state
 
 ## practical Byzantine Fault Tolerance (pBFT)
 
@@ -186,7 +186,7 @@ The application that validates state transitions and updates state in Drive
 
 ## State Transition
 
-The change a user does to the application and platforms states. Consists of an array of documents _or_ one data contract, the id of the application to which the change is made, and a user signature
+A signed change to platform state submitted by an identity. State transitions cover a range of operations, including data contract creation and updates, document and token changes (batched), identity lifecycle operations (create, top-up, update), credit transfers and withdrawals, and masternode voting (cast by masternode and evonode operators)
 
 ## Tenderdash
 

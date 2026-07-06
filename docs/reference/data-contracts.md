@@ -24,7 +24,7 @@ Data contracts define the schema (structure) of data an application will store o
 }
 :::
 
-The following sections provide details that developers need to configure and construct valid contracts. All data contracts must define one or more [documents](#documents) that conform to the [general data contract constraints](#general-constraints). Additionally, several contract-level [configuration parameters](#contract-configuration) can be set to modify the mutability, retention, and security behavior of the contract and its documents.
+The following sections provide details that developers need to configure and construct valid contracts. All data contracts must define at least one [document](#documents) or token, each conforming to the [general data contract constraints](#general-constraints). Additionally, several contract-level [configuration parameters](#contract-configuration) can be set to modify the mutability, retention, and security behavior of the contract and its documents.
 
 ## Contract Configuration
 
@@ -41,6 +41,14 @@ Data contracts support three categories of configuration options to provide flex
 | `documentsKeepHistory`<br>`ContractDefault`   | `false` | Sets the default behavior for whether documents keep history within the contract|
 | `documentsMutable`<br>`ContractDefault`       | `true`  | Sets the default mutability of documents within the contract |
 | `documentsCanBeDeleted`<br>`ContractDefault`  | `true`  | Sets the default behavior for whether documents within the contract can be deleted|
+
+Data contracts may also define the following top-level fields:
+
+| Contract field | Type | Description |
+|----------------|------|-------------|
+| `groups`       | object | (Optional) Groups that allow for specific multiparty actions on the contract. See [Data Contract groups](../protocol-ref/data-contract.md#data-contract-groups). |
+| `keywords`     | array of strings | (Optional) Keywords associated with the contract to improve searchability via the `search` system contract. Maximum of 50 unique keywords. |
+| `description`  | string | (Optional) Brief human-readable description of the contract (3-100 characters). Also added to the `search` system contract. |
 
 ## Key Management
 
@@ -105,6 +113,12 @@ Documents support the following configuration options to provide flexibility in 
 | [`requiresIdentity`<br>`DecryptionBoundedKey`](#key-management) | integer  | Key requirements for identity decryption:<br>`0` - Unique non-replaceable<br>`1` - Multiple<br>`2` - Multiple with reference to latest key |
 | `signatureSecurity`<br>`LevelRequirement`  | integer  | Public key security level:<br>`1` - Critical<br>`2` - High<br>`3` - Medium. Default is High if none specified. |
 
+Document types may also define a `tokenCost` object requiring token payment per operation. See [Token Costs](../protocol-ref/data-contract-document.md#token-costs) in the protocol reference for the full schema.
+
+:::{versionadded} 4.0.0
+Document types can opt into aggregate queries with the flags `documentsCountable`, `documentsSummable`, `documentsAverageable`, and their `range*` variants, which enable `COUNT`/`SUM`/`AVG` support. See [Aggregate Query Flags](../protocol-ref/data-contract-document.md#aggregate-query-flags) in the protocol reference for the full schema.
+:::
+
 :::{dropdown} List of all usable document properties
 
   This list of properties is defined in the [Rust DPP implementation](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/src/data_contract/document_type/mod.rs#L31) and the [document meta-schema](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json).
@@ -126,6 +140,13 @@ Documents support the following configuration options to provide flexibility in 
   | [`requiresIdentity`<br>`DecryptionBoundedKey`](#key-management) | integer  | Key requirements for identity decryption:<br>`0` - Unique non-replaceable<br>`1` - Multiple<br>`2` - Multiple with reference to latest key |
   | [`properties`](#document-properties) | object   | Defines the properties of the document. |
   | [`transient`](#transient-properties) | array    | An array of strings specifying transient properties that are validated by Platform but not stored. |
+  | `tokenCost`                          | object   | Defines token costs for document operations (create, replace, update_price, delete, transfer, purchase). See [Token Costs](../protocol-ref/data-contract-document.md#token-costs). |
+  | [`documentsCountable`](../protocol-ref/data-contract-document.md#aggregate-query-flags) | boolean | Doctype-wide count support. See [Aggregate Query Flags](../protocol-ref/data-contract-document.md#aggregate-query-flags). |
+  | [`rangeCountable`](../protocol-ref/data-contract-document.md#aggregate-query-flags) | boolean | Per-index range counts. See [Aggregate Query Flags](../protocol-ref/data-contract-document.md#aggregate-query-flags). |
+  | [`documentsSummable`](../protocol-ref/data-contract-document.md#aggregate-query-flags) | string | Doctype-wide sums of the named integer property. See [Aggregate Query Flags](../protocol-ref/data-contract-document.md#aggregate-query-flags). |
+  | [`rangeSummable`](../protocol-ref/data-contract-document.md#aggregate-query-flags) | boolean | Per-index range sums. See [Aggregate Query Flags](../protocol-ref/data-contract-document.md#aggregate-query-flags). |
+  | [`documentsAverageable`](../protocol-ref/data-contract-document.md#aggregate-query-flags) | string | Doctype-wide averages of the named integer property. See [Aggregate Query Flags](../protocol-ref/data-contract-document.md#aggregate-query-flags). |
+  | [`rangeAverageable`](../protocol-ref/data-contract-document.md#aggregate-query-flags) | boolean | Per-index range averages. See [Aggregate Query Flags](../protocol-ref/data-contract-document.md#aggregate-query-flags). |
   | [`additionalProperties`](#additional-properties) | boolean  | Specifies whether additional properties are allowed. Must be set to false, meaning no additional properties are allowed beyond those defined. |
 :::
 
@@ -247,7 +268,7 @@ The `indices` array consists of one or more objects that each contain:
   :::
 * An optional `unique` element that determines if duplicate values are allowed for the document
 * An optional `nullSearchable` element that indicates whether the index allows searching for NULL values. If nullSearchable is false (default: true) and all properties of the index are null then no reference is added.
-* An optional `contested` element that determines if duplicate values are allowed for the document
+* An optional `contested` element that configures a masternode-voting contest over documents whose field values match a defined pattern (see [Contested indices](#contested-indices)). It is an object composed of `fieldMatches` (field and `regexPattern` conditions) and a `resolution` method.
 
 :::{code-block} json
 :force:
@@ -256,8 +277,8 @@ The `indices` array consists of one or more objects that each contain:
   {
     "name": "<index name a>",
     "properties": [
-      { "<field name a>": "<asc"|"desc>" },
-      { "<field name b>": "<asc"|"desc>" }
+      { "<field name a>": "asc" },
+      { "<field name b>": "asc" }
     ],
     "unique": true|false,
     "nullSearchable": true|false,
@@ -274,7 +295,7 @@ The `indices` array consists of one or more objects that each contain:
   {
     "name": "<index name b>",
     "properties": [
-      { "<field name c>": "<asc"|"desc>" },
+      { "<field name c>": "asc" },
     ],
   }
 ]
@@ -377,7 +398,7 @@ This example syntax shows the structure of a document object including all optio
       {
         "name": "<index name>",
         "properties": [
-          { "<property name c>": "<asc"|"desc>" },
+          { "<property name c>": "asc" },
         ], 
         "unique": true|false,
         "nullSearchable": true|false,
