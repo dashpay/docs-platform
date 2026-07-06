@@ -47,7 +47,7 @@ Dash Platform Name Service (DPNS).
 :::{dropdown} How can I register a name?
 
 Currently, names can be registered using the [DashPay Android wallet](https://play.google.com/store/apps/details?id=hashengineering.darkcoin.wallet).
-Developers and other technical users may want to experiment with registering names using the [Dash Evo Tool](https://github.com/dashpay/dash-evo-tool) or the [JavaScript SDK](https://docs.dash.org/projects/platform/en/stable/docs/tutorials/identities-and-names/register-a-name-for-an-identity.html).
+Developers and other technical users may want to experiment with registering names using the [Dash Evo Tool](https://github.com/dashpay/dash-evo-tool) or the [JavaScript SDK](../tutorials/identities-and-names/register-a-name-for-an-identity.md).
 :::
 
 ::::{dropdown} Can I register multiple names?
@@ -113,7 +113,7 @@ example, once "Alice" is registered, none of the following will be available:
 
 Any name meeting the following criteria is considered premium:
 
-* Less than 20 characters long (i.e. "alice", "quantumexplorer") AND
+* Between 3 and 19 characters long (i.e. "alice", "quantumexplorer") AND
 * Contain no numbers or only contain the number(s) 0 and/or 1 (i.e. "bob", "carol01")
 
 These names require a two-week waiting period during which masternodes and evonodes vote to
@@ -123,7 +123,8 @@ pay a 0.2 DASH name request fee.
 
 :::{dropdown} What happens if no one votes for a contested username request?
 
-If no one votes, the first identity requesting the name will receive it.
+If no one votes, a single uncontested request receives the name. If multiple identities requested
+it, the winner is resolved deterministically by the protocol (based on document creation order).
 :::
 
 :::{dropdown} How do I prove my identity if requesting a contested name?
@@ -145,14 +146,15 @@ not be awarded to the person requesting it. Some examples of names that may be l
 
 :::{dropdown} Can locked names be requested by someone else later?
 
-Locked names can no longer be requested or awarded in Dash Platform v1. The plan is to change this
+Locked names can no longer be requested or awarded in Dash Platform. The plan is to change this
 in future updates, but the exact details have not been defined.
 :::
 
 :::{dropdown} What happens if there is a tie vote?
 
-If there is a tie, the first identity requesting the name will receive it. This applies even if
-there is a tie between votes for an identity and votes to lock the name.
+If there is a tie, the name is awarded deterministically by the protocol (based on document
+creation order) rather than to whoever requested it first. If there is a tie between votes for an
+identity and votes to lock the name, the identity receives the name.
 :::
 
 :::{dropdown} Can usernames be transferred?
@@ -188,7 +190,7 @@ multiple usernames.
 
 :::{tip}
 See the [DashPay page](../explanations/dashpay.md) and the [DashPay
-DIP](https://github.com/dashpay/dips/blob/master/dip-0015.md) for additional information on the Dash Platform Name Service (DPNS).
+DIP](https://github.com/dashpay/dips/blob/master/dip-0015.md) for additional information on DashPay.
 :::
 
 :::{dropdown} Can someone tell when Dash is sent from one username to another?
