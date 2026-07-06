@@ -149,6 +149,7 @@ explanations/query
 reference/dapi-endpoints
 reference/query-syntax
 reference/data-contracts
+reference/platform-proofs
 reference/glossary
 ```
 
