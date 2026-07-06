@@ -443,4 +443,4 @@ This example syntax shows the structure of a documents object that defines two d
 
 ## Document Schema
 
-See full document schema details in the [rs-dpp document meta schema](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json).
+See full document schema details in the [rs-dpp document meta schema](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-dpp/schema/meta_schemas/document/v1/document-meta.json).

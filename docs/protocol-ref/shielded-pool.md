@@ -82,7 +82,7 @@ Move credits from one or more [Platform addresses](address-system.md#platform-ad
 | Field | Type | Size | Description |
 | --- | --- | --- | --- |
 | inputs | map | Varies | Map of source [Platform addresses](address-system.md#platform-address) to (`AddressNonce`, max contribution in credits) pairs |
-| actions | array | Varies | Orchard [actions](#actions) (output-only — Shield creates new notes without consuming prior ones) |
+| actions | array | Varies | Orchard [actions](#actions) (spend-output pairs). Shield brings value in from the transparent inputs, so its actions create new notes rather than consuming prior pool notes |
 | amount | unsigned integer | 64 bits | Credits entering the shielded pool |
 | anchor | array of bytes | 32 bytes | [Anchor](#anchors) |
 | proof | array of bytes | Varies | Halo 2 proof |
@@ -199,7 +199,7 @@ See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.0
 
 ## Shielded Transition Signing
 
-Shielded transitions are not signed by an identity public key. The 65-byte `signature` and the `signaturePublicKeyId` fields listed in the [common fields](state-transition.md#common-fields) for identity-signed transitions do not appear on any shielded transition. Authorization is instead carried by cryptographic primitives attached to the Orchard bundle and, where applicable, to the transparent side of the transition.
+Shielded transitions are not signed by an identity public key. The identity-signed `signature` and `signaturePublicKeyId` fields listed in the [common fields](state-transition.md#common-fields) for identity-signed transitions do not appear on any shielded transition. Authorization is instead carried by cryptographic primitives attached to the Orchard bundle and, where applicable, to the transparent side of the transition. This includes the asset-lock ECDSA `signature` carried by [Shield from Asset Lock](#shield-from-asset-lock) described below.
 
 ### Orchard bundle signatures
 

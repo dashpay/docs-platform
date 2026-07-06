@@ -17,7 +17,7 @@ State transition fees are paid via the credits established when an identity is c
 
 ### Size
 
-State transitions are limited to a maximum size of [20 KB](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-platform-version/src/version/system_limits/v1.rs#L6).
+State transitions are limited to a maximum size of [20 KiB / 20,480 bytes](https://github.com/dashpay/platform/blob/v4.0.0/packages/rs-platform-version/src/version/system_limits/v1.rs#L6).
 
 ### Common Fields
 
