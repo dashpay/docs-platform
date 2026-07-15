@@ -10,10 +10,10 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: edit-pull-request-description
-        uses: Jerome1337/comment-pull-request@v1.0.4
+        uses: Jerome1337/comment-pull-request@77a1932e3cac02d55e5b9ce108607aaea45663a8 # v1.0.4
 
         env:
           GITHUB_TOKEN: ${{ github.token }}
