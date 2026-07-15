@@ -24,6 +24,10 @@ The JavaScript SDK package is available from npmjs.com and can be installed by r
 npm install @dashevo/evo-sdk
 ```
 
+:::{tip}
+Want to try the SDK before installing anything? The [Evo SDK Playground](https://evo-sdk.dash.org/playground) runs queries adapted from these tutorials directly in your browser.
+:::
+
 ### 2. Connect to Dash Platform
 
 Create a file named `connect.mjs` with the following contents. Then run it by typing `node connect.mjs` from the command line:
@@ -43,7 +47,7 @@ try {
 }
 ```
 
-Once this returns successfully, you're ready to begin developing! See the [Quickstart](../tutorials/introduction.md#quickstart) for recommended next steps. For details on SDK methods, please refer to the [SDK documentation](https://dashpay.github.io/evo-sdk-website/docs.html).
+Once this returns successfully, you're ready to begin developing! See the [Quickstart](../tutorials/introduction.md#quickstart) for recommended next steps. For details on SDK methods, please refer to the [SDK documentation](https://evo-sdk.dash.org/docs.html).
 
 ## Connect to a Local Devnet
 

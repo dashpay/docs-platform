@@ -19,7 +19,7 @@ The tutorials in this section are written in JavaScript and use [Node.js](https:
 ## Quickstart
 
 :::{tip}
-You can clone a repository containing the code for all tutorials from <a href="https://github.com/dashpay/platform-readme-tutorials#readme" target="_blank">GitHub</a> or download it as a [zip file](https://github.com/dashpay/platform-readme-tutorials/archive/refs/heads/main.zip).
+You can clone a repository containing the code for all tutorials from <a href="https://github.com/dashpay/platform-readme-tutorials#readme" target="_blank">GitHub</a> or download it as a [zip file](https://github.com/dashpay/platform-readme-tutorials/archive/refs/heads/main.zip). Or, use the [Evo SDK playground](https://evo-sdk.dash.org/playground) to instantly experiment with tutorial queries -- no local setup required.
 :::
 
 While going through each tutorial is advantageous, the subset of tutorials listed below get you from a start to storing data on Dash Platform most quickly:
@@ -29,6 +29,10 @@ While going through each tutorial is advantageous, the subset of tutorials liste
 - [Registering an Identity](../tutorials/identities-and-names/register-an-identity.md)
 - [Registering a Data Contract](../tutorials/contracts-and-documents/register-a-data-contract.md)
 - [Submitting data](../tutorials/contracts-and-documents/submit-documents.md)
+
+## Try it in the browser
+
+See the [Evo SDK site](https://evo-sdk.dash.org/) run queries against live networks, experiment with the [code playground](https://evo-sdk.dash.org/playground), or view [SDK documentation](https://evo-sdk.dash.org/docs.html) and an AI reference.
 
 ## Example apps
 

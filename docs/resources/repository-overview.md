@@ -23,6 +23,8 @@ layout can change over time, so treat the monorepo as the source of truth.
 | [rs-sdk-ffi](https://github.com/dashpay/platform/tree/master/packages/rs-sdk-ffi) / [swift-sdk](https://github.com/dashpay/platform/tree/master/packages/swift-sdk) | Shared components used for Swift and other native integrations |
 | [wasm-sdk](https://github.com/dashpay/platform/tree/master/packages/wasm-sdk) | WebAssembly-oriented bindings for browser and hybrid environments |
 
+The [Evo SDK site](https://evo-sdk.dash.org/) hosts developer-facing tooling for the JavaScript SDK: an interactive [playground](https://evo-sdk.dash.org/playground.html) that runs read-only queries in the browser against testnet, [SDK documentation](https://evo-sdk.dash.org/docs.html), and an AI reference.
+
 ## Platform and Supporting Repositories
 
 These run on the network and process data.

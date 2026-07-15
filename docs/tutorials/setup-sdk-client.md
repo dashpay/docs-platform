@@ -9,10 +9,12 @@ tutorials.
 
 ## Code
 
-Save the following two modules side-by-side — <a href="https://github.com/dashpay/platform-tutorials/blob/main/setupDashClient-core.mjs" target="_blank">setupDashClient-core.mjs</a> and
-<a href="https://github.com/dashpay/platform-tutorials/blob/main/setupDashClient.mjs" target="_blank">setupDashClient.mjs</a> — in the same directory. Later Node tutorials import from
-`setupDashClient.mjs`; browser apps can import from `setupDashClient-core.mjs`
-directly.
+Save the following two modules side-by-side — <a
+href="https://github.com/dashpay/platform-tutorials/blob/main/setupDashClient-core.mjs"
+target="_blank">setupDashClient-core.mjs</a> and <a
+href="https://github.com/dashpay/platform-tutorials/blob/main/setupDashClient.mjs"
+target="_blank">setupDashClient.mjs</a> — in the same directory. Later Node tutorials import from
+`setupDashClient.mjs`; browser apps can import from `setupDashClient-core.mjs` directly.
 
 :::{important}
 After saving, open `setupDashClient.mjs` (the wrapper) and set your mnemonic in

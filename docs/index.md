@@ -179,13 +179,14 @@ protocol-ref/errors
 :hidden:
 
 resources/faq
-resources/repository-overview
 Dash Platform Monorepo <https://github.com/dashpay/platform>
-Dash Platform Book <https://dashpay.github.io/platform/>
+resources/repository-overview
 Platform Bridge <https://bridge.thepasta.org/>
 Platform Explorer <https://platform-explorer.com/>
 Testnet Block Explorer <https://insight.testnet.networks.dash.org/insight/>
 Testnet Faucet <https://faucet.testnet.networks.dash.org/>
+Evo SDK Playground <https://evo-sdk.dash.org/playground>
+Dash Platform Book <https://dashpay.github.io/platform/>
 Previous Version of Docs <https://docs.dash.org/projects/platform/en/2.0.0/docs/>
 ```
 
