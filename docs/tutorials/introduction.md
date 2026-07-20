@@ -32,7 +32,7 @@ While going through each tutorial is advantageous, the subset of tutorials liste
 
 ## Try it in the browser
 
-See the [Evo SDK site](https://evo-sdk.dash.org/) run queries against live networks, experiment with the [code playground](https://evo-sdk.dash.org/playground), or view [SDK documentation](https://evo-sdk.dash.org/docs.html) and an AI reference.
+Visit the [Evo SDK site](https://evo-sdk.dash.org/) to run queries against live networks, experiment with the [code playground](https://evo-sdk.dash.org/playground), or view [SDK documentation](https://evo-sdk.dash.org/docs.html) and an AI reference.
 
 ## Example apps
 
