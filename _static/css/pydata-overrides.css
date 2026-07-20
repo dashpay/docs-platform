@@ -151,6 +151,24 @@ tbody tr:nth-child(even) { background-color: var(--table-bg-color-even); }
   border-color: var(--pst-color-primary)
 }
 
+/* Zoom example-app screenshots while keeping the preview viewport unchanged.
+   A 1.4x scale displays roughly half of the source image area. */
+.example-app-card .sd-card-img-top {
+  height: 18rem;
+  object-fit: cover;
+  object-position: left top;
+  transform: scale(1.4);
+  transform-origin: left top;
+  clip-path: inset(0 28.572% 28.572% 0);
+}
+
+@media (max-width: 767.98px) {
+  .example-app-card .sd-card-img-top {
+    height: 75vw;
+    max-height: 28rem;
+  }
+}
+
 /* These are hacks to hide the pydata-theme search popup behind the readthedocs
 sphinx search extension interface.
 */

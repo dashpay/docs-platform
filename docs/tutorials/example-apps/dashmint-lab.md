@@ -6,6 +6,13 @@
 
 [DashMint Lab](https://dashpay.github.io/platform-tutorials/dashmint-lab/) is a React + TypeScript + Vite single-page app that exercises every Dash Platform NFT operation: mint, transfer, price, purchase, burn, and query. Minting is gated by a fixed-supply DashMint token, so the walkthrough also shows how token balances, token transfers, and token-paid document creation fit into a real UI.
 
+```{button-link} https://dashpay.github.io/platform-tutorials/dashmint-lab/
+:color: primary
+:shadow:
+
+Try DashMint Lab live
+```
+
 ![DashMint Lab - Collection](./img/dashmint-collection.png)
 
 ## What this app does

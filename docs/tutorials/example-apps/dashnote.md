@@ -6,6 +6,13 @@
 
 [Dashnote](https://dashpay.github.io/platform-tutorials/dashnote/) is a React + TypeScript + Vite single-page app that demonstrates full mutable-document CRUD on Dash Platform. Users log in with a BIP-39 mnemonic, create notes with an optional title and required message body, edit and delete their own notes, and browse any identity's notes in read-only mode without credentials.
 
+```{button-link} https://dashpay.github.io/platform-tutorials/dashnote/
+:color: primary
+:shadow:
+
+Try Dashnote live
+```
+
 Where [DashMint Lab](dashmint-lab.md) covers the NFT-shaped operations (mint, transfer, price, purchase, burn), Dashnote covers the everyday document lifecycle: create, query, update, delete — plus the **fetch-then-bump-revision** pattern that every Platform document update has to follow.
 
 ![Dashnote](./img/dashnote.png)
