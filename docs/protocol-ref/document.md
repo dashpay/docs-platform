@@ -83,7 +83,7 @@ fn generate(&self) -> anyhow::Result<[u8; 32]> {
 
 #### Document Transition Action
 
-Document transition actions indicate what operation platform should perform with the provided transition data. Documents provide CRUD functionality, ownership transfer, and NFT features as [defined in rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_transition_action_type.rs#L6-L14).
+Document transition actions indicate what operation platform should perform with the provided transition data. Documents provide CRUD functionality, ownership transfer, and NFT features as [defined in rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_transition_action_type.rs#L6-L14). The Action column is the enum index. In the JSON form, `$action` carries the camelCase name instead: `create`, `replace`, `delete`, `transfer`, `purchase`, `updatePrice`, or `indexOnlyDelete`.
 
 | Action | Name | Description |
 | :-: | - | - |
@@ -94,6 +94,7 @@ Document transition actions indicate what operation platform should perform with
 | 4 | [Purchase](#document-purchase-transition) | Purchase the referenced document |
 | 5 | [Update price](#document-update-price-transition) | Update the price for the document |
 | 6 | IgnoreWhileBumpingRevision | Internal action type used to bypass revision bump |
+| 7 | [Index-only delete](#document-index-only-delete-transition) | Delete an [indexOnly](../reference/data-contracts.md#indexonly-document-types) document by its property values. Only valid for document types with `indexOnly` set (protocol version 14+). JSON `$action` value: `indexOnlyDelete`. |
 
 ### Document Create Transition
 
@@ -115,7 +116,7 @@ The following example document create transition and subsequent table demonstrat
 
 ```json
 {
-  "$action": 0,
+  "$action": "create",
   "$dataContractId": "5wpZAEWndYcTeuwZpkmSa8s49cHXU5q2DhdibesxFSu8",
   "$id": "6oCKUeLVgjr7VZCyn1LdGbrepqKLmoabaff5WQqyTKYP",
   "$type": "note",
@@ -153,7 +154,7 @@ The following example document replace transition and subsequent table demonstra
 
 ```json
 {
-  "$action": 1,
+  "$action": "replace",
   "$dataContractId": "5wpZAEWndYcTeuwZpkmSa8s49cHXU5q2DhdibesxFSu8",
   "$id": "6oCKUeLVgjr7VZCyn1LdGbrepqKLmoabaff5WQqyTKYP",
   "$type": "note",
@@ -209,6 +210,31 @@ The document update price transition allows a document owner to set or update th
 
 Each document update price transition must comply with the structure defined in [rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_update_price_transition/v0/mod.rs#L28-L35) (in addition to the [document base transition](#document-base-transition) that is required for all document transitions).
 
+### Document Index-Only Delete Transition
+
+:::{versionadded} 4.2.0
+:::
+
+The document index-only delete transition deletes a document of an [indexOnly](../reference/data-contracts.md#indexonly-document-types) document type. These documents have no stored row to look up by id, so the transition carries the document's property values instead. Platform recomputes every index entry from those values and the signer's identity as owner, then removes the entries.
+
+In JSON, the document's property values are flattened into the transition object alongside the [document base transition](#document-base-transition) fields; there is no enclosing `data` property. Internally, rs-dpp collects the property values in a `data` map. The supplied values must match those used when the document was created.
+
+```json
+{
+  "$action": "indexOnlyDelete",
+  "$dataContractId": "5wpZAEWndYcTeuwZpkmSa8s49cHXU5q2DhdibesxFSu8",
+  "$id": "6oCKUeLVgjr7VZCyn1LdGbrepqKLmoabaff5WQqyTKYP",
+  "$identityContractNonce": 1,
+  "$type": "like",
+  "postId": "BwW4XJHcVsfRbqdMUK5hWaz2WYLxVjVQFzXyWj6YV2R",
+  "hashtag": "dash"
+}
+```
+
+The transition has no `$revision` or `$entropy` field. It is rejected for document types without `indexOnly`; those are deleted with the [delete transition](#document-delete-transition).
+
+Each document index-only delete transition must comply with the structure defined in [rs-dpp](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_index_only_delete_transition/v0/mod.rs#L37-L45) (in addition to the [document base transition](#document-base-transition) that is required for all document transitions).
+
 ## Document Object
 
 The document object represents the data provided by the platform in response to a query. Responses consist of an array of these objects containing the following fields as defined in the Rust reference client ([rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/document/v0/mod.rs#L37-L101)):
@@ -230,6 +256,7 @@ The document object represents the data provided by the platform in response to 
 | $updatedAt<br>CoreBlockHeight | unsigned integer (32 bits) | No |Core block height at the document's last update, if required by the schema |
 | $transferredAt<br>CoreBlockHeight | unsigned integer (32 bits) | No |Core block height when document was last transferred, if required by the schema |
 | $creatorId | array | No | Identity of the document creator (32 bytes), if required by the document type schema |
+| $contractVersion | unsigned integer (32 bits) | No | Data contract version the document's stored bytes conform to. Set by platform on create and replace and kept on transfer and purchase. Present when the document type uses `requiredSince`; absent for documents stored before this field existed. |
 
 ### Example Document Object
 

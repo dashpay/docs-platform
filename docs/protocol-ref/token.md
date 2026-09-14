@@ -39,7 +39,7 @@ The following fields are included in all token transitions:
 | $tokenContractPosition | unsigned integer | 16 bits | Position of the token within the contract |
 | $dataContractId | array | 32 bytes | Data contract ID [generated](../protocol-ref/data-contract.md#data-contract-id) from the data contract's `ownerId` and `entropy` |
 | [$tokenId](#token-id) | array | 32 bytes | Token ID generated from the data contract ID and the token position |
-| usingGroupInfo | [GroupStateTransitionInfo object](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/group/mod.rs#L45-L54) | Varies | Optional field indicating group multi-party authentication rules. Since protocol version 13, a transition confirming an existing group action must carry the same `$dataContractId` and `$tokenContractPosition` as the original proposal; deviation is rejected. |
+| $groupContractPosition<br>$groupActionId<br>$groupActionIsProposer | unsigned integer<br>array<br>boolean | 16 bits<br>32 bytes<br>- | Optional group multi-party authentication info, flattened from [GroupStateTransitionInfo](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/group/mod.rs#L45-L54) so the three fields appear at the top level of the transition. All three are present together or absent together. Since protocol version 13, a transition confirming an existing group action must carry the same `$dataContractId` and `$tokenContractPosition` as the original proposal. |
 
 Each token transition must comply with the [token base transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_base_transition/v0/mod.rs#L45-L63).
 
@@ -160,7 +160,7 @@ The token claim transition extends the [base transition](#token-base-transition)
 
 | Field | Type | Size | Description |
 | ----- | ---- | ---- | ----------- |
-| distributionType | [TokenDistributionType enum](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/data_contract/associated_token/token_distribution_key.rs#L18-L25) | Varies | Type of [token distribution](../explanations/tokens.md#distribution-rules) targeted (`0` = PreProgrammed, `1` = Perpetual) |
+| distributionType | [TokenDistributionType enum](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/data_contract/associated_token/token_distribution_key.rs#L18-L25) | Varies | Type of [token distribution](../explanations/tokens.md#distribution-rules) targeted (binary `0` = PreProgrammed, `1` = Perpetual; JSON `"PreProgrammed"` or `"Perpetual"`) |
 | publicNote | string | [<= 2048 bytes](#token-notes) | Optional public note (only saved for historical contracts) |
 
 Each token claim transition must comply with the [token claim transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_claim_transition/v0/mod.rs#L21-L29).
@@ -171,7 +171,7 @@ The token emergency action transition extends the [base transition](#token-base-
 
 | Field | Type | Size | Description |
 | ----- | ---- | ---- | ----------- |
-| emergencyAction | [TokenEmergencyAction enum](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/tokens/emergency_action.rs#L14-L18) | Varies | The emergency action to be executed (`0` = Pause, `1` = Resume) |
+| emergencyAction | [TokenEmergencyAction enum](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/tokens/emergency_action.rs#L14-L18) | Varies | The emergency action to be executed (binary `0` = Pause, `1` = Resume; JSON `"pause"` or `"resume"`) |
 | publicNote | string | [<= 2048 bytes](#token-notes) | Optional public note |
 
 Each token emergency action transition must comply with the [token emergency action transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_emergency_action_transition/v0/mod.rs#L19-L27).
@@ -229,7 +229,7 @@ Each token set purchase price transition must comply with the [token set purchas
 
 ### Token Purchase Transition
 
-The token purchase transition transfers a specified number of tokens to the purchasing identity. Platform simultaneously deducts the corresponding purchase cost in credits from the buyer’s balance as part of the state transition. A purchase must be accompanied by a credit transfer to the token seller’s identity in the same batch. If direct purchase history is enabled for the token, platform will create a record of this sale in the token’s history.
+The token purchase transition mints the requested number of tokens to the purchasing identity. Platform simultaneously deducts the corresponding purchase cost in credits from the buyer’s balance as part of the state transition. The credits are moved from the purchaser to the contract owner by the purchase transition itself; no separate credit transfer is needed. Purchases that would push the total supply above `maxSupply` are rejected. If direct purchase history is enabled for the token, platform will create a record of this sale in the token’s history.
 
 Attempts to purchase tokens when no price is set, when providing insufficient payment, or below the minimum amount will be rejected by platform consensus.
 

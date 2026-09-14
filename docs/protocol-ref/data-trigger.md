@@ -75,6 +75,8 @@ In addition to DPNS, the following system contracts have registered data trigger
 | Document         | Action   | Trigger Description                              |
 | ---------------- | -------- | ------------------------------------------------ |
 | `contactRequest` | `CREATE` | Validates contact request fields and permissions |
+| `profile` | `CREATE` | Rejects `corePaymentAddress` or `platformPaymentAddress` values whose first byte is not `0x00` (P2PKH) or `0x01` (P2SH) (protocol version 14+) |
+| `profile` | `REPLACE` | Same payment address type byte check as `CREATE` (protocol version 14+) |
 
 **Masternode Rewards**
 

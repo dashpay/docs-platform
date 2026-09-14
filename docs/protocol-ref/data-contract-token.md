@@ -123,7 +123,7 @@ Token configuration controls behavioral aspects of token operations, including s
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `description` | string | Optional text describing the token's purpose or behavior (3–100 characters) |
+| `description` | string | Optional text describing the token's purpose or behavior |
 
 ### Supply Management
 
@@ -288,6 +288,8 @@ The `distributionType` field accepts one of three schedule types:
 | `EpochBasedDistribution` | `epochBasedDistribution` | Epochs | Emits tokens every N epochs. By default begins at the epoch of the block when the data contract is registered. Distribution happens at the start of the following epoch. Required when using `EvonodesByParticipation` as the distribution recipient. |
 
 Each type wraps an `interval` (the period length) and a `function` (the emission pattern from the options below). There is no separate `start` field on the distribution type; the schedule begins at contract registration by default and a later start can be set through the function's start offset parameter (`start_step`, `start_moment`, or `start_decreasing_offset`, depending on the function).
+
+The `interval` has a network specific minimum, checked when the contract is registered or updated. Block based intervals must be at least 100 blocks on mainnet (5 on testnet, 2 on devnet, 1 on regtest). Time based intervals must be at least 3,600,000 ms (1 hour) on mainnet (600,000 ms on testnet, 60,000 ms on devnet and regtest) and must be a multiple of 60,000 ms. Epoch based intervals have no minimum.
 
 #### Perpetual Distribution Options
 
@@ -609,6 +611,21 @@ Parameter sign types vary by function: `a` is unsigned (u64) for `Exponential` b
 The **Default** column shows typical values rather than code-enforced defaults. In the underlying structs, `a`, `b`, `d`, `m`, `n`, and `o` are required fields with no default — they must be supplied for the functions that use them. Only the start offset (`s`) and the emission bounds (`min_value`, `max_value`) are optional; the start offset defaults to contract registration.
 :::
 
+### Parameter Bounds
+
+Contract registration validates each function's parameters. Where a bound applies, the largest allowed value is 281,474,976,710,655 (2^48 - 1); this caps the emitted amounts, the start offset (`s`), the offset `o` (as an absolute value), `max_value`, and the constant term `b` for the exponential, logarithmic, and inverted logarithmic functions. Divisors (`d`, `n`, `decrease_per_interval_denominator`, `step_count`) may not be zero, and `min_value` may not exceed `max_value`.
+
+| Function | Enforced bounds |
+| - | - |
+| `fixedAmount` | `amount` from 1 to 2^48 - 1 |
+| `stepDecreasingAmount` | `distribution_start_amount` from 1 to 2^48 - 1 and at least `min_value`; `trailing_distribution_interval_amount` <= `distribution_start_amount`; `decrease_per_interval_numerator` > 0 and < `decrease_per_interval_denominator`; `max_interval_count` from 2 to 1024 when set |
+| `stepwise` | at least 2 steps |
+| `linear` | `a` from -255 to 256, not 0 |
+| `polynomial` | `a` from -32766 to 32767, not 0; `m` from -8 to 8, not 0; `n` from 1 to 32; `n` may not equal `m` when `m` > 0 |
+| `exponential` | `a` from 1 to 256; `m` from -8 to 8, not 0; `n` from 1 to 32; `max_value` required when `m` > 0 |
+| `logarithmic` | `a` from -32766 to 32767, not 0; `m` from 1 to 2^48 - 1; `(x - s + o)` must be greater than 0 at the start |
+| `invertedLogarithmic` | `a` from -32766 to 32767, not 0; `m` greater than 0; `n` greater than 0; `(x - s + o)` must be greater than 0 at the start |
+
 ### Distribution Recipients
 
 | Recipient | JSON value | Description |
@@ -627,10 +644,12 @@ For performance and security reasons, tokens have the following constraints:
 
 ### General Constraints
 
+The keyword and description limits below apply to the data contract that holds the tokens, not to each token.
+
 | Parameter | Value |
 |-----------|-------|
 | Maximum number of keywords | [50](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/data_contract/methods/validate_update/v0/mod.rs#L272-L277) |
-| Keyword length | [3 to 50 characters](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/data_contract/methods/validate_update/v0/mod.rs#L279-L287) |
+| Keyword length | [3 to 50 bytes](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/data_contract/methods/validate_update/v0/mod.rs#L279-L287) |
 | Description length | [3 to 100 characters](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/data_contract/methods/validate_update/v0/mod.rs#L312-L323) |
 | Maximum note length | [2048 bytes](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/tokens/mod.rs#L19) |
 | Maximum number of tokens per contract | Only limited by [maximum contract size](./data-contract.md#data-size) |

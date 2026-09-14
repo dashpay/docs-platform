@@ -101,6 +101,24 @@ The following example (excerpt from the DPNS contract's `domain` document) demon
 ]
 ```
 
+#### Adding required properties in a contract update
+
+:::{versionadded} 4.2.0
+:::
+
+A contract update may add a property to `required` only if the property also sets `requiredSince` to the contract version from which it is required. The value is an integer from 1 to 4294967295 and may not exceed the version of the contract that carries it. `requiredSince` is allowed only on top-level properties that are listed in `required`.
+
+```json
+"properties": {
+  "avatarUrl": {
+    "type": "string",
+    "maxLength": 2048,
+    "position": 3,
+    "requiredSince": 2
+  }
+}
+```
+
 ### Transient Properties
 
 Each document may have transient fields that require validation but do not need to be stored by the system once validated. Transient fields are defined in the `transient` array. Only include the `transient` object for documents with at least one transient property.
@@ -114,6 +132,23 @@ The following example (from the [DPNS contract's `domain` document](https://gith
       "preorderSalt"
     ]
 ```
+
+### Property References
+
+:::{versionadded} 4.2.0
+:::
+
+An identifier property (`type: array`, `byteArray: true`, `contentMediaType: application/x.dash.dpp.identifier`, `minItems` and `maxItems` of 32) may declare a `refersTo` object. Platform then checks at document write time that the referenced entity exists. Setting `refersTo` on any other property type is rejected.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `type` | string | Yes | `identity`, `contract`, `token`, `permanentDocument`, or `identityPublicKey` |
+| `contractId` | string or array (32 bytes) | No | `permanentDocument` only. Contract holding the referenced document type. Defaults to the declaring contract. |
+| `documentType` | string (1-64 chars) | `permanentDocument` only | Name of the referenced document type. The referenced type must set `canBeDeleted: false`. |
+| `propertyAgreement` | object (1-10 entries) | No | `permanentDocument` only. Maps a property of this document to a property of the referenced document. Both values must be equal when the document is written, and both properties must have the same type. |
+| `keyIdProperty` | string (1-256 chars) | `identityPublicKey` only | Property of this document that holds the referenced key id. The `refersTo` property itself holds the identity id. |
+
+`contractId`, `documentType`, and `propertyAgreement` are rejected unless `type` is `permanentDocument`; `keyIdProperty` is rejected unless `type` is `identityPublicKey`.
 
 ### Property Constraints
 
@@ -142,10 +177,15 @@ The `indices` array consists of one or more objects that each contain:
   :::
 * An optional `unique` element that determines if duplicate values are allowed for the document
 * An optional `nullSearchable` element that indicates whether the index allows searching for NULL values. If nullSearchable is false (default: true) and all properties of the index are null then no reference is added.
-* An optional `contested` element that determines if duplicate values are allowed for the document
+* An optional `contested` element that makes matching values on a unique index subject to a masternode vote instead of first-come ownership. See [Contested Indices](#contested-indices)
 * Optional [aggregate query flags](#aggregate-query-flags) - `countable`, `rangeCountable`, `summable`, `rangeSummable`, `averageable`, and `rangeAverageable` - that enable count, sum, and average fast paths on the index
+* Optional ranked aggregate flags (added in 4.2.0) - `rankedCountable`, `rankedSummable`, and `rankedAverageable` - that enable top or bottom K queries on the index. See [Index-level flags](#index-level-flags).
+* An optional `timeRange` object (added in 4.2.0) that buckets the index's first property into fixed-length time windows. Fields: `on` (required; the first index property, which must be `$createdAt`, `$updatedAt`, or `$transferredAt` and be listed in `required`), `range` (required; window length in seconds), `step` (required; seconds between window starts; `range` must be a multiple of `step`), and `phase` (optional; grid offset in seconds, less than `step` and less than 31536000; default 0). A `timeRange` index may be `unique` only when `range` equals `step` and `on` is `$createdAt`. It cannot be `contested` or set `nullSearchable: false`.
+* An optional `skipIfAbsent` element (added in 4.2.0), only on `indexOnly` document types. When true, a document that omits the index's first property writes no entry into this index. That first property must be a top-level property that is not in `required`; every index that includes an optional property must be `skipIfAbsent` with that property first; every other property must still appear in at least one index that is not `skipIfAbsent`; and at least one index without `$createdAt` must not be `skipIfAbsent`.
+* An optional `terminal` element, only on `indexOnly` document types, naming the property whose value keys each index entry: `$ownerId` (default) or an identifier property with a `refersTo` of type `identity`, `contract`, `token`, or `permanentDocument`. It must not repeat one of the index's listed properties.
+* An optional `preallocated` element, only on `indexOnly` document types whose index properties are all either the referring property of a same-contract `permanentDocument` reference or a key of its `propertyAgreement`. When true, the index trees for entries referencing a document are created when that document is created. It cannot be combined with `timeRange`.
 
-Index objects do not accept any properties beyond those listed above.
+Index objects do not accept any properties beyond those listed above. Starting with Dash Platform 4.2.0 (protocol version 14), index objects also accept the ranked aggregate keywords, `timeRange`, and the `indexOnly`-specific keywords `terminal`, `preallocated`, and `skipIfAbsent`. Under earlier protocol versions those keywords are rejected.
 
 :::{code-block} json
 :force:
@@ -198,6 +238,7 @@ The table below describes the properties used to configure a contested index:
 | fieldMatches.field | string | Name of the field to check for matches |
 | fieldMatches.regexPattern | string | Regex used to check for matches |
 | resolution | integer | Method to resolve the contest:<br>`0` - masternode voting |
+| description | string | Optional free-text note (1-256 characters) |
 
 **Example**
 
@@ -227,6 +268,7 @@ For performance and security reasons, indices have the following constraints. Th
 | Maximum number of unique indices | [10](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-platform-version/src/version/dpp_versions/dpp_validation_versions/v2.rs#L27) |
 | Maximum number of contested indices | [1](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-platform-version/src/version/dpp_versions/dpp_validation_versions/v2.rs#L26) |
 | Maximum number of properties in a single index | [10](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json#L378) |
+| Maximum `timeRange` overlap factor (`range / step`) (added in 4.2.0) | 24 |
 | Maximum length of indexed string property | [63](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/mod.rs#L24) |
 | Usage of `$id` in an index [disallowed](https://github.com/dashpay/platform/pull/178) | N/A |
 | **Note: Dash Platform [does not allow indices for arrays](https://github.com/dashpay/platform/pull/225).**<br>Maximum length of indexed byte array property | [255](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/mod.rs#L25) |
@@ -268,12 +310,17 @@ Documents support the following configuration options to provide flexibility in 
 | `keepsTransferHistory`               | boolean  | If true, transfers of these documents are recorded in the [document history contract](#document-history-flags). Default: false. |
 | `keepsPurchaseHistory`               | boolean  | If true, purchases of these documents are recorded in the [document history contract](#document-history-flags). Default: false. |
 | `keepsPricingHistory`                | boolean  | If true, price updates on these documents are recorded in the [document history contract](#document-history-flags). Default: false. |
+| `indexOnly`                          | boolean  | **Added in 4.2.0.** If true, documents of this type are stored only as index entries; there is no primary document row. Requires `documentsMutable: false`, `transferable: 0`, `tradeMode: 0`, no history flags, no `transient` properties, no document-type aggregate flags, at least one index, and every property required and indexed (see `skipIfAbsent` for the one exception). Indices on such a type cannot be `unique`, `contested`, or set `nullSearchable: false`, and every index must include `$ownerId` as a property or as its terminal. Default: false. |
 
 | Security option | Type | Description |
 |-----------------|------|-------------|
 | [`requiresIdentity`<br>`EncryptionBoundedKey`](./data-contract.md#key-management) | integer  | Key requirements for identity encryption:<br>`0` - Unique non-replaceable<br>`1` - Multiple<br>`2` - Multiple with reference to latest key |
 | [`requiresIdentity`<br>`DecryptionBoundedKey`](./data-contract.md#key-management) | integer  | Key requirements for identity decryption:<br>`0` - Unique non-replaceable<br>`1` - Multiple<br>`2` - Multiple with reference to latest key |
 | `signatureSecurity`<br>`LevelRequirement`  | integer  | Public key security level:<br>`1` - Critical<br>`2` - High<br>`3` - Medium. Default is High if none specified. |
+
+:::{versionchanged} 4.2.0
+A document type with `documentsKeepHistory: true` must also set `canBeDeleted: false`. Since `canBeDeleted` defaults to true, leaving it unset on a keep-history type is rejected when the contract is validated.
+:::
 
 ### Token Costs
 
@@ -329,6 +376,7 @@ The following operation types can each have an independent cost configuration:
   | [`keepsTransferHistory`](#document-history-flags) | boolean | Records transfers in the document history contract. See [Document History Flags](#document-history-flags). |
   | [`keepsPurchaseHistory`](#document-history-flags) | boolean | Records purchases in the document history contract. See [Document History Flags](#document-history-flags). |
   | [`keepsPricingHistory`](#document-history-flags) | boolean | Records price updates in the document history contract. See [Document History Flags](#document-history-flags). |
+  | `indexOnly` | boolean | If true, index entries are the only storage for this document type. See [Document Configuration](#document-configuration). |
   | `required`                           | array    | Standard JSON Schema keyword listing required property names. |
   | `description`                        | string   | Standard JSON Schema keyword describing the document type. |
   | `$comment`                           | string   | Standard JSON Schema keyword for a schema comment. |
@@ -390,12 +438,15 @@ Index-level flags configure aggregates along a specific index path. Set them on 
 | `rangeSummable` | Boolean | Enables range sums over the indexed property. Requires `summable` on the same index. |
 | `averageable` | String | Syntactic sugar for index-level `countable: "countable"` plus `summable: "<property>"`. |
 | `rangeAverageable` | Boolean | Syntactic sugar for index-level `rangeCountable: true` plus `rangeSummable: true`. Requires `averageable` on the same index. |
+| `rankedCountable` | Boolean or object | **Added in 4.2.0.** Ranks groups by document count for top or bottom K queries. `true` ranks the last index property. The object form `{"at": "<property>"}` or `{"at": ["<property>", ...]}` (1-10 unique names, each an index property) places a count ranking at the named level(s); a non-terminal level ranks its values by whole-subtree count. Requires `rangeCountable: true`. A non-terminal `at` cannot be combined with `rankedSummable` or `rankedAverageable`, and no other index of the type may share that level. |
+| `rankedSummable` | Boolean | **Added in 4.2.0.** Ranks groups by the sum of the `summable` property. Requires `rangeSummable: true`. |
+| `rankedAverageable` | Boolean | **Added in 4.2.0.** Ranks groups by the average of the `averageable` property. Requires `rangeAverageable: true`. Does not imply `rankedCountable` or `rankedSummable`. |
 
 Properties named by `documentsSummable`, `documentsAverageable`, `summable`, or `averageable` must exist on the document type, be listed in `required`, and have an integer type.
 
 The averageable flags desugar to the underlying count + sum flags during contract parsing — same on-disk layout — so authors who think in terms of averages get a single flag and downstream code paths (insert, query, estimation) stay unchanged. If both `documentsAverageable` and `documentsSummable` are set, they must name the same property.
 
-These flags were introduced in the v1 document meta-schema and carry forward unchanged into v2. They are rejected when applied to pre-v12 contracts. The full v2 meta-schema, including these flags, is defined [in rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json).
+These flags were introduced in the v1 document meta-schema and carry forward unchanged into v2 and v3. They are rejected when applied to pre-v12 contracts. The full v2 meta-schema, including these flags, is defined [in rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json).
 
 See the [`getDocuments` reference](../reference/dapi-endpoints-platform-endpoints.md#getdocuments) for the request/response shapes that consume these flags.
 
@@ -414,7 +465,7 @@ Document types can opt into recording ownership and pricing events in the [docum
 
 Like the [aggregate query flags](#aggregate-query-flags), these cannot be changed by a contract update once set on a published contract.
 
-The flags are read only when the contract validates against the v2 document meta-schema (protocol version 13 or later). Under earlier meta-schema versions they are treated as false. The full v2 meta-schema is defined [in rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json).
+The flags are read only when the contract validates against the v2 or later document meta-schema (protocol version 13 or later). Under earlier meta-schema versions they are treated as false. The full v2 meta-schema is defined [in rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json).
 
 ## Keyword Constraints
 
@@ -493,4 +544,4 @@ This example syntax shows the structure of a documents object that defines two d
 
 ## Document Schema
 
-See full document schema details in the [rs-dpp document meta schema](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json).
+See full document schema details in the rs-dpp document meta schema. Protocol version 13 (Dash Platform 4.1) validates against the [v2 meta-schema](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json). Protocol version 14 (Dash Platform 4.2.0) validates against the [v3 meta-schema](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/schema/meta_schemas/document/v3/document-meta.json), which adds the ranked index keywords, `refersTo`, `requiredSince`, `timeRange`, and the `indexOnly` keywords.

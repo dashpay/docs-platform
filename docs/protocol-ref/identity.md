@@ -68,10 +68,10 @@ Each item in the `publicKeys` array consists of an object containing:
 | [securityLevel](#public-key-securitylevel) | integer        | Public key security level (`0` - Master, `1` - Critical, `2` - High, `3` - Medium) |
 | contractBounds | object (optional) | Restricts this key to a specific data contract or document type context |
 | [type](#public-key-type) | integer        | Type of key (default: `0` - ECDSA) |
-| [readonly](#public-key-readonly) | boolean        | Identity public key can’t be modified with `readOnly` set to `true`. This can’t be changed after adding a key. |
+| [readOnly](#public-key-readonly) | boolean        | Identity public key can’t be modified with `readOnly` set to `true`. This can’t be changed after adding a key. |
 | [data](#public-key-data)          | array of bytes | Public key (`0` - ECDSA: 33 bytes, `1` - BLS: 48 bytes, `2` - ECDSA Hash160: 20 bytes, `3` - [BIP13](https://github.com/bitcoin/bips/blob/master/bip-0013.mediawiki) Hash160: 20 bytes, `4` - EDDSA_25519_HASH160: 20 bytes) |
 | [disabledAt](#public-key-disabledat) | integer        | Timestamp indicating that the key was disabled at a specified time |
-| signature     | array of bytes | Signature of the signable identity create or topup state transition by the private key associated with this public key |
+| signature     | array of bytes | Signature of the signable state transition adding the key (identity create, identity update, or identity create from addresses) by the private key for this public key. Must be empty for key types `2`, `3`, and `4`. |
 
 See the [public key implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/identity/identity_public_key/v0/mod.rs#L42-L60) for more details.
 
@@ -251,11 +251,15 @@ Identities can transfer credits on the platform by submitting an identity credit
 | type                 | integer        | State transition type (`7` for identity credit transfer) |
 | identityId           | array of bytes | The [identity id](#identity-id) of the sender (32 bytes) |
 | recipientId          | array of bytes | The [identity id](#identity-id) of the recipient (32 bytes) |
-| amount               | integer        | The credit amount to transfer |
+| amount               | integer        | The credit amount to transfer (minimum 100,000 credits) |
 | nonce                | unsigned integer (64 bits) | Identity nonce for this transition to prevent replay attacks |
 | userFeeIncrease      | integer        | Extra fee to prioritize processing if the mempool is full. Typically set to zero. |
 | signaturePublicKeyId | integer        | The ID of public key used to sign the state transition |
 | signature            | array of bytes | Signature of state transition data (65 bytes) |
+
+:::{note}
+The `recipientId` must differ from `identityId`; transfers to the sending identity are rejected.
+:::
 
 See the [identity credit transfer implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_credit_transfer_transition/v0/mod.rs#L38-L49) for more details.
 
@@ -276,6 +280,10 @@ Credits can be withdrawn from an identity to an external Core wallet using an id
 | userFeeIncrease      | integer        | Extra fee to prioritize processing if the mempool is full. Typically set to zero. |
 | signaturePublicKeyId | integer        | The ID of public key used to sign the state transition |
 | signature            | array of bytes | Signature of state transition data (65 bytes) |
+
+:::{note}
+**Constraints:** `pooling` must be `0` (Never); `1` (IfAvailable) and `2` (Standard) are not yet implemented. `coreFeePerByte` must be a non-zero [Fibonacci number](https://en.wikipedia.org/wiki/Fibonacci_sequence). `outputScript`, when set, must be P2PKH or P2SH. `amount` must be within the [min and max withdrawal amount](protocol-constants.md) limits.
+:::
 
 See the [identity credit withdrawal implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_credit_withdrawal_transition/v1/mod.rs#L31-L48) for more details.
 
@@ -320,5 +328,5 @@ The process to sign an identity create state transition consists of the followin
    - `signature` for the overall state transition
 2. Calculate the double SHA-256 hash of the encoded signable state transition
 3. Sign the hash from the previous step using the private key associated with the asset lock transaction, then add the result to the state transition's `signature` field
-4. For each public key being added to the identity, sign the hash from step 2 using the respective private key and add the result to the public key's `signature` field
+4. For each public key of type `0` or `1` being added to the identity, sign the hash from step 2 using the respective private key and add the result to the public key's `signature` field. Keys of type `2`, `3`, or `4` must have an empty `signature`.
 5. Use Bincode to re-encode the state transition with all signatures and the identity id included

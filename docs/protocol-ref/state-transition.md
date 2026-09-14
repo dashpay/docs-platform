@@ -21,20 +21,22 @@ State transitions are limited to a maximum size of [20 KiB / 20,480 bytes](https
 
 ### Common Fields
 
-The list of common fields used by multiple state transitions is defined in [rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/state_transition/state_transitions/common_fields.rs). All state transitions include the following fields:
+The list of common fields used by multiple state transitions is defined in [rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/state_transition/state_transitions/common_fields.rs). State transitions draw from the following common fields:
 
 | Field           | Type           | Size | Description |
 | --------------- | -------------- | ---- | ----------- |
 | $version        | unsigned integer | 16 bits | The state transition format version (FeatureVersion). Currently `0` for most transitions, `1` for Batch. This is not the global platform protocol version, which is negotiated separately. |
 | type            | unsigned integer | 8 bits  | State transition type discriminator (defined in [rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/state_transition/state_transition_types.rs#L21)). See [State Transition Types](#state-transition-types) for the full list. |
 | userFeeIncrease | unsigned integer | 16 bits | Extra fee to prioritize processing if the mempool is full. Typically set to zero. |
-| signature       | array of bytes | 65 bytes |Signature of state transition data |
+| signature       | array of bytes | 65 or 96 bytes | Signature of state transition data. Present on identity-signed and asset-lock-signed transitions (types 0-9, 13, and 18): 65 bytes for ECDSA signatures or 96 bytes for BLS signatures. |
+| inputWitnesses  | array | Varies | Address-ownership witnesses. Present on address-authorized transitions (types 10-15); may be empty when the transition has no address inputs. |
+| spendAuthSig<br>bindingSignature | array of bytes | 64 bytes each | Orchard authorization carried by shielded transitions (types 15-20). `spendAuthSig` appears on each action; `bindingSignature` appears at the transition level. See [Shielded Transition Signing](shielded-pool.md#shielded-transition-signing). |
 
 :::{note}
 The [masternode vote](#masternode-vote) transition does not include the `userFeeIncrease` field.
 :::
 
-Additionally, all state transitions except the identity create and topup state transitions include:
+Additionally, the identity-signed state transitions (types 0, 1, and 4-9) include:
 
 | Field           | Type           | Size | Description |
 | --------------- | -------------- | ---- |----------- |

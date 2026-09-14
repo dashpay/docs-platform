@@ -55,7 +55,7 @@ Each action publishes:
 | cvNet | array of bytes | 32 bytes | Net value commitment (Pedersen commitment to the action's value contribution) |
 | spendAuthSig | array of bytes | 64 bytes | Per-action spend authorization signature — see [Shielded Transition Signing](#shielded-transition-signing) |
 
-Permanent storage cost per action is [344 bytes](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/shielded/mod.rs#L32-L58) (312 bytes in the note commitment tree + 32 bytes in the nullifier tree).
+Each action permanently stores [344 bytes](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/shielded/mod.rs#L32-L58) (312 bytes in the note commitment tree + 32 bytes in the nullifier tree). The minimum shielded fee charges a per-action storage allowance of `shielded_storage_bytes_per_action` bytes at the storage rate: 344 bytes through protocol version 13, and 550 bytes from protocol version 14 to cover tree framing overhead.
 
 See the [serialized action implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/shielded/mod.rs).
 
