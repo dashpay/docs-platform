@@ -164,28 +164,41 @@ There are a variety of constraints currently defined for performance and securit
 
 ## Document Indices
 
-Document indices may be defined if indexing on document fields is required. The `indices` object should only be included for documents with at least one index.
+Document indices may be defined if indexing on document fields is required. The `indices` array should only be included for documents with at least one index.
 
-The `indices` array consists of one or more objects that each contain:
+### Required Index Fields
 
-* A unique `name` for the index
-* A `properties` array composed of a `<field name: sort order>` object for each document field that is part of the index (only `asc` is currently supported)
-  
-  :::{admonition} Compound Indices
-  :class: attention
-  When defining an index with multiple properties, the ordering of properties is important. Refer to the [mongoDB documentation](https://docs.mongodb.com/manual/core/index-compound/#prefixes) for details. Dash uses [GroveDB](https://github.com/dashpay/grovedb), which works similarly but requires listing all the index's fields in query order by statements.
-  :::
-* An optional `unique` element that determines if duplicate values are allowed for the document
-* An optional `nullSearchable` element that indicates whether the index allows searching for NULL values. If nullSearchable is false (default: true) and all properties of the index are null then no reference is added.
-* An optional `contested` element that makes matching values on a unique index subject to a masternode vote instead of first-come ownership. See [Contested Indices](#contested-indices)
-* Optional [aggregate query flags](#aggregate-query-flags) - `countable`, `rangeCountable`, `summable`, `rangeSummable`, `averageable`, and `rangeAverageable` - that enable count, sum, and average fast paths on the index
-* Optional ranked aggregate flags (added in 4.2.0) - `rankedCountable`, `rankedSummable`, and `rankedAverageable` - that enable top or bottom K queries on the index. See [Index-level flags](#index-level-flags).
-* An optional `timeRange` object (added in 4.2.0) that buckets the index's first property into fixed-length time windows. Fields: `on` (required; the first index property, which must be `$createdAt`, `$updatedAt`, or `$transferredAt` and be listed in `required`), `range` (required; window length in seconds), `step` (required; seconds between window starts; `range` must be a multiple of `step`), and `phase` (optional; grid offset in seconds, less than `step` and less than 31536000; default 0). An optional `ttl` (seconds) makes entries expire: an entry lives at most `ttl` seconds past the start of its window, plus a bounded cleanup lag, and expired windows cannot be queried. `ttl` must be at least `range` and at most 604,800 (one week) under protocol version 14; indexes that bucket the same field on the same grid must declare the same `ttl` or none. Bytes written under a `ttl` index are charged as processing at the [TTL ephemeral rate](protocol-constants.md#storage) instead of storage and are not refunded on removal. Omitted means entries live forever. A `timeRange` index may be `unique` only when `range` equals `step` and `on` is `$createdAt`. It cannot be `contested` or set `nullSearchable: false`.
-* An optional `skipIfAbsent` element (added in 4.2.0), only on `indexOnly` document types. When true, a document that omits the index's first property writes no entry into this index. That first property must be a top-level property that is not in `required`; every index that includes an optional property must be `skipIfAbsent` with that property first; every other property must still appear in at least one index that is not `skipIfAbsent`; and at least one index without `$createdAt` must not be `skipIfAbsent`.
-* An optional `terminal` element, only on `indexOnly` document types, naming the property whose value keys each index entry: `$ownerId` (default) or an identifier property with a `refersTo` of type `identity`, `contract`, `token`, or `permanentDocument`. It must not repeat one of the index's listed properties.
-* An optional `preallocated` element, only on `indexOnly` document types whose index properties are all either the referring property of a same-contract `permanentDocument` reference or a key of its `propertyAgreement`. When true, the index trees for entries referencing a document are created when that document is created. It cannot be combined with `timeRange`.
+Each object in the `indices` array requires two fields:
+
+| Field | Description |
+| --- | --- |
+| `name` | A unique name for the index. |
+| `properties` | An ordered array containing one `<field name: sort order>` object for each indexed document field. Only `asc` is currently supported. |
+
+:::{admonition} Compound Indices
+:class: attention
+When defining an index with multiple properties, the ordering of properties is important. Refer to the [mongoDB documentation](https://docs.mongodb.com/manual/core/index-compound/#prefixes) for details. Dash uses [GroveDB](https://github.com/dashpay/grovedb), which works similarly but requires listing all the index's fields in query order by statements.
+:::
+
+### Optional Index Fields
+
+In addition to `name` and `properties`, an index may contain the following optional fields:
+
+| Option | Purpose | Details |
+| --- | --- | --- |
+| `unique` | Determines whether duplicate values are allowed. | Defaults to `false`. |
+| `nullSearchable` | Determines whether the index includes entries whose properties are all null. | Defaults to `true`. When `false`, no reference is added if all indexed properties are null. |
+| `contested` | Makes matching values on a unique index subject to a masternode vote instead of first-come ownership. | See [Contested Indices](#contested-indices). |
+| Aggregate flags | Enable count, sum, and average fast paths. | `countable`, `rangeCountable`, `summable`, `rangeSummable`, `averageable`, and `rangeAverageable`. See [Aggregate Query Flags](#aggregate-query-flags). |
+| Ranked aggregate flags | Enable top or bottom K queries. Added in 4.2.0. | `rankedCountable`, `rankedSummable`, and `rankedAverageable`. See [Index-level Flags](#index-level-flags). |
+| `timeRange` | Buckets the first index property into fixed-length time windows. Added in 4.2.0. | See [Time-Range Indices](#time-range-indices). |
+| `skipIfAbsent` | Omits an index entry when the first property is absent. Added in 4.2.0. | Available only on `indexOnly` document types. See [Index-Only Options](#index-only-options). |
+| `terminal` | Selects the value that keys each index entry. Added in 4.2.0. | Available only on `indexOnly` document types. See [Index-Only Options](#index-only-options). |
+| `preallocated` | Creates index trees before referenced documents produce entries. Added in 4.2.0. | Available only on `indexOnly` document types. See [Index-Only Options](#index-only-options). |
 
 Index objects do not accept any properties beyond those listed above. Starting with Dash Platform 4.2.0 (protocol version 14), index objects also accept the ranked aggregate keywords, `timeRange`, and the `indexOnly`-specific keywords `terminal`, `preallocated`, and `skipIfAbsent`. Under earlier protocol versions those keywords are rejected.
+
+The following template shows the required shape and commonly used optional fields:
 
 :::{code-block} json
 :force:
@@ -224,7 +237,57 @@ Index objects do not accept any properties beyond those listed above. Starting w
 ]
 :::
 
-### Contested Indices
+**Example**
+
+The following example (excerpt from the DPNS contract's `preorder` document) creates an index named `saltedHash` on the `saltedDomainHash` property and enforces uniqueness across all documents of that type:
+
+```json
+"indices": [
+  {
+    "name": "saltedHash",
+    "properties": [
+      {
+        "saltedDomainHash": "asc"
+      }
+    ],
+    "unique": true
+  }
+]
+```
+
+#### Time-Range Indices
+
+:::{versionadded} 4.2.0
+Protocol version 14 added time-range indices.
+:::
+
+The optional `timeRange` object buckets an index's first property into fixed-length time windows. It contains the following fields:
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `on` | string | Yes | The first index property. It must be `$createdAt`, `$updatedAt`, or `$transferredAt` and must be listed in the document type's `required` array. |
+| `range` | integer | Yes | Window length in seconds. It must be a multiple of `step`. |
+| `step` | integer | Yes | Number of seconds between window starts. |
+| `phase` | integer | No | Grid offset in seconds. It must be less than `step` and less than 31,536,000. Defaults to `0`. |
+| `ttl` | integer | No | Entry lifetime in seconds, measured from the start of its window. It must be at least `range` and, under protocol version 14, at most 604,800 (one week). Omit it for entries that live forever. |
+
+When `ttl` is set, an entry lives at most `ttl` seconds past the start of its window, plus a bounded cleanup lag. Expired windows cannot be queried. Indexes that bucket the same field on the same grid must all declare the same `ttl`, or all omit it.
+
+Bytes written under a `ttl` index are charged as processing at the [TTL ephemeral rate](protocol-constants.md#storage) instead of storage and are not refunded on removal.
+
+A time-range index may be `unique` only when `range` equals `step` and `on` is `$createdAt`. It cannot be `contested`, set `nullSearchable` to `false`, or be combined with `preallocated`.
+
+#### Index-Only Options
+
+The following options are available only on document types with [`indexOnly: true`](#document-configuration):
+
+| Option | Behavior and constraints |
+| --- | --- |
+| `skipIfAbsent` | When true, a document that omits the index's first property writes no entry into this index. The first property must be a top-level property that is not in `required`, and every index containing an optional property must place that property first and set `skipIfAbsent`. Every other property must still appear in at least one index without `skipIfAbsent`, and at least one index without `$createdAt` must not use `skipIfAbsent`. |
+| `terminal` | Names the property whose value keys each index entry. It may be `$ownerId` (the default) or an identifier property with a `refersTo` type of `identity`, `contract`, `token`, or `permanentDocument`. It must not repeat an index property. |
+| `preallocated` | Creates the index trees for entries referencing a document when that document is created. Every index property must be either the referring property of a same-contract `permanentDocument` reference or a key of its `propertyAgreement`. It cannot be combined with `timeRange`. |
+
+#### Contested Indices
 
 Contested unique indices provide a way for multiple identities to compete for ownership when a new document field matches a predefined pattern. This system enables fair distribution of valuable documents, such as [premium DPNS names](../explanations/dpns.md#conflict-resolution), through community-driven decision-making.
 
@@ -278,23 +341,6 @@ For performance and security reasons, indices have the following constraints. Th
 :::{seealso}
 For all protocol constants, see [Protocol Constants](protocol-constants.md).
 :::
-
-**Example**  
-The following example (excerpt from the DPNS contract's `preorder` document) creates an index named `saltedHash` on the `saltedDomainHash` property that also enforces uniqueness across all documents of that type:
-
-```json
-"indices": [
-  {
-    "name": "saltedHash",
-    "properties": [
-      {
-        "saltedDomainHash": "asc"
-      }
-    ],
-    "unique": true
-  }
-]
-```
 
 ## Document Configuration
 
