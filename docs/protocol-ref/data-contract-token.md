@@ -491,6 +491,10 @@ Emits tokens in fixed amounts for specific intervals.
 - **Use Case:** Adjust rewards at specific milestones
 - **Example:** 100 tokens per block for first 1000 blocks, then 50 tokens thereafter
 
+:::{note}
+Starting with protocol version 14 (Dash Platform 4.2.0), the logarithmic, inverted logarithmic, exponential, and polynomial functions are evaluated with a fixed portable math library so every node computes the same reward. A client that predicts rewards with its own platform's math library may differ from the consensus amount by one unit on boundary inputs.
+:::
+
 ### Pre-Programmed Distribution
 
 Pre-programmed distribution allows scheduling specific token allocations at predetermined times. The following configuration distributes 3 sets of tokens to the same identity at the defined timestamps:

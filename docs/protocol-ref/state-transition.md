@@ -28,15 +28,15 @@ The list of common fields used by multiple state transitions is defined in [rs-d
 | $version        | unsigned integer | 16 bits | The state transition format version (FeatureVersion). Currently `0` for most transitions, `1` for Batch. This is not the global platform protocol version, which is negotiated separately. |
 | type            | unsigned integer | 8 bits  | State transition type discriminator (defined in [rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/state_transition/state_transition_types.rs#L21)). See [State Transition Types](#state-transition-types) for the full list. |
 | userFeeIncrease | unsigned integer | 16 bits | Extra fee to prioritize processing if the mempool is full. Typically set to zero. |
-| signature       | array of bytes | 65 or 96 bytes | Signature of state transition data. Present on identity-signed and asset-lock-signed transitions (types 0-9, 13, and 18): 65 bytes for ECDSA signatures or 96 bytes for BLS signatures. |
+| signature       | array of bytes | 65 or 96 bytes | Signature of state transition data. Present on identity-signed and asset-lock-signed transitions (types 0-9, 13, 18, and 21): 65 bytes for ECDSA signatures or 96 bytes for BLS signatures. |
 | inputWitnesses  | array | Varies | Address-ownership witnesses. Present on address-authorized transitions (types 10-15); may be empty when the transition has no address inputs. |
-| spendAuthSig<br>bindingSignature | array of bytes | 64 bytes each | Orchard authorization carried by shielded transitions (types 15-20). `spendAuthSig` appears on each action; `bindingSignature` appears at the transition level. See [Shielded Transition Signing](shielded-pool.md#shielded-transition-signing). |
+| spendAuthSig<br>bindingSignature | array of bytes | 64 bytes each | Orchard authorization carried by shielded transitions (types 15-22). `spendAuthSig` appears on each action; `bindingSignature` appears at the transition level. See [Shielded Transition Signing](shielded-pool.md#shielded-transition-signing). |
 
 :::{note}
 The [masternode vote](#masternode-vote) transition does not include the `userFeeIncrease` field.
 :::
 
-Additionally, the identity-signed state transitions (types 0, 1, and 4-9) include:
+Additionally, the identity-signed state transitions (types 0, 1, 4-9, and 21) include:
 
 | Field           | Type           | Size | Description |
 | --------------- | -------------- | ---- |----------- |
@@ -69,6 +69,8 @@ Dash Platform Protocol defines the following [state transition types](https://gi
 | 18 | Shield from Asset Lock | [Shield from Asset Lock](shielded-pool.md#shield-from-asset-lock) |
 | 19 | Shielded Withdrawal | [Shielded Withdrawal](shielded-pool.md#shielded-withdrawal) |
 | 20 | Identity Create From Shielded Pool | [Identity Create From Shielded Pool](shielded-pool.md#identity-create-from-shielded-pool) |
+| 21 | Shield from Identity | [Shield from Identity](shielded-pool.md#shield-from-identity) (added in 4.2.0) |
+| 22 | Identity Top Up From Shielded Pool | [Identity Top Up From Shielded Pool](shielded-pool.md#identity-top-up-from-shielded-pool) (added in 4.2.0) |
 
 ### Batch
 
@@ -99,14 +101,14 @@ transition type:
 
 | Signing Method | State Transitions |
 | -------------- | ----------------- |
-| [Identity](#signing-with-identity)     | Batch, Contract create, Contract update, Identity update, Identity credit transfer, Identity credit transfer to addresses, Identity credit withdrawal, Masternode vote |
+| [Identity](#signing-with-identity)     | Batch, Contract create, Contract update, Identity update, Identity credit transfer, Identity credit transfer to addresses, Identity credit withdrawal, Masternode vote, Shield from identity\*\* |
 | [Asset lock](#signing-with-asset-lock) | Identity create, Identity topup, Address funding from asset lock\*, Shield from asset lock\*\* |
 | [Address witness](#signing-with-address-witness) | Identity create from addresses, Identity topup from addresses, Address funds transfer, Address credit withdrawal, Address funding from asset lock\*, Shield\*\* |
-| [Shielded (Orchard)](shielded-pool.md#shielded-transition-signing) | Shield\*\*, Shielded transfer, Unshield, Shield from asset lock\*\*, Shielded withdrawal, Identity create from shielded pool |
+| [Shielded (Orchard)](shielded-pool.md#shielded-transition-signing) | Shield\*\*, Shielded transfer, Unshield, Shield from asset lock\*\*, Shielded withdrawal, Identity create from shielded pool, Shield from identity\*\*, Identity top up from shielded pool |
 
 \* Address funding from asset lock requires both an asset lock signature and address witnesses (`input_witnesses`).
 
-\*\* Shielded transitions are always authorized by Orchard bundle signatures (per-action `spendAuthSig` plus the transition-level `bindingSignature`). Shield additionally carries address witnesses for its transparent address inputs; Shield from asset lock additionally carries an asset-lock ECDSA signature.
+\*\* Shielded transitions are always authorized by Orchard bundle signatures (per-action `spendAuthSig` plus the transition-level `bindingSignature`). Shield additionally carries address witnesses for its transparent address inputs; Shield from asset lock additionally carries an asset-lock ECDSA signature; Shield from identity additionally carries an identity signature (`signature` and `signaturePublicKeyId`) made with a CRITICAL transfer key.
 
 :::{note}
 Address-based state transitions (types 9-14) were introduced in Protocol Version 11. For detailed information on these transitions, see [Address-Based State Transitions](address-system.md).
@@ -137,7 +139,7 @@ requires at least a CRITICAL key (level `1`).
 | State transition | Accepted security level(s) |
 | ---------------- | -------------------------- |
 | Identity update | MASTER (`0`) |
-| Identity credit transfer, Identity credit withdrawal, Data contract update | CRITICAL (`1`) |
+| Identity credit transfer, Identity credit withdrawal, Data contract update, Shield from identity | CRITICAL (`1`) |
 | Data contract create | CRITICAL or HIGH (`1`-`2`) |
 | Batch (document/token), Masternode vote | CRITICAL, HIGH, or MEDIUM (`1`-`3`) |
 
@@ -187,7 +189,7 @@ Public keys can be added to an identity by the identity create or identity updat
 
 ### Signing Shielded Transitions
 
-Shielded transitions are not signed by an identity public key or an address private key at the transition level — they do not include `signature` or `signaturePublicKeyId` fields. Authorization is carried instead by Orchard primitives attached to each action and to the bundle as a whole. Shield additionally carries [address witnesses](#signing-with-address-witness) over its address inputs, and Shield from asset lock additionally carries an [asset-lock ECDSA signature](#signing-with-asset-lock). Both `input_witnesses` (on Shield) and `signature` (on Shield from asset lock) are omitted from the bytes that feed the platform sighash.
+With one exception, shielded transitions are not signed by an identity public key or an address private key at the transition level and do not include `signature` or `signaturePublicKeyId` fields. The exception is Shield from identity, which is signed by the funding identity like an identity credit transfer; only its `signature` and `signaturePublicKeyId` are excluded from the signable bytes. Authorization is carried instead by Orchard primitives attached to each action and to the bundle as a whole. Shield additionally carries [address witnesses](#signing-with-address-witness) over its address inputs, and Shield from asset lock additionally carries an [asset-lock ECDSA signature](#signing-with-asset-lock). Both `input_witnesses` (on Shield) and `signature` (on Shield from asset lock) are omitted from the bytes that feed the platform sighash.
 
 See [Shielded Transition Signing](shielded-pool.md#shielded-transition-signing) for the full signing model.
 
@@ -206,7 +208,8 @@ This table shows the fields that must be excluded when creating state transition
 | [Identity credit transfer](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_credit_transfer_transition/v0/mod.rs#L45-L48) | Exclude | Exclude | N/A | N/A |
 | [Identity credit withdrawal](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_credit_withdrawal_transition/v1/mod.rs#L44-L47) | Exclude | Exclude | N/A | N/A |
 | [Masternode vote](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/state_transition/state_transitions/identity/masternode_vote_transition/v0/mod.rs#L45-L48) | Exclude | Exclude | N/A | N/A |
+| [Shield from identity](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/state_transition/state_transitions/shielded/shield_from_identity_transition/v0/mod.rs#L66-L69) | Exclude | Exclude | N/A | N/A |
 
 :::{note}
-The table above does not cover shielded transitions, which do not carry transition-level `signature` or `signaturePublicKeyId` fields. See [Signing Shielded Transitions](#signing-shielded-transitions).
+The table above does not cover the shielded transitions other than Shield from identity, which do not carry transition-level `signature` or `signaturePublicKeyId` fields. See [Signing Shielded Transitions](#signing-shielded-transitions).
 :::

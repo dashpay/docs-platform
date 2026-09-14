@@ -24,7 +24,11 @@ Maximum sizes and limits for various platform components.
 | Max contract group size | 256 | Maximum members per group | [rs-platform-version](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-platform-version/src/version/system_limits/v3.rs#L21) |
 | Max token redemption cycles | 128 | Maximum redemption cycles | [rs-platform-version](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-platform-version/src/version/system_limits/v3.rs#L22) |
 | Max shielded transition actions | 16 | Consensus cap on [actions](shielded-pool.md#actions) per shielded transition. The effective limit is 6 - the Halo 2 proof grows ~2,681 bytes per action, so larger transitions exceed the max state transition size | [rs-platform-version](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-platform-version/src/version/system_limits/v3.rs#L30) |
-| Max time-range overlap factor | 24 | **Added in 4.2.0.** Maximum `range / step` for a [timeRange](data-contract-document.md#document-indices) index, so at most 24 windows overlap at any timestamp | [rs-platform-version](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-platform-version/src/version/system_limits/v4.rs#L43) |
+| Max time-range overlap factor | 24 | **Added in 4.2.0.** Maximum `range / step` for a [timeRange](data-contract-document.md#document-indices) index, so at most 24 windows overlap at any timestamp | [rs-platform-version](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-platform-version/src/version/system_limits/v4.rs#L65) |
+| Max time-range TTL | 604,800 seconds (1 week) | **Added in 4.2.0.** Maximum `ttl` a [timeRange](data-contract-document.md#document-indices) index may declare | [rs-platform-version](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-platform-version/src/version/system_limits/v4.rs#L66) |
+| Min time-range TTL drop operations per write | 32 | **Added in 4.2.0.** Minimum expired-entry cleanup operations Drive performs on each write into a `ttl` index | [rs-platform-version](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-platform-version/src/version/system_limits/v4.rs#L67) |
+| Core dust relay fee | 3,000 duffs/kB | **Added in 4.2.0.** Used to compute the Core dust threshold of a withdrawal's output script (546 duffs for P2PKH). An expired withdrawal whose whole amount is below it is marked `FAILED` instead of being re-signed | [rs-platform-version](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-platform-version/src/version/system_limits/v4.rs#L54) |
+| Min GroveDB proof envelope version | 1 | **Added in 4.2.0.** Clients verifying with protocol version 14 tables reject the legacy V0 proof envelope | [rs-platform-version](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-platform-version/src/version/system_limits/v4.rs#L68) |
 | Max CBOR encoded length | 16,384 bytes (16 KiB) | Maximum CBOR encoding size (defined as `MAX_ENCODED_KBYTE_LENGTH = 16` kibibytes) | [rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/util/cbor_serializer.rs#L8) |
 | Contract deserialization limit | 15,000 | Maximum contract deserialization | [rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/data_contract/serialized_version/mod.rs#L40) |
 
@@ -108,6 +112,7 @@ Fees related to data storage operations.
 | Storage load (per byte) | 20 | [rs-platform-version](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-platform-version/src/version/fee/storage/v1.rs) |
 | Non-storage load (per byte) | 10 | [rs-platform-version](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-platform-version/src/version/fee/storage/v1.rs) |
 | Storage seek | 2,000 | [rs-platform-version](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-platform-version/src/version/fee/storage/v1.rs) |
+| TTL ephemeral disk usage (per byte) | 270 | **Added in 4.2.0.** Charged as processing for bytes written under a [timeRange `ttl`](data-contract-document.md#document-indices) index instead of the storage rate; not refunded on removal. [rs-platform-version](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-platform-version/src/version/fee/storage/v1.rs#L23) |
 
 #### Cryptographic Operations
 
@@ -157,7 +162,7 @@ Fees related to contested document voting.
 
 | Fee Type | Amount (Credits) | Amount (Dash) | Source |
 |----------|------------------|---------------|--------|
-| Contested document vote resolution fund | 20,000,000,000 | 0.2 | [rs-platform-version](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-platform-version/src/version/fee/vote_resolution_fund_fees/v1.rs) |
+| Contested document vote resolution fund | **Updated in 4.2.0.**<br>Through protocol version 13: 20,000,000,000<br>Protocol version 14+: 10,000,000,000 | 0.2<br>0.1 | [through v13](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-platform-version/src/version/fee/vote_resolution_fund_fees/v1.rs), [v14+](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-platform-version/src/version/fee/vote_resolution_fund_fees/v2.rs#L6) |
 | Contested document unlock fund | 400,000,000,000 | 4.0 | [rs-platform-version](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-platform-version/src/version/fee/vote_resolution_fund_fees/v1.rs) |
 | Single vote cost | 10,000,000 | 0.0001 | [rs-platform-version](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-platform-version/src/version/fee/vote_resolution_fund_fees/v1.rs) |
 

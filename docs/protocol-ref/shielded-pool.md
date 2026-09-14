@@ -22,8 +22,10 @@ The shielded pool is implemented through state transition types that share a com
 | 18 | [Shield from Asset Lock](#shield-from-asset-lock) | Move credits from an L1 asset lock directly into the pool |
 | 19 | [Shielded Withdrawal](#shielded-withdrawal) | Move credits from the pool back to Dash Core (L1) |
 | 20 | [Identity Create From Shielded Pool](#identity-create-from-shielded-pool) | Create a new identity funded from the shielded pool |
+| 21 | [Shield from Identity](#shield-from-identity) | Move credits from an identity balance into the shielded pool (protocol version 14+) |
+| 22 | [Identity Top Up From Shielded Pool](#identity-top-up-from-shielded-pool) | Move credits from the shielded pool to an existing identity's balance (protocol version 14+) |
 
-All transitions share a common Orchard bundle (anchor, actions, proof, binding signature). Transitions that touch the transparent side (Shield, Unshield, Shield from Asset Lock, Shielded Withdrawal, Identity Create From Shielded Pool) layer the transparent fields on top of that bundle. Shielded Transfer has no transparent surface beyond the bundle itself.
+All transitions share a common Orchard bundle (anchor, actions, proof, binding signature). Transitions that touch the transparent side (Shield, Unshield, Shield from Asset Lock, Shielded Withdrawal, Identity Create From Shielded Pool, Shield from Identity, Identity Top Up From Shielded Pool) layer the transparent fields on top of that bundle. Shielded Transfer has no transparent surface beyond the bundle itself.
 
 ## Common Components
 
@@ -218,9 +220,63 @@ Protocol version 13 added 0.03 and 0.25 DASH and retired 0.3 DASH. The protocol 
 
 See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/state_transition/state_transitions/shielded/identity_create_from_shielded_pool_transition/v0/mod.rs#L31-L64).
 
+### Shield from Identity
+
+:::{versionadded} 4.2.0
+Protocol version 14 added this transition.
+:::
+
+Move credits from an identity's balance directly into the shielded pool. The transition is signed by the funding identity, like an [identity credit transfer](identity.md#identity-credit-transfer), and carries an outputs-only Orchard bundle like [Shield](#shield). The identity pays the fee plus the shielded amount.
+
+| Field | Type | Size | Description |
+| --- | --- | --- | --- |
+| identityId | array of bytes | 32 bytes | The [identity](identity.md#identity-id) whose balance funds the shield |
+| amount | unsigned integer | 64 bits | Credits leaving the identity balance and entering the pool (the absolute value of the bundle's value balance) |
+| actions | array | Varies | Orchard [actions](#actions). Spends are disabled; the actions create new notes |
+| anchor | array of bytes | 32 bytes | [Anchor](#anchors) |
+| proof | array of bytes | Varies | Halo 2 proof |
+| bindingSignature | array of bytes | 64 bytes | RedPallas binding signature |
+| nonce | unsigned integer | 64 bits | Identity nonce for this transition to prevent replay attacks |
+| userFeeIncrease | unsigned integer | 16 bits | Extra fee to prioritize processing if the mempool is full |
+| signaturePublicKeyId | unsigned integer | 32 bits | The `id` of the identity public key that signed the transition. Must be a CRITICAL key with the transfer purpose |
+| signature | array of bytes | 65 or 96 bytes | Identity signature over the signable bytes: 65 bytes for ECDSA keys or 96 bytes for BLS keys |
+
+:::{note}
+`signature` and `signaturePublicKeyId` are the only fields excluded from the signable bytes. The Orchard bundle uses empty `extra_sighash_data`; the identity signature binds the bundle to this identity and nonce. Maximum actions per transition: [`max_shielded_transition_actions`](protocol-constants.md).
+
+**Constraints:** `amount` must be greater than zero and at most `i64::MAX`. The identity balance must cover `amount` plus the minimum shielded fee for the action count plus a 20-byte balance write at the storage rate. At execution the identity pays the metered fee plus the shielded compute fee (proof verification and per-action processing). A bundle that fails verification charges the proof failure penalty and bumps the identity nonce.
+:::
+
+See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/state_transition/state_transitions/shielded/shield_from_identity_transition/v0/mod.rs#L48-L69).
+
+### Identity Top Up From Shielded Pool
+
+:::{versionadded} 4.2.0
+Protocol version 14 added this transition.
+:::
+
+Move credits from the shielded pool to an existing identity's balance. The spends consume shielded notes like [Unshield](#unshield), and the identity receives `topUpAmount` minus the fee. The fee is paid from the pool; there is no transition-level signature.
+
+| Field | Type | Size | Description |
+| --- | --- | --- | --- |
+| identityId | array of bytes | 32 bytes | The existing [identity](identity.md#identity-id) whose balance receives the top-up |
+| actions | array | Varies | Orchard [actions](#actions) (spends consume shielded notes) |
+| topUpAmount | unsigned integer | 64 bits | Gross credits leaving the pool (the bundle's value balance). The identity is credited `topUpAmount` minus the fee |
+| anchor | array of bytes | 32 bytes | [Anchor](#anchors) |
+| proof | array of bytes | Varies | Halo 2 proof |
+| bindingSignature | array of bytes | 64 bytes | RedPallas binding signature |
+
+:::{note}
+`identityId` and `topUpAmount` are bound to the Orchard bundle through the [platform sighash](#platform-sighash), so the top-up cannot be redirected to another identity. Maximum actions per transition: [`max_shielded_transition_actions`](protocol-constants.md).
+
+**Constraints:** `topUpAmount` must be greater than zero and at most `i64::MAX`, and the pool balance must cover it. The identity must exist; otherwise the transition fails with [`IdentityNotFoundError`](errors.md) (code 20000). The fee is the minimum shielded fee for the action count plus an 8-byte balance write at the storage rate.
+:::
+
+See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/state_transition/state_transitions/shielded/identity_top_up_from_shielded_pool_transition/v0/mod.rs#L41-L54).
+
 ## Shielded Transition Signing
 
-Shielded transitions are not signed by an identity public key. The identity-signed `signature` and `signaturePublicKeyId` fields listed in the [common fields](state-transition.md#common-fields) for identity-signed transitions do not appear on any shielded transition. Authorization is instead carried by cryptographic primitives attached to the Orchard bundle and, where applicable, to the transparent side of the transition. This includes the asset-lock ECDSA `signature` carried by [Shield from Asset Lock](#shield-from-asset-lock) described below.
+With one exception, shielded transitions are not signed by an identity public key, and the identity-signed `signature` and `signaturePublicKeyId` fields listed in the [common fields](state-transition.md#common-fields) do not appear on them. The exception is [Shield from Identity](#shield-from-identity), which the funding identity signs with a CRITICAL transfer key. Authorization is instead carried by cryptographic primitives attached to the Orchard bundle and, where applicable, to the transparent side of the transition. This includes the asset-lock ECDSA `signature` carried by [Shield from Asset Lock](#shield-from-asset-lock) described below.
 
 ### Orchard bundle signatures
 
@@ -231,16 +287,17 @@ Every shielded transition includes:
 
 ### Platform sighash
 
-Unshield, Shielded Withdrawal, and Identity Create From Shielded Pool bind their transparent fields to the Orchard bundle through the [platform sighash](#platform-sighash) (non-empty `extra_sighash_data`). Any modification to those transparent fields invalidates the Orchard signatures, preventing replay attacks that substitute transparent fields while reusing a valid bundle. Shield and Shield from Asset Lock use empty `extra_sighash_data`; their transparent side is authorized by address witnesses (Shield) or the asset-lock ECDSA signature (Shield from Asset Lock) over the signable bytes instead.
+Unshield, Shielded Withdrawal, Identity Create From Shielded Pool, and Identity Top Up From Shielded Pool bind their transparent fields to the Orchard bundle through the [platform sighash](#platform-sighash) (non-empty `extra_sighash_data`). Any modification to those transparent fields invalidates the Orchard signatures, preventing replay attacks that substitute transparent fields while reusing a valid bundle. Shield, Shield from Asset Lock, and Shield from Identity use empty `extra_sighash_data`; their transparent side is authorized by address witnesses (Shield), the asset-lock ECDSA signature (Shield from Asset Lock), or the identity signature (Shield from Identity) over the signable bytes instead.
 
-### Transparent signatures (Shield, Shield from Asset Lock)
+### Transparent signatures
 
-Two shielded transitions also carry transparent signatures over the transparent side of the transition:
+Several shielded transitions also carry transparent signatures over the transparent side of the transition:
 
 - **Shield** includes an array of [address witnesses](address-system.md#address-witness) (`inputWitnesses`) — one per address input. Each witness proves control of its corresponding Platform address. Address witness signatures are excluded from the bytes that feed the platform sighash (they sign the platform sighash output, not vice-versa).
 - **Shield from Asset Lock** includes a 65-byte ECDSA `signature` proving control of the L1 asset-locked output, in the same form used by [Identity Create](identity.md#identity-create). The signature is excluded from the bytes that feed the platform sighash.
+- **Shield from Identity** includes an identity `signature` and `signaturePublicKeyId`, in the same form used by [identity credit transfer](identity.md#identity-credit-transfer). Both are excluded from the signable bytes; the signature binds the Orchard bundle to the identity and nonce.
 
-Shielded Transfer, Unshield, and Shielded Withdrawal have no transparent signatures; the Orchard bundle signatures plus the platform sighash provide full authorization.
+Shielded Transfer, Unshield, Shielded Withdrawal, and Identity Top Up From Shielded Pool have no transparent signatures; the Orchard bundle signatures plus the platform sighash provide full authorization.
 
 ## Querying shielded state
 

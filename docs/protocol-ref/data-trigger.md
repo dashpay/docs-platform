@@ -91,4 +91,4 @@ In addition to DPNS, the following system contracts have registered data trigger
 | Document     | Action    | Trigger Description |
 | ------------ | --------- | ------------------- |
 | `withdrawal` | `REPLACE` | Rejected by data trigger (withdrawal documents cannot be updated) |
-| `withdrawal` | `DELETE`  | Rejected unless status is `COMPLETE` |
+| `withdrawal` | `DELETE`  | Rejected unless status is `COMPLETE` or, from protocol version 14, `FAILED` (an expired withdrawal whose amount is below Core's dust threshold) |

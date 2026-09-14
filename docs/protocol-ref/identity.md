@@ -181,15 +181,21 @@ For all protocol constants, see [Protocol Constants](protocol-constants.md).
 
 ## Identity State Transition Details
 
-There are five identity-related state transitions: [identity create](#identity-create), [identity topup](#identity-topup), [identity update](#identity-update), [identity credit transfer](#identity-credit-transfer), and [identity credit withdrawal](#identity-credit-withdrawal). Details are provided in this section including information about [asset locking](#asset-lock) and [signing](#identity-state-transition-signing) required for these state transitions.
+The following state transitions create, fund, update, or transfer credits to or from identities. Five are documented on this page; this section also covers the relevant [asset-lock](#asset-lock) and [signing](#identity-state-transition-signing) mechanisms. The remaining transitions are documented with the feature they belong to.
 
-:::{note}
-Protocol Version 11 introduced additional address-based identity operations. See [Address-Based State Transitions](address-system.md) for:
-
-- Identity Credit Transfer to Addresses (type 9)
-- Identity Create from Addresses (type 10)
-- Identity Top-Up from Addresses (type 11)
-:::
+| Type | Name | Supported protocol versions |
+| --- | --- | --- |
+| 2 | [Identity Create](#identity-create) | ≥ 1 |
+| 3 | [Identity Top-Up](#identity-topup) | ≥ 1 |
+| 5 | [Identity Update](#identity-update) | ≥ 1 |
+| 6 | [Identity Credit Withdrawal](#identity-credit-withdrawal) | ≥ 1 |
+| 7 | [Identity Credit Transfer](#identity-credit-transfer) | ≥ 1 |
+| 9 | [Identity Credit Transfer to Addresses](address-system.md#identity-credit-transfer-to-addresses) | ≥ 11 |
+| 10 | [Identity Create from Addresses](address-system.md#identity-create-from-addresses) | ≥ 11 |
+| 11 | [Identity Top-Up from Addresses](address-system.md#identity-top-up-from-addresses) | ≥ 11 |
+| 20 | [Identity Create from Shielded Pool](shielded-pool.md#identity-create-from-shielded-pool) | ≥ 12 |
+| 21 | [Shield from Identity](shielded-pool.md#shield-from-identity) | ≥ 14 |
+| 22 | [Identity Top-Up from Shielded Pool](shielded-pool.md#identity-top-up-from-shielded-pool) | ≥ 14 |
 
 ### Identity Create
 
