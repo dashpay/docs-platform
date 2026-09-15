@@ -24,11 +24,11 @@ The following fields are included in all document transitions. Note that `$actio
 | $dataContractId | array | 32 bytes | Data contract ID [generated](../protocol-ref/data-contract.md#data-contract-id) from the data contract's `ownerId` and `identity nonce` |
 | [$tokenPaymentInfo](#token-payment-info) | object | Varies | (Optional, V1+) Token-based fee payment information for this transition |
 
-Each document transition must comply with the [document base transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_base_transition/v1/mod.rs#L40-L58).
+Each document transition must comply with the [document base transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_base_transition/v1/mod.rs#L40-L58).
 
 #### Document id
 
-The document `$id` is created by double sha256 hashing the document's `dataContractId`, `ownerId`, `type`, and `entropy` as shown in [rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/document/generate_document_id.rs).
+The document `$id` is created by double sha256 hashing the document's `dataContractId`, `ownerId`, `type`, and `entropy` as shown in [rs-dpp](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/document/generate_document_id.rs).
 
 ```rust
 // From the Rust reference implementation (rs-dpp)
@@ -52,7 +52,7 @@ pub fn generate_document_id_v0(
 
 #### Token Payment Info
 
-When a document type requires token payment (configured via [`tokenCost`](./data-contract-document.md#token-costs) in the data contract), the `$tokenPaymentInfo` object specifies which token to use and the cost limits the client is willing to accept. The object is defined in [rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/tokens/token_payment_info/v0/mod.rs#L34-L54).
+When a document type requires token payment (configured via [`tokenCost`](./data-contract-document.md#token-costs) in the data contract), the `$tokenPaymentInfo` object specifies which token to use and the cost limits the client is willing to accept. The object is defined in [rs-dpp](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/tokens/token_payment_info/v0/mod.rs#L34-L54).
 
 | Field | Type | Size | Description |
 | - | - | - | - |
@@ -68,7 +68,7 @@ The `gasFeesPaidBy` value must match what the data contract's `tokenCost` config
 
 #### Entropy Generation
 
-Dash Platform uses the following entropy generator found in [rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/util/entropy_generator.rs#L9-L14):
+Dash Platform uses the following entropy generator found in [rs-dpp](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/util/entropy_generator.rs#L9-L14):
 
 ```rust
 // From the Rust reference implementation (rs-dpp)
@@ -83,7 +83,7 @@ fn generate(&self) -> anyhow::Result<[u8; 32]> {
 
 #### Document Transition Action
 
-Document transition actions indicate what operation platform should perform with the provided transition data. Documents provide CRUD functionality, ownership transfer, and NFT features as [defined in rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_transition_action_type.rs#L6-L14). The Action column is the enum index. In the JSON form, `$action` carries the camelCase name instead: `create`, `replace`, `delete`, `transfer`, `purchase`, `updatePrice`, or `indexOnlyDelete`.
+Document transition actions indicate what operation platform should perform with the provided transition data. Documents provide CRUD functionality, ownership transfer, and NFT features as [defined in rs-dpp](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_transition_action_type.rs#L6-L15). The Action column is the enum index. In the JSON form, `$action` carries the camelCase name instead: `create`, `replace`, `delete`, `transfer`, `purchase`, `updatePrice`, or `indexOnlyDelete`.
 
 | Action | Name | Description |
 | :-: | - | - |
@@ -103,10 +103,10 @@ The document create transition extends the [base transition](#document-base-tran
 | Field | Type | Size | Description |
 | - | - | - | - |
 | $entropy | array | 32 bytes | Entropy used in creating the [document ID](#document-id). Generated as [shown here](#entropy-generation). |
-| data | | Varies | Document data being submitted. |
-| $prefundedVotingBalance | | Varies | (Optional) Prefunded amount of credits reserved for unique index conflict resolution voting (e.g., [premium DPNS name](../explanations/dpns.md#conflict-resolution)).|
+| data | object | Varies | Document data being submitted. |
+| $prefundedVotingBalance | array | 2 elements | (Optional) Contested index name and prefunded amount of credits reserved for unique index conflict resolution voting (e.g., [premium DPNS name](../explanations/dpns.md#conflict-resolution)). Starting in protocol version 14, the named index must be the contested index resolved for the submitted document values. Field rejected if another index is named or the document resolves to no contested index. |
 
-Each document create transition must comply with the structure defined in [rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_create_transition/v0/mod.rs#L70-L99) (in addition to the [document base transition](#document-base-transition) that is required for all document transitions).
+Each document create transition must comply with the structure defined in [rs-dpp](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_create_transition/v0/mod.rs#L70-L99) (in addition to the [document base transition](#document-base-transition) that is required for all document transitions).
 
 ::: {note}
 The document create transition data field must include all [required document properties](./data-contract-document.md#required-properties) specified in the data contract.
@@ -142,9 +142,9 @@ The document replace transition extends the [base transition](#document-base-tra
 | Field | Type | Size | Description |
 | - | - | - | - |
 | $revision | unsigned integer | 64 bits | Document revision (=> 1) |
-| data | | Varies | Document data being updated |
+| data | object | Varies | Document data being updated |
 
-Each document replace transition must comply with the structure defined in [rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_replace_transition/v0/mod.rs#L39-L46) (in addition to the [document base transition](#document-base-transition) that is required for all document transitions).
+Each document replace transition must comply with the structure defined in [rs-dpp](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_replace_transition/v0/mod.rs#L39-L46) (in addition to the [document base transition](#document-base-transition) that is required for all document transitions).
 
 ::: {note}
 The document replace transition data field must include all [required document properties](./data-contract-document.md#required-properties) specified in the data contract.
@@ -175,7 +175,7 @@ The following example document replace transition and subsequent table demonstra
 
 ### Document Delete Transition
 
-The document delete transition only requires the fields found in the [base document transition](#document-base-transition). See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_delete_transition/v0/mod.rs#L24-L27) for details.
+The document delete transition only requires the fields found in the [base document transition](#document-base-transition). See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_delete_transition/v0/mod.rs#L24-L27) for details.
 
 ### Document Transfer Transition
 
@@ -186,7 +186,7 @@ The document transfer transition allows a document owner to transfer document ow
 | $revision | unsigned integer | 64 bits | Document revision (=> 1) |
 | recipientOwnerId | array of bytes | 32 bytes | Identifier of the recipient (new owner). See the [NFT page](../explanations/nft.md#transfer-and-trade) for more details. |
 
-Each document transfer transition must comply with the structure defined in [rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_transfer_transition/v0/mod.rs#L34-L41) (in addition to the [document base transition](#document-base-transition) that is required for all document transitions).
+Each document transfer transition must comply with the structure defined in [rs-dpp](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_transfer_transition/v0/mod.rs#L34-L41) (in addition to the [document base transition](#document-base-transition) that is required for all document transitions).
 
 ### Document Purchase Transition
 
@@ -197,7 +197,7 @@ The document purchase transition allows an identity to purchase a document previ
 | $revision | unsigned integer | 64 bits | Document revision (=> 1) |
 | price | unsigned integer | 64 bits | Number of credits being offered for the purchase. See the [NFT page](../explanations/nft.md#transfer-and-trade) for more details. |
 
-Each document purchase transition must comply with the structure defined in [rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_purchase_transition/v0/mod.rs#L24-L31) (in addition to the [document base transition](#document-base-transition) that is required for all document transitions).
+Each document purchase transition must comply with the structure defined in [rs-dpp](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_purchase_transition/v0/mod.rs#L24-L31) (in addition to the [document base transition](#document-base-transition) that is required for all document transitions).
 
 ### Document Update Price Transition
 
@@ -208,7 +208,7 @@ The document update price transition allows a document owner to set or update th
 | $revision | unsigned integer | 64 bits | Document revision (=> 1) |
 | $price | unsigned integer | 64 bits | Updated price for the document. Can only be set by the current document owner. See the [NFT page](../explanations/nft.md#transfer-and-trade) for more details. |
 
-Each document update price transition must comply with the structure defined in [rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_update_price_transition/v0/mod.rs#L28-L35) (in addition to the [document base transition](#document-base-transition) that is required for all document transitions).
+Each document update price transition must comply with the structure defined in [rs-dpp](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_update_price_transition/v0/mod.rs#L28-L35) (in addition to the [document base transition](#document-base-transition) that is required for all document transitions).
 
 ### Document Index-Only Delete Transition
 
@@ -237,7 +237,7 @@ Each document index-only delete transition must comply with the structure define
 
 ## Document Object
 
-The document object represents the data provided by the platform in response to a query. Responses consist of an array of these objects containing the following fields as defined in the Rust reference client ([rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/document/v0/mod.rs#L37-L101)):
+The document object represents the data provided by the platform in response to a query. Responses consist of an array of these objects containing the following fields as defined in the Rust reference client ([rs-dpp](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/document/v0/mod.rs#L37-L115)):
 
 | Property | Type | Required | Description |
 | - | - | - | - |

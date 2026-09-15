@@ -5,7 +5,7 @@
 The `documents` object defines each type of document in the data contract. At a minimum, a document must consist of 1 or more properties. The `additionalProperties` properties keyword must be included as described in the [constraints](./data-contract.md#additional-properties) section and each property must be [assigned a position](#assigning-position).
 
 :::{note}
-The `$schema` property is required for each document type but is automatically injected by the platform during [contract enrichment](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/data_contract/document_type/schema/enrich_with_base_schema/v0/mod.rs). Do not include it in user-submitted document type definitions — providing it will result in a validation error.
+The `$schema` property is required for each document type but is automatically injected by the platform during [contract enrichment](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/data_contract/document_type/schema/enrich_with_base_schema/v0/mod.rs). Do not include it in user-submitted document type definitions — providing it will result in a validation error.
 :::
 
 The following example shows a minimal `documents` object defining a single document (`note`) with one property (`message`).
@@ -144,9 +144,9 @@ An identifier property (`type: array`, `byteArray: true`, `contentMediaType: app
 |-------|------|----------|-------------|
 | `type` | string | Yes | `identity`, `contract`, `token`, `permanentDocument`, or `identityPublicKey` |
 | `contractId` | string or array (32 bytes) | No | `permanentDocument` only. Contract holding the referenced document type. Defaults to the declaring contract. |
-| `documentType` | string (1-64 chars) | `permanentDocument` only | Name of the referenced document type. The referenced type must set `canBeDeleted: false`. |
+| `documentType` | string (1-64 chars) | Yes, for `permanentDocument` | Name of the referenced document type. The referenced type must set `canBeDeleted: false`. |
 | `propertyAgreement` | object (1-10 entries) | No | `permanentDocument` only. Maps a property of this document to a property of the referenced document. Both values must be equal when the document is written, and both properties must have the same type. |
-| `keyIdProperty` | string (1-256 chars) | `identityPublicKey` only | Property of this document that holds the referenced key id. The `refersTo` property itself holds the identity id. |
+| `keyIdProperty` | string (1-256 chars) | Yes, for `identityPublicKey` | Property of this document that holds the referenced key id. The `refersTo` property itself holds the identity id. |
 
 `contractId`, `documentType`, and `propertyAgreement` are rejected unless `type` is `permanentDocument`; `keyIdProperty` is rejected unless `type` is `identityPublicKey`.
 
@@ -156,10 +156,10 @@ There are a variety of constraints currently defined for performance and securit
 
 | Description | Value |
 | ----------- | ----- |
-| Minimum number of properties | [1](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json#L23) |
-| Maximum number of properties | [100](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json#L24) |
-| Minimum property name length | [1](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json#L21) |
-| Maximum property name length | [64](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json#L21) |
+| Minimum number of properties | [1](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json#L23) |
+| Maximum number of properties | [100](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json#L24) |
+| Minimum property name length | [1](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json#L21) |
+| Maximum property name length | [64](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json#L21) |
 | Property name characters     | Alphanumeric (`A-Z`, `a-z`, `0-9`)<br>Hyphen (`-`) <br>Underscore (`_`) |
 
 ## Document Indices
@@ -298,8 +298,8 @@ The table below describes the properties used to configure a contested index:
 | Property Name | Type | Description |
 |-|-|-|
 | fieldMatches | array | Array containing conditions to check |
-| fieldMatches.field | string | Name of the field to check for matches |
-| fieldMatches.regexPattern | string | Regex used to check for matches |
+| fieldMatches.field | string | Name of the field to check for matches (1-256 characters) |
+| fieldMatches.regexPattern | string | Regex used to check for matches (1-256 characters) |
 | resolution | integer | Method to resolve the contest:<br>`0` - masternode voting |
 | description | string | Optional free-text note (1-256 characters) |
 
@@ -326,17 +326,17 @@ For performance and security reasons, indices have the following constraints. Th
 
 | Description | Value |
 | ----------- | ----- |
-| Minimum/maximum length of index `name` | [1](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json#L358) / [32](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json#L359) |
-| Maximum number of indices | [10](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json#L482) |
-| Maximum number of unique indices | [10](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-platform-version/src/version/dpp_versions/dpp_validation_versions/v2.rs#L27) |
-| Maximum number of contested indices | [1](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-platform-version/src/version/dpp_versions/dpp_validation_versions/v2.rs#L26) |
-| Maximum number of properties in a single index | [10](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json#L378) |
-| Maximum `timeRange` overlap factor (`range / step`) (added in 4.2.0) | 24 |
-| Maximum `timeRange` `ttl` (added in 4.2.0) | 604,800 seconds (1 week) |
-| Maximum length of indexed string property | [63](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/mod.rs#L24) |
+| Minimum/maximum length of index `name` | [1](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json#L358) / [32](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json#L359) |
+| Maximum number of indices | [10](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json#L482) |
+| Maximum number of unique indices | [10](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-platform-version/src/version/dpp_versions/dpp_validation_versions/v2.rs#L27) |
+| Maximum number of contested indices | [1](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-platform-version/src/version/dpp_versions/dpp_validation_versions/v2.rs#L26) |
+| Maximum number of properties in a single index | [10](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json#L378) |
+| Maximum `timeRange` overlap factor (`range / step`) (added in 4.2.0) | [24](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-platform-version/src/version/system_limits/v4.rs#L65) |
+| Maximum `timeRange` `ttl` (added in 4.2.0) | [604,800](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-platform-version/src/version/system_limits/v4.rs#L66) seconds (1 week) |
+| Maximum length of indexed string property | [63](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/mod.rs#L28) |
 | Usage of `$id` in an index [disallowed](https://github.com/dashpay/platform/pull/178) | N/A |
-| **Note: Dash Platform [does not allow indices for arrays](https://github.com/dashpay/platform/pull/225).**<br>Maximum length of indexed byte array property | [255](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/mod.rs#L25) |
-| **Note: Dash Platform [does not allow indices for arrays](https://github.com/dashpay/platform/pull/225).**<br>Maximum number of indexed array items         | [1024](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/mod.rs#L26) |
+| **Note: Dash Platform [does not allow indices for arrays](https://github.com/dashpay/platform/pull/225).**<br>Maximum length of indexed byte array property | [255](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/mod.rs#L29) |
+| **Note: Dash Platform [does not allow indices for arrays](https://github.com/dashpay/platform/pull/225).**<br>Maximum number of indexed array items         | [1024](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/mod.rs#L30) |
 
 :::{seealso}
 For all protocol constants, see [Protocol Constants](protocol-constants.md).
@@ -371,14 +371,14 @@ A document type with `documentsKeepHistory: true` must also set `canBeDeleted: f
 
 ### Token Costs
 
-The `tokenCost` option allows document types to require token payment for operations. When configured, users must pay a specified amount of tokens to perform each operation type. Each operation cost is defined as a [documentActionTokenCost](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L294-L337) object with the following properties:
+The `tokenCost` option allows document types to require token payment for operations. When configured, users must pay a specified amount of tokens to perform each operation type. Each operation cost is defined as a [documentActionTokenCost](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L294-L337) object with the following properties:
 
 | Property | Type | Required | Description |
 |----------|------|----------|-------------|
-| `contractId` | array (32 bytes) | No | Identifier of the contract containing the payment token. Defaults to the current contract if omitted. |
+| `contractId` | array (32 bytes) | No | Identifier of the contract containing the payment token. Omit it for a token in the current contract; setting it to the contract's own id is rejected. |
 | `tokenPosition` | integer (0–65535) | Yes | Position of the token within the contract |
 | `amount` | integer (1–281474976710655) | Yes | Number of tokens required for the operation |
-| `effect` | integer | No | Token disposition after payment:<br>`0` - Transfer to contract owner (default)<br>`1` - Burn (tokens destroyed) |
+| `effect` | integer | No | Token disposition after payment:<br>`0` - Transfer to contract owner (default)<br>`1` - Burn (tokens destroyed). Burning is allowed only for a token in the current contract, so `1` is rejected when `contractId` is set. |
 | `gasFeesPaidBy` | integer | No | Who pays gas fees for the operation:<br>`0` - Document owner (default)<br>`1` - Contract owner<br>`2` - Prefer contract owner (falls back to document owner if insufficient) |
 
 The following operation types can each have an independent cost configuration:
@@ -394,7 +394,7 @@ The following operation types can each have an independent cost configuration:
 
 :::{dropdown} List of all usable document properties
 
-  This list of properties is defined in the [Rust DPP implementation](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/data_contract/document_type/mod.rs#L43) and the [document meta-schema](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json).
+  This list of properties is defined in the [Rust DPP implementation](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/data_contract/document_type/mod.rs#L48) and the [document meta-schema](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json).
 
   | Property Name | Type | Description |
   |---------------|------|-------------|
@@ -493,7 +493,7 @@ Properties named by `documentsSummable`, `documentsAverageable`, `summable`, or 
 
 The averageable flags desugar to the underlying count + sum flags during contract parsing — same on-disk layout — so authors who think in terms of averages get a single flag and downstream code paths (insert, query, estimation) stay unchanged. If both `documentsAverageable` and `documentsSummable` are set, they must name the same property.
 
-These flags were introduced in the v1 document meta-schema and carry forward unchanged into v2 and v3. They are rejected when applied to pre-v12 contracts. The full v2 meta-schema, including these flags, is defined [in rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json).
+These flags were introduced in the v1 document meta-schema and carry forward unchanged into v2 and v3. They are rejected when applied to pre-v12 contracts. The current v3 meta-schema, including these flags and the ranked keywords, is defined [in rs-dpp](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/schema/meta_schemas/document/v3/document-meta.json).
 
 See the [`getDocuments` reference](../reference/dapi-endpoints-platform-endpoints.md#getdocuments) for the request/response shapes that consume these flags.
 
@@ -512,14 +512,14 @@ Document types can opt into recording ownership and pricing events in the [docum
 
 Like the [aggregate query flags](#aggregate-query-flags), these cannot be changed by a contract update once set on a published contract.
 
-The flags are read only when the contract validates against the v2 or later document meta-schema (protocol version 13 or later). Under earlier meta-schema versions they are treated as false. The full v2 meta-schema is defined [in rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json).
+The flags are read only when the contract validates against the v2 or later document meta-schema (protocol version 13 or later). Under earlier meta-schema versions they are treated as false. The current v3 meta-schema is defined [in rs-dpp](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/schema/meta_schemas/document/v3/document-meta.json).
 
 ## Keyword Constraints
 
 There are a variety of keyword constraints currently defined for performance and security reasons. The
 following constraints apply to document definitions. Unless otherwise noted, these
 constraints are defined in the platform's JSON Schema rules (e.g., [rs-dpp document meta
-schema](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json)).
+schema](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json)).
 
 | Keyword | Constraint |
 | ------- | ---------- |
@@ -591,4 +591,4 @@ This example syntax shows the structure of a documents object that defines two d
 
 ## Document Schema
 
-See full document schema details in the rs-dpp document meta schema. Protocol version 13 (Dash Platform 4.1) validates against the [v2 meta-schema](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json). Protocol version 14 (Dash Platform 4.2.0) validates against the [v3 meta-schema](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/schema/meta_schemas/document/v3/document-meta.json), which adds the ranked index keywords, `refersTo`, `requiredSince`, `timeRange`, and the `indexOnly` keywords.
+See full document schema details in the rs-dpp document meta schema. Protocol version 13 (Dash Platform 4.1) validates against the [v2 meta-schema](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json). Protocol version 14 (Dash Platform 4.2.0) validates against the [v3 meta-schema](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/schema/meta_schemas/document/v3/document-meta.json), which adds the ranked index keywords, `refersTo`, `requiredSince`, `timeRange`, and the `indexOnly` keywords.

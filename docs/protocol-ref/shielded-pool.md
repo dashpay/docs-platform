@@ -5,7 +5,7 @@
 # Shielded Pool
 
 :::{attention}
-Shielded state transitions were [enabled in Protocol Version 12](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-platform-version/src/version/feature_initial_protocol_versions.rs#L4). They use the [Orchard](https://zips.z.cash/protocol/protocol.pdf) shielded protocol to move credits into, within, and out of a pool that hides amounts, senders, and recipients.
+Shielded state transitions were [enabled in Protocol Version 12](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-platform-version/src/version/feature_initial_protocol_versions.rs#L4). They use the [Orchard](https://zips.z.cash/protocol/protocol.pdf) shielded protocol to move credits into, within, and out of a pool that hides amounts, senders, and recipients.
 
 For the conceptual overview of how the pool works and when to use it, see [Shielded Pool](../explanations/shielded-pool.md).
 :::
@@ -40,7 +40,7 @@ Every shielded transition includes an Orchard bundle proving that a set of note 
 | proof | array of bytes | Varies | Halo 2 zero-knowledge proof that the actions are valid |
 | bindingSignature | array of bytes | 64 bytes | RedPallas signature binding the bundle's actions to its net value balance |
 
-See the [Orchard bundle primitives in rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/shielded/mod.rs).
+See the [Orchard bundle primitives in rs-dpp](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/shielded/mod.rs).
 
 ### Actions
 
@@ -57,15 +57,15 @@ Each action publishes:
 | cvNet | array of bytes | 32 bytes | Net value commitment (Pedersen commitment to the action's value contribution) |
 | spendAuthSig | array of bytes | 64 bytes | Per-action spend authorization signature — see [Shielded Transition Signing](#shielded-transition-signing) |
 
-Each action permanently stores [344 bytes](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/shielded/mod.rs#L32-L58) (312 bytes in the note commitment tree + 32 bytes in the nullifier tree). The minimum shielded fee charges a per-action storage allowance of `shielded_storage_bytes_per_action` bytes at the storage rate: 344 bytes through protocol version 13, and 550 bytes from protocol version 14 to cover tree framing overhead.
+Each action permanently stores [344 bytes](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-platform-version/src/version/drive_abci_versions/drive_abci_validation_versions/v9.rs#L357) (312 bytes in the note commitment tree + 32 bytes in the nullifier tree). The minimum shielded fee charges a per-action storage allowance of `shielded_storage_bytes_per_action` bytes at the storage rate: 344 bytes through protocol version 13, and 550 bytes from protocol version 14 to cover tree framing overhead.
 
-See the [serialized action implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/shielded/mod.rs).
+See the [serialized action implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/shielded/mod.rs).
 
 ### Anchors
 
 An **anchor** is the Sinsemilla root of the note commitment tree at the time the bundle was constructed. Each shielded transition specifies the anchor it was built against; the platform validates that the anchor was previously published. Clients fetch anchors using [`getShieldedAnchors`](../reference/dapi-endpoints-platform-endpoints.md#getshieldedanchors) or [`getMostRecentShieldedAnchor`](../reference/dapi-endpoints-platform-endpoints.md#getmostrecentshieldedanchor).
 
-Anchors are not retained indefinitely. Nodes keep a rolling window governed by [`shielded_anchor_retention_blocks` and `shielded_anchor_pruning_interval`](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-platform-version/src/version/drive_abci_versions/drive_abci_validation_versions/v1.rs#L275-L276), pruning anchors older than the retention window at each pruning boundary. A prover selecting an anchor must therefore choose one from the current window, not from arbitrary history.
+Anchors are not retained indefinitely. Nodes keep a rolling window governed by [`shielded_anchor_retention_blocks` and `shielded_anchor_pruning_interval`](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-platform-version/src/version/drive_abci_versions/drive_abci_validation_versions/v1.rs#L297-L298), pruning anchors older than the retention window at each pruning boundary. A prover selecting an anchor must therefore choose one from the current window, not from arbitrary history.
 
 ### Platform Sighash
 
@@ -75,7 +75,7 @@ Transitions with transparent fields (Unshield, Shielded Withdrawal, etc.) bind t
 SHA-256(SIGHASH_DOMAIN || bundle_commitment || extra_data)
 ```
 
-This prevents replay attacks where an attacker substitutes transparent fields while reusing a valid Orchard bundle. See the [platform sighash implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/shielded/sighash.rs#L21-L41).
+This prevents replay attacks where an attacker substitutes transparent fields while reusing a valid Orchard bundle. See the [platform sighash implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/shielded/sighash.rs#L21-L41).
 
 ## Shielded State Transition Details
 
@@ -101,7 +101,7 @@ Maximum actions per transition: [`max_shielded_transition_actions`](protocol-con
 **Constraints:** Minimum inputs: 1. Maximum inputs: `max_address_inputs`. Minimum per input: 100,000 credits. One witness per input. `amount` must be greater than zero and at most `i64::MAX`, and the input sum must cover the amount plus the minimum shielded fee. The fee strategy must be non-empty, contain no duplicate steps, and have at most `max_address_fee_strategies` steps.
 :::
 
-See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/state_transition/state_transitions/shielded/shield_transition/v0/mod.rs#L37-L63).
+See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/state_transition/state_transitions/shielded/shield_transition/v0/mod.rs#L37-L63).
 
 ### Shielded Transfer
 
@@ -119,7 +119,7 @@ Move credits within the pool between notes. There is no transparent surface — 
 Maximum actions per transition: [`max_shielded_transition_actions`](protocol-constants.md).
 :::
 
-See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/state_transition/state_transitions/shielded/shielded_transfer_transition/v0/mod.rs#L31-L42).
+See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/state_transition/state_transitions/shielded/shielded_transfer_transition/v0/mod.rs#L31-L42).
 
 ### Unshield
 
@@ -138,7 +138,7 @@ Move credits from the pool to a [Platform address](address-system.md#platform-ad
 The `outputAddress` is bound to the Orchard bundle through the [platform sighash](#platform-sighash) to prevent substitution attacks. Maximum actions per transition: [`max_shielded_transition_actions`](protocol-constants.md).
 :::
 
-See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/state_transition/state_transitions/shielded/unshield_transition/v0/mod.rs#L32-L45).
+See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/state_transition/state_transitions/shielded/unshield_transition/v0/mod.rs#L32-L45).
 
 ### Shield from Asset Lock
 
@@ -159,7 +159,7 @@ Move credits from a Dash Core (L1) asset-lock transaction directly into the shie
 `valueBalance` must be greater than zero and at most `i64::MAX`. The ECDSA signature is excluded from the signable bytes used by the platform sighash. Maximum actions per transition: [`max_shielded_transition_actions`](protocol-constants.md).
 :::
 
-See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/state_transition/state_transitions/shielded/shield_from_asset_lock_transition/v0/mod.rs#L35-L60).
+See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/state_transition/state_transitions/shielded/shield_from_asset_lock_transition/v0/mod.rs#L35-L60).
 
 ### Shielded Withdrawal
 
@@ -182,7 +182,7 @@ Transparent fields (`coreFeePerByte`, `pooling`, `outputScript`) are bound to th
 **Constraints:** Pooling must be `Never` (others not yet implemented). `coreFeePerByte` must be a non-zero Fibonacci number. Output script must be P2PKH or P2SH.
 :::
 
-See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/state_transition/state_transitions/shielded/shielded_withdrawal_transition/v0/mod.rs#L33-L54).
+See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/state_transition/state_transitions/shielded/shielded_withdrawal_transition/v0/mod.rs#L33-L54).
 
 ### Identity Create From Shielded Pool
 
@@ -213,12 +213,12 @@ The `denomination` field must exactly match one of the values accepted by the ac
 
 | Protocol version | Accepted denominations |
 | --- | --- |
-| 13 | 0.03 DASH (3,000,000,000 credits), 0.1 DASH (10,000,000,000), 0.25 DASH (25,000,000,000), 0.5 DASH (50,000,000,000), 1 DASH (100,000,000,000) |
+| 14 | 0.03 DASH (3,000,000,000 credits), 0.1 DASH (10,000,000,000), 0.25 DASH (25,000,000,000), 0.5 DASH (50,000,000,000), 1 DASH (100,000,000,000) |
 | 12 | 0.1 DASH (10,000,000,000 credits), 0.3 DASH (30,000,000,000), 0.5 DASH (50,000,000,000), 1 DASH (100,000,000,000) |
 
-Protocol version 13 added 0.03 and 0.25 DASH and retired 0.3 DASH. The protocol version 12 set is retained for chain replay. See the [denomination set in rs-platform-version](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-platform-version/src/version/drive_abci_versions/drive_abci_validation_versions/v9.rs#L336-L342).
+Protocol version 13 added 0.03 and 0.25 DASH and retired 0.3 DASH. Protocol version 14 keeps the version 13 set unchanged. The protocol version 12 set is retained for chain replay. See the [denomination set in rs-platform-version](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-platform-version/src/version/drive_abci_versions/drive_abci_validation_versions/v10.rs#L386-L394).
 
-See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/state_transition/state_transitions/shielded/identity_create_from_shielded_pool_transition/v0/mod.rs#L31-L64).
+See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/state_transition/state_transitions/shielded/identity_create_from_shielded_pool_transition/v0/mod.rs#L31-L64).
 
 ### Shield from Identity
 
