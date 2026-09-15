@@ -46,9 +46,9 @@ A shielded transition is composed of one or more **actions**. Each action struct
 
 ## Transition types
 
-Six state transition types interact with the shielded pool. The wire-level structure of each — including field-by-field tables and source links — is documented in the [Shielded Pool protocol reference](../protocol-ref/shielded-pool.md).
+Several state transition types interact with the shielded pool. The wire-level structure of each — including field-by-field tables and source links — is documented in the [Shielded Pool protocol reference](../protocol-ref/shielded-pool.md).
 
-Consensus gates every transition that moves credits *out of* the pool on the pool holding a minimum number of encrypted notes. This is not a soft privacy recommendation: until the pool reaches that size, unshields, shielded withdrawals, and identity creation from the pool are rejected outright. The gate exists so that exits always draw from a meaningful anonymity set, but its practical effect is that funds shielded into a young or lightly used pool cannot leave it immediately. The threshold is given in the [Shielded Pool protocol reference](../protocol-ref/shielded-pool.md).
+Consensus gates every transition that moves credits *out of* the pool on the pool holding a minimum number of encrypted notes. This is not a soft privacy recommendation: until the pool reaches that size, unshields, shielded withdrawals, identity creation from the pool, and identity top-ups from the pool are rejected outright. The gate exists so that exits always draw from a meaningful anonymity set, but its practical effect is that funds shielded into a young or lightly used pool cannot leave it immediately. The threshold is given in the [Shielded Pool protocol reference](../protocol-ref/shielded-pool.md).
 
 ### Shield
 
@@ -77,6 +77,14 @@ Creates a new identity funded directly from the pool by spending one or more not
 The funding amount cannot be chosen freely: it must be one of a small fixed set of allowed denominations, and any other amount is rejected. Restricting the exit to standard sizes means every identity created at a given denomination looks identical on-chain, so the new identity cannot be linked back to a particular shielded balance by its amount. The permitted denominations are listed in the [Shielded Pool protocol reference](../protocol-ref/shielded-pool.md).
 
 The notes being spent do not have to add up to the chosen denomination exactly - any excess is returned to the pool as a new note, so change stays shielded. If identity creation then fails a stateful check, the denomination still leaves the pool: it lands, less a penalty, at a fallback Platform address named in the transition.
+
+### Shield from identity
+
+Moves credits *into* the pool from an identity's balance, without first moving them to a Platform address. Available from protocol version 14.
+
+### Identity top up from shielded pool
+
+Moves credits *out of* the pool into the balance of an identity that already exists. Like an unshield, the amount and the destination identity are visible; only the source notes stay private. Available from protocol version 14.
 
 ## What the pool does not provide
 

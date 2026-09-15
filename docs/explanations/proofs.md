@@ -158,7 +158,7 @@ Proof verification also detects proof-of-absence, confirming when requested data
 
 ## Asset Lock Proofs
 
-Asset lock proofs are a special category used when creating or funding [identities](../explanations/identity.md). They prove that Dash has been locked on the core blockchain (layer 1) to establish credits on Dash Platform (layer 2).
+Asset lock proofs are a special category used when bringing Dash onto Platform. They prove that Dash has been locked on the core blockchain (layer 1) to establish credits on Dash Platform (layer 2). The credits can fund an [identity](../explanations/identity.md), a [Platform address](../protocol-ref/address-system.md), or the [shielded pool](../explanations/shielded-pool.md).
 
 ### Instant Asset Lock Proof
 
@@ -181,7 +181,7 @@ Uses ChainLocks to prove funds are locked at a specific core blockchain height:
 This method is used when InstantSend confirmation is not available.
 
 :::{attention}
-Asset lock proofs are verified by the network during identity creation and topup state transitions. The locked funds cannot be spent on the core chain once used to create platform credits.
+Asset lock proofs are verified by the network during identity creation and topup, Platform address funding, and shielding directly from an asset lock. The locked funds cannot be spent on the core chain once used to create platform credits.
 :::
 
 ## Related Topics

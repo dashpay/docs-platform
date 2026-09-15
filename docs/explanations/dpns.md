@@ -29,7 +29,7 @@ To prevent [front-running](https://en.wikipedia.org/wiki/Domain_name_front_runni
 
 #### Domain pre-order
 
-In the pre-order phase, the domain name is salted to obscure the actual domain name being registered (e.g. `hash('alice.dash' + salt)`) and submitted to platform. This is done to prevent masternodes from seeing the names being registered and "stealing" them for later resale. Once the pre-order document has been accepted by Platform, the registration can proceed.
+In the pre-order phase, a random 32-byte salt is placed in front of the normalized domain name and the pair is hashed with a double SHA-256 (e.g. the hash of the salt followed by `a11ce.dash`). Only that hash is submitted to Platform, preventing observers from identifying the requested name and front-running its registration. Once the pre-order document has been accepted by Platform, the registration can proceed.
 
 #### Domain registration
 

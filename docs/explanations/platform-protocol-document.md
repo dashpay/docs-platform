@@ -16,7 +16,7 @@ Most document types store each document as a JSON body with the base fields desc
 
 ### Base Fields
 
-Dash Platform Protocol (DPP) defines a set of base fields that must be present in all documents. For the [reference implementation](https://github.com/dashpay/platform/tree/master/packages/rs-dpp), the base fields shown below are defined in the [document base fields](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/src/document/fields.rs).
+Dash Platform Protocol (DPP) defines a set of base fields that may appear on documents. For the [reference implementation](https://github.com/dashpay/platform/tree/master/packages/rs-dpp), the base fields shown below are defined in the [document base fields](https://github.com/dashpay/platform/blob/master/packages/rs-dpp/src/document/fields.rs).
 
 | Field Name | Description |
 | - | - |
@@ -34,12 +34,19 @@ Dash Platform Protocol (DPP) defines a set of base fields that must be present i
 | $createdAtCoreBlockHeight | Core block height when the document was created |
 | $updatedAtCoreBlockHeight | Core block height when the document was last updated |
 | $transferredAtCoreBlockHeight | Core block height when the document was last transferred |
-| $creatorId | [Identity](../explanations/identity.md) that originally created the document (32 bytes). Present on document types that are transferable or have a trade mode set, and preserved when ownership changes |
-| $contractVersion | Version of the data contract the document was last written under, used to determine which properties were required at that time. Present on documents written since protocol version 14; this is what allows a contract update to add a required property without invalidating older documents |
+| $price | Current listing price in credits |
+| $creatorId | [Identity](../explanations/identity.md) that originally created the document (32 bytes) |
+| $contractVersion | Version of the data contract the document was last written under |
 
-:::{attention}
-The timestamp and block height fields will only be present in documents that add them to the list of [required properties](../reference/data-contracts.md#required-properties).
-:::
+#### Field availability
+
+Timestamp and block height fields are present only when included in the document type's [required properties](../reference/data-contracts.md#required-properties).
+
+`$price` is present only while a document whose trade mode supports seller-set pricing is listed, and is cleared when the document is purchased or transferred. `$creatorId` is present on transferable or tradeable document types and is preserved when ownership changes.
+
+Since protocol version 14, `$contractVersion` records which contract version supplied the document's required properties. This allows contract updates to add required properties without invalidating older documents.
+
+`$type` and `$dataContractId` identify the document rather than being stored with its data. Platform supplies them when the document is fetched.
 
 ### Data Contract Fields
 

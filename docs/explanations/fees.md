@@ -58,7 +58,7 @@ An in-depth look at the Fee Multiplier can be found at **link**
 
 In an attempt to minimize Dash Platform's storage requirements, users are incentivized to remove data that they no longer want to be stored in the Dash Platform state for a refund. Data storage fees are distributed to masternodes over the data's lifetime which is 50 years for permanent storage. Therefore, at any time before the data's fees are entirely distributed, there will be fees remaining which can be refunded to the user if they decide to delete the data.
 
-Distribution is front-loaded rather than spread evenly across those 50 years, so the refundable remainder falls fastest in the early years. Removals below a small minimum byte threshold are not refunded at all. See the [protocol constants reference](../protocol-ref/protocol-constants.md) for the distribution schedule and the refund threshold.
+Distribution is front-loaded rather than spread evenly across those 50 years, so the refundable remainder falls fastest in the early years. Removals below a small minimum byte threshold are not refunded at all. See the [protocol constants reference](../protocol-ref/protocol-constants.md) for the storage era counts and the refund threshold.
 
 ## Minimum and Fixed Fees
 

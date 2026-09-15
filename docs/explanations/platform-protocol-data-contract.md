@@ -57,7 +57,7 @@ The drawing below illustrates the steps an application developer follows to comp
 
 ### Updates
 
-Existing data contracts can be updated by their owner in backwards-compatible ways. Updates are applied by submitting a data contract update state transition and are validated to preserve compatibility with previously stored documents.
+Existing data contracts can be updated by their owner in backwards-compatible ways, unless they were registered as read-only. Read-only status is permanent and can only be set at registration. See [Contract Configuration](../reference/data-contracts.md#contract-configuration) for details. Updates are applied by submitting a data contract update state transition and are validated to preserve compatibility with previously stored documents.
 
 Permitted changes include:
 

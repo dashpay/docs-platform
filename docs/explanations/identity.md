@@ -20,7 +20,7 @@ In order to [create an identity](#identity-create-process), a user pays the netw
 
 Once an identity is created, its credit balance is used to pay for activity (e.g. use of applications). The [topup process](#identity-balance-topup-process) provides a way to add additional funds to the balance when necessary.
 
-Locking Dash on layer 1 is the primary funding route, but it is not the only one. An identity can also be created or topped up from credits already held at a [Platform address](../protocol-ref/address-system.md), or created directly from the [shielded pool](./shielded-pool.md) by spending shielded notes. Both routes fund the identity entirely on layer 2, without a Core chain asset lock.
+Locking Dash on layer 1 is the primary funding route, but it is not the only one. An identity can also be created or topped up from credits already held at a [Platform address](../protocol-ref/address-system.md), or created and topped up directly from the [shielded pool](./shielded-pool.md) by spending shielded notes. Both routes fund the identity entirely on layer 2, without a Core chain asset lock.
 
 The processes below describe the Core-chain asset-lock path. For the layer 2 paths, see
 [Identity Create From Addresses](../protocol-ref/address-system.md#identity-create-from-addresses),
@@ -35,7 +35,7 @@ On Testnet, a [test Dash faucet](https://faucet.testnet.networks.dash.org/) is a
 
 First, the user creates an asset lock transaction on the Core chain with one or more outputs that lock Dash funds for use on Platform. An asset lock proof is then obtained for that transaction - either an InstantSend lock proof (for fast confirmation) or a ChainLock-based proof once the transaction is included in a ChainLocked block.
 
-The user then submits an [identity create state transition](https://github.com/dashpay/dips/blob/master/dip-0011.md#identity-create-transition) referencing the asset lock proof and the public keys to register for the new identity. The locked value (minus fees) becomes the new identity's initial credit balance.
+The user then submits an [identity create state transition](https://github.com/dashpay/dips/blob/master/dip-0011.md#identity-create-transition) referencing the asset lock proof and the public keys to register for the new identity. The locked value, minus fees, is converted to credits and becomes the new identity's initial balance.
 
 Application-layer flows where a third party funds an identity on behalf of another user are possible by having that third party create the asset lock transaction and share the resulting proof, but this is a client-side convention rather than a protocol-level invitation mechanism.
 
@@ -77,7 +77,7 @@ Note: the payout key is associated with the masternode owner identity, so both t
 
 ## Credits
 
-Credits provide the mechanism for paying fees that cover the cost of platform usage. Once a user locks Dash on the core blockchain and proves ownership of the locked value in an identity create or topup state transition, their credit balance increases by that amount. Credits can also reach an identity from a [Platform address](../protocol-ref/address-system.md) or the [shielded pool](./shielded-pool.md) without a layer 1 lock. As they perform platform actions, these credits are deducted to pay the associated fees.
+Credits provide the mechanism for paying fees that cover the cost of platform usage. Once a user locks Dash on the core blockchain and proves ownership of the locked value in an identity create or topup state transition, that value is converted to credits and added to their balance, with each duff of locked Dash becoming 1000 credits. Credits can also reach an identity from a [Platform address](../protocol-ref/address-system.md) or the [shielded pool](./shielded-pool.md) without a layer 1 lock. As they perform platform actions, these credits are deducted to pay the associated fees.
 
 Credits are not locked to the identity that holds them: an identity can transfer credits directly to another identity, or to a [Platform address](../protocol-ref/address-system.md), using the corresponding [state transitions](../explanations/platform-protocol-state-transition.md).
 

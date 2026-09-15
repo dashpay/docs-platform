@@ -112,16 +112,16 @@ When creating a token, you define its configuration using the following paramete
 |:------------------------|:------------------|:--------|
 | Description                              | **No** | None |
 | [Conventions](#display-conventions)      | Yes | Required; must include English |
-| [Decimal precision](#display-conventions)| Yes | [8](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/data_contract/associated_token/token_configuration_convention/v0/mod.rs#L47) |
-| [Base supply](#token-supply)             | **No**  | [0](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/data_contract/associated_token/token_configuration/v0/mod.rs#L48) |
+| [Decimal precision](#display-conventions)| Yes | [8](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/data_contract/associated_token/token_configuration_convention/v0/mod.rs#L57) |
+| [Base supply](#token-supply)             | **No**  | [0](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/data_contract/associated_token/token_configuration/v0/mod.rs#L47) |
 | [Maximum supply](#token-supply)          | Yes | None |
 | [Keep history](#history)                 | **No** | True (all history types) |
 | [Start paused](#initial-state)           | **No** | False |
 | [Allow transfer to frozen balance](#allow-transfer-to-frozen-balance) | **No** | True |
 | [Main control group](#main-control-group)| Yes | None |
 | Main control group can be modified       | **No** | NoOne |
-| Marketplace rules                        | Yes | None |
-| [Distribution rules](#distribution-rules)| Yes | None |
+| Marketplace rules                        | Yes | NotTradeable |
+| [Distribution rules](#distribution-rules)| Yes (pre-programmed schedule excluded) | None |
 
 #### Display Conventions
 
@@ -133,7 +133,7 @@ When creating a token, you define its configuration using the following paramete
 
 - Initial supply at launch (base supply)
 - Maximum supply
-  - No minting is possible if the maximum supply equals the base supply
+  - Minting is rejected if it would push the current supply above the maximum supply, so a token that starts at its maximum cannot be minted until some of it is burned
   - Token can be configured to allow authorized parties to change the maximum supply
 
 #### History
@@ -227,7 +227,7 @@ distribution options are summarized below:
 | Method | Description |  Example |  Notes |
 | ------ | ----------- | -------- | ------ |
 | Manual Minting      | Authorized users/groups can create new tokens until `maxSupply` is reached | On-demand minting | - Requires proper configuration to enable<br>- Minting actions may be logged or controlled via permissions |
-| Programmed Distribution | A fixed number of tokens are allocated to designated identities at explicit timestamps, and the recipients must [claim](#claim) them to receive the tokens | *On Jan 1, 2047, allocate `X` tokens to the provided identity* | - Schedules token release at known times<br>- Each entry is a one-time allocation at a fixed timestamp; there is no recurrence option |
+| Programmed Distribution | A fixed number of tokens are allocated to designated identities at explicit timestamps, and the recipients must [claim](#claim) them to receive the tokens | *On Jan 1, 2047, allocate `X` tokens to the provided identity* | - Schedules token release at known times<br>- Each entry is a one-time allocation at a fixed timestamp; there is no recurrence option<br>- The schedule is set when the contract is registered and cannot be changed later |
 | [Perpetual Distribution](../protocol-ref/data-contract-token.md#perpetual-distribution-options) | Scheduled release of tokens based on block, time, or epoch intervals | *Emit 100 tokens every 20 blocks*, or *Halve the emission every year* | - Offers ongoing, dynamic token emission patterns.<br>- Supports variable rates (e.g., linear, steps).<br>- Emissions accrue on schedule and are always collected by the recipient via a [claim](#claim). |
 
 Dash Platform also supports three options to control the destination for newly minted tokens:
