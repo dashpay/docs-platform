@@ -61,9 +61,9 @@ verification, making it practical for light clients and user-facing applications
 
 ### DAPI - A decentralized API
 
-DAPI is a _decentralized_ HTTP API exposing [gRPC](https://grpc.io/) and [JSON-RPC](https://www.jsonrpc.org/) endpoints. Developers send and retrieve Dash Platform application data over the gRPC endpoints, while the JSON-RPC endpoints expose some layer 1 (Dash Core blockchain) information.
+DAPI is a _decentralized_ HTTP API exposing [gRPC](https://grpc.io/) and [JSON-RPC](https://www.jsonrpc.org/) endpoints. Developers send and retrieve Dash Platform application data over the gRPC endpoints, while the JSON-RPC endpoints expose some Dash Core blockchain information.
 
-DAPI provides developers the same access and security as running their own Dash node without the cost and maintenance overhead. Unlike traditional APIs which have a single point of failure, DAPI allows clients to connect to different instances depending on resource availability in the Dash network.
+DAPI provides access to Dash network services without the cost and maintenance overhead of running a node. Clients can verify supported Platform responses using cryptographic proofs. Unlike traditional APIs which have a single point of failure, DAPI allows clients to connect to different instances depending on resource availability in the Dash network.
 
 Developers can connect to DAPI directly or use higher-level SDKs and client libraries maintained in
 the Dash Platform monorepo. These libraries handle connection management, data serialization, and
@@ -78,7 +78,7 @@ The source for these components is available on GitHub:
 
 Drive is Dash Platform's storage component, allowing for consensus-based verification and validation of user-created data. In order for this to occur, developers create a [data contract](../explanations/platform-protocol-data-contract.md). This data contract describes the data structures that comprise an application, similar to creating a schema for a document-oriented database like MongoDB.
 
-Data created by users of the application is validated and verified against this contract. Upon successful validation/verification, application data is submitted to Drive (via DAPI), where it is stored on the masternode network. Drive uses Dash's purpose-built database, [GroveDB](https://github.com/dashpay/grovedb/), to provide efficient proofs with query responses, so you don't have to trust the API provider to be certain your data is authentic.
+Users submit application data in state transitions through DAPI. The network validates the data against its data contract before storing accepted changes in Drive. Drive uses Dash's purpose-built database, [GroveDB](https://github.com/dashpay/grovedb/), to provide efficient proofs with query responses, so you don't have to trust the API provider to be certain your data is authentic.
 
 The source is available on GitHub:
 

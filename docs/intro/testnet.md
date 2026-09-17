@@ -10,7 +10,7 @@ Testnet is the Dash testing network used for experimentation and evaluation of D
 
 ### Infrastructure
 
-Dash Core Group provides the core Testnet infrastructure consisting of 150 masternodes running Dash Core along with the platform services that provide the [decentralized API (DAPI)](../explanations/dapi.md) and [storage (Drive)](../explanations/drive.md) functionality.
+Dash Core Group provides the core Testnet infrastructure consisting of ~50 masternodes running Dash Core plus ~30 evonodes that also run the platform services that provide the [decentralized API (DAPI)](../explanations/dapi.md) and [storage (Drive)](../explanations/drive.md) functionality.
 
 Testnet also includes a [block explorer](https://insight.testnet.networks.dash.org/insight/) for the core blockchain and a [test Dash faucet](https://faucet.testnet.networks.dash.org/) that dispenses funds to users/developers experimenting on the network.
 

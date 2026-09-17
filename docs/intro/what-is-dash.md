@@ -24,15 +24,15 @@ Most of Dash's technical innovations are described in greater detail elsewhere i
 
 ### Instantly Confirmed Transactions
 
-All transactions are automatically sent and received instantly at no extra cost. Transaction security and decentralization are not compromised, due to the ChainLocks innovation. As a result, using Dash to transact means getting the speed and fungibility of fiat currency, while simultaneously having the lower costs, privacy, and security of funds of a blockchain-based network.
+Dash transactions benefit from automatic, near-instant confirmation through InstantSend at no extra cost. Transaction security and decentralization are not compromised, due to the ChainLocks innovation. As a result, using Dash to transact means getting the speed and fungibility of fiat currency, while simultaneously having the lower costs, privacy, and security of funds of a blockchain-based network.
 
 ## Key Features
 
 ### Masternodes
 
-The most important differentiating feature of the Dash payments network is the concept of a **masternode**. On a traditional p2p network, nodes participate equally in the sharing of data and network resources. These nodes are all compensated equally for their contributions toward preserving the network.
+The most important differentiating feature of the Dash payments network is the concept of a **masternode**. On a traditional p2p network, nodes participate equally in the sharing of data and network resources.
 
-However, the Dash network has a second layer of network participants that provide enhanced functionality in exchange for greater compensation. This second layer of masternodes is the reason why Dash is the most secure payments network, and can provide industry-leading features such as instant transaction settlement and usernames.
+However, the Dash network has a second layer of network participants that provide enhanced functionality in exchange for compensation. This second layer of masternodes is the reason why Dash is the most secure payments network, and can provide industry-leading features such as instant transaction settlement and usernames.
 
 ### Long-Living Masternode Quorums
 
