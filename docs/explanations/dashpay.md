@@ -43,8 +43,11 @@ The contract defines three document types: `contactRequest`, `profile` and `cont
 payment channels between Dash identities.
 * Profile documents are used to store public facing information about Dash identities including
 avatars and display names. Since Dash Platform v4.2, a profile can also publish optional public
-payment addresses (a Core chain address and/or a Platform address). Unlike contact-based payments,
-payments to these addresses are publicly linkable to the profile.
+payment addresses (a Core chain address, a Platform address, and/or a shielded receiving
+address). Unlike contact-based payments, payments to the Core and Platform addresses are publicly
+linkable to the profile. Publishing a shielded address ties it to the profile, but shielded payments
+still hide the recipient on-chain. Platform checks its schema type and length; wallets must validate
+the shielded address before paying.
 * ContactInfo documents can be used to store private information about other Dash identities.
 
 ### Establishing a Contact
@@ -83,7 +86,7 @@ contract](https://github.com/dashpay/platform/blob/master/packages/dashpay-contr
 Additionally, the DashPay data triggers defined in
 [rs-drive-abci](https://github.com/dashpay/platform/tree/master/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/batch/data_triggers/triggers/dashpay)
 enforce additional validation rules related to the `contactRequest` document and, since Dash Platform
-v4.2, the payment address fields of the `profile` document. Note: as a system data
+v4.2, the Core and Platform payment address fields of the `profile` document. Note: as a system data
 contract, the version active on a network is determined by that network's active protocol version.
 
 :::{tip}
@@ -177,6 +180,14 @@ information and complete details about the data contract.
         "maxItems": 21,
         "description": "Platform address in storage form (type byte 0x00 P2PKH / 0x01 P2SH followed by the 20-byte HASH160, i.e. RIPEMD160 of SHA256, of the public key or redeem script) for public payments. The type byte is consensus-enforced by a data trigger.",
         "position": 6
+      },
+      "shieldedAddress": {
+        "type": "array",
+        "byteArray": true,
+        "minItems": 43,
+        "maxItems": 43,
+        "description": "Raw Orchard receiving address: 11-byte diversifier followed by 32-byte diversified transmission key. Clients validate before payment; wallets should use a dedicated tip account.",
+        "position": 7
       }
     },
     "minProperties": 1,

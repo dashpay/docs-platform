@@ -51,6 +51,8 @@ Since anyone can topup either their own account or any other account, applicatio
 
 Each identity key has a purpose, a security level, and a cryptographic key type. Its purpose defines how the key may be used (for example authentication, encryption, decryption, transferring credits, or voting), while its security level indicates how strongly clients should protect it and which signing requirements it can satisfy. A master key controls changes to the identity's keys, while a transfer key controls its credits. More keys can be added later through an identity update.
 
+From protocol version 14, non-master authentication keys can be bound to a contract, a document type, or a [contract group](../explanations/platform-protocol-data-contract.md#contract-groups), restricting them to batch transitions within those bounds. They can also carry a credit budget and an expiry time. Transitions are rejected once the budget is exhausted or the block time reaches the expiry. Credits moved out of the identity, storage fees, fixed fees, and voluntary fee increases must fit in the remaining budget; metered processing fees may exceed it.
+
 Data contracts can require a property to refer to an existing identity or, since Dash Platform v4.2, to a specific identity key. See [property references](../reference/data-contracts.md#platform-specific-property-keywords) and the [identity protocol reference](../protocol-ref/identity.md#identity-publickeys) for details.
 
 ### Identity Update Process

@@ -78,6 +78,8 @@ The funding amount cannot be chosen freely: it must be one of a small fixed set 
 
 The notes being spent do not have to add up to the chosen denomination exactly - any excess is returned to the pool as a new note, so change stays shielded. If identity creation then fails a stateful check, the denomination still leaves the pool: it lands, less a penalty, at a fallback Platform address named in the transition.
 
+From protocol version 14, keys with a budget, an expiry, or a contract group binding cannot be registered when creating an identity from the pool. Add these keys afterward through an identity update.
+
 ### Shield from identity
 
 Moves credits *into* the pool from an identity's balance, without first moving them to a Platform address. Available from protocol version 14.

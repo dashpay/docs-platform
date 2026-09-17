@@ -68,12 +68,14 @@ Dash Platform supports proofs for all core data types:
 - Identity existence and full details
 - Identity balance and revision
 - Public keys associated with an identity
+- Remaining credit budget of identity keys that carry one (from protocol version 14)
 - Identity nonces (for replay protection)
 
 **Data Contracts**
 
 - Contract existence and contents
 - Contract history (for contracts that track changes)
+- Contract version on its own, without the contract contents, so a client can check whether a cached contract is current (from protocol version 14; earlier versions prove the whole contract)
 
 **Documents**
 
@@ -95,6 +97,11 @@ Dash Platform supports proofs for all core data types:
 
 - Group state and member powers
 - Group action status and the votes recorded against it
+
+**Contract Groups** (from protocol version 14)
+
+- Contract group owner, admins, name, and description
+- The contracts, document types, and tokens in a contract group, and the contract groups a contract belongs to
 
 **Address System**
 

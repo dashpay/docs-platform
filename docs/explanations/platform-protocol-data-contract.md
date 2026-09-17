@@ -39,6 +39,12 @@ Each document type's schema also determines how applications can query and relat
 
 For a practical example, see the [DashPay contract](#example-contract).
 
+### Contract Groups
+
+From protocol version 14, contract groups organize contracts, document types, and tokens into an identity-owned collection. They can scope [authentication keys](../explanations/identity.md#keys) to those members. These are separate from [token groups](../explanations/tokens.md#groups), whose member identities jointly authorize token actions.
+
+When registering a contract, the creation transition can also register a contract group, optionally with admins, and declare memberships for the new contract, its document types, or its tokens in groups the creating identity owns or administers.
+
 ### Registration
 
 Once a [Dash Platform Protocol](../explanations/platform-protocol.md) compliant data contract has been defined, it may be registered on the platform. Registration is completed by submitting a state transition containing the data contract to [DAPI](../explanations/dapi.md).
@@ -71,7 +77,7 @@ Restricted changes include modifications that would break existing stored docume
 
 A contract update cannot remove or modify an existing token or group. Changing an existing token's configuration is done with a [token configuration update transition](../explanations/tokens.md#configuration-updates), governed by that token's own change control rules, and existing groups are immutable once the contract is registered.
 
-Optional contract revision history storage allows contracts to retain a record of their revisions that can be retrieved and verified. Identity key access rules also allow an encryption or decryption key to be bound to a specific contract or document type for more granular key management.
+Optional contract revision history storage allows contracts to retain a record of their revisions that can be retrieved and verified. Identity key access rules also allow an encryption or decryption key to be bound to a specific contract or document type for more granular key management. From protocol version 14, non-master authentication keys can also be bound to a contract, document type, or contract group, restricting them to batch transitions within those bounds. See [Identity keys](../explanations/identity.md#keys).
 
 :::{note}
 For more detailed information, see the [Platform Protocol Reference - Data Contract](../protocol-ref/data-contract.md) page.

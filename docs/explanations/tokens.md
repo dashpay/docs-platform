@@ -71,7 +71,7 @@ The initial token implementation includes all actions required to create, use, a
 #### Claim
 
 - Claim tokens that have been allocated to an identity by a [distribution rule](#distribution-rules) but not yet credited to its balance. Claim covers both:
-  - **Perpetual distributions** - tokens continuously emitted on a block or time schedule that recipients must pull in order to take ownership.
+  - **Perpetual distributions** - tokens continuously emitted on a block, time, or epoch schedule that recipients must pull in order to take ownership.
   - **Pre-programmed distributions** - tokens scheduled for specific recipients at specific times that recipients must claim to receive.
 - Each claim collects a bounded number of unclaimed perpetual distribution intervals (128 for variable-rate distribution functions), so recipients with a long backlog may need to claim more than once to collect everything owed.
 
