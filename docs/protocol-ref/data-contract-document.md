@@ -331,8 +331,8 @@ For performance and security reasons, indices have the following constraints. Th
 | Maximum number of unique indices | [10](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-platform-version/src/version/dpp_versions/dpp_validation_versions/v2.rs#L27) |
 | Maximum number of contested indices | [1](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-platform-version/src/version/dpp_versions/dpp_validation_versions/v2.rs#L26) |
 | Maximum number of properties in a single index | [10](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json#L378) |
-| Maximum `timeRange` overlap factor (`range / step`) (added in 4.2.0) | [24](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-platform-version/src/version/system_limits/v4.rs#L65) |
-| Maximum `timeRange` `ttl` (added in 4.2.0) | [604,800](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-platform-version/src/version/system_limits/v4.rs#L66) seconds (1 week) |
+| Maximum `timeRange` overlap factor (`range / step`) (added in 4.2.0) | [24](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-platform-version/src/version/system_limits/v4.rs#L77) |
+| Maximum `timeRange` `ttl` (added in 4.2.0) | [604,800](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-platform-version/src/version/system_limits/v4.rs#L78) seconds (1 week) |
 | Maximum length of indexed string property | [63](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/mod.rs#L28) |
 | Usage of `$id` in an index [disallowed](https://github.com/dashpay/platform/pull/178) | N/A |
 | **Note: Dash Platform [does not allow indices for arrays](https://github.com/dashpay/platform/pull/225).**<br>Maximum length of indexed byte array property | [255](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/mod.rs#L29) |

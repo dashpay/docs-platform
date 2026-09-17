@@ -15,7 +15,7 @@ Platform error codes are organized into four categories. Each category may be fu
 | [Basic](#basic-errors)                | 10000 - 10999 | Errors encountered while validating structure and data |
 | [Signature](#signature-errors) | 20000 - 20999 | Errors encountered while validating identity existence and state transition signature |
 | [Fee](#fee-errors)             | 30000 - 30999 | Errors encountered while validating an identity's balance is sufficient to pay fees |
-| [State](#state-errors)         | 40000 - 40999 | Errors encounter while validating state transitions against the platform state |
+| [State](#state-errors)         | 40000 - 41099 | Errors encounter while validating state transitions against the platform state |
 
 ## Basic Errors
 
@@ -146,6 +146,14 @@ Code range:  10350-10399
 | 10357 |MainGroupIsNotDefinedError                                |         |
 | 10358 |GroupRequiredPowerIsInvalidError                           |         |
 | 10359 |GroupHasTooFewMembersError                                 |         |
+| 10360 | ContractGroupMembershipsOverLimitError | |
+| 10361 | DuplicateContractGroupMembershipError | |
+| 10362 | RedundantContractGroupMembershipError | |
+| 10363 | ContractGroupMemberNotInContractError | |
+| 10364 | InvalidContractGroupAdminsError | |
+| 10365 | *(unassigned)* | The registrant-not-owner rule became inexpressible when the owner was removed from the wire format before protocol version 14 shipped |
+| 10366 | InvalidContractGroupNameLengthError | |
+| 10367 | InvalidContractGroupDescriptionLengthError | |
 
 ### Document
 
@@ -233,6 +241,10 @@ Code range:  10500-10599
 | 10532 | WithdrawalOutputScriptNotAllowedWhenSigningWithOwnerKeyError  |         |
 | 10533 | InvalidKeyPurposeForContractBoundsError                       |         |
 | 10534 | IdentityAssetLockTransactionTooManyInputsError                |         |
+| 10535 | ContractGroupBoundKeyNotAllowedInShieldedIdentityCreationError | |
+| 10536 | IdentityPublicKeyLimitsNotAllowedError | |
+| 10537 | InvalidIdentityPublicKeyBudgetError | |
+| 10538 | IdentityPublicKeyLimitsNotAllowedInShieldedIdentityCreationError | |
 
 ### State Transition
 
@@ -287,6 +299,7 @@ Code range: 10800-10899
 | 10825 | ShieldedTooManyActionsError                    |         |
 | 10826 | ShieldedImplicitFeeCapExceededError            |         |
 | 10827 | ShieldedInvalidDenominationError               |         |
+| 10828 | InvalidTokenDistributionEpochIntervalTooShortError | Token distribution error; minimum epoch interval is 1 |
 
 ## Signature Errors
 
@@ -305,6 +318,10 @@ Code range: 10800-10899
 | 20010 | BasicBLSError                               |                |
 | 20011 | InvalidSignaturePublicKeyPurposeError       |                |
 | 20012 | UncompressedPublicKeyNotAllowedError        |                |
+| 20013 | ContractBoundedKeyNonBatchError | |
+| 20014 | ContractBoundedKeyOutOfBoundsError | Enforced during batch advanced-structure validation; an authenticated out-of-bounds member is a paid failure |
+| 20015 | PublicKeyBudgetExhaustedError | |
+| 20016 | PublicKeyExpiredError | Enforced during fee validation against the block time |
 
 ## Fee Errors
 
@@ -418,6 +435,8 @@ Code range:  40200-40299
 | 40215 | NoTransferKeyForCoreWithdrawalAvailableError               |         |
 | 40216 | RecipientIdentityDoesNotExistError                         |         |
 | 40217 | IdentityToFreezeDoesNotExistError                          |         |
+| 40218 | IdentityPublicKeyBudgetExceededError | |
+| 40219 | IdentityPublicKeyAlreadyExpiredError | |
 
 ### Voting State
 
@@ -486,3 +505,14 @@ Code range: 40900-40999
 | 40902 | InvalidShieldedProofError       |         |
 | 40903 | InsufficientPoolNotesError      |         |
 | 40904 | InsufficientShieldedFeeError    |         |
+
+### Contract Group State
+
+Code range: 41000-41099
+
+| Code  | Error Description                         | Comment |
+| :---: | ----------------------------------------- | ------- |
+| 41000 | ContractGroupAlreadyExistsError | |
+| 41001 | ContractGroupNotFoundError | |
+| 41002 | IdentityNotContractGroupOwnerOrAdminError | |
+| 41003 | ContractGroupAdminNotFoundError | |

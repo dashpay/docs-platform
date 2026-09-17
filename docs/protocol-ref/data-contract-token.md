@@ -289,7 +289,7 @@ The `distributionType` field accepts one of three schedule types:
 
 Each type wraps an `interval` (the period length) and a `function` (the emission pattern from the options below). There is no separate `start` field on the distribution type; the schedule begins at contract registration by default and a later start can be set through the function's start offset parameter (`start_step`, `start_moment`, or `start_decreasing_offset`, depending on the function).
 
-The `interval` has a network specific minimum, checked when the contract is registered or updated. Block based intervals must be at least 100 blocks on mainnet (5 on testnet, 2 on devnet, 1 on regtest). Time based intervals must be at least 3,600,000 ms (1 hour) on mainnet (600,000 ms on testnet, 60,000 ms on devnet and regtest) and must be a multiple of 60,000 ms. Epoch based intervals have no minimum.
+The `interval` has a network specific minimum, checked when the contract is registered or updated. Block based intervals must be at least 100 blocks on mainnet (5 on testnet, 2 on devnet, 1 on regtest). Time based intervals must be at least 3,600,000 ms (1 hour) on mainnet (600,000 ms on testnet, 60,000 ms on devnet and regtest) and must be a multiple of 60,000 ms. Epoch based intervals must be at least 1 epoch starting with protocol version 14; earlier protocol versions did not enforce a minimum. An interval of `0` is rejected with `InvalidTokenDistributionEpochIntervalTooShortError` (10828). Block- and time-based minimums are unchanged.
 
 #### Perpetual Distribution Options
 

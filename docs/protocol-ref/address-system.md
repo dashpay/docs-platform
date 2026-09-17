@@ -214,16 +214,18 @@ Withdraw credits from Platform addresses back to the Core chain.
 | inputs          | map              | Varies   | Map of source [Platform addresses](#platform-address) to (nonce, credits) pairs                                      |
 | output          | tuple            | Varies   | (Optional) Change output as (Platform address, credits)                                                              |
 | feeStrategy     | array            | Varies   | [Fee deduction strategy](#fee-strategy)                                                                              |
-| coreFeePerByte  | unsigned integer | 32 bits  | Core transaction fee per byte (must be a [Fibonacci number](https://en.wikipedia.org/wiki/Fibonacci_sequence) ≥ 1)   |
+| coreFeePerByte  | unsigned integer | 32 bits  | Core transaction fee per byte (must be a [Fibonacci number](https://en.wikipedia.org/wiki/Fibonacci_sequence) ≥ 1; at most 6,765 from protocol version 14)   |
 | pooling         | unsigned integer | 8 bits   | Pooling mode: `0` = Never (required), `1` = IfAvailable, `2` = Standard                                              |
 | outputScript    | array of bytes   | Varies   | Core chain destination script (P2PKH or P2SH only)                                                                   |
 | userFeeIncrease | unsigned integer | 16 bits  | Extra fee to prioritize processing if the mempool is full                                                            |
 | inputWitnesses  | array            | Varies   | [Address witnesses](#address-witness) for each input                                                                 |
 
 :::{note}
-**Constraints:** Minimum inputs: 1. Maximum inputs: `max_address_inputs`. Minimum per input: 100,000 credits. Minimum output: 500,000 credits. Pooling must be `Never` (others not yet implemented). Output script must be P2PKH or P2SH. The withdrawn amount (input sum minus the change output) must be greater than zero and within the [min and max withdrawal amount](protocol-constants.md) limits.
+**Constraints:** Minimum inputs: 1. Maximum inputs: `max_address_inputs`. Minimum per input: 100,000 credits. Minimum output: 500,000 credits. Pooling must be `Never` (others not yet implemented). Output script must be P2PKH or P2SH. The withdrawn amount (input sum minus the change output) must be greater than zero and within the [min and max withdrawal amount](protocol-constants.md) limits. From protocol version 14 the Core fee of the withdrawal transaction (190 bytes x `coreFeePerByte` duffs, or 190,000 x `coreFeePerByte` credits) is taken from the withdrawn amount, so the amount must be at least the minimum withdrawal amount plus that fee (1,190,000 credits at `coreFeePerByte` 1). `coreFeePerByte` above 6,765 is rejected.
 
 **Fee:** 400,000,000 credits + 500,000 per input + 6,000,000 for the change output (if present). Withdrawal fees are significantly higher due to the complexity and finality of moving funds back to the Core chain.
+
+At `coreFeePerByte` 6,765, the minimum withdrawn amount is 1,286,350,000 credits. The recipient receives the input sum minus the change output and Core fee. A fee rate above the cap is rejected with error `10522`, and an amount below the fee-inclusive minimum with `10818`.
 :::
 
 See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/state_transition/state_transitions/address_funds/address_credit_withdrawal_transition/).

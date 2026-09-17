@@ -63,17 +63,24 @@ Each item in the `publicKeys` array consists of an object containing:
 
 | Field         | Type           | Description |
 | ------------- | -------------- | ----------- |
+| $formatVersion | string (JSON) | Key format version: `"0"`, or `"1"` from protocol version 14. Version `1` supports the optional usage limits below. |
 | [id](#public-key-id) | integer        | The key id (all public keys must be unique) |
 | [purpose](#public-key-purpose) | integer        | Public key purpose (`0` - Authentication, `1` - Encryption, `2` - Decryption, `3` - Transfer) |
 | [securityLevel](#public-key-securitylevel) | integer        | Public key security level (`0` - Master, `1` - Critical, `2` - High, `3` - Medium) |
-| contractBounds | object (optional) | Restricts this key to a specific data contract or document type context |
+| [contractBounds](#public-key-contractbounds) | object (optional) | Restricts this key to a data contract (`$type` `singleContract`), a document type (`documentType`), or a contract group (`contractGroup`, protocol version 14) |
 | [type](#public-key-type) | integer        | Type of key (default: `0` - ECDSA) |
 | [readOnly](#public-key-readonly) | boolean        | Identity public key can’t be modified with `readOnly` set to `true`. This can’t be changed after adding a key. |
 | [data](#public-key-data)          | array of bytes | Public key (`0` - ECDSA: 33 bytes, `1` - BLS: 48 bytes, `2` - ECDSA Hash160: 20 bytes, `3` - [BIP13](https://github.com/bitcoin/bips/blob/master/bip-0013.mediawiki) Hash160: 20 bytes, `4` - EDDSA_25519_HASH160: 20 bytes) |
 | [disabledAt](#public-key-disabledat) | integer        | Timestamp indicating that the key was disabled at a specified time |
+| totalBudget | unsigned integer (64 bits, optional) | Budget in credits for transitions signed with this key; metered processing fees can exceed it as described below. Must be greater than `0`. Only allowed on authentication keys with security level `1`, `2`, or `3`. Requires key format version `1` (protocol version 14). |
+| expiresAt | unsigned integer (64 bits, optional) | Block time (milliseconds) from which the key can no longer sign. Must be later than the block time when the key is added. Only allowed on authentication keys with security level `1`, `2`, or `3`. Requires key format version `1` (protocol version 14). |
 | signature     | array of bytes | Signature of the signable state transition adding the key (identity create, identity update, or identity create from addresses) by the private key for this public key. Must be empty for key types `2`, `3`, and `4`. |
 
-See the [public key implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/identity/identity_public_key/v0/mod.rs#L43-L61) for more details.
+Each key has a `$formatVersion`. Version `0` keys have the fields above except `totalBudget` and `expiresAt`. Version `1` keys (protocol version 14 and later) add those two optional fields; keys without limits ordinarily use version `0`; the V1 format can also carry no limits. See the [version 0](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/identity/identity_public_key/v0/mod.rs#L43-L61) and [version 1](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/identity/identity_public_key/v1/mod.rs#L39-L58) public key implementations in rs-dpp for more details.
+
+The original `totalBudget` stays on the key; the remaining budget is tracked separately in Drive and stops at zero. Removed credits, storage fees, fixed fees and the user fee increase must fit within the remaining budget, but metered processing fees can exceed it. A key with no remaining budget cannot sign. Limits on a MASTER or non-authentication key are rejected with error `10536`, a zero budget with `10537`, and an expiry at or before the block adding the key with `40219`.
+
+The limits are included in the signable bytes when adding a key. Changing the proposed limits before submission requires signing again; this does not make an already registered key's limits editable.
 
 #### Public Key `id`
 
@@ -135,6 +142,24 @@ value of this field cannot be changed after adding the key.
 
 The `disabledAt` field indicates that the key has been disabled. Its value equals the timestamp when the key was disabled.
 
+#### Public Key `contractBounds`
+
+The optional `contractBounds` object limits where a key may be used. Its `$type` selects the bound:
+
+| `$type` | Fields | Description |
+| --- | --- | --- |
+| `singleContract` | `id` | The key is limited to one data contract |
+| `documentType` | `id`, `documentTypeName` | The key is limited to one document type of a data contract |
+| `contractGroup` | `id` | The key is limited to the contracts, document types, and tokens that belong to a contract group when the key signs |
+
+The JSON `$type` values above are names; their binary discriminants are `0`, `1`, and `2`, respectively.
+
+From protocol version 14, authentication keys may carry contract bounds. No contract opt-in or uniqueness rule is required for authentication bounds. A bound authentication key cannot be a master key, and the contract, document type, or contract group it names must exist. It can only sign [batch](state-transition.md#batch) state transitions, and every transition in the batch must be within the bounds. The `contractGroup` bound is only allowed on authentication keys.
+
+Encryption and decryption keys retain their separate rules: the bound contract or document type must opt in to bounded keys for that purpose, and its configured uniqueness requirements apply. These keys cannot use a `contractGroup` bound.
+
+See the [ContractBounds implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/identity/identity_public_key/contract_bounds/mod.rs#L51-L65) for more details.
+
 ### Identity balance
 
 Each identity has a balance of credits established by an [asset lock transaction](inv:user:std#ref-txs-assetlocktx) on the Core chain. This credit balance is used to pay the fees associated with state transitions.
@@ -164,8 +189,8 @@ Total = identity_create_base_cost + asset_lock_base_cost + (number_of_keys × id
 **Examples:**
 
 - 1 key: 2,000,000 + 200,000,000 + 6,500,000 = **208,500,000 credits** (0.002085 Dash)
-- 2 keys: 2,000,000 + 13,000,000 = **15,000,000 credits** (0.00015 Dash)
-- 6 keys: 2,000,000 + 39,000,000 = **41,000,000 credits** (0.00041 Dash)
+- 2 keys: 2,000,000 + 200,000,000 + 13,000,000 = **215,000,000 credits** (0.00215 Dash)
+- 6 keys: 2,000,000 + 200,000,000 + 39,000,000 = **241,000,000 credits** (0.00241 Dash)
 
 ### Minimum Funding Requirements
 
@@ -185,15 +210,15 @@ The following state transitions create, fund, update, or transfer credits to or 
 
 | Type | Name | Supported protocol versions |
 | --- | --- | --- |
-| 2 | [Identity Create](#identity-create) | ≥ 1 |
+| 2 | [Identity Create](#identity-create) | ≥ 1 (≥ 14 if any key is format version `1` or has a `contractGroup` bound) |
 | 3 | [Identity Top-Up](#identity-topup) | ≥ 1 |
-| 5 | [Identity Update](#identity-update) | ≥ 1 |
+| 5 | [Identity Update](#identity-update) | ≥ 1 (≥ 14 if any added key is format version `1` or has a `contractGroup` bound) |
 | 6 | [Identity Credit Withdrawal](#identity-credit-withdrawal) | ≥ 1 |
 | 7 | [Identity Credit Transfer](#identity-credit-transfer) | ≥ 1 |
 | 9 | [Identity Credit Transfer to Addresses](address-system.md#identity-credit-transfer-to-addresses) | ≥ 11 |
-| 10 | [Identity Create from Addresses](address-system.md#identity-create-from-addresses) | ≥ 11 |
+| 10 | [Identity Create from Addresses](address-system.md#identity-create-from-addresses) | ≥ 11 (≥ 14 if any key is format version `1` or has a `contractGroup` bound) |
 | 11 | [Identity Top-Up from Addresses](address-system.md#identity-top-up-from-addresses) | ≥ 11 |
-| 20 | [Identity Create from Shielded Pool](shielded-pool.md#identity-create-from-shielded-pool) | ≥ 12 |
+| 20 | [Identity Create from Shielded Pool](shielded-pool.md#identity-create-from-shielded-pool) | ≥ 12 (≥ 14 if any key is format version `1` or has a `contractGroup` bound) |
 | 21 | [Shield from Identity](shielded-pool.md#shield-from-identity) | ≥ 14 |
 | 22 | [Identity Top-Up from Shielded Pool](shielded-pool.md#identity-top-up-from-shielded-pool) | ≥ 14 |
 
@@ -288,7 +313,7 @@ Credits can be withdrawn from an identity to an external Core wallet using an id
 | signature            | array of bytes | Signature of state transition data (65 bytes) |
 
 :::{note}
-**Constraints:** `pooling` must be `0` (Never); `1` (IfAvailable) and `2` (Standard) are not yet implemented. `coreFeePerByte` must be a non-zero [Fibonacci number](https://en.wikipedia.org/wiki/Fibonacci_sequence). `outputScript`, when set, must be P2PKH or P2SH. `amount` must be within the [min and max withdrawal amount](protocol-constants.md) limits.
+**Constraints:** `pooling` must be `0` (Never); `1` (IfAvailable) and `2` (Standard) are not yet implemented. `coreFeePerByte` must be a non-zero [Fibonacci number](https://en.wikipedia.org/wiki/Fibonacci_sequence); from protocol version 14 it is also capped at 6,765, and a higher rate is rejected with error `10522`. `outputScript`, when set, must be P2PKH or P2SH. `amount` must be within the [min and max withdrawal amount](protocol-constants.md) limits. From protocol version 14 the Core fee of the withdrawal transaction (190 bytes x `coreFeePerByte` duffs, or 190,000 x `coreFeePerByte` credits) is taken from `amount`, so `amount` must be at least the minimum withdrawal amount plus that fee: 1,190,000 credits at `coreFeePerByte` 1 and 1,286,350,000 credits at 6,765. An `amount` below that floor is rejected with error `10525`. The recipient receives `amount` less the Core fee.
 :::
 
 See the [identity credit withdrawal implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_credit_withdrawal_transition/v1/mod.rs#L31-L48) for more details.

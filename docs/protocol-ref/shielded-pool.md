@@ -57,7 +57,7 @@ Each action publishes:
 | cvNet | array of bytes | 32 bytes | Net value commitment (Pedersen commitment to the action's value contribution) |
 | spendAuthSig | array of bytes | 64 bytes | Per-action spend authorization signature — see [Shielded Transition Signing](#shielded-transition-signing) |
 
-Each action permanently stores [344 bytes](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-platform-version/src/version/drive_abci_versions/drive_abci_validation_versions/v9.rs#L357) (312 bytes in the note commitment tree + 32 bytes in the nullifier tree). The minimum shielded fee charges a per-action storage allowance of `shielded_storage_bytes_per_action` bytes at the storage rate: 344 bytes through protocol version 13, and 550 bytes from protocol version 14 to cover tree framing overhead.
+Each action permanently stores [344 bytes](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-platform-version/src/version/drive_abci_versions/drive_abci_validation_versions/v9.rs#L358) (312 bytes in the note commitment tree + 32 bytes in the nullifier tree). The minimum shielded fee charges a per-action storage allowance of `shielded_storage_bytes_per_action` bytes at the storage rate: 344 bytes through protocol version 13, and 550 bytes from protocol version 14 to cover tree framing overhead.
 
 See the [serialized action implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/shielded/mod.rs).
 
@@ -65,7 +65,7 @@ See the [serialized action implementation in rs-dpp](https://github.com/dashpay/
 
 An **anchor** is the Sinsemilla root of the note commitment tree at the time the bundle was constructed. Each shielded transition specifies the anchor it was built against; the platform validates that the anchor was previously published. Clients fetch anchors using [`getShieldedAnchors`](../reference/dapi-endpoints-platform-endpoints.md#getshieldedanchors) or [`getMostRecentShieldedAnchor`](../reference/dapi-endpoints-platform-endpoints.md#getmostrecentshieldedanchor).
 
-Anchors are not retained indefinitely. Nodes keep a rolling window governed by [`shielded_anchor_retention_blocks` and `shielded_anchor_pruning_interval`](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-platform-version/src/version/drive_abci_versions/drive_abci_validation_versions/v1.rs#L297-L298), pruning anchors older than the retention window at each pruning boundary. A prover selecting an anchor must therefore choose one from the current window, not from arbitrary history.
+Anchors are not retained indefinitely. Nodes keep a rolling window governed by [`shielded_anchor_retention_blocks` and `shielded_anchor_pruning_interval`](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-platform-version/src/version/drive_abci_versions/drive_abci_validation_versions/v1.rs#L298-L299), pruning anchors older than the retention window at each pruning boundary. A prover selecting an anchor must therefore choose one from the current window, not from arbitrary history.
 
 ### Platform Sighash
 
@@ -179,14 +179,14 @@ Move credits from the pool back to Dash Core (L1). The funds leave Platform enti
 :::{note}
 Transparent fields (`coreFeePerByte`, `pooling`, `outputScript`) are bound to the Orchard bundle through the [platform sighash](#platform-sighash). Maximum actions per transition: [`max_shielded_transition_actions`](protocol-constants.md).
 
-**Constraints:** Pooling must be `Never` (others not yet implemented). `coreFeePerByte` must be a non-zero Fibonacci number. Output script must be P2PKH or P2SH.
+**Constraints:** Pooling must be `Never` (others not yet implemented). `coreFeePerByte` must be a non-zero Fibonacci number; from protocol version 14 it is also capped at 6,765, and a higher rate is rejected with error `10522`. Output script must be P2PKH or P2SH. From protocol version 14 the Core fee of the withdrawal transaction (190 bytes x `coreFeePerByte` duffs, or 190,000 x `coreFeePerByte` credits) is taken from the amount reserved for Core, which is `unshieldingAmount` less the Platform fee for the transition's actions. That reserved amount must be at least the minimum withdrawal amount plus the Core fee: 1,190,000 credits at `coreFeePerByte` 1 and 1,286,350,000 credits at 6,765. A reserved amount below that floor is rejected with error `10818`, and one above the maximum withdrawal amount with error `10525`. If `unshieldingAmount` cannot cover the Platform fee, structure validation leaves the rejection to fee validation. The recipient receives the reserved amount less the Core fee.
 :::
 
 See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/state_transition/state_transitions/shielded/shielded_withdrawal_transition/v0/mod.rs#L33-L54).
 
 ### Identity Create From Shielded Pool
 
-Create a new identity funded directly from the shielded pool. The spend nullifiers fund a fixed exit denomination; any change re-enters the pool as an ordinary output note. The new identity carries the same public keys as an ordinary [Identity Create](identity.md#identity-create).
+Create a new identity funded directly from the shielded pool. The spend nullifiers fund a fixed exit denomination; any change re-enters the pool as an ordinary output note. The new identity uses the public key structure of an ordinary [Identity Create](identity.md#identity-create), but starting with protocol version 14 its keys cannot be bound to a contract group or carry a budget or expiry. Those keys can be added later using an [Identity Update](identity.md#identity-update). A version `1` key without these restrictions is allowed. The restriction protects fields absent from the Orchard sighash layout: group-bound keys produce error 10535, and keys with limits produce error 10538. Group-bound key errors take precedence.
 
 | Field | Type | Size | Description |
 | --- | --- | --- | --- |
@@ -216,7 +216,7 @@ The `denomination` field must exactly match one of the values accepted by the ac
 | 14 | 0.03 DASH (3,000,000,000 credits), 0.1 DASH (10,000,000,000), 0.25 DASH (25,000,000,000), 0.5 DASH (50,000,000,000), 1 DASH (100,000,000,000) |
 | 12 | 0.1 DASH (10,000,000,000 credits), 0.3 DASH (30,000,000,000), 0.5 DASH (50,000,000,000), 1 DASH (100,000,000,000) |
 
-Protocol version 13 added 0.03 and 0.25 DASH and retired 0.3 DASH. Protocol version 14 keeps the version 13 set unchanged. The protocol version 12 set is retained for chain replay. See the [denomination set in rs-platform-version](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-platform-version/src/version/drive_abci_versions/drive_abci_validation_versions/v10.rs#L386-L394).
+Protocol version 13 added 0.03 and 0.25 DASH and retired 0.3 DASH. Protocol version 14 keeps the version 13 set unchanged. The protocol version 12 set is retained for chain replay. See the [denomination set in rs-platform-version](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-platform-version/src/version/drive_abci_versions/drive_abci_validation_versions/v10.rs#L392-L398).
 
 See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/state_transition/state_transitions/shielded/identity_create_from_shielded_pool_transition/v0/mod.rs#L31-L64).
 

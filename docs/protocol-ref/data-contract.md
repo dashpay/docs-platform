@@ -45,9 +45,9 @@ There are a variety of constraints currently defined for performance and securit
 
 | Parameter | Size |
 | - | - |
-| Estimated maximum serialized data contract size | [16384 bytes (16 KB)](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-platform-version/src/version/system_limits/v4.rs#L39) |
-| Maximum field value size | [5120 bytes (5 KB)](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-platform-version/src/version/system_limits/v4.rs#L40) |
-| Maximum state transition size | [20480 bytes (20 KB)](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-platform-version/src/version/system_limits/v4.rs#L44) |
+| Estimated maximum serialized data contract size | [16384 bytes (16 KB)](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-platform-version/src/version/system_limits/v4.rs#L46) |
+| Maximum field value size | [5120 bytes (5 KB)](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-platform-version/src/version/system_limits/v4.rs#L47) |
+| Maximum state transition size | [20480 bytes (20 KB)](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-platform-version/src/version/system_limits/v4.rs#L51) |
 
 A document cannot exceed the maximum state transition size in any case. For example, although it is
 possible to define a data contract with 10 document fields that each support the maximum field size
@@ -109,7 +109,7 @@ This page reflects the v3 meta-schema, which adds the `refersTo` and `requiredSi
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/dashpay/platform/blob/master/packages/rs-dpp/schema/meta_schemas/document/v1/document-meta.json",
-  "$comment": "EDITABLE UNTIL THE RELEASE CARRYING PROTOCOL V14 SHIPS — FROZEN AFTER. This v3 document meta-schema activates with protocol v14 (CONTRACT_VERSIONS_V6). It is v2 plus the ranked index keywords (rankedCountable, rankedSummable, rankedAverageable), the refersTo reference keyword on identifier properties, the requiredSince property keyword (the contract version a property is required from), and the timeRange index transform, and admits every v14+ contract written to disk. v2 stays in place for protocol v13, where those keys still fail an index entry's `additionalProperties: false`. Once the release carrying protocol v14 ships, mutating it would change historical validation results and break consensus replay. After release, any new top-level property or rule MUST go in a newer meta-schema version (v4+). The $id above deliberately still names the v1 path: v1, v2 and v3 all share that identity, and it is the exact string `enrich_with_base_schema` injects as every PV12+ document schema's `$schema`, so bumping it here would be a wire-visible change rather than a documentation fix.",
+  "$comment": "FROZEN: shipped with Platform 4.2 (protocol v14). This v3 document meta-schema activates with protocol v14 (CONTRACT_VERSIONS_V6). It is v2 plus the ranked index keywords (rankedCountable, rankedSummable, rankedAverageable), the refersTo reference keyword on identifier properties, the requiredSince property keyword (the contract version a property is required from), and the timeRange index transform, and admits every v14+ contract written to disk. v2 stays in place for protocol v13, where those keys still fail an index entry's `additionalProperties: false`. Mutating it would change historical validation results and break consensus replay. Any new top-level property or rule MUST go in a newer meta-schema version (v4+). The $id above deliberately still names the v1 path: v1, v2 and v3 all share that identity, and it is the exact string `enrich_with_base_schema` injects as every PV12+ document schema's `$schema`, so bumping it here would be a wire-visible change rather than a documentation fix.",
   "type": "object",
   "$defs": {
     "documentProperties": {
@@ -1176,7 +1176,7 @@ Groups can be used to distribute contract configuration and update authorization
 | Constant | Value | Description |
 |----------|-------|-------------|
 | Minimum group size | [2](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/data_contract/group/v0/mod.rs#L111-L114) | Minimum members per group |
-| `max_contract_group_size` | [256](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-platform-version/src/version/system_limits/v4.rs#L55) | Maximum members per group |
+| `max_group_member_count` | [256](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-platform-version/src/version/system_limits/v4.rs#L63) | Maximum members per change-control group |
 | Maximum member power | 65,535 (u32; cap enforced at u16::MAX) | Maximum voting power per member. Each member's power must also not exceed the group's [`requiredPower`](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/data_contract/group/v0/mod.rs#L133-L138) value. |
 | Maximum required power | 65,535 (u32; cap enforced at u16::MAX) | Maximum threshold power |
 
@@ -1257,6 +1257,40 @@ Its documents are written by the protocol while applying the corresponding docum
 
 See the [contract schema in rs-dpp](https://github.com/dashpay/platform/blob/v4.2-dev/packages/document-history-contract/schema/v1/document-history-contract-documents.json).
 
+### Contract groups
+
+Contract groups require protocol version 14.
+
+A contract group is an identity-owned set of contracts, document types and tokens. It is not the same as the change-control [data contract groups](#data-contract-groups) above, which distribute update authorization inside a single contract.
+
+A group is registered by a [Data Contract Create](#data-contract-create) transition using format version `1`. The identity that signs the transition owns the group; the owner is not a wire field. The group ID is `hash_double("contract_group" || owner ID || identity nonce as big-endian bytes)`, so the client knows it before broadcasting.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `admins` | set of identity IDs | Identities that may add members alongside the owner. May be empty. At most 16, and the owner must not be listed. Each must be an existing identity that is not a masternode. |
+| `name` | string (optional) | 1 to 64 Unicode characters when present |
+| `description` | string (optional) | 1 to 256 Unicode characters when present |
+
+Admins act on their own; there is no threshold. Registering a group whose ID already exists is rejected (`41000`), and an admin that does not exist is rejected (`41003`).
+
+Invalid admin lists are rejected with `10364`; invalid name and description lengths are rejected with `10366` and `10367`. These lengths count characters, not UTF-8 bytes. The limits are listed in [Protocol Constants](protocol-constants.md#system-limits).
+
+#### Contract group memberships
+
+A create transition also declares which parts of the contract it creates join a contract group. Each membership names a `contractGroupId` and a `member`:
+
+| Member | Description |
+|--------|-------------|
+| Whole contract | Every document type and token the contract has or later gains |
+| Document type | One document type of the contract, by name |
+| Token | One token of the contract, by its position |
+
+A contract can only enroll its own parts, never another contract. At most 16 memberships per contract. The named document type or token must exist in the contract being created (`10363`), a membership must not repeat (`10361`), and a membership is redundant if the same group already has a whole-contract membership (`10362`). Exceeding the cap is rejected with `10360`.
+
+The group joined must already exist (`41001`), or be the group registered by the same transition, and the creating identity must be its owner or an admin (`41002`). Memberships are declared only when the contract is created.
+
+Once the signer is authenticated, a contract-group state validation failure is a paid failure that bumps the identity nonce. See the [contract group definitions](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/contract_group/mod.rs#L28-L177), [basic validation](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/data_contract_create/basic_structure/v2/mod.rs#L125-L230), and [state validation](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/data_contract_create/state/v1/mod.rs#L110-L277) for the rules and [Errors](errors.md#contract-group-state) for the state error codes.
+
 ## Data Contract State Transition Details
 
 There are two data contract-related state transitions: [data contract create](#data-contract-create) and [data contract update](#data-contract-update). Details are provided in this section.
@@ -1267,15 +1301,17 @@ Data contracts are created on the platform by submitting the [data contract obje
 
 | Field           | Type           | Size | Description |
 | --------------- | -------------- | ---- | ----------- |
-| $formatVersion  | unsigned integer | 16 bits | The state transition format version (currently `0`) |
+| $formatVersion  | unsigned integer | 16 bits | Data Contract Create supports `0` and `1`. The DPP constructors default to `1` from protocol version 14; `1` supports the contract group fields below and requires protocol version 14. |
 | type            | unsigned integer | 8 bits  | State transition type (`0` for data contract create)  |
 | dataContract    | [data contract object](#data-contract-object) | Varies | Object containing the data contract details |
 | identityNonce   | unsigned integer | 64 bits | Identity nonce for this transition to prevent replay attacks |
+| contractGroup   | object | Varies | (Optional; version `1` only) Registers a new [contract group](#contract-groups) owned by the signing identity. Contains `admins` (set of identity IDs, may be empty), `name` (optional string) and `description` (optional string). |
+| contractGroupMemberships | array | Varies | (Version `1` only; defaults to empty) Contract groups the new contract joins. Each entry has `contractGroupId` and a `member` that is the whole contract, one document type (by name), or one token (by position). Empty for a plain contract creation. |
 | userFeeIncrease | unsigned integer | 16 bits | Extra fee to prioritize processing if the mempool is full. Typically set to zero. |
 | signaturePublicKeyId | unsigned integer | 32 bits | The `id` of the [identity public key](../protocol-ref/identity.md#identity-publickeys) that signed the state transition (`=> 0`) |
 | signature            | array of bytes | 65 bytes | Signature of state transition data |
 
-See the [data contract create implementation in rs-dpp](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/state_transition/state_transitions/contract/data_contract_create_transition/v0/mod.rs#L36-L44) for more details.
+See the [version 0](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/state_transition/state_transitions/contract/data_contract_create_transition/v0/mod.rs#L36-L44) and [version 1](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/state_transition/state_transitions/contract/data_contract_create_transition/v1/mod.rs#L40-L52) data contract create implementations in rs-dpp for more details.
 
 ### Data Contract Update
 

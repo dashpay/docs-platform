@@ -110,6 +110,8 @@ Each document create transition must comply with the structure defined in [rs-dp
 
 ::: {note}
 The document create transition data field must include all [required document properties](./data-contract-document.md#required-properties) specified in the data contract.
+
+A create is rejected if a document with the same `$id` already exists ([`DocumentAlreadyPresentError`](errors.md), code 40100). From protocol version 14, a create without `$prefundedVotingBalance` on a document type with a contested index is also rejected if the `$id` is already in the contested document tree ([`DocumentContestDocumentWithSameIdAlreadyPresentError`](errors.md), code 40113).
 :::
 
 The following example document create transition and subsequent table demonstrate how the document transition base, document create transition, and data contract document definitions are assembled into a complete transition for inclusion in a [state transition](#document-overview):

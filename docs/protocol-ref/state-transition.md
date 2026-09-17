@@ -25,7 +25,7 @@ The list of common fields used by multiple state transitions is defined in [rs-d
 
 | Field           | Type           | Size | Description |
 | --------------- | -------------- | ---- | ----------- |
-| $formatVersion  | unsigned integer | 16 bits | The state transition format version (FeatureVersion). Currently `0` for most transitions, `1` for Batch. This is not the global platform protocol version, which is negotiated separately. |
+| $formatVersion  | unsigned integer | 16 bits | The state transition format version (FeatureVersion). Currently `0` for most transitions; `1` for Batch; `0` or `1` for Data Contract Create (`1` carries contract groups and requires protocol version 14). This is not the global platform protocol version, which is negotiated separately. |
 | type            | unsigned integer | 8 bits  | State transition type discriminator (defined in [rs-dpp](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/state_transition/state_transition_types.rs#L22)). See [State Transition Types](#state-transition-types) for the full list. |
 | userFeeIncrease | unsigned integer | 16 bits | Extra fee to prioritize processing if the mempool is full. Typically set to zero. |
 | signature       | array of bytes | 65 or 96 bytes | Signature of state transition data. Present on identity-signed and asset-lock-signed transitions (types 0-9, 13, 18, and 21): 65 bytes for ECDSA signatures or 96 bytes for BLS signatures. |
@@ -71,6 +71,10 @@ Dash Platform Protocol defines the following [state transition types](https://gi
 | 20 | Identity Create From Shielded Pool | [Identity Create From Shielded Pool](shielded-pool.md#identity-create-from-shielded-pool) |
 | 21 | Shield from Identity | [Shield from Identity](shielded-pool.md#shield-from-identity) (added in 4.2.0) |
 | 22 | Identity Top Up From Shielded Pool | [Identity Top Up From Shielded Pool](shielded-pool.md#identity-top-up-from-shielded-pool) (added in 4.2.0) |
+
+:::{note}
+Each state transition is active from a given protocol version. For some, the version depends on content: a Data Contract Create with format version `1`, or an identity transition adding a key with format version `1` or a `contractGroup` bound, is active from protocol version 14. A transition that is not active at the current protocol version is [rejected](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/state_transition/mod.rs#L885-L903) before any fee is charged.
+:::
 
 ### Batch
 
@@ -147,6 +151,8 @@ Within a batch, token transfers are restricted to a CRITICAL (`1`) key. An ident
 hold a MASTER key for identity updates and, for the other transitions it will sign, a key meeting
 that transition's minimum level.
 
+From protocol version 14, an authentication key with [contract bounds](identity.md#public-key-contractbounds) can only sign a batch, and every member must fall within those bounds. A key with `totalBudget` cannot sign when its remaining budget is zero. The credits removed, storage fee, fixed fees and user fee increase must fit within the remaining budget; metered processing fees can exceed it. A key with `expiresAt` cannot sign once the block time reaches that value. An out-of-bounds batch member produces a paid failure and bumps the identity's data contract nonce.
+
 The process to sign state transitions using an identity consists of the following steps:
 
 1. **Create a canonical, signable state transition** encoded using [Bincode](https://github.com/bincode-org/bincode).
@@ -200,7 +206,7 @@ This table shows the fields that must be excluded when creating state transition
 | State transition | Signature | Signature public key ID | Identity ID | Identity public key signature(s) |
 | - | :-: | :-: | :-: | :-: |
 | [Batch](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/v1/mod.rs#L34-L37) | Exclude | Exclude | N/A | N/A |
-| [Contract create](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/state_transition/state_transitions/contract/data_contract_create_transition/v0/mod.rs#L40-L43) | Exclude | Exclude | N/A | N/A |
+| Contract create ([v0](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/state_transition/state_transitions/contract/data_contract_create_transition/v0/mod.rs#L40-L43), [v1](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/state_transition/state_transitions/contract/data_contract_create_transition/v1/mod.rs#L48-L51)) | Exclude | Exclude | N/A | N/A |
 | [Contract update](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/state_transition/state_transitions/contract/data_contract_update_transition/v0/mod.rs#L39-L42) | Exclude | Exclude | N/A | N/A |
 | [Identity create](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_create_transition/v0/mod.rs#L49-L53) | Exclude | N/A | Exclude | [Exclude](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/public_key_in_creation/v0/mod.rs#L56-L57) |
 | [Identity topup](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_topup_transition/v0/mod.rs#L44-L45)  | Exclude | N/A | N/A | N/A |
