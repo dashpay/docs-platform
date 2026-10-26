@@ -325,7 +325,7 @@ The `orderBy` clause must use the field spelling shown above; naming the aggrega
 
 `desc` walks the axis from the largest aggregate down (the "top n" reading); `asc` walks from the smallest up (the "bottom n" reading). Groups holding equal aggregate values are returned in group-key order in the direction of the walk.
 
-`limit` is required and must be between 1 and [100](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-drive/src/query/drive_document_ranked_query/mod.rs#L136). This is a hard ceiling rather than a clamp: a larger limit is rejected with `InvalidLimit`, because the limit is part of the traversal a client re-executes when verifying the proof.
+`limit` is required and must be between 1 and [100](https://github.com/dashpay/platform/blob/v5.0-dev/packages/rs-drive/src/query/drive_document_ranked_query/mod.rs#L142). This is a hard ceiling rather than a clamp: a larger limit is rejected with `InvalidLimit`, because the limit is part of the traversal a client re-executes when verifying the proof.
 
 `offset` skips that many ranks before the returned page, so `limit: 1, offset: 4` returns the fifth-ranked group. The skip is counted from subtree aggregates rather than walked, so there is deliberately no ceiling on it. The response reports the skip actually performed, which can be smaller than the requested offset when the groups run out. Cursors (`startAt` / `startAfter`) are rejected in ranked mode, which makes `offset` the only way to page a ranked result.
 
@@ -343,7 +343,7 @@ A having-range query filters grouped aggregates by their aggregate value, return
 
 The operator must describe one contiguous range - `==`, `>`, `>=`, `<`, `<=`, `Between`, or a `BetweenExclude*` variant. `!=` and `in` are rejected, because neither describes a contiguous range of the axis. Multi-clause `having` is also rejected.
 
-As with ranked queries, `limit` must be between 1 and [100](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-drive/src/query/drive_document_having_query/mod.rs#L119), and the same ranking-axis index flags apply.
+As with ranked queries, `limit` must be between 1 and [100](https://github.com/dashpay/platform/blob/v5.0-dev/packages/rs-drive/src/query/drive_document_having_query/mod.rs#L119), and the same ranking-axis index flags apply.
 
 Having-range queries support neither `offset` nor cursors. To continue past a page cut short by the limit, tighten the `having` bound past the last aggregate value seen. This cannot cross a tie: several groups sharing the boundary aggregate value must fit inside one limit.
 
@@ -381,7 +381,7 @@ Chained mode has strict prerequisites:
 - The join property must declare a same-contract by-ID `refersTo` - `permanentDocument`, `deletableDocument`, or `moderatedDocument` - targeting the outer document type. `findBy` references, `anyOf` / `allOf` alternatives, and arrays of references are not accepted.
 - `limit` is required - it bounds the derived outer query, so there is no server-default fallback. A value outside 1 to 100 (the configured `max_query_limit`, 100 by default) is rejected with `InvalidLimit` rather than clamped.
 - The outer document type must **not** be `indexOnly`, and `selects` must be empty or a single `DOCUMENTS` projection.
-- `groupBy`, `having`, window selections (`inTimeRange` and `inIntegerRange`), cursors, and `offset` are all rejected. Paginate with a range clause on the join property.
+- `groupBy`, `having`, window selections (`inTimeRange` and `inIntegerRange`), `containsAny`, cursors, and `offset` are all rejected. Paginate with a range clause on the join property.
 
 The response carries both halves: the inner documents in query order, and the outer documents ordered by the first appearance of their ID among the inner results, deduplicated.
 
@@ -431,7 +431,7 @@ A sub-query may declare a binding describing where its derived `IN` values come 
 
 Setting `field` to `$id` makes the sub-query a by-ID join, which requires the source property to declare a by-ID `refersTo` (`permanentDocument`, `deletableDocument`, or `moderatedDocument`) targeting the sub-query's contract and document type. Missing documents are handled as for [chained queries](#chained-queries): under `permanentDocument` every derived ID must resolve and a missing document fails the query, `deletableDocument` reports missing IDs, and `moderatedDocument` reports each missing ID with its removal record. Any other field is a lookup, where absence is itself a proven fact. A sub-query with no binding is a sibling: an independent query proven under the same state root.
 
-Composite mode has the same gates as chained mode: the page's `limit` is required, and a value outside 1 to 100 is rejected with `InvalidLimit` rather than clamped. A page addressed by IDs is proven without its limit, so that limit must be at least as large as the number of IDs it addresses. `groupBy`, `having`, window selections (`inTimeRange` and `inIntegerRange`), cursors, and `offset` are rejected, and chained and composite modes are mutually exclusive. A request may carry at most 10 sub-queries, and a sub-query may not use `containsAny`.
+Composite mode has the same gates as chained mode: the page's `limit` is required, and a value outside 1 to 100 is rejected with `InvalidLimit` rather than clamped. A page addressed by IDs is proven without its limit, so that limit must be at least as large as the number of IDs it addresses. `groupBy`, `having`, window selections (`inTimeRange` and `inIntegerRange`), cursors, and `offset` are rejected, and chained and composite modes are mutually exclusive. A request may carry at most 10 sub-queries, and neither the page nor a sub-query may use `containsAny`.
 
 Whether a sub-query takes its own `limit` depends on whether its lookup is already bounded by its values. A value-bounded lookup - a unique index, or an `indexOnly` terminal with every prefix fixed - must not carry one, and neither must a by-ID join or a count. Every other lookup, siblings included, requires one.
 

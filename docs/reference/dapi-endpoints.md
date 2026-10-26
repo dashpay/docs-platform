@@ -22,7 +22,7 @@ without introducing issues for endpoint consumers.
 | Endpoint | Description |
 | -------- | ----------- |
 | [`getContestedResources`](../reference/dapi-endpoints-platform-endpoints.md#getcontestedresources) | *Added in Dash Platform v1.0.0*<br>Retrieves the contested resources for a specific contract, document type, and index. |
-| [`getContestedResourceIdentityVotes`](../reference/dapi-endpoints-platform-endpoints.md#getcontestedresourceidentityvotes) | *Added in Dash Platform v1.0.0*<br>Retrieves the voting record of a specific identity. |
+| [`getContestedResourceIdentityVotes`](../reference/dapi-endpoints-platform-endpoints.md#getcontestedresourceidentityvotes) | **Updated in Dash Platform v5.0.0**<br>Retrieves the voting record of a specific identity. Rejects a non-zero `offset` on proved requests. |
 | [`getContestedResourceVotersForIdentity`](../reference/dapi-endpoints-platform-endpoints.md#getcontestedresourcevotersforidentity) | *Added in Dash Platform v1.0.0*<br>Retrieves the voters for a specific identity associated with a contested resource. |
 | [`getContestedResourceVoteState`](../reference/dapi-endpoints-platform-endpoints.md#getcontestedresourcevotestate) | *Added in Dash Platform v1.0.0*<br>Retrieves the state of a vote for a specific contested resource. |
 | [`getVotePollsByEndDate`](../reference/dapi-endpoints-platform-endpoints.md#getvotepollsbyenddate) | Retrieves vote polls that will end within a specified date range |
@@ -32,13 +32,13 @@ without introducing issues for endpoint consumers.
 | Endpoint | Description |
 | -------- | ----------- |
 | [`getDataContract`](../reference/dapi-endpoints-platform-endpoints.md#getdatacontract) | Returns the requested data contract |
-| [`getDataContracts`](../reference/dapi-endpoints-platform-endpoints.md#getdatacontracts) | Returns the requested data contracts |
-| [`getDataContractHistory`](../reference/dapi-endpoints-platform-endpoints.md#getdatacontracthistory) | **Updated in Dash Platform v5.0.0**<br>Returns the requested data contract history. Rejects a `limit` outside 1 to 10, and an `offset` on proved requests. |
+| [`getDataContracts`](../reference/dapi-endpoints-platform-endpoints.md#getdatacontracts) | **Updated in Dash Platform v5.0.0**<br>Returns the requested data contracts. Rejects an empty ID list when a proof is requested. |
+| [`getDataContractHistory`](../reference/dapi-endpoints-platform-endpoints.md#getdatacontracthistory) | **Updated in Dash Platform v5.0.0**<br>Returns the requested data contract history. Returns `INVALID_ARGUMENT` for a `limit` outside 1 to 10, and rejects an `offset` on proved requests. |
 | [`getDataContractsByRange`](../reference/dapi-endpoints-platform-endpoints.md#getdatacontractsbyrange) | **Added in Dash Platform v5.0.0**<br>Enumerates every data contract on Platform, one page at a time, in ascending contract ID order. |
 | [`getDataContractsLatestVersions`](../reference/dapi-endpoints-platform-endpoints.md#getdatacontractslatestversions) | **Added in Dash Platform v5.0.0**<br>Returns the current version number of each requested data contract. Clients can use this to check whether contracts they already hold are still current without downloading the contracts again. |
 | [`getContractFeePots`](../reference/dapi-endpoints-platform-endpoints.md#getcontractfeepots) | **Added in Dash Platform v5.0.0**<br>Returns the two fee pots of a data contract. |
 | [`getDocuments`](../reference/dapi-endpoints-platform-endpoints.md#getdocuments) | **Updated in Dash Platform v5.0.0**<br>Returns the requested document(s), or an aggregate count/sum/average over the matched document set. Includes ranked, having-range, chained, and composite query modes, the `IN_TIME_RANGE` and `IN_INTEGER_RANGE` window operators, and the `CONTAINS` / `CONTAINS_ANY` typed-array operators. |
-| [`getDocumentHistory`](../reference/dapi-endpoints-platform-endpoints.md#getdocumenthistory) | *Added in Dash Platform v4.0.0*<br>Returns the revision history for a single document on a contract that keeps document history |
+| [`getDocumentHistory`](../reference/dapi-endpoints-platform-endpoints.md#getdocumenthistory) | **Updated in Dash Platform v5.0.0**<br>Returns the revision history for a single document on a contract that keeps document history. Rejects a non-zero `offset` on proved requests. |
 
 ### Contract Moderation
 
@@ -49,12 +49,12 @@ Contract moderation, introduced in protocol version 14, lets a data contract kee
 
 | Endpoint | Description |
 | -------- | ----------- |
-| [`getContractModerationStatus`](../reference/dapi-endpoints-platform-endpoints.md#getcontractmoderationstatus) | **Added in Dash Platform v5.0.0**<br>Returns an identity's status on one or more moderation lists of a moderated data contract: whether it is banned, until when it is suspended, and which warnings it carries. |
-| [`getContractModerationEntries`](../reference/dapi-endpoints-platform-endpoints.md#getcontractmoderationentries) | **Added in Dash Platform v5.0.0**<br>Returns one page of a moderated contract's banlist, suspension list, or warning list, in identity ID order. |
-| [`getContractDocumentRemovals`](../reference/dapi-endpoints-platform-endpoints.md#getcontractdocumentremovals) | **Added in Dash Platform v5.0.0**<br>Returns the removal records of documents that a contract's moderators deleted from one document type, either for specific document IDs or as a page in document ID order. A record shows who removed the document, when, and why, and whether it has since been restored. |
-| [`getContractTeamActions`](../reference/dapi-endpoints-platform-endpoints.md#getcontractteamactions) | **Added in Dash Platform v5.0.0**<br>Returns one page of the actions that an elected contract's seated moderation team is voting on (active) or has carried out (closed), in action ID order. |
-| [`getContractTeamActionSigners`](../reference/dapi-endpoints-platform-endpoints.md#getcontractteamactionsigners) | **Added in Dash Platform v5.0.0**<br>Returns the team members that approved one of the actions an elected contract's seated moderation team votes on. |
-| [`getContractModerationActionCounts`](../reference/dapi-endpoints-platform-endpoints.md#getcontractmoderationactioncounts) | **Added in Dash Platform v5.0.0**<br>Returns how many counted moderation actions (bans, suspensions, warnings, and document deletions) each member of an elected contract's seated moderation team has signed since the moderators fee pot was last settled. |
+| [`getContractModerationStatus`](../reference/dapi-endpoints-platform-endpoints.md#getcontractmoderationstatus) | Returns an identity's status on one or more moderation lists of a moderated data contract: whether it is banned, until when it is suspended, and which warnings it carries. |
+| [`getContractModerationEntries`](../reference/dapi-endpoints-platform-endpoints.md#getcontractmoderationentries) | Returns one page of a moderated contract's banlist, suspension list, or warning list, in identity ID order. |
+| [`getContractDocumentRemovals`](../reference/dapi-endpoints-platform-endpoints.md#getcontractdocumentremovals) | Returns the removal records of documents that a contract's moderators deleted from one document type, either for specific document IDs or as a page in document ID order. A record shows who removed the document, when, and why, and whether it has since been restored. |
+| [`getContractTeamActions`](../reference/dapi-endpoints-platform-endpoints.md#getcontractteamactions) | Returns one page of the actions that an elected contract's seated moderation team is voting on (active) or has carried out (closed), in action ID order. |
+| [`getContractTeamActionSigners`](../reference/dapi-endpoints-platform-endpoints.md#getcontractteamactionsigners) | Returns the team members that approved one of the actions an elected contract's seated moderation team votes on. |
+| [`getContractModerationActionCounts`](../reference/dapi-endpoints-platform-endpoints.md#getcontractmoderationactioncounts) | Returns how many counted moderation actions (bans, suspensions, warnings, and document deletions) each member of an elected contract's seated moderation team has signed since the moderators fee pot was last paid out. |
 
 ### Identities
 
@@ -69,8 +69,8 @@ Contract moderation, introduced in protocol version 14, lets a data contract kee
 | [`getIdentityKeys`](../reference/dapi-endpoints-platform-endpoints.md#getidentitykeys) | **Updated in Dash Platform v5.0.0**<br>Returns the requested identity keys. Request validation is stricter. |
 | [`getIdentityKeysRemainingBudgets`](../reference/dapi-endpoints-platform-endpoints.md#getidentitykeysremainingbudgets) | **Added in Dash Platform v5.0.0**<br>Returns what is left of the credit budgets of an identity's keys. |
 | [`getIdentityNonce`](../reference/dapi-endpoints-platform-endpoints.md#getidentitynonce) | Returns the current identity nonce |
-| [`getIdentitiesBalances`](../reference/dapi-endpoints-platform-endpoints.md#getidentitiesbalances) | *Added in Dash Platform v1.3.0*<br>Retrieves the balances for a list of identities |
-| [`getIdentitiesContractKeys`](../reference/dapi-endpoints-platform-endpoints.md#getidentitiescontractkeys) | *Added in Dash Platform v1.0.0*<br>Returns keys associated to a specific contract for multiple Identities |
+| [`getIdentitiesBalances`](../reference/dapi-endpoints-platform-endpoints.md#getidentitiesbalances) | **Updated in Dash Platform v5.0.0**<br>Retrieves the balances for a list of identities. Rejects an empty ID list when a proof is requested. |
+| [`getIdentitiesContractKeys`](../reference/dapi-endpoints-platform-endpoints.md#getidentitiescontractkeys) | **Updated in Dash Platform v5.0.0**<br>Returns keys associated to a specific contract for multiple Identities. Rejects an empty ID list when a proof is requested. |
 
 ### Security Groups
 
@@ -113,7 +113,7 @@ From protocol version 14, contract groups organize data contracts, document type
 | [`getCurrentQuorumsInfo`](../reference/dapi-endpoints-platform-endpoints.md#getcurrentquorumsinfo) | *Added in Dash Platform v1.4.0*<br>Retrieves current quorum details, including validator sets and metadata for each quorum. |
 | [`getEvonodesProposedEpochBlocksByIds`](../reference/dapi-endpoints-platform-endpoints.md#getevonodesproposedepochblocksbyids) | *Added in Dash Platform v1.3.0*<br>Retrieves the number of blocks proposed by the specified evonodes in a certain epoch, based on their IDs |
 | [`getEvonodesProposedEpochBlocksByRange`](../reference/dapi-endpoints-platform-endpoints.md#getevonodesproposedepochblocksbyrange) | *Added in Dash Platform v1.3.0*<br>Retrieves the number of blocks proposed by evonodes for a specified epoch |
-| [`getEpochsInfo`](../reference/dapi-endpoints-platform-endpoints.md#getepochsinfo) | Returns information about the requested epoch(s) |
+| [`getEpochsInfo`](../reference/dapi-endpoints-platform-endpoints.md#getepochsinfo) | **Updated in Dash Platform v5.0.0**<br>Returns information about the requested epoch(s). `count` must be at least 1 when a proof is requested. |
 | [`getFinalizedEpochInfos`](../reference/dapi-endpoints-platform-endpoints.md#getfinalizedepochinfos) | *Added in Dash Platform v2.0.0*<br>Retrieves finalized epoch information within a specified index range |
 | [`getPathElements`](../reference/dapi-endpoints-platform-endpoints.md#getpathelements) | *Added in Dash Platform v1.0.0*<br>Returns elements for a specified path in the Platform |
 | [`getPrefundedSpecializedBalance`](../reference/dapi-endpoints-platform-endpoints.md#getprefundedspecializedbalance) | *Added in Dash Platform v1.0.0*<br>Returns the pre-funded specialized balance for a specific identity |

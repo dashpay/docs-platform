@@ -33,7 +33,7 @@ Clients use the gRPC status code to decide whose fault a failure is: `INVALID_AR
 | ------ | ------------ |
 | `INVALID_ARGUMENT` | A request payload that is not valid protobuf, an invalid argument, too many elements, or a query syntax error (including errors such as `InvalidLimit`, `InvalidInClause`, and `Unsupported` described on the [Query Syntax](../reference/query-syntax.md) page) |
 | `NOT_FOUND` | A requested item that does not exist, where the endpoint reports absence as an error |
-| `RESOURCE_EXHAUSTED` | A node-side resource limit, such as a bounded concurrency pool. Back off and retry, or use another node |
+| `RESOURCE_EXHAUSTED` | A node-side resource limit, such as a bounded concurrency pool or the [shielded proof-failure limit](#broadcaststatetransition): back off and retry, or use another node. [`getPathElements`](#getpathelements) also returns it for a request over its path and key budget, which must be reduced rather than retried |
 | `OUT_OF_RANGE` | A request larger than the [request size limit](#request-size-limit) |
 | `UNKNOWN` | A request the node could not decode as a query, an unsupported request version, or another unexpected query error. A newer request version may succeed on a node running a newer protocol version |
 | `INTERNAL` | Any other node-side failure |
@@ -218,6 +218,10 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ### getContestedResourceIdentityVotes
 
+:::{versionchanged} 5.0.0
+A non-zero `offset` is now rejected with `INVALID_ARGUMENT` on proved requests.
+:::
+
 Retrieves the voting record of a specific identity.
 
 **Returns**: A list of contested resource votes or a cryptographic proof.
@@ -228,7 +232,7 @@ Retrieves the voting record of a specific identity.
 | ------------------------------ | -------- | -------- | ------------|
 | `identity_id`                  | Bytes    | Yes      | The ID of the identity whose votes are being requested |
 | `limit`                        | Integer  | No       | Maximum number of results to return. See [Result limits and pagination](#result-limits-and-pagination) |
-| `offset`                       | Integer  | No       | Offset for pagination. *Changed in Dash Platform v5.0.0:* a non-zero `offset` is rejected with `INVALID_ARGUMENT` when `prove` is `true` |
+| `offset`                       | Integer  | No       | Offset for pagination. A non-zero `offset` is rejected with `INVALID_ARGUMENT` when `prove` is `true` |
 | `order_ascending`              | Boolean  | No       | Sort order for results |
 | `start_at_vote_poll_id_info`   | Object   | No       | Start poll ID information for pagination |
 | `prove`                        | Boolean  | No       | Set to `true` to receive a proof that contains the requested identity votes |
@@ -358,8 +362,8 @@ Retrieves the voters for a specific identity associated with a contested resourc
 | ---------------------- | -------- | -------- | --------------------------------------------------------------------------- |
 | `contract_id`          | Bytes    | Yes      | The ID of the data contract associated with the contested resource          |
 | `document_type_name`   | String   | Yes      | The name of the document type associated with the contested resource        |
-| `index_name`           | String   | Yes      | The name of the document type's contested index. A document type has at most one contested index; naming any other index is rejected with `InvalidArgument` |
-| `index_values`         | Array    | Yes      | The values used to query the contested resource. Must contain exactly one value per contested index property; supplying more returns `InvalidArgument`, and supplying fewer surfaces as an `InvalidParameter` error from Drive. |
+| `index_name`           | String   | Yes      | The name of the document type's contested index. A document type has at most one contested index; naming any other index is rejected with `INVALID_ARGUMENT` |
+| `index_values`         | Array    | Yes      | The values used to query the contested resource. Must contain exactly one value per contested index property; supplying more returns `INVALID_ARGUMENT`, and supplying fewer surfaces as an `InvalidParameter` error from Drive. |
 | `contestant_id`        | Bytes    | Yes      | The ID of the identity for which to retrieve voters                         |
 | `start_at_identifier_info` | Object | No      | Start identifier information for pagination                                 |
 | `count`                | Integer  | No       | Number of results to return. See [Result limits and pagination](#result-limits-and-pagination) |
@@ -868,13 +872,17 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ### getDataContracts
 
+:::{versionchanged} 5.0.0
+An empty `ids` array is now rejected with `INVALID_ARGUMENT` on proved requests.
+:::
+
 **Returns**: [Data Contract](../explanations/platform-protocol-data-contract.md) information for the requested data contracts
 
 **Parameters**:
 
 | Name    | Type    | Required | Description                               |
 | ------- | ------- | -------- | ----------------------------------------- |
-| `ids`   | Array   | Yes      | An array of data contract IDs. *Changed in Dash Platform v5.0.0:* an empty array is rejected with `INVALID_ARGUMENT` when `prove` is `true`; without a proof it returns an empty result |
+| `ids`   | Array   | Yes      | An array of data contract IDs. An empty array is rejected with `INVALID_ARGUMENT` when `prove` is `true`; without a proof it returns an empty result |
 | `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested data contracts |
 
 **Example Request and Response**
@@ -945,7 +953,7 @@ Enumerates every data contract on Platform, one page at a time, in ascending con
 | `ids_only`    | Boolean | No       | Set to `true` to return only contract IDs. Each entry's `data_contract` is left unset |
 | `prove`       | Boolean | No       | Set to `true` to receive a proof that contains the requested page |
 
-A cursor that is not 32 bytes long is rejected with `InvalidArgument`. When no contracts remain, the
+A cursor that is not 32 bytes long is rejected with `INVALID_ARGUMENT`. When no contracts remain, the
 response contains an empty `data_contract_entries` list rather than a `NotFound` error. A page with
 fewer entries than `limit` is the last page; otherwise pass the last entry's `identifier` as
 `start_after` to fetch the next page.
@@ -1014,7 +1022,7 @@ Returns the current version number of each requested data contract. Clients can 
 
 | Name                | Type    | Required | Description |
 | ------------------- | ------- | -------- | ----------- |
-| `ids`               | Array   | Yes      | An array of 32-byte data contract IDs. At least one and at most 100 IDs; an empty array or an ID that is not 32 bytes is rejected with `InvalidArgument`, and more than 100 returns `InvalidLimit` |
+| `ids`               | Array   | Yes      | An array of 32-byte data contract IDs. At least one and at most 100 IDs; an empty array or an ID that is not 32 bytes is rejected with `INVALID_ARGUMENT`, and more than 100 returns `InvalidLimit` |
 | `include_contracts` | Boolean | No       | Set to `true` to also return the serialized contract in each entry for a contract that exists |
 | `prove`             | Boolean | No       | Set to `true` to receive a proof that contains the requested contract versions |
 
@@ -1090,18 +1098,19 @@ Returns the two fee pots of a data contract. From protocol version 14, a documen
 fixed action fee, on top of the normal processing fees, for actions on its documents. Each fee has
 an owner part, which collects in the owner pot that the contract owner claims, and a moderators part,
 which collects in the moderators pot that the contract's moderation team shares. A pot is paid out
-by a contract fee claim, at most once per epoch.
+by a contract fee claim, at most once per epoch. A change to an elected contract's seated moderation
+team also pays out the moderators pot.
 
 **Returns**: The `owner` and `moderators` pots, or a cryptographic proof. Each pot contains the
-`credits` it holds and, if the pot has been paid out before, its `last_claim`: the `epoch` and block
-time (`time_ms`) of the most recent payout and the `claimant_id` of the identity that signed the
-claim. `last_claim` is unset for a pot that has never been paid out.
+`credits` it holds and, if the pot has ever been claimed, its `last_claim`: the `epoch` and block
+time (`time_ms`) of the most recent claim and the `claimant_id` of the identity that signed it.
+`last_claim` is unset for a pot that has never been claimed.
 
 **Parameters**:
 
 | Name          | Type    | Required | Description |
 | ------------- | ------- | -------- | ----------- |
-| `contract_id` | Bytes   | Yes      | The 32-byte ID of the data contract. An ID that is not 32 bytes is rejected with `InvalidArgument`, and an ID with no contract returns `NotFound` |
+| `contract_id` | Bytes   | Yes      | The 32-byte ID of the data contract. An ID that is not 32 bytes is rejected with `INVALID_ARGUMENT`, and an ID with no contract returns `NotFound` |
 | `prove`       | Boolean | No       | Set to `true` to receive a proof that contains both pots and their last claims |
 
 **Example Request and Response**
@@ -1161,6 +1170,10 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ### getDataContractHistory
 
+:::{versionchanged} 5.0.0
+A `limit` outside 1 to 10 is now rejected with `INVALID_ARGUMENT`, and a non-zero `offset` is rejected with `INVALID_ARGUMENT` on proved requests.
+:::
+
 **Returns**: [Data Contract](../explanations/platform-protocol-data-contract.md) information for the requested data contract  
 **Parameters**:
 
@@ -1168,8 +1181,8 @@ grpcurl -proto protos/platform/v0/platform.proto \
 | ------- | -------- | -------- | ---------------------------------------- |
 | `id`    | Bytes    | Yes      | A data contract `id`                     |
 | `start_at_ms` | Integer | No | Request revisions starting at this timestamp |
-| `limit` | Integer  | No      | The maximum number of revisions to return, between 1 and 10. Omitting the field uses the maximum (10). *Changed in Dash Platform v5.0.0:* an explicit `0` or a value above 10 is rejected with `INVALID_ARGUMENT` |
-| `offset` | Integer | No      | The offset of the first revision to return. *Changed in Dash Platform v5.0.0:* a non-zero `offset` is rejected with `INVALID_ARGUMENT` when `prove` is `true` |
+| `limit` | Integer  | No      | The maximum number of revisions to return, between 1 and 10. Omitting the field uses the maximum (10). An explicit `0` or a value above 10 is rejected with `INVALID_ARGUMENT` |
+| `offset` | Integer | No      | The offset of the first revision to return. A non-zero `offset` is rejected with `INVALID_ARGUMENT` when `prove` is `true` |
 | `prove` | Boolean  | No       | Set to `true` to receive a proof that contains the requested data contract. The data requested will be encoded as part of the proof in the response.|
 
 **Example Request and Response**
@@ -1346,7 +1359,7 @@ The request envelope is `oneof version { v0; v1; }`. Pick a version per call:
 | ---- | ---- | -------- | ----------- |
 | `data_contract_id` | Bytes | Yes | A data contract `id`. |
 | `document_type` | String | Yes | A document type defined by the data contract. |
-| `where_clauses` (v1) / `where` (v0) | Typed (v1) or CBOR bytes (v0) | No | Filter clauses. A v1 clause carries `field`, `operator`, and exactly one operand: `IN_TIME_RANGE` clauses set `time_range`, `IN_INTEGER_RANGE` clauses set `integer_range`, and every other operator sets `value`. Any mismatch is rejected with `InvalidArgument`. The window operators exist only on v1; `CONTAINS` / `CONTAINS_ANY` are also accepted in v0 as `contains` / `containsAny`. See [Query Syntax](../reference/query-syntax.md), [Time-range selection](../reference/query-syntax.md#time-range-selection), [Integer-range selection](../reference/query-syntax.md#integer-range-selection), and [Typed array elements](../reference/query-syntax.md#typed-array-elements). |
+| `where_clauses` (v1) / `where` (v0) | Typed (v1) or CBOR bytes (v0) | No | Filter clauses. A v1 clause carries `field`, `operator`, and exactly one operand: `IN_TIME_RANGE` clauses set `time_range`, `IN_INTEGER_RANGE` clauses set `integer_range`, and every other operator sets `value`. Any mismatch is rejected with `INVALID_ARGUMENT`. The window operators exist only on v1; `CONTAINS` / `CONTAINS_ANY` are also accepted in v0 as `contains` / `containsAny`. See [Query Syntax](../reference/query-syntax.md), [Time-range selection](../reference/query-syntax.md#time-range-selection), [Integer-range selection](../reference/query-syntax.md#integer-range-selection), and [Typed array elements](../reference/query-syntax.md#typed-array-elements). |
 | `order_by` | Typed (v1) or CBOR bytes (v0) | No | Sort order. See [Query Syntax](../reference/query-syntax.md). |
 | `prove` | Boolean | No | Return a proof instead of data. See [Platform proofs](../reference/platform-proofs.md). |
 | `having` (v1) | Typed | No | Aggregate filters on grouped results. From protocol version 14, a single clause naming the selected aggregate alongside one `group_by` property is served as a [having-range query](../reference/query-syntax.md#having-range-queries). Other shapes, and every request on protocol version 13 or earlier, are rejected - usually with `Unsupported`, though a bad limit gives `InvalidLimit` and a missing `group_by` gives `InvalidParameter`. See [Query Syntax](../reference/query-syntax.md). |
@@ -1780,7 +1793,7 @@ Performs a provable semi-join. Presence of the `chained` message selects this mo
 | `chained.outer_document_type` | String | Yes | The joined document type - the `refersTo` target. |
 | `limit` | Integer | Yes | Bounds the derived outer query, so there is no server-default fallback. A value outside 1 to 100 is rejected with `InvalidLimit` rather than clamped. |
 
-The inner document type must be `indexOnly` and resolve to an index carrying the join property; the outer type must not be `indexOnly`. The join property must declare a same-contract by-ID `refersTo` - `permanentDocument`, `deletableDocument`, or `moderatedDocument` - targeting the outer document type, and `selects` must be empty or a single `DOCUMENTS` projection. `group_by`, `having`, window-selection clauses (`IN_TIME_RANGE` and `IN_INTEGER_RANGE`), cursors, and `offset` are rejected; paginate with a range clause on the join property. See [Chained queries](../reference/query-syntax.md#chained-queries).
+The inner document type must be `indexOnly` and resolve to an index carrying the join property; the outer type must not be `indexOnly`. The join property must declare a same-contract by-ID `refersTo` - `permanentDocument`, `deletableDocument`, or `moderatedDocument` - targeting the outer document type, and `selects` must be empty or a single `DOCUMENTS` projection. `group_by`, `having`, window-selection clauses (`IN_TIME_RANGE` and `IN_INTEGER_RANGE`), `CONTAINS_ANY`, cursors, and `offset` are rejected; paginate with a range clause on the join property. See [Chained queries](../reference/query-syntax.md#chained-queries).
 
 The response is carried in `result.data.chained` as `inner_documents` and `outer_documents`. Join values with no outer document are reported according to the join property's `refersTo` kind:
 
@@ -1788,7 +1801,7 @@ The response is carried in `result.data.chained` as `inner_documents` and `outer
 | --------------- | ---------------------- |
 | `permanentDocument` | Cannot occur; a dangling reference fails the query. |
 | `deletableDocument` | Reported in `missing_outer_ids`, in first-appearance order. |
-| `moderatedDocument` | Reported in `removed_outer_documents` with the moderators' removal record (a `ContractDocumentRemoval`), in first-appearance order. A join value with neither a document nor a removal record fails the query. |
+| `moderatedDocument` | Reported in `removed_outer_documents` with the moderators' removal record (a [`ContractDocumentRemoval`](#getcontractdocumentremovals)), in first-appearance order. A join value with neither a document nor a removal record fails the query. |
 
 A node predating this field ignores it and serves the plain inner query, which fails closed on the client: an inner-only proof cannot satisfy the re-derived merged query.
 
@@ -1819,11 +1832,15 @@ Returns a page plus sub-queries derived from it, answered as one merged proof ov
 | `source_property` | String | The property read off each source document - `$id`, `$ownerId`, or an identifier-typed property. Dotted paths reach nested properties. |
 | `field` | String | The sub-query field receiving the `IN` clause. `$id` makes this a by-ID join, requiring the source property to declare a by-ID `refersTo` (`permanentDocument`, `deletableDocument`, or `moderatedDocument`) targeting this sub-query's contract and document type. |
 
-The page's `limit` is required, and a value outside 1 to 100 is rejected with `InvalidLimit` rather than clamped. `group_by`, `having`, window-selection clauses (`IN_TIME_RANGE` and `IN_INTEGER_RANGE`), cursors, and `offset` are rejected, `chained` and `sub_queries` are mutually exclusive, and a request may carry at most 10 sub-queries. A sub-query may not use `CONTAINS_ANY`. See [Composite queries](../reference/query-syntax.md#composite-queries).
+The page's `limit` is required, and a value outside 1 to 100 is rejected with `InvalidLimit` rather than clamped. `group_by`, `having`, window-selection clauses (`IN_TIME_RANGE` and `IN_INTEGER_RANGE`), cursors, and `offset` are rejected, `chained` and `sub_queries` are mutually exclusive, and a request may carry at most 10 sub-queries. Neither the page nor a sub-query may use `CONTAINS_ANY`. See [Composite queries](../reference/query-syntax.md#composite-queries).
 
-The response is carried in `result.data.composite` as `page_documents` plus one `sub_results` entry per sub-query, in request order. For a by-ID join, each `sub_results` entry also reports derived IDs with no document, by the source property's `refersTo` kind: `deletableDocument` lists them in `missing_ids`, and `moderatedDocument` lists them in `removed` with their removal records. Under `permanentDocument`, and for a `moderatedDocument` ID with neither a document nor a removal record, a missing document fails the query.
+The response is carried in `result.data.composite` as `page_documents` plus one `sub_results` entry per sub-query, in request order. For a by-ID join, each `sub_results` entry also reports derived IDs with no document, by the source property's `refersTo` kind: `deletableDocument` lists them in `missing_ids`, and `moderatedDocument` lists them in `removed` with their [removal records](#getcontractdocumentremovals). Under `permanentDocument`, and for a `moderatedDocument` ID with neither a document nor a removal record, a missing document fails the query.
 
 ### getDocumentHistory
+
+:::{versionchanged} 5.0.0
+A non-zero `offset` is now rejected with `INVALID_ARGUMENT` on proved requests.
+:::
 
 **Returns**: The revision history for a single document on a contract that keeps document history  
 **Parameters**:
@@ -1833,8 +1850,8 @@ The response is carried in `result.data.composite` as `page_documents` plus one 
 | `data_contract_id` | Bytes | Yes | A data contract `id` |
 | `document_type_name` | String | Yes | A document type defined by the data contract |
 | `document_id` | Bytes | Yes | The `id` of the document whose history is requested |
-| `limit` | Integer | No | Maximum number of history entries to return, between 1 and 10. Omitting the field uses the maximum (10); an explicit `0` or a value above 10 is rejected with `InvalidArgument`. |
-| `offset` | Integer | No | Number of history entries to skip. Omitted and explicit `0` both start at the first entry. *Changed in Dash Platform v5.0.0:* a non-zero `offset` is rejected with `INVALID_ARGUMENT` when `prove` is `true`. |
+| `limit` | Integer | No | Maximum number of history entries to return, between 1 and 10. Omitting the field uses the maximum (10); an explicit `0` or a value above 10 is rejected with `INVALID_ARGUMENT`. |
+| `offset` | Integer | No | Number of history entries to skip. Omitted and explicit `0` both start at the first entry. A non-zero `offset` is rejected with `INVALID_ARGUMENT` when `prove` is `true`. |
 | `start_at_ms` | Integer | No | Only return results *after* this time in milliseconds; the bound is exclusive. |
 | `prove` | Boolean | No | Set to `true` to receive a proof that contains the requested document history. The data requested will be encoded as part of the proof in the response.|
 
@@ -1914,7 +1931,7 @@ moderation actions are counted toward a share of the contract's moderators fee p
 The endpoints in this section read that state. The contract must keep the data being queried.
 Querying a moderation list the contract doesn't keep, a document type whose deletions keep no
 records, or team actions or action counts that the contract doesn't track is rejected with
-`InvalidArgument`. A contract that doesn't exist returns `NotFound`.
+`INVALID_ARGUMENT`. A contract that doesn't exist returns `NotFound`.
 
 ### getContractModerationStatus
 
@@ -1931,7 +1948,7 @@ Returns an identity's status on one or more moderation lists of a moderated data
 | `lists`       | Array of enums | Yes | The lists to read: `CONTRACT_MODERATION_LIST_BANLIST = 1`, `CONTRACT_MODERATION_LIST_SUSPENSIONS = 2`, or `CONTRACT_MODERATION_LIST_WARNINGS = 3`. Name at least one list, with no repeats. Each list must be one the contract keeps. `CONTRACT_MODERATION_LIST_UNSPECIFIED = 0` is rejected |
 | `prove`       | Boolean | No       | Set to `true` to receive a proof of the identity's entry, present or absent, on each requested list |
 
-A request is rejected with `InvalidArgument` if `lists` is empty, names a list twice, or names a
+A request is rejected with `INVALID_ARGUMENT` if `lists` is empty, names a list twice, or names a
 list the contract doesn't keep, or if the contract isn't moderated.
 
 **Response Object**
@@ -1944,7 +1961,7 @@ left unset rather than reported as empty.
 | `status.lists` | Array of enums | The lists this status covers, as named in the request |
 | `status.banned` | Boolean (optional) | Set only when the banlist was read: `true` if the identity is on it |
 | `status.ban_reason` | Object (optional) | Set when the identity is banned. See [Moderation reason fields](#moderation-reason-fields) |
-| `status.suspended_until` | UInt64 (optional) | The block time, in milliseconds, at which the identity's suspension lapses. Unset when the identity isn't suspended or the suspension list wasn't read. A lapsed suspension stays on the list until the identity's next document transition or an unsuspend removes it, so compare this value with the current block time to tell whether the suspension is still in effect |
+| `status.suspended_until` | UInt64 (optional) | The block time, in milliseconds, at which the identity's suspension lapses. Unset when the identity isn't suspended or the suspension list wasn't read. A lapsed suspension stays on the list until the identity's next document transition, an unsuspend, or a ban removes it, so compare this value with the current block time to tell whether the suspension is still in effect |
 | `status.suspension_reason` | Object (optional) | Set when the identity is suspended. See [Moderation reason fields](#moderation-reason-fields) |
 | `status.warnings` | Array | When the warning list was read, the identity's warnings, oldest first. Each has `warned_at` (the block time of the warning, in milliseconds) and a `reason`. Empty when the identity carries no warnings or the warning list wasn't read; use `status.lists` to tell the two apart |
 | `metadata` | Object | Metadata about the blockchain state. See [metadata details](#data-proofs-and-metadata) for complete information |
@@ -2016,9 +2033,12 @@ grpcurl -proto protos/platform/v0/platform.proto \
       ]
     },
     "metadata": {
-      "height": "5991",
-      "coreChainLockedHeight": 1097384,
-      "protocolVersion": 14
+      "height": "412345",
+      "coreChainLockedHeight": 1520000,
+      "epoch": 18000,
+      "timeMs": "1793000000000",
+      "protocolVersion": 14,
+      "chainId": "dash-testnet-51"
     }
   }
 }
@@ -2039,7 +2059,7 @@ Returns one page of a moderated contract's banlist, suspension list, or warning 
 | `contract_id` | Bytes   | Yes      | The 32-byte ID of the moderated data contract |
 | `list`        | Enum    | Yes      | The list to read: `CONTRACT_MODERATION_LIST_BANLIST = 1`, `CONTRACT_MODERATION_LIST_SUSPENSIONS = 2`, or `CONTRACT_MODERATION_LIST_WARNINGS = 3`. Must be a list the contract keeps. `CONTRACT_MODERATION_LIST_UNSPECIFIED = 0` is rejected |
 | `start_after` | Bytes   | No       | A 32-byte identity ID. The page starts after this identity (exclusive) |
-| `limit`       | UInt32  | No       | Maximum number of entries to return. See [Result limits and pagination](#result-limits-and-pagination) |
+| `limit`       | UInt32  | No       | Maximum number of entries to return, from 1 to 100. Omit to return up to 100. `0` or a value above 100 is rejected with `INVALID_ARGUMENT`. The default and maximum are protocol constants, not node settings |
 | `prove`       | Boolean | No       | Set to `true` to receive a proof that contains the requested page |
 
 To read the next page, pass the last `identity_id` returned as `start_after`. A page with fewer
@@ -2109,9 +2129,12 @@ grpcurl -proto protos/platform/v0/platform.proto \
       ]
     },
     "metadata": {
-      "height": "5991",
-      "coreChainLockedHeight": 1097384,
-      "protocolVersion": 14
+      "height": "412345",
+      "coreChainLockedHeight": 1520000,
+      "epoch": 18000,
+      "timeMs": "1793000000000",
+      "protocolVersion": 14,
+      "chainId": "dash-testnet-51"
     }
   }
 }
@@ -2132,14 +2155,14 @@ Returns the removal records of documents that a contract's moderators deleted fr
 | `contract_id`        | Bytes   | Yes      | The 32-byte ID of the moderated data contract |
 | `document_type_name` | String  | Yes      | A document type whose moderator deletions keep records: one that sets `moderatorAbilities.delete` without turning off `deleteKeepsRecord` |
 | `document_ids`       | Object  | No\*     | Select the records of specific documents |
-| `document_ids.`<br>`document_ids` | Array of bytes | Yes | 32-byte document IDs, from 1 to 100, with no repeats. An ID with no removal record is left out of the response, and proved absent when a proof is requested |
+| `document_ids.`<br>`document_ids` | Array of bytes | Yes | 32-byte document IDs, from 1 to 100, with no repeats. An empty list, more than 100 IDs, or a repeated ID is rejected with `INVALID_ARGUMENT`. An ID with no removal record is left out of the response, and proved absent when a proof is requested |
 | `page`               | Object  | No\*     | Select one page of the type's records, in document ID order |
 | `page.start_after`   | Bytes   | No       | A 32-byte document ID. The page starts after this document (exclusive) |
-| `page.limit`         | UInt32  | No       | Maximum number of records to return. See [Result limits and pagination](#result-limits-and-pagination) |
+| `page.limit`         | UInt32  | No       | Maximum number of records to return, from 1 to 100. Omit to return up to 100. `0` or a value above 100 is rejected with `INVALID_ARGUMENT`. The default and maximum are protocol constants, not node settings |
 | `prove`              | Boolean | No       | Set to `true` to receive a proof that contains the requested records |
 
 \* Exactly one of `document_ids` or `page` must be set. A request with neither is rejected with
-`InvalidArgument`, as is a request for a document type that doesn't exist or doesn't keep
+`INVALID_ARGUMENT`, as is a request for a document type that doesn't exist or doesn't keep
 removal records.
 
 **Response Object**
@@ -2204,9 +2227,12 @@ grpcurl -proto protos/platform/v0/platform.proto \
       ]
     },
     "metadata": {
-      "height": "5991",
-      "coreChainLockedHeight": 1097384,
-      "protocolVersion": 14
+      "height": "412345",
+      "coreChainLockedHeight": 1520000,
+      "epoch": 18000,
+      "timeMs": "1793000000000",
+      "protocolVersion": 14,
+      "chainId": "dash-testnet-51"
     }
   }
 }
@@ -2229,11 +2255,11 @@ Returns one page of the actions that an elected contract's seated moderation tea
 | `start_at_action_id` | Object  | No       | Where the page starts. Omit to start at the first action |
 | `start_at_action_id.`<br>`start_action_id` | Bytes | Yes | The 32-byte action ID to start from |
 | `start_at_action_id.`<br>`start_action_id_included` | Boolean | No | Whether the page includes the start action |
-| `count`              | UInt32  | No       | Maximum number of actions to return. See [Result limits and pagination](#result-limits-and-pagination) |
+| `count`              | UInt32  | No       | Maximum number of actions to return, from 1 to 100. Omit to return up to 100. `0` or a value above 100 is rejected with `INVALID_ARGUMENT`. The default and maximum are protocol constants, not node settings |
 | `prove`              | Boolean | No       | Set to `true` to receive a proof that contains the requested actions |
 
 A request for a contract with no document type that sets `moderatorAbilities.deleteSettled` is
-rejected with `InvalidArgument`.
+rejected with `INVALID_ARGUMENT`.
 
 **Response Object**
 
@@ -2303,9 +2329,12 @@ grpcurl -proto protos/platform/v0/platform.proto \
       ]
     },
     "metadata": {
-      "height": "5991",
-      "coreChainLockedHeight": 1097384,
-      "protocolVersion": 14
+      "height": "412345",
+      "coreChainLockedHeight": 1520000,
+      "epoch": 18000,
+      "timeMs": "1793000000000",
+      "protocolVersion": 14,
+      "chainId": "dash-testnet-51"
     }
   }
 }
@@ -2370,9 +2399,12 @@ grpcurl -proto protos/platform/v0/platform.proto \
       ]
     },
     "metadata": {
-      "height": "5991",
-      "coreChainLockedHeight": 1097384,
-      "protocolVersion": 14
+      "height": "412345",
+      "coreChainLockedHeight": 1520000,
+      "epoch": 18000,
+      "timeMs": "1793000000000",
+      "protocolVersion": 14,
+      "chainId": "dash-testnet-51"
     }
   }
 }
@@ -2382,7 +2414,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ### getContractModerationActionCounts
 
-Returns how many counted moderation actions (bans, suspensions, warnings, and document deletions) each member of an elected contract's seated moderation team has signed since the moderators fee pot was last settled. These counts set each member's part of the action share when the pot is paid out. A payout resets every count, and so does a change to the team.
+Returns how many counted moderation actions (bans, suspensions, warnings, and document deletions) each member of an elected contract's seated moderation team has signed since the moderators [fee pot](#getcontractfeepots) was last paid out. These counts set each member's part of the action share when the pot is paid out. A payout resets every count, and a change to the team pays the pot out first.
 
 **Returns**: The action count of each member, or a cryptographic proof.
 
@@ -2394,11 +2426,11 @@ Returns how many counted moderation actions (bans, suspensions, warnings, and do
 | `prove`       | Boolean | No       | Set to `true` to receive a proof that contains the requested counts |
 
 The response isn't paginated: it returns every count, which the team's size bounds. A request
-for a contract whose moderators aren't an elected team is rejected with `InvalidArgument`.
+for a contract whose moderators aren't an elected team is rejected with `INVALID_ARGUMENT`.
 
 The response's `counts.counts` lists one entry per member, in identity ID order, each with the
 member's `identity_id` and `count` (UInt32). A member that hasn't signed a counted action since
-the last settlement has no entry.
+the last payout has no entry.
 
 **Example Request and Response**
 
@@ -2442,9 +2474,12 @@ grpcurl -proto protos/platform/v0/platform.proto \
       ]
     },
     "metadata": {
-      "height": "5991",
-      "coreChainLockedHeight": 1097384,
-      "protocolVersion": 14
+      "height": "412345",
+      "coreChainLockedHeight": 1520000,
+      "epoch": 18000,
+      "timeMs": "1793000000000",
+      "protocolVersion": 14,
+      "chainId": "dash-testnet-51"
     }
   }
 }
@@ -3089,8 +3124,8 @@ All keys
 
 Returns what is left of the credit budgets of an identity's keys. From protocol version 14, a
 non-master authentication key can carry a total credit budget (see [Identity
-keys](../explanations/identity.md#keys)). The key itself never changes, so the remaining budget is
-tracked separately and read with this endpoint.
+keys](../explanations/identity.md#keys)). Spending against a budget doesn't modify the stored key,
+so the remaining budget is tracked separately and read with this endpoint.
 
 **Returns**: One entry per requested key, in key ID order, or a cryptographic proof. Each entry
 contains the `key_id` and its `remaining_budget` in credits. `remaining_budget` is absent when the
@@ -3101,12 +3136,12 @@ the key can no longer sign transitions.
 
 | Name          | Type    | Required | Description |
 | ------------- | ------- | -------- | ----------- |
-| `identity_id` | Bytes   | Yes      | An identity ID. An ID that is not 32 bytes is rejected with `InvalidArgument` |
-| `key_ids`     | Array   | Yes      | An array of key IDs to look up. At least one and at most 100 IDs, with no repeats; an empty array or a repeated ID is rejected with `InvalidArgument`, and more than 100 returns `InvalidLimit` |
+| `identity_id` | Bytes   | Yes      | An identity ID. An ID that is not 32 bytes is rejected with `INVALID_ARGUMENT` |
+| `key_ids`     | Array   | Yes      | An array of key IDs to look up. At least one and at most 100 IDs, with no repeats; an empty array or a repeated ID is rejected with `INVALID_ARGUMENT`, and more than 100 returns `InvalidLimit` |
 | `prove`       | Boolean | No       | Set to `true` to receive a proof that contains the requested remaining budgets |
 
 Key budgets only exist from protocol version 14. On earlier protocol versions, the endpoint returns
-an error instead of a result.
+`UNKNOWN` instead of a result.
 
 **Example Request and Response**
 
@@ -3243,6 +3278,10 @@ Current identity nonce: 0
 
 ### getIdentitiesBalances
 
+:::{versionchanged} 5.0.0
+An empty `ids` array is now rejected with `INVALID_ARGUMENT` on proved requests.
+:::
+
 Retrieves the balances for a list of identities.
 
 **Returns**: A list of identities with their corresponding balances or a cryptographic proof.
@@ -3251,7 +3290,7 @@ Retrieves the balances for a list of identities.
 
 | Name      | Type    | Required | Description                                              |
 |-----------|---------|----------|----------------------------------------------------------|
-| `ids`     | Array   | No       | An array of identity IDs for which balances are requested. At most 100 IDs per call; more returns `InvalidLimit`. *Changed in Dash Platform v5.0.0:* an empty array is rejected with `INVALID_ARGUMENT` when `prove` is `true`<br>Note: masternode IDs are created uniquely as described in the [masternode identity IDs section](#masternode-identity-ids) |
+| `ids`     | Array   | No       | An array of identity IDs for which balances are requested. At most 100 IDs per call; more returns `InvalidLimit`. An empty array is rejected with `INVALID_ARGUMENT` when `prove` is `true`<br>Note: masternode IDs are created uniquely as described in the [masternode identity IDs section](#masternode-identity-ids) |
 | `prove`   | Boolean | No       | Set to `true` to receive a proof containing the requested balances |
 
 **Example Request and Response**
@@ -3307,16 +3346,20 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ### getIdentitiesContractKeys
 
+:::{versionchanged} 5.0.0
+On proved requests, an empty `identities_ids` array is now rejected with `INVALID_ARGUMENT`, and `purposes` is now required and must not be empty.
+:::
+
 **Returns**: Keys associated to a specific contract for multiple [Identities](../explanations/identity.md).
 
 **Parameters**:
 
 | Name                 | Type                    | Required | Description |
 |----------------------|-------------------------|----------|-------------|
-| `identities_ids`     | Array                   | Yes      | An array of identity IDs. At most 100 IDs per call; more returns `InvalidLimit`. *Changed in Dash Platform v5.0.0:* an empty array is rejected with `INVALID_ARGUMENT` when `prove` is `true`<br>Note: masternode IDs are created uniquely as described in the [masternode identity IDs section](#masternode-identity-ids) |
+| `identities_ids`     | Array                   | Yes      | An array of identity IDs. At most 100 IDs per call; more returns `InvalidLimit`. An empty array is rejected with `INVALID_ARGUMENT` when `prove` is `true`<br>Note: masternode IDs are created uniquely as described in the [masternode identity IDs section](#masternode-identity-ids) |
 | `contract_id`        | Bytes                   | Yes      | The ID of the contract |
 | `document_type_name` | String                  | No       | Name of the document type |
-| `purposes`           | Array of [KeyPurpose](#key-purposes) | No | Array of purposes for which keys are requested. *Changed in Dash Platform v5.0.0:* required when `prove` is `true`; an empty array is then rejected with `INVALID_ARGUMENT` |
+| `purposes`           | Array of [KeyPurpose](#key-purposes) | No | Array of purposes for which keys are requested. Required when `prove` is `true`; an empty array is then rejected with `INVALID_ARGUMENT` |
 | `prove`              | Boolean                 | No       | Set to `true` to receive a proof that contains the requested identity keys |
 
 #### Key Purposes
@@ -3553,7 +3596,7 @@ Retrieves a list of actions performed by a specific group within a contract.
 |-----------------------------------|---------|----------|-------------|
 | `contract_id`                     | Bytes   | Yes      | The ID of the contract containing the group |
 | `group_contract_position`         | UInt32  | Yes      | The position of the group within the contract |
-| `status`                          | Enum    | Yes      | The status of the actions to retrieve (`ACTIVE = 0`, `CLOSED = 1`) |
+| `status`                          | Enum    | No       | The status of the actions to retrieve (`ACTIVE = 0`, `CLOSED = 1`). Omitting the field selects `ACTIVE` |
 | `start_at_action_id`              | Object  | No       | Filtering options for retrieving actions |
 | `start_at_action_id.`<br>`start_action_id` | Bytes  | No       | The action ID to start retrieving from |
 | `start_at_action_id.`<br>`start_action_id_included` | Boolean | No | Whether the start action should be included in the results |
@@ -3713,7 +3756,7 @@ Retrieves the signers for a specified group action within a contract, along with
 |---------------------------|---------|----------|-------------|
 | `contract_id`             | Bytes   | Yes      | The ID of the contract containing the group action. |
 | `group_contract_position` | UInt32  | Yes      | The position of the group within the contract. |
-| `status`                  | Enum    | Yes      | The status of the action (`ACTIVE = 0`, `CLOSED = 1`). |
+| `status`                  | Enum    | No       | The status of the action (`ACTIVE = 0`, `CLOSED = 1`). Omitting the field selects `ACTIVE` |
 | `action_id`               | Bytes   | Yes      | The unique identifier of the action. |
 | `prove`                   | Boolean | No       | Set to `true` to receive a proof that contains the requested group action signers. |
 
@@ -3802,7 +3845,7 @@ or its absence.
 
 | Name                | Type    | Required | Description |
 | ------------------- | ------- | -------- | ----------- |
-| `contract_group_id` | Bytes   | Yes      | The 32-byte ID of the contract group. An ID that is not 32 bytes is rejected with `InvalidArgument` |
+| `contract_group_id` | Bytes   | Yes      | The 32-byte ID of the contract group. An ID that is not 32 bytes is rejected with `INVALID_ARGUMENT` |
 | `prove`             | Boolean | No       | Set to `true` to receive a proof that contains the requested group information |
 
 **Example Request and Response**
@@ -3873,7 +3916,7 @@ an empty page.
 
 | Name                | Type    | Required | Description |
 | ------------------- | ------- | -------- | ----------- |
-| `contract_group_id` | Bytes   | Yes      | The 32-byte ID of the contract group. An ID that is not 32 bytes is rejected with `InvalidArgument` |
+| `contract_group_id` | Bytes   | Yes      | The 32-byte ID of the contract group. An ID that is not 32 bytes is rejected with `INVALID_ARGUMENT` |
 | `contracts`         | Object  | Yes      | Request member contracts. Optional `start_after`: a 32-byte contract ID; the page starts after it |
 | `document_types`    | Object  | Yes      | Request member document types. Optional `start_after`: a `{contract_id, document_type_name}` pair; the page starts after it |
 | `tokens`            | Object  | Yes      | Request member tokens. Optional `start_after`: a `{contract_id, token_position}` pair; the page starts after it. `token_position` must fit in 16 bits |
@@ -3881,8 +3924,8 @@ an empty page.
 | `prove`             | Boolean | No       | Set to `true` to receive a proof that contains the requested page |
 
 Exactly one of `contracts`, `document_types`, or `tokens` must be set; a request with none is
-rejected with `InvalidArgument`. An invalid cursor (a contract ID that is not 32 bytes or a token
-position above 65,535) is also rejected with `InvalidArgument`. To fetch the next page, pass the last
+rejected with `INVALID_ARGUMENT`. An invalid cursor (a contract ID that is not 32 bytes or a token
+position above 65,535) is also rejected with `INVALID_ARGUMENT`. To fetch the next page, pass the last
 returned member as `start_after`.
 
 **Example Request and Response**
@@ -3956,7 +3999,7 @@ memberships or their absence.
 
 | Name          | Type    | Required | Description |
 | ------------- | ------- | -------- | ----------- |
-| `contract_id` | Bytes   | Yes      | The 32-byte ID of the data contract. An ID that is not 32 bytes is rejected with `InvalidArgument` |
+| `contract_id` | Bytes   | Yes      | The 32-byte ID of the data contract. An ID that is not 32 bytes is rejected with `INVALID_ARGUMENT` |
 | `prove`       | Boolean | No       | Set to `true` to receive a proof that contains the requested memberships |
 
 **Example Request and Response**
@@ -4034,7 +4077,7 @@ DAPI now rejects an oversized state transition with `INVALID_ARGUMENT` before at
 :::
 
 :::{versionadded} 5.0.0
-DAPI limits shielded state transitions from a source address that keeps submitting invalid Orchard proofs. The limit applies to transitions carrying Orchard actions (for example shield, shielded transfer, unshield, and shielded withdrawal) and is charged only when Drive rejects a transition with an invalid shielded proof (consensus code 40902). Each source address - an IPv4 address or an IPv6 /48 prefix - may accumulate four failed actions, and each failed action takes 30 seconds to drain. While a source has outstanding failures it may have only one shielded broadcast in flight. A refused broadcast returns `RESOURCE_EXHAUSTED` with the message `too many rejected shielded state transitions from this address; retry later` and a `ratelimit-reset` trailer giving the number of seconds to wait. These limits are fixed in DAPI and are not configurable.
+DAPI throttles shielded state transitions (those carrying Orchard actions) from a source address whose recent broadcasts failed shielded proof verification (consensus code 40902), and limits how many shielded actions one address may have in flight at once. A refused broadcast returns `RESOURCE_EXHAUSTED` with the message `too many rejected shielded state transitions from this address; retry later` and a `ratelimit-reset` metadata entry giving the seconds to wait. Wallets that submit valid proofs are not affected.
 :::
 
 ```{eval-rst}
@@ -4061,7 +4104,7 @@ DAPI limits shielded state transitions from a source address that keeps submitti
 | `request_user_balance`  | Boolean | No       | *Added in Dash Platform v5.0.0.* Set to `true` to receive, without a proof, the credit balance of the identity that owns the state transition after it executed. Ignored when `prove` is `true`. |
 
 :::{versionadded} 5.0.0
-When `request_user_balance` is `true` and `prove` is `false`, a successful result carries `success_with_owner_balance.owner_balance`: the owner identity's credit balance, read unproved from Drive's current state. If that state predates the block that executed the transition, the response carries only the metadata, with no result, so a caller can detect a lagging node by comparing `metadata.height` to the transition's block. Transitions without an owner identity (address-funded and shielded-pool transitions), and a balance lookup that fails, return a plain success with no result, as before.
+When `request_user_balance` is `true` and `prove` is `false`, a successful result carries `success_with_owner_balance.owner_balance`: the owner identity's credit balance, read unproved from Drive's current state. If that state predates the block that executed the transition, the response carries only the metadata, with no result, so a caller can detect a lagging node by comparing `metadata.height` to the transition's block. Transitions without an owner identity (address-funded transitions and shielded transitions other than shield-from-identity), and a balance lookup that fails, return a plain success with no result, as before.
 
 From protocol version 14, the proof of an owned, fee-paying transition (document and token batches, contract creates and updates, identity updates, key limit updates, and contract moderation) carries the owner's balance itself, so a client requesting a proof does not need `request_user_balance`.
 :::
@@ -4344,6 +4387,10 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ### getEpochsInfo
 
+:::{versionchanged} 5.0.0
+A `count` of `0`, including an omitted `count`, is now rejected with `INVALID_ARGUMENT` on proved requests.
+:::
+
 **Returns**: Information for the requested epoch(s)
 
 **Parameters**:
@@ -4351,7 +4398,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 | Name    | Type    | Required | Description |
 | ------- | ------- | -------- | ----------- |
 | `start_epoch` | Integer | No | First epoch being requested. Must be below 65535, and `start_epoch` plus `count` must also stay below 65535; otherwise the request is rejected with `InvalidArgument`
-| `count` | Integer | No | Number of records to request. The effective ceiling is 65534 minus `start_epoch`. *Changed in Dash Platform v5.0.0:* a `count` of `0` (including an omitted `count`) is rejected with `INVALID_ARGUMENT` when `prove` is `true`; without a proof it returns an empty result
+| `count` | Integer | No | Number of records to request. The effective ceiling is 65534 minus `start_epoch`. A `count` of `0` (including an omitted `count`) is rejected with `INVALID_ARGUMENT` when `prove` is `true`; without a proof it returns an empty result
 | `ascending` | Boolean | No | Set to `true` to query in ascending order. Results are returned in descending order by default.
 | `prove` | Boolean | No | Set to `true` to receive a proof that contains the requested data contracts
 
@@ -4742,6 +4789,10 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ### getProtocolVersionUpgradeVoteStatus
 
+:::{versionchanged} 5.0.0
+A `count` of `0`, including an omitted `count`, is now rejected with `INVALID_ARGUMENT`.
+:::
+
 **Returns**: Protocol version upgrade status.
 
 **Parameters**:
@@ -4749,7 +4800,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 | Name    | Type    | Required | Description |
 | ------- | ------- | -------- | ------------ |
 | `start_pro_tx_hash` | Bytes | No | Protx hash of an evonode. Must be represented in base64 if present, and must be exactly 32 bytes; any other length is rejected with `InvalidArgument`
-| `count` | Integer | No       | Number of records to request. Must be below 65535. *Changed in Dash Platform v5.0.0:* a `count` of `0`, including an omitted `count`, is rejected with `INVALID_ARGUMENT`, so set it explicitly
+| `count` | Integer | No       | Number of records to request. Must be below 65535. A `count` of `0`, including an omitted `count`, is rejected with `INVALID_ARGUMENT`, so set it explicitly
 | `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested protocol version vote status
 
 **Example Request and Response**
@@ -4805,6 +4856,10 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ### getStatus
 
+:::{versionchanged} 5.0.0
+`stateSync` was previously always returned, usually as an all-zero object. It is now omitted unless a snapshot-restore counter is non-zero.
+:::
+
 Retrieves status information related to Dash Platform.
 
 **Returns**: Status details including version, node, chain, network, and state sync information.
@@ -4835,7 +4890,7 @@ Retrieves status information related to Dash Platform.
 | `network.chainId` | String | Name of the network |
 | `network.peersCount` | Integer | Number of connected peers |
 | `network.listening` | Boolean | Whether the node is accepting inbound connections |
-| `stateSync` | Object | State sync progress. Omitted unless at least one snapshot-restore counter (`totalSnapshots`, `chunkProcessAvgTime`, `snapshotHeight`, `snapshotChunksCount`, `backfilledBlocks`, or `backfillBlocksTotal`) is non-zero; the block-sync values `totalSyncedTime` and `remainingTime` alone do not include it. Members are `totalSyncedTime`, `remainingTime`, `totalSnapshots`, `chunkProcessAvgTime`, `snapshotHeight`, `snapshotChunksCount`, `backfilledBlocks`, and `backfillBlocksTotal`. *Changed in Dash Platform v5.0.0: previously returned as an empty object when no state sync was in progress.* |
+| `stateSync` | Object | Snapshot-restore progress. Present only when a snapshot counter (`totalSnapshots`, `chunkProcessAvgTime`, `snapshotHeight`, `snapshotChunksCount`, `backfilledBlocks`, `backfillBlocksTotal`) is non-zero; current Tenderdash releases do not report these, so the field is normally absent. Members also include `totalSyncedTime` and `remainingTime`. To tell whether a node was state synced, compare `chain.earliestBlockHeight` with the genesis height. |
 | `time.local` | String (uint64) | Node's local time in milliseconds |
 | `time.block` | String (uint64) | Most recent block time. Missing if Drive is not responding |
 | `time.genesis` | String (uint64) | Genesis time. Missing if Drive is not responding |
@@ -6029,7 +6084,7 @@ differ from the `setBalance` and `addToBalance` fields used by
 :::
 
 :::{versionchanged} 5.0.0
-Every shielded endpoint accepts an optional `token_id` that targets that token's own shielded pool instead of the credit shielded pool. Responses have the same shape for both pools. Token shielded pools require protocol version 14: on earlier versions a request carrying `token_id` is rejected with `InvalidArgument`, as is a `token_id` that is not 32 bytes. An unproved request naming a token that has no shielded pool is rejected with `NotFound`; a proved request returns a proof of the pool's absence instead.
+Every shielded endpoint accepts an optional `token_id` that targets that token's own shielded pool instead of the credit shielded pool. Responses have the same shape for both pools. Token shielded pools require protocol version 14: on earlier versions a request carrying `token_id` is rejected with `INVALID_ARGUMENT`, as is a `token_id` that is not 32 bytes. An unproved request naming a token that has no shielded pool is rejected with `NotFound`; a proved request returns a proof of the pool's absence instead.
 :::
 
 ### getShieldedEncryptedNotes
