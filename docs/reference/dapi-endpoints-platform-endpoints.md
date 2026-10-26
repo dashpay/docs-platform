@@ -1857,6 +1857,563 @@ grpcurl -proto protos/platform/v0/platform.proto \
 :::
 ::::
 
+## Contract Moderation Endpoints
+
+:::{versionadded} 5.0.0
+:::
+
+Contract moderation, introduced in protocol version 14, lets a data contract declare moderation
+rules in its config. A moderated contract can keep up to three lists of identities: a
+**banlist** (barred until unbanned), a **suspension list** (barred until a given block time), and
+a **warning list** (a record of warnings that bars nothing). A banned identity, or one with an
+active suspension, cannot submit document transitions for the contract. Document types can also
+let moderators delete documents; by default each deletion leaves a removal record, and the
+document can be restored within 7 days. A contract's moderators are its owner, a set of
+identities the contract appoints, or a team elected by masternodes. Once seated, an elected team
+can jointly delete settled documents through proposals and approvals, and each member's
+moderation actions are counted toward a share of the contract's moderators fee pot.
+
+The endpoints in this section read that state. The contract must keep the data being queried.
+Querying a moderation list the contract doesn't keep, a document type whose deletions keep no
+records, or team actions or action counts that the contract doesn't track is rejected with
+`InvalidArgument`. A contract that doesn't exist returns `NotFound`.
+
+### getContractModerationStatus
+
+Returns an identity's status on one or more moderation lists of a moderated data contract: whether it is banned, until when it is suspended, and which warnings it carries.
+
+**Returns**: The identity's status on the requested lists, or a cryptographic proof.
+
+**Parameters**:
+
+| Name          | Type    | Required | Description |
+|---------------|---------|----------|-------------|
+| `contract_id` | Bytes   | Yes      | The 32-byte ID of the moderated data contract |
+| `identity_id` | Bytes   | Yes      | The 32-byte ID of the identity to check |
+| `lists`       | Array of enums | Yes | The lists to read: `CONTRACT_MODERATION_LIST_BANLIST = 1`, `CONTRACT_MODERATION_LIST_SUSPENSIONS = 2`, or `CONTRACT_MODERATION_LIST_WARNINGS = 3`. Name at least one list, with no repeats. Each list must be one the contract keeps. `CONTRACT_MODERATION_LIST_UNSPECIFIED = 0` is rejected |
+| `prove`       | Boolean | No       | Set to `true` to receive a proof of the identity's entry, present or absent, on each requested list |
+
+A request is rejected with `InvalidArgument` if `lists` is empty, names a list twice, or names a
+list the contract doesn't keep, or if the contract isn't moderated.
+
+**Response Object**
+
+The status covers only the lists named in the request. Fields for a list that wasn't read are
+left unset rather than reported as empty.
+
+| Name | Type | Description |
+|------|------|-------------|
+| `status.lists` | Array of enums | The lists this status covers, as named in the request |
+| `status.banned` | Boolean (optional) | Set only when the banlist was read: `true` if the identity is on it |
+| `status.ban_reason` | Object (optional) | Set when the identity is banned. See [Moderation reason fields](#moderation-reason-fields) |
+| `status.suspended_until` | UInt64 (optional) | The block time, in milliseconds, at which the identity's suspension lapses. Unset when the identity isn't suspended or the suspension list wasn't read. A lapsed suspension stays on the list until the identity's next document transition or an unsuspend removes it, so compare this value with the current block time to tell whether the suspension is still in effect |
+| `status.suspension_reason` | Object (optional) | Set when the identity is suspended. See [Moderation reason fields](#moderation-reason-fields) |
+| `status.warnings` | Array | When the warning list was read, the identity's warnings, oldest first. Each has `warned_at` (the block time of the warning, in milliseconds) and a `reason`. Empty when the identity carries no warnings or the warning list wasn't read; use `status.lists` to tell the two apart |
+| `metadata` | Object | Metadata about the blockchain state. See [metadata details](#data-proofs-and-metadata) for complete information |
+
+#### Moderation reason fields
+
+Every ban, suspension, warning, document removal, and team action carries a reason. Platform
+doesn't check what a moderator writes, and the documents a reason cites aren't looked up.
+
+| Name | Type | Description |
+|------|------|-------------|
+| `code` | UInt32 (optional) | Reserved for ban codes that contracts may declare in a later protocol version. Expected to be unset; not validated |
+| `text` | String | Free-text reason, up to 1024 bytes of UTF-8. May be empty |
+| `documents` | Array | Up to 16 documents on the moderated contract that the reason is about, each with a `document_type_name` and a 32-byte `document_id`. No document is listed twice |
+| `reason_document_id` | Bytes (optional) | The 32-byte ID of a `reason` document in the moderation charters system contract. For an action by a seated elected team, it must be a reason listed by the team's proposal; otherwise it isn't checked |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+:sync: grpcurl
+```shell
+# TODO: Replace with a real example once a moderated contract is
+# published on testnet. The IDs and values below are illustrative only.
+# `contract_id` and `identity_id` must be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "contract_id": "<base64-of-moderated-contract-id>",
+      "identity_id": "<base64-of-identity-id>",
+      "lists": [
+        "CONTRACT_MODERATION_LIST_BANLIST",
+        "CONTRACT_MODERATION_LIST_SUSPENSIONS",
+        "CONTRACT_MODERATION_LIST_WARNINGS"
+      ],
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getContractModerationStatus
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+:sync: grpcurl
+```json
+{
+  "v0": {
+    "status": {
+      "banned": false,
+      "suspendedUntil": "1793232000000",
+      "lists": [
+        "CONTRACT_MODERATION_LIST_BANLIST",
+        "CONTRACT_MODERATION_LIST_SUSPENSIONS",
+        "CONTRACT_MODERATION_LIST_WARNINGS"
+      ],
+      "suspensionReason": {
+        "text": "flooding"
+      },
+      "warnings": [
+        {
+          "warnedAt": "1792800000000",
+          "reason": {
+            "text": "first strike"
+          }
+        }
+      ]
+    },
+    "metadata": {
+      "height": "5991",
+      "coreChainLockedHeight": 1097384,
+      "protocolVersion": 14
+    }
+  }
+}
+```
+:::
+::::
+
+### getContractModerationEntries
+
+Returns one page of a moderated contract's banlist, suspension list, or warning list, in identity ID order.
+
+**Returns**: A page of list entries, or a cryptographic proof.
+
+**Parameters**:
+
+| Name          | Type    | Required | Description |
+|---------------|---------|----------|-------------|
+| `contract_id` | Bytes   | Yes      | The 32-byte ID of the moderated data contract |
+| `list`        | Enum    | Yes      | The list to read: `CONTRACT_MODERATION_LIST_BANLIST = 1`, `CONTRACT_MODERATION_LIST_SUSPENSIONS = 2`, or `CONTRACT_MODERATION_LIST_WARNINGS = 3`. Must be a list the contract keeps. `CONTRACT_MODERATION_LIST_UNSPECIFIED = 0` is rejected |
+| `start_after` | Bytes   | No       | A 32-byte identity ID. The page starts after this identity (exclusive) |
+| `limit`       | UInt32  | No       | Maximum number of entries to return. See [Result limits and pagination](#result-limits-and-pagination) |
+| `prove`       | Boolean | No       | Set to `true` to receive a proof that contains the requested page |
+
+To read the next page, pass the last `identity_id` returned as `start_after`. A page with fewer
+entries than the limit is the last one.
+
+**Response Object**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `entries.entries` | Array | The page of entries, in identity ID order |
+| `entries.entries[]`<br>`.identity_id` | Bytes | The identity on the list |
+| `entries.entries[]`<br>`.until` | UInt64 (optional) | Suspension list only: the block time, in milliseconds, at which the suspension lapses. A lapsed suspension stays listed until it is removed |
+| `entries.entries[]`<br>`.reason` | Object | Banlist and suspension list only: why the identity is on the list. Unset for warning list entries. See [Moderation reason fields](#moderation-reason-fields) |
+| `entries.entries[]`<br>`.warnings` | Array | Warning list only: every warning the identity carries, oldest first, each with `warned_at` and `reason`. The latest warning is why the identity is on the list |
+| `metadata` | Object | Metadata about the blockchain state. See [metadata details](#data-proofs-and-metadata) for complete information |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+:sync: grpcurl
+```shell
+# TODO: Replace with a real example once a moderated contract is
+# published on testnet. The IDs and values below are illustrative only.
+# `contract_id` must be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "contract_id": "<base64-of-moderated-contract-id>",
+      "list": "CONTRACT_MODERATION_LIST_BANLIST",
+      "limit": 2,
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getContractModerationEntries
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+:sync: grpcurl
+```json
+{
+  "v0": {
+    "entries": {
+      "entries": [
+        {
+          "identityId": "<base64-of-identity-id-1>",
+          "reason": {
+            "text": "spam"
+          }
+        },
+        {
+          "identityId": "<base64-of-identity-id-2>",
+          "reason": {
+            "text": "impersonation",
+            "documents": [
+              {
+                "documentTypeName": "post",
+                "documentId": "<base64-of-document-id>"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "metadata": {
+      "height": "5991",
+      "coreChainLockedHeight": 1097384,
+      "protocolVersion": 14
+    }
+  }
+}
+```
+:::
+::::
+
+### getContractDocumentRemovals
+
+Returns the removal records of documents that a contract's moderators deleted from one document type, either for specific document IDs or as a page in document ID order. A record shows who removed the document, when, and why, and whether it has since been restored.
+
+**Returns**: A list of document removal records, or a cryptographic proof.
+
+**Parameters**:
+
+| Name                 | Type    | Required | Description |
+|----------------------|---------|----------|-------------|
+| `contract_id`        | Bytes   | Yes      | The 32-byte ID of the moderated data contract |
+| `document_type_name` | String  | Yes      | A document type whose moderator deletions keep records: one that sets `moderatorAbilities.delete` without turning off `deleteKeepsRecord` |
+| `document_ids`       | Object  | No\*     | Select the records of specific documents |
+| `document_ids.`<br>`document_ids` | Array of bytes | Yes | 32-byte document IDs, from 1 to 100, with no repeats. An ID with no removal record is left out of the response, and proved absent when a proof is requested |
+| `page`               | Object  | No\*     | Select one page of the type's records, in document ID order |
+| `page.start_after`   | Bytes   | No       | A 32-byte document ID. The page starts after this document (exclusive) |
+| `page.limit`         | UInt32  | No       | Maximum number of records to return. See [Result limits and pagination](#result-limits-and-pagination) |
+| `prove`              | Boolean | No       | Set to `true` to receive a proof that contains the requested records |
+
+\* Exactly one of `document_ids` or `page` must be set. A request with neither is rejected with
+`InvalidArgument`, as is a request for a document type that doesn't exist or doesn't keep
+removal records.
+
+**Response Object**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `removals.removals` | Array | The removal records, in document ID order |
+| `removals.removals[]`<br>`.document_id` | Bytes | The ID of the removed document |
+| `removals.removals[]`<br>`.document_owner_id` | Bytes | The identity that owned the document |
+| `removals.removals[]`<br>`.moderator_id` | Bytes | The contract owner or moderator that removed it |
+| `removals.removals[]`<br>`.removed_at` | UInt64 | The block time of the removal, in milliseconds |
+| `removals.removals[]`<br>`.reason` | Object | Why the moderator removed it. See [Moderation reason fields](#moderation-reason-fields) |
+| `removals.removals[]`<br>`.document_hash` | Bytes | A 32-byte double SHA-256 of the document as serialized under its document type when it was removed. A restore must supply a document that matches it byte for byte |
+| `removals.removals[]`<br>`.restoration` | Object (optional) | Set once a moderator has restored the document, which is then live again. Contains `moderator_id` (who restored it) and `restored_at` (the block time of the restore, in milliseconds). Absent while the removal stands |
+| `removals.removals[]`<br>`.kept_fields` | Bytes | The values the record keeps for the paths listed in the document type's `moderatorAbilities.deleteKeepsFields`, in that order. Each path is encoded as `0` when the document held no value there, or `1` followed by the value encoded the way the document encodes its properties. Decode it using the contract's document type. Empty when the type keeps no fields |
+| `metadata` | Object | Metadata about the blockchain state. See [metadata details](#data-proofs-and-metadata) for complete information |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+:sync: grpcurl
+```shell
+# TODO: Replace with a real example once a moderated contract is
+# published on testnet. The IDs and values below are illustrative only.
+# `contract_id` and `document_ids` must be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "contract_id": "<base64-of-moderated-contract-id>",
+      "document_type_name": "post",
+      "document_ids": {
+        "document_ids": ["<base64-of-document-id>"]
+      },
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getContractDocumentRemovals
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+:sync: grpcurl
+```json
+{
+  "v0": {
+    "removals": {
+      "removals": [
+        {
+          "documentId": "<base64-of-document-id>",
+          "documentOwnerId": "<base64-of-owner-identity-id>",
+          "moderatorId": "<base64-of-moderator-identity-id>",
+          "removedAt": "1792800000000",
+          "reason": {
+            "text": "off-topic"
+          },
+          "documentHash": "<base64-of-32-byte-document-hash>"
+        }
+      ]
+    },
+    "metadata": {
+      "height": "5991",
+      "coreChainLockedHeight": 1097384,
+      "protocolVersion": 14
+    }
+  }
+}
+```
+:::
+::::
+
+### getContractTeamActions
+
+Returns one page of the actions that an elected contract's seated moderation team is voting on (active) or has carried out (closed), in action ID order. One member proposes an action, other members approve it, and it runs once the approvals meet the document type's rule. Currently the only action is deleting a settled document: one past its document type's `deleteWithin` window, which the type's `moderatorAbilities.deleteSettled` rule lets the team delete together.
+
+**Returns**: A list of team actions, or a cryptographic proof.
+
+**Parameters**:
+
+| Name                 | Type    | Required | Description |
+|----------------------|---------|----------|-------------|
+| `contract_id`        | Bytes   | Yes      | The 32-byte ID of the elected contract. At least one of its document types must set `moderatorAbilities.deleteSettled` |
+| `status`             | Enum    | No       | `ACTIVE = 0` (still gathering approvals) or `CLOSED = 1` (approvals met the rule and the action ran). Omitting the field selects `ACTIVE` |
+| `start_at_action_id` | Object  | No       | Where the page starts. Omit to start at the first action |
+| `start_at_action_id.`<br>`start_action_id` | Bytes | Yes | The 32-byte action ID to start from |
+| `start_at_action_id.`<br>`start_action_id_included` | Boolean | No | Whether the page includes the start action |
+| `count`              | UInt32  | No       | Maximum number of actions to return. See [Result limits and pagination](#result-limits-and-pagination) |
+| `prove`              | Boolean | No       | Set to `true` to receive a proof that contains the requested actions |
+
+A request for a contract with no document type that sets `moderatorAbilities.deleteSettled` is
+rejected with `InvalidArgument`.
+
+**Response Object**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `actions.actions` | Array | The actions, in action ID order |
+| `actions.actions[]`<br>`.action_id` | Bytes | The 32-byte ID of the action |
+| `actions.actions[]`<br>`.proposer_id` | Bytes | The team member that proposed it |
+| `actions.actions[]`<br>`.proposed_at` | UInt64 | The block time of the proposal, in milliseconds |
+| `actions.actions[]`<br>`.delete_settled_document` | Object | The settled document the action deletes |
+| `actions.actions[]`<br>`.delete_settled_document`<br>`.document_type_name` | String | The document's type |
+| `actions.actions[]`<br>`.delete_settled_document`<br>`.document_id` | Bytes | The 32-byte ID of the document |
+| `actions.actions[]`<br>`.delete_settled_document`<br>`.document_last_modified_at` | UInt64 | The document's `$updatedAt` (or `$createdAt`) when the action was proposed. Approvals apply to the document as it was then |
+| `actions.actions[]`<br>`.delete_settled_document`<br>`.document_revision` | UInt64 (optional) | The document's `$revision` when the action was proposed. Absent for types whose documents carry no revision. An approval is refused if the document has changed since |
+| `actions.actions[]`<br>`.delete_settled_document`<br>`.reason` | Object | Why, as given by the proposer. See [Moderation reason fields](#moderation-reason-fields) |
+| `actions.actions[]`<br>`.approval_count` | UInt32 | The number of approvals the action holds, including the proposer's. For an active action this is an upper bound: an approval from a member who has since left the team is only dropped when a later approval is processed. For the exact figure, get the action's signers with [`getContractTeamActionSigners`](#getcontractteamactionsigners) and count those still on the team |
+| `metadata` | Object | Metadata about the blockchain state. See [metadata details](#data-proofs-and-metadata) for complete information |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+:sync: grpcurl
+```shell
+# TODO: Replace with a real example once an elected contract with a
+# seated moderation team is published on testnet. The IDs and values
+# below are illustrative only.
+# `contract_id` must be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "contract_id": "<base64-of-elected-contract-id>",
+      "status": 0,
+      "count": 10,
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getContractTeamActions
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+:sync: grpcurl
+```json
+{
+  "v0": {
+    "actions": {
+      "actions": [
+        {
+          "actionId": "<base64-of-action-id>",
+          "proposerId": "<base64-of-member-identity-id>",
+          "proposedAt": "1792800000000",
+          "deleteSettledDocument": {
+            "documentTypeName": "post",
+            "documentId": "<base64-of-document-id>",
+            "documentLastModifiedAt": "1790000000000",
+            "documentRevision": "2",
+            "reason": {
+              "text": "doxxing"
+            }
+          },
+          "approvalCount": 2
+        }
+      ]
+    },
+    "metadata": {
+      "height": "5991",
+      "coreChainLockedHeight": 1097384,
+      "protocolVersion": 14
+    }
+  }
+}
+```
+:::
+::::
+
+### getContractTeamActionSigners
+
+Returns the team members that approved one of the actions an elected contract's seated moderation team votes on.
+
+**Returns**: The IDs of the members that approved the action, or a cryptographic proof.
+
+**Parameters**:
+
+| Name          | Type    | Required | Description |
+|---------------|---------|----------|-------------|
+| `contract_id` | Bytes   | Yes      | The 32-byte ID of the elected contract. At least one of its document types must set `moderatorAbilities.deleteSettled` |
+| `status`      | Enum    | No       | Whether the action is `ACTIVE = 0` or `CLOSED = 1`. Omitting the field selects `ACTIVE` |
+| `action_id`   | Bytes   | Yes      | The 32-byte ID of the action |
+| `prove`       | Boolean | No       | Set to `true` to receive a proof that contains the requested approvals |
+
+The response's `signers.signer_ids` lists the 32-byte IDs of the approving members in ID order.
+The proposer is included unless it has left the team and its approval was dropped. The list is
+empty when there is no action with that ID and status.
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+:sync: grpcurl
+```shell
+# TODO: Replace with a real example once an elected contract with a
+# seated moderation team is published on testnet. The IDs below are
+# illustrative only.
+# `contract_id` and `action_id` must be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "contract_id": "<base64-of-elected-contract-id>",
+      "status": 0,
+      "action_id": "<base64-of-action-id>",
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getContractTeamActionSigners
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+:sync: grpcurl
+```json
+{
+  "v0": {
+    "signers": {
+      "signerIds": [
+        "<base64-of-member-identity-id-1>",
+        "<base64-of-member-identity-id-2>"
+      ]
+    },
+    "metadata": {
+      "height": "5991",
+      "coreChainLockedHeight": 1097384,
+      "protocolVersion": 14
+    }
+  }
+}
+```
+:::
+::::
+
+### getContractModerationActionCounts
+
+Returns how many counted moderation actions (bans, suspensions, warnings, and document deletions) each member of an elected contract's seated moderation team has signed since the moderators fee pot was last settled. These counts set each member's part of the action share when the pot is paid out. A payout resets every count, and so does a change to the team.
+
+**Returns**: The action count of each member, or a cryptographic proof.
+
+**Parameters**:
+
+| Name          | Type    | Required | Description |
+|---------------|---------|----------|-------------|
+| `contract_id` | Bytes   | Yes      | The 32-byte ID of a contract whose moderators are an elected team |
+| `prove`       | Boolean | No       | Set to `true` to receive a proof that contains the requested counts |
+
+The response isn't paginated: it returns every count, which the team's size bounds. A request
+for a contract whose moderators aren't an elected team is rejected with `InvalidArgument`.
+
+The response's `counts.counts` lists one entry per member, in identity ID order, each with the
+member's `identity_id` and `count` (UInt32). A member that hasn't signed a counted action since
+the last settlement has no entry.
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+:sync: grpcurl
+```shell
+# TODO: Replace with a real example once an elected contract with a
+# seated moderation team is published on testnet. The IDs and values
+# below are illustrative only.
+# `contract_id` must be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "contract_id": "<base64-of-elected-contract-id>",
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getContractModerationActionCounts
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+:sync: grpcurl
+```json
+{
+  "v0": {
+    "counts": {
+      "counts": [
+        {
+          "identityId": "<base64-of-member-identity-id-1>",
+          "count": 12
+        },
+        {
+          "identityId": "<base64-of-member-identity-id-2>",
+          "count": 3
+        }
+      ]
+    },
+    "metadata": {
+      "height": "5991",
+      "coreChainLockedHeight": 1097384,
+      "protocolVersion": 14
+    }
+  }
+}
+```
+:::
+::::
+
 ## Identity Endpoints
 
 ### getIdentity
