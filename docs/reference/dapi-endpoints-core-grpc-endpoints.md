@@ -10,6 +10,10 @@ Please refer to the [gRPC Overview](../reference/dapi-endpoints-grpc-overview.md
 
 ### broadcastTransaction
 
+:::{versionchanged} 5.0.0
+DAPI decodes Dash Core v24 blocks and transactions, including version 3 provider transactions (ProRegTx and ProUpServTx) and blocks whose coinbase special transaction is version 4. Version 3 provider transactions, previously refused with `INVALID_ARGUMENT`, are now accepted.
+:::
+
 **Returns**: The transaction id (TXID) if successful  
 **Parameters**:
 
@@ -589,6 +593,10 @@ Note: The gRPCurl response `transaction` and `blockHash` data are Base64 encoded
 
 ### subscribeToBlockHeadersWithChainLocks
 
+:::{versionchanged} 5.0.0
+DAPI decodes Dash Core v24 blocks and transactions, including version 3 provider transactions (ProRegTx and ProUpServTx) and blocks whose coinbase special transaction is version 4. Headers of such blocks, previously skipped by the live stream, are now delivered.
+:::
+
 This endpoint helps support simplified payment verification ([SPV](https://docs.dash.org/en/stable/docs/core/guide/operating-modes-simplified-payment-verification-spv.html)) via DAPI by providing access to block headers which can then be used to verify transactions and simplified masternode lists.
 
 **Returns**: streams the requested block header information  
@@ -690,6 +698,10 @@ the update messages following a new block.
 ::::
 
 ### subscribeToTransactionsWithProofs
+
+:::{versionchanged} 5.0.0
+DAPI decodes Dash Core v24 blocks and transactions, including version 3 provider transactions (ProRegTx and ProUpServTx) and blocks whose coinbase special transaction is version 4. Such blocks are now delivered as merkle blocks rather than as raw block bytes in `raw_merkle_block`, and bloom filters now match version 3 provider transactions.
+:::
 
 **Returns**: streams the requested transaction information  
 **Parameters**:

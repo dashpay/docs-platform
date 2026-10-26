@@ -69,6 +69,7 @@ Valid fields consist of the indices defined for the document being queried. For 
 
 - A query can have only one effective range clause. Use `Between` or one of its variants to express both bounds, or supply two complementary range clauses on the same field; Platform normalizes the pair to the equivalent `Between*` form
 - A single `in` clause is only allowed for the last two indexed properties. This applies to ordinary document queries and grouped aggregates; [ranked](#ranked-aggregate-queries) and [having-range](#having-range-queries) queries instead pin each leading index property with one clause, at most one of which may be an `in` of 2 to 10 elements
+- *Added in Dash Platform v5.0.0:* from protocol version 14, a query returning `DOCUMENTS` may carry several `in` clauses when they sit on consecutive properties of one compound index, after any `==` clauses and with an optional range clause right after the last `in`. Each `in` property needs an `orderBy` entry, the product of the `in` array sizes may not exceed 100 (`InvalidInClause` otherwise), and `startAt` / `startAfter` cannot be combined with more than one `in`. Grouped aggregate queries still accept only one `in` clause, and protocol version 13 and earlier reject a second `in` clause with `MultipleInClauses`
 - Range operators apply to an indexed field that follows any `==` and `in` clauses in the index. A standalone range (with no preceding `==`/`in` clause) is valid when a matching index exists
 - Range operators are only allowed for the last two fields used in the where condition
 - Queries using range operators (including `in`, which is treated as a range) must also include an `orderBy` statement
@@ -79,10 +80,13 @@ Valid fields consist of the indices defined for the document being queried. For 
 | :-: | - |
 | startsWith | Selects documents where the value of a field begins with the specified characters. Must include an `orderBy` statement. |
 | inTimeRange | Selects documents falling in one window of a `timeRange` index grid. See [Time-range selection](#time-range-selection). Available on the v1 query surface only. |
+| inIntegerRange | *Added in Dash Platform v5.0.0.* Selects documents falling in one window of an `integerRange` index grid. See [Integer-range selection](#integer-range-selection). Available on the v1 query surface only. |
+| contains | *Added in Dash Platform v5.0.0.* Selects documents whose typed array holds the specified element. See [Typed array elements](#typed-array-elements). |
+| containsAny | *Added in Dash Platform v5.0.0.* Selects documents whose typed array holds any of the specified elements. See [Typed array elements](#typed-array-elements). |
 
 #### Time-range selection
 
-:::{versionadded} 4.2.0
+:::{versionadded} 5.0.0
 Requires protocol version 14.
 :::
 
@@ -98,7 +102,37 @@ The relative selectors (`NEWEST` and `OLDEST`) are resolved server-side from the
 
 `BY_START` requires a start timestamp in milliseconds, and it must lie on the grid (`start_ms == phase + k * step`). An unaligned start is rejected rather than snapped to the nearest window. A window holding no documents - including one that has not started yet - is a provable empty answer, not an error.
 
-A query may carry at most one `inTimeRange` clause. When more than one `timeRange` grid buckets the field, the clause must also name the grid (its `range`, `step`, and `phase`, in the contract's own seconds); a bare selector is ambiguous there and rejected. Naming the grid is optional when exactly one grid covers the field.
+A query may carry at most one window selection - one `inTimeRange` or one `inIntegerRange` clause, not both. When more than one `timeRange` grid buckets the field, the clause must also name the grid (its `range`, `step`, and `phase`, in the contract's own seconds); a bare selector is ambiguous there and rejected. Naming the grid is optional when exactly one grid covers the field.
+
+If the index declares a `ttl`, a `BY_START` window that has passed the ttl horizon is rejected with `Unsupported`. Expired windows are drained lazily and may be partially removed, so they are not queryable.
+
+#### Integer-range selection
+
+:::{versionadded} 5.0.0
+Requires protocol version 14, which introduces `integerRange` indices.
+:::
+
+The `inIntegerRange` operator selects one window of an integer grid, the integer counterpart of [time-range selection](#time-range-selection). The clause's field must name an integer property covered by an `integerRange` index; on any other field the clause is rejected with `WhereClauseOnNonIndexedProperty`. The operand is a typed selection, `integer_range`, carrying:
+
+| Field | Description |
+| - | - |
+| `start` | Required. The window's start, as an integer value (`int64_value` or `uint64_value`). It must be a window start of the grid - `phase + k * step` within the property's integer type, or the type's minimum when that starts a clamped bottom window. An unaligned start is rejected with `Unsupported` rather than snapped. |
+| `grid` | The grid's `range`, `step`, and `phase`, verbatim from the contract's `integerRange` declaration. Required when more than one grid buckets the field; optional while exactly one does. |
+
+The window is named absolutely, so both the node and a proof verifier resolve it from the query alone. A window holding no documents is a provable empty answer, not an error. The bucketed property cannot also carry a range clause, an `in` clause, or an `orderBy`, and the `inIntegerRange` clause counts toward the one-window-selection limit above. Chained and composite queries reject window selections.
+
+#### Typed array elements
+
+:::{versionadded} 5.0.0
+Requires protocol version 14. Earlier versions reject both operators with `Unsupported`.
+:::
+
+A typed array is an `array` property whose `items` schema names a single scalar element type. An index on a typed array holds each document once per distinct element, so the array is queried by its elements:
+
+- `contains` matches documents whose array holds the given element. The operand is one non-null value of the element type. It behaves as an equality and may page with `startAt` / `startAfter`, provided the cursor document holds the element.
+- `containsAny` matches documents whose array holds any of the given elements. The operand is an array of 1 to 100 distinct values; an empty, oversized, or duplicated array is rejected with `InvalidInClause`. A document holding several of the elements is returned once, where it first appears, but `limit` counts every index entry walked, so a page can hold fewer documents than the limit. `containsAny` accepts an `orderBy` on the array, which sets the order the elements are walked in, and rejects cursors.
+
+No other operator may name a typed array, and neither operator may name anything else; both mismatches are rejected with `InvalidWhereClauseComponents`. An `orderBy` on a typed array is accepted only together with `containsAny` on it. In aggregate queries, `contains` is accepted wherever an equality is; `containsAny` is accepted for `COUNT`, `SUM`, and `AVG` only when grouped by the array alone with no range clause, and is rejected by ranked and having-range queries and by composite and chained queries.
 
 ### Operator aliases
 
@@ -111,6 +145,8 @@ Operator names are matched against a fixed set of aliases:
 | `Between` | `between` |
 | `BetweenExclude*` | CamelCase, lowercase, and snake_case variants, such as `betweenExcludeLeft`, `betweenexcludeleft`, and `between_exclude_left` |
 | `startsWith` | `StartsWith`, `startswith`, `starts_with` |
+| `contains` | `Contains` |
+| `containsAny` | `ContainsAny`, `containsany`, `contains_any` |
 
 Any other spelling is rejected.
 
@@ -220,7 +256,7 @@ Ascending queries that combined a cursor with a `<` or `<=` clause previously [b
 :::{versionadded} 4.0.0
 :::
 
-:::{versionchanged} 4.2.0
+:::{versionchanged} 5.0.0
 Protocol version 14 adds [ranked](#ranked-aggregate-queries) and [having-range](#having-range-queries) query modes, and relaxes the blanket rejection of `HAVING` and `OFFSET` accordingly.
 :::
 
@@ -273,7 +309,7 @@ Compound carrier-aggregate shapes that pair an `In` field with a range field and
 
 ### Ranked aggregate queries
 
-:::{versionadded} 4.2.0
+:::{versionadded} 5.0.0
 Requires protocol version 14.
 :::
 
@@ -299,7 +335,7 @@ The covering index must declare the matching ranking axis - `rankedCountable` fo
 
 ### Having-range queries
 
-:::{versionadded} 4.2.0
+:::{versionadded} 5.0.0
 Requires protocol version 14.
 :::
 
@@ -327,7 +363,7 @@ On protocol version 13 and earlier, and for every other `having` shape at v14, `
 
 ## Chained queries
 
-:::{versionadded} 4.2.0
+:::{versionadded} 5.0.0
 Chained queries have no protocol-version gate of their own, but depend in practice on protocol version 14, which is what admits the `indexOnly` and `refersTo` keywords they require.
 :::
 
@@ -342,18 +378,20 @@ The request's own document type, where clauses, `orderBy`, and `limit` describe 
 Chained mode has strict prerequisites:
 
 - The inner document type must be [`indexOnly`](../reference/data-contracts.md#document-configuration), and must resolve to an index carrying the join property.
-- The join property must declare a same-contract `refersTo: permanentDocument` targeting the outer document type.
+- The join property must declare a same-contract by-ID `refersTo` - `permanentDocument`, `deletableDocument`, or `moderatedDocument` - targeting the outer document type. `findBy` references, `anyOf` / `allOf` alternatives, and arrays of references are not accepted.
 - `limit` is required - it bounds the derived outer query, so there is no server-default fallback. A value outside 1 to 100 (the configured `max_query_limit`, 100 by default) is rejected with `InvalidLimit` rather than clamped.
 - The outer document type must **not** be `indexOnly`, and `selects` must be empty or a single `DOCUMENTS` projection.
-- `groupBy`, `having`, time-range clauses, cursors, and `offset` are all rejected. Paginate with a range clause on the join property.
+- `groupBy`, `having`, window selections (`inTimeRange` and `inIntegerRange`), cursors, and `offset` are all rejected. Paginate with a range clause on the join property.
 
 The response carries both halves: the inner documents in query order, and the outer documents ordered by the first appearance of their ID among the inner results, deduplicated.
+
+What happens when a join value has no outer document depends on the join property's `refersTo` kind. Under `permanentDocument` the reference cannot dangle, so a missing document fails the query. Under `deletableDocument` the missing IDs are reported alongside the results. Under `moderatedDocument` each missing ID is reported with the moderators' removal record, and an ID with neither a document nor a removal record fails the query.
 
 A node predating this feature ignores the chained field and serves the plain inner query. That fails closed on the client: an inner-only proof cannot satisfy the re-derived merged query.
 
 ## Composite queries
 
-:::{versionadded} 4.2.0
+:::{versionadded} 5.0.0
 :::
 
 A composite query returns a page of documents plus one or more sub-queries derived from that page, answered as a single merged proof over one state root. This replaces a round-trip-per-lookup pattern - fetch a page, then fetch each referenced profile - with one provable request. Conceptually:
@@ -391,9 +429,9 @@ A sub-query may declare a binding describing where its derived `IN` values come 
 | `source_property` | The property read off each source document - `$id`, `$ownerId`, or an identifier-typed property. Dotted paths reach nested properties, and documents lacking the property contribute nothing. |
 | `field` | The sub-query field receiving the derived `IN` clause. |
 
-Setting `field` to `$id` makes the sub-query a by-ID join, which requires the source property to declare `refersTo: permanentDocument` targeting the sub-query's document type - every derived ID must resolve, and a missing document invalidates the proof. Any other field is a lookup, where absence is itself a proven fact. A sub-query with no binding is a sibling: an independent query proven under the same state root.
+Setting `field` to `$id` makes the sub-query a by-ID join, which requires the source property to declare a by-ID `refersTo` (`permanentDocument`, `deletableDocument`, or `moderatedDocument`) targeting the sub-query's contract and document type. Missing documents are handled as for [chained queries](#chained-queries): under `permanentDocument` every derived ID must resolve and a missing document fails the query, `deletableDocument` reports missing IDs, and `moderatedDocument` reports each missing ID with its removal record. Any other field is a lookup, where absence is itself a proven fact. A sub-query with no binding is a sibling: an independent query proven under the same state root.
 
-Composite mode has the same gates as chained mode: the page's `limit` is required, and a value outside 1 to 100 is rejected with `InvalidLimit` rather than clamped. A page addressed by IDs is proven without its limit, so that limit must be at least as large as the number of IDs it addresses. `groupBy`, `having`, time-range clauses, cursors, and `offset` are rejected, and chained and composite modes are mutually exclusive. A request may carry at most 10 sub-queries.
+Composite mode has the same gates as chained mode: the page's `limit` is required, and a value outside 1 to 100 is rejected with `InvalidLimit` rather than clamped. A page addressed by IDs is proven without its limit, so that limit must be at least as large as the number of IDs it addresses. `groupBy`, `having`, window selections (`inTimeRange` and `inIntegerRange`), cursors, and `offset` are rejected, and chained and composite modes are mutually exclusive. A request may carry at most 10 sub-queries, and a sub-query may not use `containsAny`.
 
 Whether a sub-query takes its own `limit` depends on whether its lookup is already bounded by its values. A value-bounded lookup - a unique index, or an `indexOnly` terminal with every prefix fixed - must not carry one, and neither must a by-ID join or a count. Every other lookup, siblings included, requires one.
 

@@ -33,11 +33,11 @@ without introducing issues for endpoint consumers.
 | -------- | ----------- |
 | [`getDataContract`](../reference/dapi-endpoints-platform-endpoints.md#getdatacontract) | Returns the requested data contract |
 | [`getDataContracts`](../reference/dapi-endpoints-platform-endpoints.md#getdatacontracts) | Returns the requested data contracts |
-| [`getDataContractHistory`](../reference/dapi-endpoints-platform-endpoints.md#getdatacontracthistory) | Returns the requested data contract history |
+| [`getDataContractHistory`](../reference/dapi-endpoints-platform-endpoints.md#getdatacontracthistory) | **Updated in Dash Platform v5.0.0**<br>Returns the requested data contract history. Rejects a `limit` outside 1 to 10, and an `offset` on proved requests. |
 | [`getDataContractsByRange`](../reference/dapi-endpoints-platform-endpoints.md#getdatacontractsbyrange) | **Added in Dash Platform v5.0.0**<br>Enumerates every data contract on Platform, one page at a time, in ascending contract ID order. |
 | [`getDataContractsLatestVersions`](../reference/dapi-endpoints-platform-endpoints.md#getdatacontractslatestversions) | **Added in Dash Platform v5.0.0**<br>Returns the current version number of each requested data contract. Clients can use this to check whether contracts they already hold are still current without downloading the contracts again. |
 | [`getContractFeePots`](../reference/dapi-endpoints-platform-endpoints.md#getcontractfeepots) | **Added in Dash Platform v5.0.0**<br>Returns the two fee pots of a data contract. |
-| [`getDocuments`](../reference/dapi-endpoints-platform-endpoints.md#getdocuments) | **Updated in Dash Platform v4.2.0**<br>Returns the requested document(s), or an aggregate count/sum/average over the matched document set. Includes ranked, having-range, chained, and composite query modes and the `IN_TIME_RANGE` operator. |
+| [`getDocuments`](../reference/dapi-endpoints-platform-endpoints.md#getdocuments) | **Updated in Dash Platform v5.0.0**<br>Returns the requested document(s), or an aggregate count/sum/average over the matched document set. Includes ranked, having-range, chained, and composite query modes, the `IN_TIME_RANGE` and `IN_INTEGER_RANGE` window operators, and the `CONTAINS` / `CONTAINS_ANY` typed-array operators. |
 | [`getDocumentHistory`](../reference/dapi-endpoints-platform-endpoints.md#getdocumenthistory) | *Added in Dash Platform v4.0.0*<br>Returns the revision history for a single document on a contract that keeps document history |
 
 ### Contract Moderation
@@ -63,10 +63,10 @@ Contract moderation, introduced in protocol version 14, lets a data contract kee
 | [`getIdentity`](../reference/dapi-endpoints-platform-endpoints.md#getidentity) | Returns the requested identity |
 | [`getIdentityBalance`](../reference/dapi-endpoints-platform-endpoints.md#getidentitybalance) | Returns the requested identity's balance |
 | [`getIdentityBalanceAndRevision`](../reference/dapi-endpoints-platform-endpoints.md#getidentitybalanceandrevision) | Returns the requested identity's balance and revision |
-| [`getIdentityByNonUniquePublicKeyHash`](../reference/dapi-endpoints-platform-endpoints.md#getidentitybynonuniquepublickeyhash) | *Added in Dash Platform v2.0.0*<br>Returns one or more identities associated with a public key hash, including for non-unique masternode keys. |
+| [`getIdentityByNonUniquePublicKeyHash`](../reference/dapi-endpoints-platform-endpoints.md#getidentitybynonuniquepublickeyhash) | **Updated in Dash Platform v5.0.0**<br>Returns one or more identities associated with a public key hash, including for non-unique masternode keys. A `v1` request returns one proof covering the index selection and the identity. |
 | [`getIdentityByPublicKeyHash`](../reference/dapi-endpoints-platform-endpoints.md#getidentitybypublickeyhash) | Returns the identity associated with the provided public key hash |
 | [`getIdentityContractNonce`](../reference/dapi-endpoints-platform-endpoints.md#getidentitycontractnonce) | Returns the identity contract nonce |
-| [`getIdentityKeys`](../reference/dapi-endpoints-platform-endpoints.md#getidentitykeys) | Returns the requested identity keys |
+| [`getIdentityKeys`](../reference/dapi-endpoints-platform-endpoints.md#getidentitykeys) | **Updated in Dash Platform v5.0.0**<br>Returns the requested identity keys. Request validation is stricter. |
 | [`getIdentityKeysRemainingBudgets`](../reference/dapi-endpoints-platform-endpoints.md#getidentitykeysremainingbudgets) | **Added in Dash Platform v5.0.0**<br>Returns what is left of the credit budgets of an identity's keys. |
 | [`getIdentityNonce`](../reference/dapi-endpoints-platform-endpoints.md#getidentitynonce) | Returns the current identity nonce |
 | [`getIdentitiesBalances`](../reference/dapi-endpoints-platform-endpoints.md#getidentitiesbalances) | *Added in Dash Platform v1.3.0*<br>Retrieves the balances for a list of identities |
@@ -83,7 +83,7 @@ Security groups provide a way to distribute token configuration and update autho
 | -------- | ----------- |
 | [`getGroupInfo`](../reference/dapi-endpoints-platform-endpoints.md#getgroupinfo) | Retrieves information about a specific group within a contract, including its members and required power. |
 | [`getGroupInfos`](../reference/dapi-endpoints-platform-endpoints.md#getgroupinfos) | Retrieves information about multiple groups within a contract, including their members and required power. |
-| [`getGroupActions`](../reference/dapi-endpoints-platform-endpoints.md#getgroupactions) | Retrieves a list of actions performed by a specific group within a contract. |
+| [`getGroupActions`](../reference/dapi-endpoints-platform-endpoints.md#getgroupactions) | **Updated in Dash Platform v5.0.0**<br>Retrieves a list of actions performed by a specific group within a contract. Adds the `mint_to_pool` and `burn_from_pool` token events. |
 | [`getGroupActionSigners`](../reference/dapi-endpoints-platform-endpoints.md#getgroupactionsigners) | Retrieves the signers for a specified group action within a contract, along with their assigned power. |
 
 ### Contract Groups
@@ -103,8 +103,8 @@ From protocol version 14, contract groups organize data contracts, document type
 
 | Endpoint | Description |
 | -------- | ----------- |
-| [`broadcastStateTransition`](../reference/dapi-endpoints-platform-endpoints.md#broadcaststatetransition) | Broadcasts the provided State Transition |
-| [`waitForStateTransitionResult`](../reference/dapi-endpoints-platform-endpoints.md#waitforstatetransitionresult) | Responds with the state transition hash and either a proof that the state transition was confirmed in a block or an error |
+| [`broadcastStateTransition`](../reference/dapi-endpoints-platform-endpoints.md#broadcaststatetransition) | **Updated in Dash Platform v5.0.0**<br>Broadcasts the provided State Transition. Shielded broadcasts from an address that keeps submitting invalid proofs are rate limited. |
+| [`waitForStateTransitionResult`](../reference/dapi-endpoints-platform-endpoints.md#waitforstatetransitionresult) | **Updated in Dash Platform v5.0.0**<br>Responds with the state transition hash and either a proof that the state transition was confirmed in a block, the owner's credit balance (if requested without a proof), or an error |
 
 ### System Info
 
@@ -118,8 +118,8 @@ From protocol version 14, contract groups organize data contracts, document type
 | [`getPathElements`](../reference/dapi-endpoints-platform-endpoints.md#getpathelements) | *Added in Dash Platform v1.0.0*<br>Returns elements for a specified path in the Platform |
 | [`getPrefundedSpecializedBalance`](../reference/dapi-endpoints-platform-endpoints.md#getprefundedspecializedbalance) | *Added in Dash Platform v1.0.0*<br>Returns the pre-funded specialized balance for a specific identity |
 | [`getProtocolVersionUpgradeState`](../reference/dapi-endpoints-platform-endpoints.md#getprotocolversionupgradestate) | Returns the number of votes cast for each protocol version |
-| [`getProtocolVersionUpgradeVoteStatus`](../reference/dapi-endpoints-platform-endpoints.md#getprotocolversionupgradevotestatus) | Returns protocol version upgrade status |
-| [`getStatus`](../reference/dapi-endpoints-platform-endpoints.md#getstatus) | *Added in Dash Platform v1.2.0*<br>Retrieves status information related to Dash Platform |
+| [`getProtocolVersionUpgradeVoteStatus`](../reference/dapi-endpoints-platform-endpoints.md#getprotocolversionupgradevotestatus) | **Updated in Dash Platform v5.0.0**<br>Returns protocol version upgrade status. `count` must be at least 1. |
+| [`getStatus`](../reference/dapi-endpoints-platform-endpoints.md#getstatus) | **Updated in Dash Platform v5.0.0**<br>Retrieves status information related to Dash Platform. `stateSync` is omitted when no snapshot restore is reported. |
 | [`getTotalCreditsInPlatform`](../reference/dapi-endpoints-platform-endpoints.md#gettotalcreditsinplatform) | *Added in Dash Platform v1.1.0*<br>Retrieves the total credits in the platform |
 
 ### Tokens
@@ -165,12 +165,12 @@ Shielded Transaction endpoints are defined in the protocol but are not yet avail
 
 | Endpoint | Description |
 | -------- | ----------- |
-| [`getShieldedEncryptedNotes`](../reference/dapi-endpoints-platform-endpoints.md#getshieldedencryptednotes) | Returns encrypted notes from the shielded pool for a specified range. |
-| [`getShieldedAnchors`](../reference/dapi-endpoints-platform-endpoints.md#getshieldedanchors) | Returns all commitment tree anchors for the shielded pool. |
-| [`getMostRecentShieldedAnchor`](../reference/dapi-endpoints-platform-endpoints.md#getmostrecentshieldedanchor) | Returns the most recent commitment tree anchor. |
-| [`getShieldedPoolState`](../reference/dapi-endpoints-platform-endpoints.md#getshieldedpoolstate) | Returns the total balance held in the shielded pool. |
-| [`getShieldedNotesCount`](../reference/dapi-endpoints-platform-endpoints.md#getshieldednotescount) | Returns the count of leaves in the shielded notes commitment tree, used to seed shielded sync progress. |
-| [`getShieldedNullifiers`](../reference/dapi-endpoints-platform-endpoints.md#getshieldednullifiers) | Returns the spent status of specified nullifiers. |
+| [`getShieldedEncryptedNotes`](../reference/dapi-endpoints-platform-endpoints.md#getshieldedencryptednotes) | **Updated in Dash Platform v5.0.0**<br>Returns encrypted notes from the shielded pool for a specified range. Accepts an optional `token_id` to query a token's shielded pool. |
+| [`getShieldedAnchors`](../reference/dapi-endpoints-platform-endpoints.md#getshieldedanchors) | **Updated in Dash Platform v5.0.0**<br>Returns all commitment tree anchors for the shielded pool. Accepts an optional `token_id` to query a token's shielded pool. |
+| [`getMostRecentShieldedAnchor`](../reference/dapi-endpoints-platform-endpoints.md#getmostrecentshieldedanchor) | **Updated in Dash Platform v5.0.0**<br>Returns the most recent commitment tree anchor. Accepts an optional `token_id` to query a token's shielded pool. |
+| [`getShieldedPoolState`](../reference/dapi-endpoints-platform-endpoints.md#getshieldedpoolstate) | **Updated in Dash Platform v5.0.0**<br>Returns the total balance held in the shielded pool. Accepts an optional `token_id` to query a token's shielded pool. |
+| [`getShieldedNotesCount`](../reference/dapi-endpoints-platform-endpoints.md#getshieldednotescount) | **Updated in Dash Platform v5.0.0**<br>Returns the count of leaves in the shielded notes commitment tree, used to seed shielded sync progress. Accepts an optional `token_id` to query a token's shielded pool. |
+| [`getShieldedNullifiers`](../reference/dapi-endpoints-platform-endpoints.md#getshieldednullifiers) | **Updated in Dash Platform v5.0.0**<br>Returns the spent status of specified nullifiers. Accepts an optional `token_id` to query a token's shielded pool. |
 
 ```{eval-rst}
 ..
@@ -196,21 +196,21 @@ Platform status.
 | [`getBestBlockHash`](../reference/dapi-endpoints-json-rpc-endpoints.md#getbestblockhash) | Returns block hash of the chaintip |
 | [`getBlockHash`](../reference/dapi-endpoints-json-rpc-endpoints.md#getblockhash)         | Returns block hash of the requested block |
 | [`getStatus`](../reference/dapi-endpoints-json-rpc-endpoints.md#getstatus) | Returns Platform status information |
-| [`sendRawTransaction`](../reference/dapi-endpoints-json-rpc-endpoints.md#sendrawtransaction) | Submits a raw transaction to the network |
+| [`sendRawTransaction`](../reference/dapi-endpoints-json-rpc-endpoints.md#sendrawtransaction) | **Updated in Dash Platform v5.0.0**<br>Submits a raw transaction to the network. Supports Dash Core v24 transactions. |
 
 ### gRPC Endpoints
 
 | Endpoint | Description |
 | -------- | ----------- |
-| [`broadcastTransaction`](../reference/dapi-endpoints-core-grpc-endpoints.md#broadcasttransaction) | Broadcasts the provided transaction |
+| [`broadcastTransaction`](../reference/dapi-endpoints-core-grpc-endpoints.md#broadcasttransaction) | **Updated in Dash Platform v5.0.0**<br>Broadcasts the provided transaction. Supports Dash Core v24 transactions. |
 | [`getBestBlockHeight`](../reference/dapi-endpoints-core-grpc-endpoints.md#getbestblockheight) | *Added in Dash Platform v1.0.0*<br>Return the best block height|
 | [`getBlock`](../reference/dapi-endpoints-core-grpc-endpoints.md#getblock) | Returns information for the requested block |
 | [`getBlockchainStatus`](../reference/dapi-endpoints-core-grpc-endpoints.md#getblockchainstatus) | *Added in Dash Platform v1.0.0*<br>Returns blockchain status information |
 | [`getMasternodeStatus`](../reference/dapi-endpoints-core-grpc-endpoints.md#getmasternodestatus) | Returns masternode status information |
 | [`getTransaction`](../reference/dapi-endpoints-core-grpc-endpoints.md#gettransaction) | Returns details for the requested transaction |
-| [`subscribeTo` `BlockHeadersWithChainLocks`](../reference/dapi-endpoints-core-grpc-endpoints.md#subscribetoblockheaderswithchainlocks) | Returns the requested block headers along with the associated ChainLocks. |
+| [`subscribeTo` `BlockHeadersWithChainLocks`](../reference/dapi-endpoints-core-grpc-endpoints.md#subscribetoblockheaderswithchainlocks) | **Updated in Dash Platform v5.0.0**<br>Returns the requested block headers along with the associated ChainLocks. Supports Dash Core v24 blocks and transactions. |
 | [`subscribeToMasternodeList`](../reference/dapi-endpoints-core-grpc-endpoints.md#subscribetomasternodelist) | *Added in Dash Platform v1.0.0*<br>Returns the full masternode list from the genesis block to the chain tip as the first message and provides update messages with every new block |
-| [`subscribeTo` `TransactionsWithProofs`](../reference/dapi-endpoints-core-grpc-endpoints.md#subscribetotransactionswithproofs) | Returns transactions matching the provided bloom filter along with the associated [`islock` message](https://docs.dash.org/en/stable/docs/core/reference/p2p-network-instantsend-messages.html#islock) and [merkle block](https://docs.dash.org/en/stable/docs/core/reference/p2p-network-data-messages.html#merkleblock) |
+| [`subscribeTo` `TransactionsWithProofs`](../reference/dapi-endpoints-core-grpc-endpoints.md#subscribetotransactionswithproofs) | **Updated in Dash Platform v5.0.0**<br>Returns transactions matching the provided bloom filter along with the associated [`islock` message](https://docs.dash.org/en/stable/docs/core/reference/p2p-network-instantsend-messages.html#islock) and [merkle block](https://docs.dash.org/en/stable/docs/core/reference/p2p-network-data-messages.html#merkleblock). Supports Dash Core v24 blocks and transactions. |
 
 :::{note}
 The previous version of documentation can be [viewed

@@ -19,12 +19,44 @@ issues for API consumers.
 Platform gRPC requests are capped at 128 KiB encoded, reduced from 64 MiB. A larger request is rejected by the transport before it reaches the endpoint. The limit sits above every per-endpoint budget — the largest are [`getPathElements`](#getpathelements) at 64 KiB of path and key components and [`broadcastStateTransition`](#broadcaststatetransition) at 20 KiB — so requests within those bounds are unaffected.
 :::
 
+A request over the size limit is rejected with `OUT_OF_RANGE`.
+
+### Error status codes
+
+:::{versionchanged} 5.0.0
+Request errors are now returned as `INVALID_ARGUMENT` consistently. Previously, many query validation failures surfaced as `INTERNAL` or `UNKNOWN`, which clients treat as a node fault, and a request payload that could not be decoded returned `INTERNAL`.
+:::
+
+Clients use the gRPC status code to decide whose fault a failure is: `INVALID_ARGUMENT` is the caller's mistake and should not be retried on another node, while `UNKNOWN` and `INTERNAL` indicate a node problem. Platform endpoints map errors as follows:
+
+| Status | Returned for |
+| ------ | ------------ |
+| `INVALID_ARGUMENT` | A request payload that is not valid protobuf, an invalid argument, too many elements, or a query syntax error (including errors such as `InvalidLimit`, `InvalidInClause`, and `Unsupported` described on the [Query Syntax](../reference/query-syntax.md) page) |
+| `NOT_FOUND` | A requested item that does not exist, where the endpoint reports absence as an error |
+| `RESOURCE_EXHAUSTED` | A node-side resource limit, such as a bounded concurrency pool. Back off and retry, or use another node |
+| `OUT_OF_RANGE` | A request larger than the [request size limit](#request-size-limit) |
+| `UNKNOWN` | A request the node could not decode as a query, an unsupported request version, or another unexpected query error. A newer request version may succeed on a node running a newer protocol version |
+| `INTERNAL` | Any other node-side failure |
+
+Status messages longer than 1,024 bytes are truncated and end with `... (N bytes truncated)`.
+
+GroveDB cannot prove an empty query or one with a limit of zero, so several endpoints answer an empty selection differently depending on `prove`:
+
+| Request | Without a proof | With a proof |
+| ------- | --------------- | ------------ |
+| Empty ID list: [`getDataContracts`](#getdatacontracts), [`getIdentitiesBalances`](#getidentitiesbalances), [`getIdentitiesContractKeys`](#getidentitiescontractkeys) (IDs or purposes), [`getEvonodesProposedEpochBlocksByIds`](#getevonodesproposedepochblocksbyids), [`getIdentityTokenBalances`](#getidentitytokenbalances), [`getIdentitiesTokenBalances`](#getidentitiestokenbalances), [`getIdentityTokenInfos`](#getidentitytokeninfos), [`getIdentitiesTokenInfos`](#getidentitiestokeninfos), [`getTokenStatuses`](#gettokenstatuses), [`getAddressesInfos`](#getaddressesinfos) | Empty answer | `INVALID_ARGUMENT` |
+| [`getIdentityKeys`](#getidentitykeys) with `limit` 0, [`getEpochsInfo`](#getepochsinfo) with `count` 0 | Empty answer | `INVALID_ARGUMENT` |
+| `limit` or `count` 0 on [`getDataContractHistory`](#getdatacontracthistory), [`getProtocolVersionUpgradeVoteStatus`](#getprotocolversionupgradevotestatus), [`getEvonodesProposedEpochBlocksByRange`](#getevonodesproposedepochblocksbyrange), [`getContestedResourceIdentityVotes`](#getcontestedresourceidentityvotes), [`getTokenPreProgrammedDistributions`](#gettokenpreprogrammeddistributions), [`getGroupInfos`](#getgroupinfos), [`getGroupActions`](#getgroupactions) | `INVALID_ARGUMENT` | `INVALID_ARGUMENT` |
+
+A non-zero `offset` on a proved request is rejected with `INVALID_ARGUMENT` for [`getIdentityKeys`](#getidentitykeys) (except `specific_keys` requests, which ignore offsets), [`getDataContractHistory`](#getdatacontracthistory), [`getDocumentHistory`](#getdocumenthistory), and [`getContestedResourceIdentityVotes`](#getcontestedresourceidentityvotes).
+
 ### Result limits and pagination
 
 Endpoints that return a list accept a `count` or `limit` field. Unless an endpoint states otherwise,
 the default and maximum are 100, although node operators may configure a different limit. A value of
 `0` or a value above the node's limit is rejected. Exceptions are documented in the relevant
-endpoint sections.
+endpoint sections; some endpoints accept `0` only when no proof is requested (see
+[Error status codes](#error-status-codes)).
 
 Endpoints that accept an array of identifiers (for example identity IDs, token IDs, or ProTx hashes)
 accept at most 100 entries.
@@ -196,7 +228,7 @@ Retrieves the voting record of a specific identity.
 | ------------------------------ | -------- | -------- | ------------|
 | `identity_id`                  | Bytes    | Yes      | The ID of the identity whose votes are being requested |
 | `limit`                        | Integer  | No       | Maximum number of results to return. See [Result limits and pagination](#result-limits-and-pagination) |
-| `offset`                       | Integer  | No       | Offset for pagination |
+| `offset`                       | Integer  | No       | Offset for pagination. *Changed in Dash Platform v5.0.0:* a non-zero `offset` is rejected with `INVALID_ARGUMENT` when `prove` is `true` |
 | `order_ascending`              | Boolean  | No       | Sort order for results |
 | `start_at_vote_poll_id_info`   | Object   | No       | Start poll ID information for pagination |
 | `prove`                        | Boolean  | No       | Set to `true` to receive a proof that contains the requested identity votes |
@@ -842,7 +874,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 | Name    | Type    | Required | Description                               |
 | ------- | ------- | -------- | ----------------------------------------- |
-| `ids`   | Array   | Yes      | An array of data contract IDs             |
+| `ids`   | Array   | Yes      | An array of data contract IDs. *Changed in Dash Platform v5.0.0:* an empty array is rejected with `INVALID_ARGUMENT` when `prove` is `true`; without a proof it returns an empty result |
 | `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested data contracts |
 
 **Example Request and Response**
@@ -1136,8 +1168,8 @@ grpcurl -proto protos/platform/v0/platform.proto \
 | ------- | -------- | -------- | ---------------------------------------- |
 | `id`    | Bytes    | Yes      | A data contract `id`                     |
 | `start_at_ms` | Integer | No | Request revisions starting at this timestamp |
-| `limit` | Integer  | No      | The maximum number of revisions to return |
-| `offset` | Integer | No      | The offset of the first revision to return |
+| `limit` | Integer  | No      | The maximum number of revisions to return, between 1 and 10. Omitting the field uses the maximum (10). *Changed in Dash Platform v5.0.0:* an explicit `0` or a value above 10 is rejected with `INVALID_ARGUMENT` |
+| `offset` | Integer | No      | The offset of the first revision to return. *Changed in Dash Platform v5.0.0:* a non-zero `offset` is rejected with `INVALID_ARGUMENT` when `prove` is `true` |
 | `prove` | Boolean  | No       | Set to `true` to receive a proof that contains the requested data contract. The data requested will be encoded as part of the proof in the response.|
 
 **Example Request and Response**
@@ -1297,8 +1329,8 @@ grpcurl -proto protos/platform/v0/platform.proto \
 Adds a typed v1 request surface (`WhereClause` / `OrderClause` / `Select`) and four aggregate modes — `DOCUMENTS`, `COUNT`, `SUM`, `AVG`. The legacy v0 CBOR surface is still supported.
 :::
 
-:::{versionchanged} 4.2.0
-Protocol version 14 adds [ranked](#ranked-documents), [having-range](#having-range-documents), [chained](#chained-documents), and [composite](#composite-documents) query modes, plus the `IN_TIME_RANGE` where operator. `offset` is now consumed in ranked mode, and `having` is served in having-range mode.
+:::{versionchanged} 5.0.0
+Protocol version 14 adds [ranked](#ranked-documents), [having-range](#having-range-documents), [chained](#chained-documents), and [composite](#composite-documents) query modes, plus the `IN_TIME_RANGE` and `IN_INTEGER_RANGE` window operators and the `CONTAINS` and `CONTAINS_ANY` typed-array operators. `offset` is now consumed in ranked mode, and `having` is served in having-range mode. Chained and composite joins accept `deletableDocument` and `moderatedDocument` references and report referenced documents that are missing or were removed by moderators. The `HavingClause` ranking operand (`ranking`, field 4), which was never served, has been removed from the wire.
 :::
 
 **Returns**: [Document](../explanations/platform-protocol-document.md) information for the requested document(s), or an aggregate count/sum/average over the matched document set.
@@ -1314,7 +1346,7 @@ The request envelope is `oneof version { v0; v1; }`. Pick a version per call:
 | ---- | ---- | -------- | ----------- |
 | `data_contract_id` | Bytes | Yes | A data contract `id`. |
 | `document_type` | String | Yes | A document type defined by the data contract. |
-| `where_clauses` (v1) / `where` (v0) | Typed (v1) or CBOR bytes (v0) | No | Filter clauses. A v1 clause carries `field`, `operator`, and exactly one operand: `IN_TIME_RANGE` clauses set `time_range` and leave `value` unset, every other operator sets `value` and leaves `time_range` unset. Either mismatch is rejected. See [Query Syntax](../reference/query-syntax.md) and [Time-range selection](../reference/query-syntax.md#time-range-selection). |
+| `where_clauses` (v1) / `where` (v0) | Typed (v1) or CBOR bytes (v0) | No | Filter clauses. A v1 clause carries `field`, `operator`, and exactly one operand: `IN_TIME_RANGE` clauses set `time_range`, `IN_INTEGER_RANGE` clauses set `integer_range`, and every other operator sets `value`. Any mismatch is rejected with `InvalidArgument`. The window operators exist only on v1; `CONTAINS` / `CONTAINS_ANY` are also accepted in v0 as `contains` / `containsAny`. See [Query Syntax](../reference/query-syntax.md), [Time-range selection](../reference/query-syntax.md#time-range-selection), [Integer-range selection](../reference/query-syntax.md#integer-range-selection), and [Typed array elements](../reference/query-syntax.md#typed-array-elements). |
 | `order_by` | Typed (v1) or CBOR bytes (v0) | No | Sort order. See [Query Syntax](../reference/query-syntax.md). |
 | `prove` | Boolean | No | Return a proof instead of data. See [Platform proofs](../reference/platform-proofs.md). |
 | `having` (v1) | Typed | No | Aggregate filters on grouped results. From protocol version 14, a single clause naming the selected aggregate alongside one `group_by` property is served as a [having-range query](../reference/query-syntax.md#having-range-queries). Other shapes, and every request on protocol version 13 or earlier, are rejected - usually with `Unsupported`, though a bad limit gives `InvalidLimit` and a missing `group_by` gives `InvalidParameter`. See [Query Syntax](../reference/query-syntax.md). |
@@ -1703,7 +1735,7 @@ Client computes `avg = 215 / 50 = 4.3`.
 
 #### Ranked documents
 
-:::{versionadded} 4.2.0
+:::{versionadded} 5.0.0
 Requires protocol version 14.
 :::
 
@@ -1722,7 +1754,7 @@ The response is carried in `result.data.ranked`, which reports the entries and t
 
 #### Having-range documents
 
-:::{versionadded} 4.2.0
+:::{versionadded} 5.0.0
 Requires protocol version 14.
 :::
 
@@ -1734,7 +1766,7 @@ The response is carried in `result.data.ranked`, with no skip reported.
 
 #### Chained documents
 
-:::{versionadded} 4.2.0
+:::{versionadded} 5.0.0
 No protocol-version gate of its own, but depends in practice on protocol version 14, which admits the `indexOnly` and `refersTo` keywords it requires.
 :::
 
@@ -1748,15 +1780,21 @@ Performs a provable semi-join. Presence of the `chained` message selects this mo
 | `chained.outer_document_type` | String | Yes | The joined document type - the `refersTo` target. |
 | `limit` | Integer | Yes | Bounds the derived outer query, so there is no server-default fallback. A value outside 1 to 100 is rejected with `InvalidLimit` rather than clamped. |
 
-The inner document type must be `indexOnly` and resolve to an index carrying the join property; the outer type must not be `indexOnly`. The join property must declare a same-contract `refersTo: permanentDocument` targeting the outer document type, and `selects` must be empty or a single `DOCUMENTS` projection. `group_by`, `having`, time-range clauses, cursors, and `offset` are rejected; paginate with a range clause on the join property. See [Chained queries](../reference/query-syntax.md#chained-queries).
+The inner document type must be `indexOnly` and resolve to an index carrying the join property; the outer type must not be `indexOnly`. The join property must declare a same-contract by-ID `refersTo` - `permanentDocument`, `deletableDocument`, or `moderatedDocument` - targeting the outer document type, and `selects` must be empty or a single `DOCUMENTS` projection. `group_by`, `having`, window-selection clauses (`IN_TIME_RANGE` and `IN_INTEGER_RANGE`), cursors, and `offset` are rejected; paginate with a range clause on the join property. See [Chained queries](../reference/query-syntax.md#chained-queries).
 
-The response is carried in `result.data.chained` as `inner_documents` and `outer_documents`.
+The response is carried in `result.data.chained` as `inner_documents` and `outer_documents`. Join values with no outer document are reported according to the join property's `refersTo` kind:
+
+| `refersTo` kind | Missing outer document |
+| --------------- | ---------------------- |
+| `permanentDocument` | Cannot occur; a dangling reference fails the query. |
+| `deletableDocument` | Reported in `missing_outer_ids`, in first-appearance order. |
+| `moderatedDocument` | Reported in `removed_outer_documents` with the moderators' removal record (a `ContractDocumentRemoval`), in first-appearance order. A join value with neither a document nor a removal record fails the query. |
 
 A node predating this field ignores it and serves the plain inner query, which fails closed on the client: an inner-only proof cannot satisfy the re-derived merged query.
 
 #### Composite documents
 
-:::{versionadded} 4.2.0
+:::{versionadded} 5.0.0
 :::
 
 Returns a page plus sub-queries derived from it, answered as one merged proof over a single state root. Presence of any `sub_queries` selects this mode: the request's own contract, document type, clauses, and `limit` describe the **page**, and each sub-query's `IN` clause is derived by the node from the page's - or an earlier sub-query's - proven documents.
@@ -1779,11 +1817,11 @@ Returns a page plus sub-queries derived from it, answered as one merged proof ov
 | ---- | ---- | ----------- |
 | `source` | Integer | `0` is the page; `n` is `sub_queries[n - 1]`, which must precede this one and be a `DOCUMENTS` sub-query. |
 | `source_property` | String | The property read off each source document - `$id`, `$ownerId`, or an identifier-typed property. Dotted paths reach nested properties. |
-| `field` | String | The sub-query field receiving the `IN` clause. `$id` makes this a by-ID join, requiring the source property to declare `refersTo: permanentDocument` targeting this document type. |
+| `field` | String | The sub-query field receiving the `IN` clause. `$id` makes this a by-ID join, requiring the source property to declare a by-ID `refersTo` (`permanentDocument`, `deletableDocument`, or `moderatedDocument`) targeting this sub-query's contract and document type. |
 
-The page's `limit` is required, and a value outside 1 to 100 is rejected with `InvalidLimit` rather than clamped. `group_by`, `having`, time-range clauses, cursors, and `offset` are rejected, `chained` and `sub_queries` are mutually exclusive, and a request may carry at most 10 sub-queries. See [Composite queries](../reference/query-syntax.md#composite-queries).
+The page's `limit` is required, and a value outside 1 to 100 is rejected with `InvalidLimit` rather than clamped. `group_by`, `having`, window-selection clauses (`IN_TIME_RANGE` and `IN_INTEGER_RANGE`), cursors, and `offset` are rejected, `chained` and `sub_queries` are mutually exclusive, and a request may carry at most 10 sub-queries. A sub-query may not use `CONTAINS_ANY`. See [Composite queries](../reference/query-syntax.md#composite-queries).
 
-The response is carried in `result.data.composite` as `page_documents` plus one `sub_results` entry per sub-query, in request order.
+The response is carried in `result.data.composite` as `page_documents` plus one `sub_results` entry per sub-query, in request order. For a by-ID join, each `sub_results` entry also reports derived IDs with no document, by the source property's `refersTo` kind: `deletableDocument` lists them in `missing_ids`, and `moderatedDocument` lists them in `removed` with their removal records. Under `permanentDocument`, and for a `moderatedDocument` ID with neither a document nor a removal record, a missing document fails the query.
 
 ### getDocumentHistory
 
@@ -1796,7 +1834,7 @@ The response is carried in `result.data.composite` as `page_documents` plus one 
 | `document_type_name` | String | Yes | A document type defined by the data contract |
 | `document_id` | Bytes | Yes | The `id` of the document whose history is requested |
 | `limit` | Integer | No | Maximum number of history entries to return, between 1 and 10. Omitting the field uses the maximum (10); an explicit `0` or a value above 10 is rejected with `InvalidArgument`. |
-| `offset` | Integer | No | Number of history entries to skip. Omitted and explicit `0` both start at the first entry. |
+| `offset` | Integer | No | Number of history entries to skip. Omitted and explicit `0` both start at the first entry. *Changed in Dash Platform v5.0.0:* a non-zero `offset` is rejected with `INVALID_ARGUMENT` when `prove` is `true`. |
 | `start_at_ms` | Integer | No | Only return results *after* this time in milliseconds; the bound is exclusive. |
 | `prove` | Boolean | No | Set to `true` to receive a proof that contains the requested document history. The data requested will be encoded as part of the proof in the response.|
 
@@ -2671,6 +2709,10 @@ An identity that has been updated returns it alongside `balance`, quoted as a st
 :::{versionadded} 2.0.0
 :::
 
+:::{versionchanged} 5.0.0
+Adds a `v1` request and response. A proved `v1` response is one proof covering both the key-hash index selection and the identity, carried in the standard `proof` field. A proved `v0` response still carries two separate proofs: `grovedb_identity_public_key_hash_proof` and `identity_proof_bytes`. Request `v1` is accepted from protocol version 14; earlier protocol versions accept only `v0` and reject `v1` as an unsupported query version. `v0` remains supported.
+:::
+
 **Returns**: One or more [identities](../explanations/identity.md) associated with a public key
 hash, including non-unique masternode keys.
 
@@ -2680,7 +2722,7 @@ key hashes that may be associated with multiple identities, such as masternode v
 `start_after` parameter to paginate through results.
 :::
 
-**Parameters**:
+**Parameters** (identical for `v0` and `v1`):
 
 | Name             | Type   | Required | Description |
 | ---------------- | ------ | -------- | ----------- |
@@ -2883,6 +2925,15 @@ Current identity contract nonce: 0
 | `limit` | Integer  | No      | The maximum number of keys to return. Values above 100 are rejected with `InvalidLimit` |
 | `offset` | Integer | No      | The offset for pagination through the keys |
 | `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested identity
+
+:::{versionchanged} 5.0.0
+Request validation is stricter, and invalid requests are rejected with `INVALID_ARGUMENT`:
+
+- `specific_keys`: duplicate key IDs are collapsed, and more than 100 distinct IDs is rejected. Without a proof, `limit` now caps the result to the first existing keys in encoded-key order, and the proved response covers the same keys. `offset` is ignored, with or without a proof.
+- `limit: 0` is rejected when `prove` is `true`; without a proof it returns an empty result.
+- `all_keys` and `search_key` with `prove` set reject a non-zero `offset`.
+- `search_key` without a proof requires a `limit` and rejects a non-zero `offset`.
+:::
 
 #### Request Types
 
@@ -3200,7 +3251,7 @@ Retrieves the balances for a list of identities.
 
 | Name      | Type    | Required | Description                                              |
 |-----------|---------|----------|----------------------------------------------------------|
-| `ids`     | Array   | No       | An array of identity IDs for which balances are requested. At most 100 IDs per call; more returns `InvalidLimit`<br>Note: masternode IDs are created uniquely as described in the [masternode identity IDs section](#masternode-identity-ids) |
+| `ids`     | Array   | No       | An array of identity IDs for which balances are requested. At most 100 IDs per call; more returns `InvalidLimit`. *Changed in Dash Platform v5.0.0:* an empty array is rejected with `INVALID_ARGUMENT` when `prove` is `true`<br>Note: masternode IDs are created uniquely as described in the [masternode identity IDs section](#masternode-identity-ids) |
 | `prove`   | Boolean | No       | Set to `true` to receive a proof containing the requested balances |
 
 **Example Request and Response**
@@ -3262,10 +3313,10 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 | Name                 | Type                    | Required | Description |
 |----------------------|-------------------------|----------|-------------|
-| `identities_ids`     | Array                   | Yes      | An array of identity IDs. At most 100 IDs per call; more returns `InvalidLimit`<br>Note: masternode IDs are created uniquely as described in the [masternode identity IDs section](#masternode-identity-ids) |
+| `identities_ids`     | Array                   | Yes      | An array of identity IDs. At most 100 IDs per call; more returns `InvalidLimit`. *Changed in Dash Platform v5.0.0:* an empty array is rejected with `INVALID_ARGUMENT` when `prove` is `true`<br>Note: masternode IDs are created uniquely as described in the [masternode identity IDs section](#masternode-identity-ids) |
 | `contract_id`        | Bytes                   | Yes      | The ID of the contract |
 | `document_type_name` | String                  | No       | Name of the document type |
-| `purposes`           | Array of [KeyPurpose](#key-purposes) | No | Array of purposes for which keys are requested |
+| `purposes`           | Array of [KeyPurpose](#key-purposes) | No | Array of purposes for which keys are requested. *Changed in Dash Platform v5.0.0:* required when `prove` is `true`; an empty array is then rejected with `INVALID_ARGUMENT` |
 | `prove`              | Boolean                 | No       | Set to `true` to receive a proof that contains the requested identity keys |
 
 #### Key Purposes
@@ -3490,6 +3541,10 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 ### getGroupActions
 
+:::{versionchanged} 5.0.0
+Adds the `mint_to_pool` and `burn_from_pool` token events for group actions on a token's shielded pool (protocol version 14+).
+:::
+
 Retrieves a list of actions performed by a specific group within a contract.
 
 **Parameters**:
@@ -3517,6 +3572,8 @@ Retrieves a list of actions performed by a specific group within a contract.
 |                   | `emergency_action`         | Performs emergency actions like pausing or resuming the contract. |
 |                   | `token_config_update`      | Updates token configuration settings. |
 |                   | `update_price`             | Updates the token's direct purchase price (fixed or tiered). |
+|                   | `mint_to_pool`             | *Added in Dash Platform v5.0.0.* Mints new tokens straight into the token's shielded pool. Protocol version 14+. |
+|                   | `burn_from_pool`           | *Added in Dash Platform v5.0.0.* Burns notes held in the token's shielded pool. Protocol version 14+. |
 | **DocumentEvent** | `create`                   | Represents the creation of a document. |
 | **ContractEvent** | `update`                   | Represents updates to a contract. |
 
@@ -3562,6 +3619,12 @@ Retrieves a list of actions performed by a specific group within a contract.
 | `update_price` | `fixed_price` | UInt64 | Fixed direct purchase price (present when a fixed price is set). |
 |           | `variable_price` | Object | Tiered pricing schedule (`price_for_quantity` array of `{quantity, price}`), present when tiered pricing is set. |
 |           | `public_note` | String (Optional) | A public note for the price update event. |
+| `mint_to_pool` | `amount` | UInt64 | Amount of tokens minted into the pool. |
+|           | `actions_digest` | Bytes | Digest of the Orchard actions every group signer commits to. |
+|           | `public_note` | String (Optional) | A public note for the mint event. |
+| `burn_from_pool` | `amount` | UInt64 | Amount of tokens destroyed. |
+|           | `actions_digest` | Bytes | Digest of the Orchard actions every group signer commits to. |
+|           | `public_note` | String (Optional) | A public note for the burn event. |
 
 **Example Request and Response**
 
@@ -3970,6 +4033,10 @@ The [`waitForStateTransitionResult` endpoint](#waitforstatetransitionresult) sho
 DAPI now rejects an oversized state transition with `INVALID_ARGUMENT` before attempting to broadcast it. An empty payload is rejected the same way. The DAPI-side check is a static upper bound; Drive enforces the active protocol version's limit authoritatively, so a state transition that passes this check can still be rejected later.
 :::
 
+:::{versionadded} 5.0.0
+DAPI limits shielded state transitions from a source address that keeps submitting invalid Orchard proofs. The limit applies to transitions carrying Orchard actions (for example shield, shielded transfer, unshield, and shielded withdrawal) and is charged only when Drive rejects a transition with an invalid shielded proof (consensus code 40902). Each source address - an IPv4 address or an IPv6 /48 prefix - may accumulate four failed actions, and each failed action takes 30 seconds to drain. While a source has outstanding failures it may have only one shielded broadcast in flight. A refused broadcast returns `RESOURCE_EXHAUSTED` with the message `too many rejected shielded state transitions from this address; retry later` and a `ratelimit-reset` trailer giving the number of seconds to wait. These limits are fixed in DAPI and are not configurable.
+:::
+
 ```{eval-rst}
 ..
   Commented out info
@@ -3984,13 +4051,20 @@ DAPI now rejects an oversized state transition with `INVALID_ARGUMENT` before at
 
 ### waitForStateTransitionResult
 
-**Returns**: The state transition hash and either a proof that the state transition was confirmed in a block or an error.  
+**Returns**: The state transition hash and either a proof that the state transition was confirmed in a block, the owner's credit balance (if requested without a proof), or an error.  
 **Parameters**:
 
 | Name                    | Type    | Required | Description                      |
 | ----------------------- | ------- | -------- | -------------------------------- |
 | `state_transition_hash` | Bytes   | Yes      | Hash of the state transition. Must be exactly 32 bytes (the SHA-256 of the serialized state transition). |
-| `prove`                 | Boolean | Yes      | Set to `true` to request a proof. The data requested will be encoded as part of the proof in the response. |
+| `prove`                 | Boolean | No       | Set to `true` to request a proof. The data requested will be encoded as part of the proof in the response. |
+| `request_user_balance`  | Boolean | No       | *Added in Dash Platform v5.0.0.* Set to `true` to receive, without a proof, the credit balance of the identity that owns the state transition after it executed. Ignored when `prove` is `true`. |
+
+:::{versionadded} 5.0.0
+When `request_user_balance` is `true` and `prove` is `false`, a successful result carries `success_with_owner_balance.owner_balance`: the owner identity's credit balance, read unproved from Drive's current state. If that state predates the block that executed the transition, the response carries only the metadata, with no result, so a caller can detect a lagging node by comparing `metadata.height` to the transition's block. Transitions without an owner identity (address-funded and shielded-pool transitions), and a balance lookup that fails, return a plain success with no result, as before.
+
+From protocol version 14, the proof of an owned, fee-paying transition (document and token batches, contract creates and updates, identity updates, key limit updates, and contract moderation) carries the owner's balance itself, so a client requesting a proof does not need `request_user_balance`.
+:::
 
 :::{versionadded} 4.1.0
 A `state_transition_hash` of any length other than 32 bytes is now rejected with `INVALID_ARGUMENT`. Previously only an empty hash was rejected, so a truncated or differently derived hash was accepted and simply never matched, causing the call to wait until it timed out.
@@ -4277,7 +4351,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 | Name    | Type    | Required | Description |
 | ------- | ------- | -------- | ----------- |
 | `start_epoch` | Integer | No | First epoch being requested. Must be below 65535, and `start_epoch` plus `count` must also stay below 65535; otherwise the request is rejected with `InvalidArgument`
-| `count` | Integer | No | Number of records to request. The effective ceiling is 65534 minus `start_epoch`
+| `count` | Integer | No | Number of records to request. The effective ceiling is 65534 minus `start_epoch`. *Changed in Dash Platform v5.0.0:* a `count` of `0` (including an omitted `count`) is rejected with `INVALID_ARGUMENT` when `prove` is `true`; without a proof it returns an empty result
 | `ascending` | Boolean | No | Set to `true` to query in ascending order. Results are returned in descending order by default.
 | `prove` | Boolean | No | Set to `true` to receive a proof that contains the requested data contracts
 
@@ -4675,7 +4749,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 | Name    | Type    | Required | Description |
 | ------- | ------- | -------- | ------------ |
 | `start_pro_tx_hash` | Bytes | No | Protx hash of an evonode. Must be represented in base64 if present, and must be exactly 32 bytes; any other length is rejected with `InvalidArgument`
-| `count` | Integer | No       | Number of records to request. Must be below 65535
+| `count` | Integer | No       | Number of records to request. Must be below 65535. *Changed in Dash Platform v5.0.0:* a `count` of `0`, including an omitted `count`, is rejected with `INVALID_ARGUMENT`, so set it explicitly
 | `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested protocol version vote status
 
 **Example Request and Response**
@@ -4733,7 +4807,7 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 Retrieves status information related to Dash Platform.
 
-**Returns**: Status details including version, node, chain, network, and state sync information, or a cryptographic proof.
+**Returns**: Status details including version, node, chain, network, and state sync information.
 
 **Response Object**
 
@@ -4761,7 +4835,7 @@ Retrieves status information related to Dash Platform.
 | `network.chainId` | String | Name of the network |
 | `network.peersCount` | Integer | Number of connected peers |
 | `network.listening` | Boolean | Whether the node is accepting inbound connections |
-| `stateSync` | Object | State sync progress. Empty when no state sync is in progress. Members are `totalSyncedTime`, `remainingTime`, `totalSnapshots`, `chunkProcessAvgTime`, `snapshotHeight`, `snapshotChunksCount`, `backfilledBlocks`, and `backfillBlocksTotal` |
+| `stateSync` | Object | State sync progress. Omitted unless at least one snapshot-restore counter (`totalSnapshots`, `chunkProcessAvgTime`, `snapshotHeight`, `snapshotChunksCount`, `backfilledBlocks`, or `backfillBlocksTotal`) is non-zero; the block-sync values `totalSyncedTime` and `remainingTime` alone do not include it. Members are `totalSyncedTime`, `remainingTime`, `totalSnapshots`, `chunkProcessAvgTime`, `snapshotHeight`, `snapshotChunksCount`, `backfilledBlocks`, and `backfillBlocksTotal`. *Changed in Dash Platform v5.0.0: previously returned as an empty object when no state sync was in progress.* |
 | `time.local` | String (uint64) | Node's local time in milliseconds |
 | `time.block` | String (uint64) | Most recent block time. Missing if Drive is not responding |
 | `time.genesis` | String (uint64) | Genesis time. Missing if Drive is not responding |
@@ -4828,7 +4902,6 @@ grpcurl -proto protos/platform/v0/platform.proto \
       "peersCount": 151,
       "listening": true
     },
-    "stateSync": {},
     "time": {
       "local": "1786373846",
       "block": "1786373752393",
@@ -5955,6 +6028,10 @@ differ from the `setBalance` and `addToBalance` fields used by
 :::{versionadded} 4.0.0
 :::
 
+:::{versionchanged} 5.0.0
+Every shielded endpoint accepts an optional `token_id` that targets that token's own shielded pool instead of the credit shielded pool. Responses have the same shape for both pools. Token shielded pools require protocol version 14: on earlier versions a request carrying `token_id` is rejected with `InvalidArgument`, as is a `token_id` that is not 32 bytes. An unproved request naming a token that has no shielded pool is rejected with `NotFound`; a proved request returns a proof of the pool's absence instead.
+:::
+
 ### getShieldedEncryptedNotes
 
 Returns encrypted notes from the shielded pool for a specified range. Clients use these notes for trial decryption to identify notes belonging to their viewing key.
@@ -5968,6 +6045,7 @@ Returns encrypted notes from the shielded pool for a specified range. Clients us
 | `start_index` | Integer | Yes      | The index of the first note to retrieve. Must be chunk-aligned: a multiple of the note commitment tree's MMR chunk size (2048). A non-aligned value is rejected with `InvalidArgument` |
 | `count`       | Integer | Yes      | The number of notes to retrieve, capped at 8,192 (4 MMR chunks of 2,048 notes each). A `count` of `0` or one above the cap is silently treated as a request for the maximum rather than rejected |
 | `prove`       | Boolean | No       | Set to `true` to receive a proof that contains the requested notes |
+| `token_id` | Bytes | No | *Added in Dash Platform v5.0.0.* The 32-byte ID of a token whose own shielded pool to query. Omit to query the credit shielded pool. See [token shielded pools](#shielded-transaction-endpoints) |
 
 Because `start_index` must land on an MMR chunk boundary, paginate by advancing `start_index` in
 multiples of the chunk size rather than by the number of notes actually returned.
@@ -6042,6 +6120,7 @@ Returns the commitment tree anchors currently retained by the node for the shiel
 | Name    | Type    | Required | Description |
 |---------|---------|----------|-------------|
 | `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested anchors |
+| `token_id` | Bytes | No | *Added in Dash Platform v5.0.0.* The 32-byte ID of a token whose own shielded pool to query. Omit to query the credit shielded pool. See [token shielded pools](#shielded-transaction-endpoints) |
 
 The response covers the [node's retention window](../protocol-ref/shielded-pool.md#anchors) rather than the full history of the pool: older anchors are pruned, so the retained set is bounded by the retention and pruning policy.
 
@@ -6105,6 +6184,7 @@ Returns the most recent commitment tree anchor for the shielded pool.
 | Name    | Type    | Required | Description |
 |---------|---------|----------|-------------|
 | `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested anchor |
+| `token_id` | Bytes | No | *Added in Dash Platform v5.0.0.* The 32-byte ID of a token whose own shielded pool to query. Omit to query the credit shielded pool. See [token shielded pools](#shielded-transaction-endpoints) |
 
 If no anchor has been recorded on the chain yet, the unproved response returns an all-zero 32-byte
 `anchor` as an "absent" sentinel rather than omitting the field or returning an error. Treat an
@@ -6153,13 +6233,14 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 Returns the total balance held in the shielded pool.
 
-**Returns**: The total shielded pool balance (in credits) or a cryptographic proof.
+**Returns**: The total shielded pool balance or a cryptographic proof. For the credit pool the balance is in credits; for a token's pool it is the amount of that token currently shielded.
 
 **Parameters**:
 
 | Name    | Type    | Required | Description |
 |---------|---------|----------|-------------|
 | `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested pool state |
+| `token_id` | Bytes | No | *Added in Dash Platform v5.0.0.* The 32-byte ID of a token whose own shielded pool to query. Omit to query the credit shielded pool. See [token shielded pools](#shielded-transaction-endpoints) |
 
 **Example Request and Response**
 
@@ -6211,6 +6292,7 @@ Returns the count of leaves in the shielded notes commitment tree. Wallets use t
 | Name    | Type    | Required | Description |
 |---------|---------|----------|-------------|
 | `prove` | Boolean | No       | Set to `true` to receive a proof that contains the requested count |
+| `token_id` | Bytes | No | *Added in Dash Platform v5.0.0.* The 32-byte ID of a token whose own shielded pool to query. Omit to query the credit shielded pool. See [token shielded pools](#shielded-transaction-endpoints) |
 
 **Example Request and Response**
 
@@ -6263,6 +6345,7 @@ Returns the spent status of specified nullifiers. Clients use this to determine 
 |--------------|----------------|----------|-------------|
 | `nullifiers` | Array of Bytes | Yes      | The nullifiers to query. Must contain between 1 and 100 entries, each exactly 32 bytes. An empty list or a wrong-length entry is rejected with `InvalidArgument`; more than 100 entries is rejected as an invalid limit |
 | `prove`      | Boolean        | No       | Set to `true` to receive a proof that contains the requested nullifier statuses |
+| `token_id` | Bytes | No | *Added in Dash Platform v5.0.0.* The 32-byte ID of a token whose own shielded pool to query. Omit to query the credit shielded pool. See [token shielded pools](#shielded-transaction-endpoints) |
 
 **Example Request and Response**
 
