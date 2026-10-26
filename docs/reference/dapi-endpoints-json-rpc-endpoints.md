@@ -254,6 +254,10 @@ curl -k --request POST \
 
 ### sendRawTransaction
 
+:::{versionchanged} 5.0.0
+DAPI decodes Dash Core v24 transactions, so version 3 provider transactions (ProRegTx and ProUpServTx), previously refused, are now accepted.
+:::
+
 **Returns**: the transaction id (TXID) of the submitted transaction
 
 **Parameters**:

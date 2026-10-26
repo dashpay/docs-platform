@@ -180,7 +180,7 @@ The following example (from the [DPNS contract's `domain` document](https://gith
 
 #### indexOnly document types
 
-:::{versionadded} 4.2.0
+:::{versionadded} 5.0.0
 Requires protocol version 14.
 :::
 
@@ -206,7 +206,7 @@ Fields may also apply a variety of optional JSON Schema constraints related to t
 
 #### Platform-specific property keywords
 
-:::{versionadded} 4.2.0
+:::{versionadded} 5.0.0
 Requires protocol version 14.
 :::
 
@@ -416,7 +416,7 @@ An index can carry aggregate flags so the node answers `COUNT`, `SUM`, and `AVG`
 
 #### Ranked index flags
 
-:::{versionadded} 4.2.0
+:::{versionadded} 5.0.0
 Requires protocol version 14.
 :::
 
@@ -441,7 +441,7 @@ The stored key is each window's start as a millisecond timestamp. Several indice
 
 #### indexOnly index keywords
 
-:::{versionadded} 4.2.0
+:::{versionadded} 5.0.0
 Requires protocol version 14.
 :::
 
