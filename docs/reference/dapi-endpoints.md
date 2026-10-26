@@ -37,6 +37,22 @@ without introducing issues for endpoint consumers.
 | [`getDocuments`](../reference/dapi-endpoints-platform-endpoints.md#getdocuments) | **Updated in Dash Platform v4.2.0**<br>Returns the requested document(s), or an aggregate count/sum/average over the matched document set. Includes ranked, having-range, chained, and composite query modes and the `IN_TIME_RANGE` operator. |
 | [`getDocumentHistory`](../reference/dapi-endpoints-platform-endpoints.md#getdocumenthistory) | *Added in Dash Platform v4.0.0*<br>Returns the revision history for a single document on a contract that keeps document history |
 
+### Contract Moderation
+
+:::{versionadded} 5.0.0
+:::
+
+Contract moderation, introduced in protocol version 14, lets a data contract keep a banlist, a suspension list, and a warning list of identities, and lets its moderators delete documents. A contract's moderators are its owner, identities it appoints, or a team elected by masternodes. A banned or suspended identity cannot submit document transitions for the contract. The endpoints in this section read an identity's moderation status, the lists themselves, the records of removed documents, and the actions and action counts of an elected contract's seated moderation team.
+
+| Endpoint | Description |
+| -------- | ----------- |
+| [`getContractModerationStatus`](../reference/dapi-endpoints-platform-endpoints.md#getcontractmoderationstatus) | **Added in Dash Platform v5.0.0**<br>Returns an identity's status on one or more moderation lists of a moderated data contract: whether it is banned, until when it is suspended, and which warnings it carries. |
+| [`getContractModerationEntries`](../reference/dapi-endpoints-platform-endpoints.md#getcontractmoderationentries) | **Added in Dash Platform v5.0.0**<br>Returns one page of a moderated contract's banlist, suspension list, or warning list, in identity ID order. |
+| [`getContractDocumentRemovals`](../reference/dapi-endpoints-platform-endpoints.md#getcontractdocumentremovals) | **Added in Dash Platform v5.0.0**<br>Returns the removal records of documents that a contract's moderators deleted from one document type, either for specific document IDs or as a page in document ID order. A record shows who removed the document, when, and why, and whether it has since been restored. |
+| [`getContractTeamActions`](../reference/dapi-endpoints-platform-endpoints.md#getcontractteamactions) | **Added in Dash Platform v5.0.0**<br>Returns one page of the actions that an elected contract's seated moderation team is voting on (active) or has carried out (closed), in action ID order. |
+| [`getContractTeamActionSigners`](../reference/dapi-endpoints-platform-endpoints.md#getcontractteamactionsigners) | **Added in Dash Platform v5.0.0**<br>Returns the team members that approved one of the actions an elected contract's seated moderation team votes on. |
+| [`getContractModerationActionCounts`](../reference/dapi-endpoints-platform-endpoints.md#getcontractmoderationactioncounts) | **Added in Dash Platform v5.0.0**<br>Returns how many counted moderation actions (bans, suspensions, warnings, and document deletions) each member of an elected contract's seated moderation team has signed since the moderators fee pot was last settled. |
+
 ### Identities
 
 | Endpoint | Description |
