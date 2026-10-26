@@ -180,7 +180,7 @@ The following example (from the [DPNS contract's `domain` document](https://gith
 
 #### indexOnly document types
 
-:::{versionadded} 5.0.0
+:::{versionadded} 4.2.0
 Requires protocol version 14.
 :::
 
@@ -206,22 +206,22 @@ Fields may also apply a variety of optional JSON Schema constraints related to t
 
 #### Platform-specific property keywords
 
-:::{versionadded} 5.0.0
+:::{versionadded} 4.2.0
 Requires protocol version 14.
 :::
 
 Beyond the standard JSON Schema constraints, two Dash Platform keywords may be applied to a property.
 
-**`refersTo`** declares that an identifier-typed property points at another Platform object, so consensus can enforce that the target exists and stays consistent. It is an object whose required `type` names what is referenced - `identity`, `contract`, `token`, `identityPublicKey`, or a document: `permanentDocument` (a document that can never be deleted), `moderatedDocument` (a document that leaves state only through a moderator's recorded removal), or `deletableDocument` (a document that can be deleted, so the reference is re-validated on every replace of the referring document) - alongside these type-dependent members:
+**`refersTo`** declares that an identifier-typed property points at another Platform object, so consensus can enforce that the target exists and stays consistent. It is an object whose required `type` names what is referenced - `identity`, `contract`, `token`, `permanentDocument`, or `identityPublicKey` - alongside these type-dependent members:
 
 | Member | Type | Applies to | Description |
 |-|-|-|-|
-| contractId | string or array | Document references only | The contract the referenced document lives in, as a base58 string or 32-byte array. When absent, the reference targets the declaring contract. Forbidden on every other type. |
-| documentType | string | Document references (required) | The referenced document type. For `permanentDocument` it must forbid deletion (`canBeDeleted: false`). Forbidden on every other type. |
+| contractId | string or array | `permanentDocument` only | The contract the referenced document lives in, as a base58 string or 32-byte array. When absent, the reference targets the declaring contract. Forbidden on every other type. |
+| documentType | string | `permanentDocument` (required) | The referenced document type. It must forbid deletion (`canBeDeleted: false`). Forbidden on every other type. |
 | keyIdProperty | string | `identityPublicKey` (required) | The property of the same document type carrying the referenced key ID; the reference property's own value then carries the identity ID. Forbidden on every other type. |
 | propertyAgreement | object | `permanentDocument` only | 1 to 10 `{referring property: referenced property}` pairs, each of which must hold as an equality between the two documents, enforced by consensus at write time. Both properties must exist and share a type, validated at contract registration. |
 
-A by-ID `refersTo` - `permanentDocument`, `deletableDocument`, or `moderatedDocument` - targeting a same-contract document type is what makes a property usable as the join property of a [chained query](../reference/query-syntax.md#chained-queries) or the by-ID binding of a [composite query](../reference/query-syntax.md#composite-queries). `findBy` references and `anyOf` / `allOf` expressions are not accepted there.
+A `permanentDocument` `refersTo` is what makes a property usable as the join property of a [chained query](../reference/query-syntax.md#chained-queries) or the by-ID binding of a [composite query](../reference/query-syntax.md#composite-queries).
 
 **`requiredSince`** is an integer naming the contract version from which the property is required, letting a later contract version add a required property without invalidating documents written under earlier versions. On a contract update, a newly required property must carry a `requiredSince` equal to the new contract version; an existing property cannot become required.
 
@@ -416,7 +416,7 @@ An index can carry aggregate flags so the node answers `COUNT`, `SUM`, and `AVG`
 
 #### Ranked index flags
 
-:::{versionadded} 5.0.0
+:::{versionadded} 4.2.0
 Requires protocol version 14.
 :::
 
@@ -441,7 +441,7 @@ The stored key is each window's start as a millisecond timestamp. Several indice
 
 #### indexOnly index keywords
 
-:::{versionadded} 5.0.0
+:::{versionadded} 4.2.0
 Requires protocol version 14.
 :::
 
@@ -587,9 +587,9 @@ There are a variety of constraints currently defined for performance and securit
 
 **Note:** These constraints are defined in the Dash Platform Protocol logic (not in JSON Schema).
 
-A state transition is limited to a maximum size of [20 KiB](https://github.com/dashpay/platform/blob/v5.0-dev/packages/rs-platform-version/src/version/system_limits/v4.rs#L145) (`max_state_transition_size`). Oversized transitions are rejected.
+A state transition is limited to a maximum size of [20 KiB](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-platform-version/src/version/system_limits/v4.rs) (`max_state_transition_size`). Oversized transitions are rejected.
 
-An individual document field value is limited to [5 KiB](https://github.com/dashpay/platform/blob/v5.0-dev/packages/rs-platform-version/src/version/system_limits/v4.rs#L134) (`max_field_value_size`).
+An individual document field value is limited to [5 KiB](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-platform-version/src/version/system_limits/v4.rs) (`max_field_value_size`).
 
 ### Additional Properties
 
