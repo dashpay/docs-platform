@@ -34,6 +34,9 @@ without introducing issues for endpoint consumers.
 | [`getDataContract`](../reference/dapi-endpoints-platform-endpoints.md#getdatacontract) | Returns the requested data contract |
 | [`getDataContracts`](../reference/dapi-endpoints-platform-endpoints.md#getdatacontracts) | Returns the requested data contracts |
 | [`getDataContractHistory`](../reference/dapi-endpoints-platform-endpoints.md#getdatacontracthistory) | Returns the requested data contract history |
+| [`getDataContractsByRange`](../reference/dapi-endpoints-platform-endpoints.md#getdatacontractsbyrange) | **Added in Dash Platform v5.0.0**<br>Enumerates every data contract on Platform, one page at a time, in ascending contract ID order. |
+| [`getDataContractsLatestVersions`](../reference/dapi-endpoints-platform-endpoints.md#getdatacontractslatestversions) | **Added in Dash Platform v5.0.0**<br>Returns the current version number of each requested data contract. Clients can use this to check whether contracts they already hold are still current without downloading the contracts again. |
+| [`getContractFeePots`](../reference/dapi-endpoints-platform-endpoints.md#getcontractfeepots) | **Added in Dash Platform v5.0.0**<br>Returns the two fee pots of a data contract. |
 | [`getDocuments`](../reference/dapi-endpoints-platform-endpoints.md#getdocuments) | **Updated in Dash Platform v4.2.0**<br>Returns the requested document(s), or an aggregate count/sum/average over the matched document set. Includes ranked, having-range, chained, and composite query modes and the `IN_TIME_RANGE` operator. |
 | [`getDocumentHistory`](../reference/dapi-endpoints-platform-endpoints.md#getdocumenthistory) | *Added in Dash Platform v4.0.0*<br>Returns the revision history for a single document on a contract that keeps document history |
 
@@ -48,6 +51,7 @@ without introducing issues for endpoint consumers.
 | [`getIdentityByPublicKeyHash`](../reference/dapi-endpoints-platform-endpoints.md#getidentitybypublickeyhash) | Returns the identity associated with the provided public key hash |
 | [`getIdentityContractNonce`](../reference/dapi-endpoints-platform-endpoints.md#getidentitycontractnonce) | Returns the identity contract nonce |
 | [`getIdentityKeys`](../reference/dapi-endpoints-platform-endpoints.md#getidentitykeys) | Returns the requested identity keys |
+| [`getIdentityKeysRemainingBudgets`](../reference/dapi-endpoints-platform-endpoints.md#getidentitykeysremainingbudgets) | **Added in Dash Platform v5.0.0**<br>Returns what is left of the credit budgets of an identity's keys. |
 | [`getIdentityNonce`](../reference/dapi-endpoints-platform-endpoints.md#getidentitynonce) | Returns the current identity nonce |
 | [`getIdentitiesBalances`](../reference/dapi-endpoints-platform-endpoints.md#getidentitiesbalances) | *Added in Dash Platform v1.3.0*<br>Retrieves the balances for a list of identities |
 | [`getIdentitiesContractKeys`](../reference/dapi-endpoints-platform-endpoints.md#getidentitiescontractkeys) | *Added in Dash Platform v1.0.0*<br>Returns keys associated to a specific contract for multiple Identities |
@@ -65,6 +69,19 @@ Security groups provide a way to distribute token configuration and update autho
 | [`getGroupInfos`](../reference/dapi-endpoints-platform-endpoints.md#getgroupinfos) | Retrieves information about multiple groups within a contract, including their members and required power. |
 | [`getGroupActions`](../reference/dapi-endpoints-platform-endpoints.md#getgroupactions) | Retrieves a list of actions performed by a specific group within a contract. |
 | [`getGroupActionSigners`](../reference/dapi-endpoints-platform-endpoints.md#getgroupactionsigners) | Retrieves the signers for a specified group action within a contract, along with their assigned power. |
+
+### Contract Groups
+
+:::{versionadded} 5.0.0
+:::
+
+From protocol version 14, contract groups organize data contracts, document types, and tokens into an identity-owned collection, which authentication keys can be scoped to. Each group has an owner, optional admins, and an optional name and description. Contract groups are not the same as security groups: security groups are defined inside a data contract and their member identities jointly authorize token actions, while the members of a contract group are contracts, document types, and tokens.
+
+| Endpoint | Description |
+| -------- | ----------- |
+| [`getContractGroupInfo`](../reference/dapi-endpoints-platform-endpoints.md#getcontractgroupinfo) | Retrieves the stored information of a contract group: its owner, admins, name, and description. |
+| [`getContractGroupMembers`](../reference/dapi-endpoints-platform-endpoints.md#getcontractgroupmembers) | Retrieves one page of a contract group's members of a single kind: member contracts, member document types, or member tokens. |
+| [`getContractGroupsForContract`](../reference/dapi-endpoints-platform-endpoints.md#getcontractgroupsforcontract) | Retrieves the contract groups a data contract belongs to, whether as a whole contract, through its document types, or through its tokens. |
 
 ### State Transitions
 

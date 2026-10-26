@@ -894,6 +894,239 @@ grpcurl -proto protos/platform/v0/platform.proto \
 :::
 ::::
 
+### getDataContractsByRange
+
+:::{versionadded} 5.0.0
+:::
+
+Enumerates every data contract on Platform, one page at a time, in ascending contract ID order.
+
+**Returns**: A page of [Data Contract](../explanations/platform-protocol-data-contract.md) entries, each with the contract ID and (unless `ids_only` is set) the serialized contract, or a cryptographic proof. The response uses the same `GetDataContractsResponse` message as [`getDataContracts`](#getdatacontracts).
+
+**Parameters**:
+
+| Name          | Type    | Required | Description |
+| ------------- | ------- | -------- | ----------- |
+| `limit`       | Integer | No       | Maximum number of contracts to return, from 1 to 100. Omit to return up to 100. `0` or a value above 100 is rejected with `InvalidLimit`. The default and maximum are protocol constants, not node settings, so an omitted limit selects the same page on every node |
+| `start_after` | Bytes   | No       | 32-byte contract ID. The page starts after this contract. Mutually exclusive with `start_at` |
+| `start_at`    | Bytes   | No       | 32-byte contract ID. The page starts at this contract (inclusive). Mutually exclusive with `start_after` |
+| `ids_only`    | Boolean | No       | Set to `true` to return only contract IDs. Each entry's `data_contract` is left unset |
+| `prove`       | Boolean | No       | Set to `true` to receive a proof that contains the requested page |
+
+A cursor that is not 32 bytes long is rejected with `InvalidArgument`. When no contracts remain, the
+response contains an empty `data_contract_entries` list rather than a `NotFound` error. A page with
+fewer entries than `limit` is the last page; otherwise pass the last entry's `identifier` as
+`start_after` to fetch the next page.
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+:sync: grpcurl
+```shell
+# TODO: Replace with a real example once Dash Platform v5.0 is deployed on
+# testnet. The response values below are illustrative only.
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "limit": 2,
+      "ids_only": true
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getDataContractsByRange
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+:sync: grpcurl
+```json
+{
+  "v0": {
+    "dataContracts": {
+      "dataContractEntries": [
+        {
+          "identifier": "AAJ1jKe+lMQ0w2eRyEWOrfiQXjxgPzVZf9hxVhfq/bM="
+        },
+        {
+          "identifier": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU="
+        }
+      ]
+    },
+    "metadata": {
+      "height": "412345",
+      "coreChainLockedHeight": 1520000,
+      "epoch": 18000,
+      "timeMs": "1793000000000",
+      "protocolVersion": 14,
+      "chainId": "dash-testnet-51"
+    }
+  }
+}
+```
+:::
+::::
+
+### getDataContractsLatestVersions
+
+:::{versionadded} 5.0.0
+:::
+
+Returns the current version number of each requested data contract. Clients can use this to check whether contracts they already hold are still current without downloading the contracts again.
+
+**Returns**: One entry per distinct requested contract ID, in contract ID order, or a cryptographic proof. Each entry contains the contract `identifier`, its current `version` (absent when no contract has that ID), and the serialized `data_contract` when `include_contracts` is set and the contract exists.
+
+**Parameters**:
+
+| Name                | Type    | Required | Description |
+| ------------------- | ------- | -------- | ----------- |
+| `ids`               | Array   | Yes      | An array of 32-byte data contract IDs. At least one and at most 100 IDs; an empty array or an ID that is not 32 bytes is rejected with `InvalidArgument`, and more than 100 returns `InvalidLimit` |
+| `include_contracts` | Boolean | No       | Set to `true` to also return the serialized contract in each entry for a contract that exists |
+| `prove`             | Boolean | No       | Set to `true` to receive a proof that contains the requested contract versions |
+
+From protocol version 14, every contract has a small version record stored beside it. When
+`include_contracts` is not set, the response is read from that record and a proof covers only the
+version records (a few hundred bytes per contract) rather than the full contracts. When
+`include_contracts` is set, or on protocol versions before 14, the proof is the same
+multi-contract proof that [`getDataContracts`](#getdatacontracts) returns.
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+:sync: grpcurl
+```shell
+# TODO: Replace with a real example once Dash Platform v5.0 is deployed on
+# testnet. The response values below are illustrative only.
+# `ids` must be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "ids": [
+        "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
+        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+      ],
+      "include_contracts": false,
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getDataContractsLatestVersions
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+:sync: grpcurl
+```json
+{
+  "v0": {
+    "dataContractsLatestVersions": {
+      "entries": [
+        {
+          "identifier": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+        },
+        {
+          "identifier": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
+          "version": 1
+        }
+      ]
+    },
+    "metadata": {
+      "height": "412345",
+      "coreChainLockedHeight": 1520000,
+      "epoch": 18000,
+      "timeMs": "1793000000000",
+      "protocolVersion": 14,
+      "chainId": "dash-testnet-51"
+    }
+  }
+}
+```
+:::
+::::
+
+### getContractFeePots
+
+:::{versionadded} 5.0.0
+:::
+
+Returns the two fee pots of a data contract. From protocol version 14, a document type can charge a
+fixed action fee, on top of the normal processing fees, for actions on its documents. Each fee has
+an owner part, which collects in the owner pot that the contract owner claims, and a moderators part,
+which collects in the moderators pot that the contract's moderation team shares. A pot is paid out
+by a contract fee claim, at most once per epoch.
+
+**Returns**: The `owner` and `moderators` pots, or a cryptographic proof. Each pot contains the
+`credits` it holds and, if the pot has been paid out before, its `last_claim`: the `epoch` and block
+time (`time_ms`) of the most recent payout and the `claimant_id` of the identity that signed the
+claim. `last_claim` is unset for a pot that has never been paid out.
+
+**Parameters**:
+
+| Name          | Type    | Required | Description |
+| ------------- | ------- | -------- | ----------- |
+| `contract_id` | Bytes   | Yes      | The 32-byte ID of the data contract. An ID that is not 32 bytes is rejected with `InvalidArgument`, and an ID with no contract returns `NotFound` |
+| `prove`       | Boolean | No       | Set to `true` to receive a proof that contains both pots and their last claims |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+:sync: grpcurl
+```shell
+# TODO: Replace with a real example once a contract charging action fees
+# is published on testnet. The response values below are illustrative only.
+# `contract_id` must be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "contract_id": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getContractFeePots
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+:sync: grpcurl
+```json
+{
+  "v0": {
+    "pots": {
+      "owner": {
+        "credits": "1500000",
+        "lastClaim": {
+          "epoch": 17950,
+          "timeMs": "1792500000000",
+          "claimantId": "HxUSbKaFxbuvTUprfr5a0yU6u4EasTdSWvSxOwKjmxw="
+        }
+      },
+      "moderators": {
+        "credits": "500000"
+      }
+    },
+    "metadata": {
+      "height": "412345",
+      "coreChainLockedHeight": 1520000,
+      "epoch": 18000,
+      "timeMs": "1793000000000",
+      "protocolVersion": 14,
+      "chainId": "dash-testnet-51"
+    }
+  }
+}
+```
+:::
+::::
+
 ### getDataContractHistory
 
 **Returns**: [Data Contract](../explanations/platform-protocol-data-contract.md) information for the requested data contract  
@@ -2241,6 +2474,86 @@ All keys
 :::
 ::::
 
+### getIdentityKeysRemainingBudgets
+
+:::{versionadded} 5.0.0
+:::
+
+Returns what is left of the credit budgets of an identity's keys. From protocol version 14, a
+non-master authentication key can carry a total credit budget (see [Identity
+keys](../explanations/identity.md#keys)). The key itself never changes, so the remaining budget is
+tracked separately and read with this endpoint.
+
+**Returns**: One entry per requested key, in key ID order, or a cryptographic proof. Each entry
+contains the `key_id` and its `remaining_budget` in credits. `remaining_budget` is absent when the
+key has no budget, or when the key or identity does not exist. A `remaining_budget` of `0` means
+the key can no longer sign transitions.
+
+**Parameters**:
+
+| Name          | Type    | Required | Description |
+| ------------- | ------- | -------- | ----------- |
+| `identity_id` | Bytes   | Yes      | An identity ID. An ID that is not 32 bytes is rejected with `InvalidArgument` |
+| `key_ids`     | Array   | Yes      | An array of key IDs to look up. At least one and at most 100 IDs, with no repeats; an empty array or a repeated ID is rejected with `InvalidArgument`, and more than 100 returns `InvalidLimit` |
+| `prove`       | Boolean | No       | Set to `true` to receive a proof that contains the requested remaining budgets |
+
+Key budgets only exist from protocol version 14. On earlier protocol versions, the endpoint returns
+an error instead of a result.
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+:sync: grpcurl
+```shell
+# TODO: Replace with a real example once Dash Platform v5.0 is deployed on
+# testnet. The response values below are illustrative only.
+# `identity_id` must be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "identity_id": "HxUSbKaFxbuvTUprfr5a0yU6u4EasTdSWvSxOwKjmxw=",
+      "key_ids": [2, 5],
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getIdentityKeysRemainingBudgets
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+:sync: grpcurl
+```json
+{
+  "v0": {
+    "keysRemainingBudgets": {
+      "entries": [
+        {
+          "keyId": 2
+        },
+        {
+          "keyId": 5,
+          "remainingBudget": "750000"
+        }
+      ]
+    },
+    "metadata": {
+      "height": "412345",
+      "coreChainLockedHeight": 1520000,
+      "epoch": 18000,
+      "timeMs": "1793000000000",
+      "protocolVersion": 14,
+      "chainId": "dash-testnet-51"
+    }
+  }
+}
+```
+:::
+::::
+
 ### getIdentityNonce
 
 **Returns**: Current nonce for the requested [Identity](../explanations/identity.md)
@@ -2829,6 +3142,248 @@ grpcurl -proto protos/platform/v0/platform.proto \
       "timeMs": "1724094056585",
       "protocolVersion": 1,
       "chainId": "dash-testnet-50"
+    }
+  }
+}
+```
+:::
+::::
+
+## Contract Group Endpoints
+
+:::{versionadded} 5.0.0
+:::
+
+From protocol version 14, [contract groups](../explanations/platform-protocol-data-contract.md#contract-groups)
+organize data contracts, document types, and tokens into an identity-owned collection, which
+[authentication keys](../explanations/identity.md#keys) can be scoped to. A contract group is
+registered by a data contract create transition and has its own 32-byte ID, an owner identity,
+optional admins who may add members alongside the owner, and an optional name and description.
+Contracts created by the owner or an admin can add themselves, one of their document types, or one
+of their tokens to the group.
+
+Contract groups are not the same as the token [security groups](#security-group-endpoints) returned
+by `getGroupInfo` and related endpoints. Security groups are defined inside a data contract at a
+numeric position, and their members are identities with voting power that jointly authorize token
+actions. Contract groups exist independently of any one contract, and their members are contracts,
+document types, and tokens.
+
+### getContractGroupInfo
+
+Retrieves the stored information of a contract group: its owner, admins, name, and description.
+
+**Returns**: The group's information, or a cryptographic proof. The `contract_group_info` result
+contains the `owner_id`, the `admin_ids` (empty when the owner is the only identity that can add
+members), and the optional `name` and `description`. When no group has the requested ID, the
+response contains no result rather than a `NotFound` error. A proof covers the group's information
+or its absence.
+
+**Parameters**:
+
+| Name                | Type    | Required | Description |
+| ------------------- | ------- | -------- | ----------- |
+| `contract_group_id` | Bytes   | Yes      | The 32-byte ID of the contract group. An ID that is not 32 bytes is rejected with `InvalidArgument` |
+| `prove`             | Boolean | No       | Set to `true` to receive a proof that contains the requested group information |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+:sync: grpcurl
+```shell
+# TODO: Replace with a real example once a contract group is registered on
+# testnet. The request and response values below are illustrative only.
+# `contract_group_id` must be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "contract_group_id": "<base64-of-contract-group-id>",
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getContractGroupInfo
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+:sync: grpcurl
+```json
+{
+  "v0": {
+    "contractGroupInfo": {
+      "ownerId": "HxUSbKaFxbuvTUprfr5a0yU6u4EasTdSWvSxOwKjmxw=",
+      "adminIds": [
+        "NBgQk65dTNttDYDGLZNLrb1QEAWB91jqkqXtK1KU4Dc="
+      ],
+      "name": "Example apps",
+      "description": "Contracts published by the example team"
+    },
+    "metadata": {
+      "height": "412345",
+      "coreChainLockedHeight": 1520000,
+      "epoch": 18000,
+      "timeMs": "1793000000000",
+      "protocolVersion": 14,
+      "chainId": "dash-testnet-51"
+    }
+  }
+}
+```
+:::
+::::
+
+### getContractGroupMembers
+
+Retrieves one page of a contract group's members of a single kind: member contracts, member document
+types, or member tokens.
+
+**Returns**: One page of members of the requested kind, or a cryptographic proof:
+
+- `contracts`: member contract IDs, in contract ID order
+- `document_types`: member document types (`contract_id` and `document_type_name`), in contract ID then document type name order
+- `tokens`: member tokens (`contract_id` and `token_position`), in contract ID then token position order
+
+A group that does not exist, or that has no members of the requested kind after the cursor, returns
+an empty page.
+
+**Parameters**:
+
+| Name                | Type    | Required | Description |
+| ------------------- | ------- | -------- | ----------- |
+| `contract_group_id` | Bytes   | Yes      | The 32-byte ID of the contract group. An ID that is not 32 bytes is rejected with `InvalidArgument` |
+| `contracts`         | Object  | Yes      | Request member contracts. Optional `start_after`: a 32-byte contract ID; the page starts after it |
+| `document_types`    | Object  | Yes      | Request member document types. Optional `start_after`: a `{contract_id, document_type_name}` pair; the page starts after it |
+| `tokens`            | Object  | Yes      | Request member tokens. Optional `start_after`: a `{contract_id, token_position}` pair; the page starts after it. `token_position` must fit in 16 bits |
+| `limit`             | Integer | No       | Maximum number of members to return, from 1 to 100. Omit to return up to 100. `0` or a value above 100 is rejected with `InvalidLimit`. The default and maximum are protocol constants, not node settings |
+| `prove`             | Boolean | No       | Set to `true` to receive a proof that contains the requested page |
+
+Exactly one of `contracts`, `document_types`, or `tokens` must be set; a request with none is
+rejected with `InvalidArgument`. An invalid cursor (a contract ID that is not 32 bytes or a token
+position above 65,535) is also rejected with `InvalidArgument`. To fetch the next page, pass the last
+returned member as `start_after`.
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+:sync: grpcurl
+```shell
+# TODO: Replace with a real example once a contract group is registered on
+# testnet. The request and response values below are illustrative only.
+# `contract_group_id` must be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "contract_group_id": "<base64-of-contract-group-id>",
+      "document_types": {},
+      "limit": 10,
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getContractGroupMembers
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+:sync: grpcurl
+```json
+{
+  "v0": {
+    "documentTypes": {
+      "documentTypes": [
+        {
+          "contractId": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
+          "documentTypeName": "note"
+        }
+      ]
+    },
+    "metadata": {
+      "height": "412345",
+      "coreChainLockedHeight": 1520000,
+      "epoch": 18000,
+      "timeMs": "1793000000000",
+      "protocolVersion": 14,
+      "chainId": "dash-testnet-51"
+    }
+  }
+}
+```
+:::
+::::
+
+### getContractGroupsForContract
+
+Retrieves the contract groups a data contract belongs to, whether as a whole contract, through its
+document types, or through its tokens.
+
+**Returns**: The contract's group memberships, or a cryptographic proof. The
+`contract_group_memberships` result contains:
+
+- `contract_group_ids`: the groups the whole contract belongs to
+- `document_types`: for each member document type, its `document_type_name` and the `contract_group_ids` it belongs to
+- `tokens`: for each member token, its `token_position` and the `contract_group_ids` it belongs to
+
+Every list is empty when the contract belongs to no group or does not exist. A proof covers the
+memberships or their absence.
+
+**Parameters**:
+
+| Name          | Type    | Required | Description |
+| ------------- | ------- | -------- | ----------- |
+| `contract_id` | Bytes   | Yes      | The 32-byte ID of the data contract. An ID that is not 32 bytes is rejected with `InvalidArgument` |
+| `prove`       | Boolean | No       | Set to `true` to receive a proof that contains the requested memberships |
+
+**Example Request and Response**
+
+::::{tab-set}
+:::{tab-item} gRPCurl
+:sync: grpcurl
+```shell
+# TODO: Replace with a real example once a contract group is registered on
+# testnet. The response values below are illustrative only.
+# `contract_id` must be represented in base64
+grpcurl -proto protos/platform/v0/platform.proto \
+  -d '{
+    "v0": {
+      "contract_id": "5mjGWa9mruHnLBht3ntbfgodcSoJxA1XIfYiv1PFMVU=",
+      "prove": false
+    }
+  }' \
+  seed-1.testnet.networks.dash.org:1443 \
+  org.dash.platform.dapi.v0.Platform/getContractGroupsForContract
+```
+:::
+::::
+
+::::{tab-set}
+:::{tab-item} Response (gRPCurl)
+:sync: grpcurl
+```json
+{
+  "v0": {
+    "contractGroupMemberships": {
+      "documentTypes": [
+        {
+          "documentTypeName": "note",
+          "contractGroupIds": [
+            "<base64-of-contract-group-id>"
+          ]
+        }
+      ]
+    },
+    "metadata": {
+      "height": "412345",
+      "coreChainLockedHeight": 1520000,
+      "epoch": 18000,
+      "timeMs": "1793000000000",
+      "protocolVersion": 14,
+      "chainId": "dash-testnet-51"
     }
   }
 }
