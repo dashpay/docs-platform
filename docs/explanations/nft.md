@@ -65,7 +65,7 @@ Since some NFTs may represent transient or consumable things, Dash Platform allo
 
 Whether deletion is permitted is set when the document type is defined in the data contract and cannot be changed afterward. Document types that keep revision history cannot allow deletion. The one exception is a legacy correction: a contract registered before this rule was enforced may update a history-keeping document type to turn deletion off, since it was never actually possible for that type.
 
-Since protocol version 14, an NFT can also be removed in other ways if its document type allows it. A moderated contract's moderators can delete it, or the platform can delete it automatically once its time to live (`ttl`) has passed. See [Document Delete](../explanations/platform-protocol-document.md#document-delete) for each of the ways a document can be removed.
+Since protocol version 14, an NFT can also be removed in other ways if its document type allows it. A moderated contract's moderators can delete it if the document type allows anyone to create its documents, or the platform can delete it automatically once its time to live (`ttl`) has passed. See [Document Delete](../explanations/platform-protocol-document.md#document-delete) for each of the ways a document can be removed.
 
 Whether an NFT can be deleted also affects how other documents can reference it. A `permanentDocument` reference only accepts NFTs that can never be removed. Deletable NFTs can be the target of a `deletableDocument` reference instead, which is checked again each time the referring document is replaced. See [property references](../reference/data-contracts.md#platform-specific-property-keywords).
 
