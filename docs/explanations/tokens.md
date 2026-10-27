@@ -112,8 +112,8 @@ When creating a token, you define its configuration using the following paramete
 |:------------------------|:------------------|:--------|
 | Description                              | **No** | None |
 | [Conventions](#display-conventions)      | Yes | Required; must include English |
-| [Decimal precision](#display-conventions)| Yes | [8](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/data_contract/associated_token/token_configuration_convention/v0/mod.rs#L57) |
-| [Base supply](#token-supply)             | **No**  | [0](https://github.com/dashpay/platform/blob/v4.2-dev/packages/rs-dpp/src/data_contract/associated_token/token_configuration/v0/mod.rs#L47) |
+| [Decimal precision](#display-conventions)| Yes | [8](https://github.com/dashpay/platform/blob/v5.0-dev/packages/rs-dpp/src/data_contract/associated_token/token_configuration_convention/v0/mod.rs#L57) |
+| [Base supply](#token-supply)             | **No**  | [0](https://github.com/dashpay/platform/blob/v5.0-dev/packages/rs-dpp/src/data_contract/associated_token/token_configuration/v0/mod.rs#L55) |
 | [Maximum supply](#token-supply)          | Yes | None |
 | [Keep history](#history)                 | **No** | True (all history types) |
 | [Start paused](#initial-state)           | **No** | False |
