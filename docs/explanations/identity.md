@@ -37,6 +37,8 @@ First, the user creates an asset lock transaction on the Core chain with one or 
 
 The user then submits an [identity create state transition](https://github.com/dashpay/dips/blob/master/dip-0011.md#identity-create-transition) referencing the asset lock proof and the public keys to register for the new identity. The locked value, minus fees, is converted to credits and becomes the new identity's initial balance.
 
+From protocol version 14, an identity create transition whose identity ID does not match the one derived from its asset lock, or whose key proofs of possession do not verify, is rejected without consuming the asset lock, which can then be used again. Other failures, such as an invalid key structure, can still charge a penalty to the asset lock.
+
 Application-layer flows where a third party funds an identity on behalf of another user are possible by having that third party create the asset lock transaction and share the resulting proof, but this is a client-side convention rather than a protocol-level invitation mechanism.
 
 ### Identity Balance Topup Process
@@ -53,6 +55,8 @@ Each identity key has a purpose, a security level, and a cryptographic key type.
 
 From protocol version 14, non-master authentication keys can be bound to a contract, a document type, or a [contract group](../explanations/platform-protocol-data-contract.md#contract-groups), restricting them to batch transitions within those bounds. They can also carry a credit budget and an expiry time. Transitions are rejected once the budget is exhausted or the block time reaches the expiry. Credits moved out of the identity, storage fees, fixed fees, and voluntary fee increases must fit in the remaining budget; metered processing fees may exceed it.
 
+A key's limits can be loosened later but never tightened. From protocol version 14, an identity key limits update transition can raise a key's budget or move its expiry later. It must be signed by a master key or by a critical authentication key that has no limits or contract bounds of its own. To give an application less, disable its key and add a new one.
+
 Data contracts can require a property to refer to an existing identity or, since Dash Platform v5.0, to a specific identity key. See [property references](../reference/data-contracts.md#platform-specific-property-keywords) and the [identity protocol reference](../protocol-ref/identity.md#identity-publickeys) for details.
 
 ### Identity Update Process
@@ -66,6 +70,8 @@ Identity updates only require the creation of a state transition that includes a
 Several features, including voting and reward distribution, are dependent on masternodes reliably having identities. Thus, Dash Platform automatically creates identities for all masternodes using information from Core chain masternode registration transactions.
 
 Unique identities are created for the owner, operator, and voting roles, with each one assigned the respective keys found in the masternode list. For example, owner and operator withdraw keys on Platform are set to their payout keys assigned on the Core blockchain. Since these identities are created automatically, their keys can only be modified using [Core masternode update transactions](inv:user:std#update-dip3-config).
+
+From protocol version 14, Platform supports the masternode list formats introduced in Dash Core v24. A shared masternode, which has no owner address, receives only voting and operator identities. For a masternode that uses a payout list, the owner identity keeps a transfer key only while the list has a single standard (P2PKH) payout. A split, empty, or unsupported payout list disables the transfer key while preserving the owner key and the identity's balance. When Dash Core v24 re-encodes an existing BLS operator key in the newer format, Platform treats it as the same key, so the masternode keeps its operator identity.
 
 #### Voting
 
@@ -83,4 +89,4 @@ Credits provide the mechanism for paying fees that cover the cost of platform us
 
 Credits are not locked to the identity that holds them: an identity can transfer credits directly to another identity, or to a [Platform address](../protocol-ref/address-system.md), using the corresponding [state transitions](../explanations/platform-protocol-state-transition.md).
 
-Credits can be converted back to Dash using an identity credit withdrawal state transition. Withdrawals are subject to per-withdrawal and network-wide limits that constrain Platform's net daily outflow. These limits are versioned protocol parameters; see the [protocol constants reference](../protocol-ref/protocol-constants.md#withdrawal-constants) for current values.
+Credits can be converted back to Dash using an identity credit withdrawal state transition. Withdrawals are subject to per-withdrawal and network-wide limits that constrain Platform's net daily outflow. From protocol version 14, a withdrawal must also fit a limit derived from the Dash Core chain's own credit pool, so Platform never queues a withdrawal that Core would refuse to process. These limits are versioned protocol parameters; see the [protocol constants reference](../protocol-ref/protocol-constants.md#withdrawal-constants) for current values.

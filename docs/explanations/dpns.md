@@ -37,7 +37,7 @@ In the registration phase, the domain name (e.g. `alice.dash`) is once again sub
 
 ### Conflict resolution
 
-Since some names may be popular, the registration process includes a voting mechanism to resolve conflicts when multiple identities request the same name. Identities requesting premium names must pay a fee (0.2 DASH) to cover the masternode voting costs.
+Since some names may be popular, the registration process includes a voting mechanism to resolve conflicts when multiple identities request the same name. Identities requesting premium names must pay a fee to cover the masternode voting costs. Since protocol version 14 (introduced in Dash Platform v5.0), the fee is 0.1 DASH, down from 0.2 DASH. Once a contest has 250 contenders, the fee for each new contender doubles, and it doubles again for every 50 contenders after that, up to the limit of 1,000 contenders per contest.
 
 :::{note}
 This process only applies to valid names that meet the following conditions:

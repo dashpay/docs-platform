@@ -61,13 +61,19 @@ The following table contains a list of currently defined payload types:
 | [Identity Create From Shielded Pool](../protocol-ref/shielded-pool.md#identity-create-from-shielded-pool) (`20`) | Create a new identity funded from the shielded pool |
 | [Shield from Identity](../protocol-ref/shielded-pool.md#shield-from-identity) (`21`) | Move credits from an identity balance into the [shielded pool](../explanations/shielded-pool.md) |
 | [Identity Top Up From Shielded Pool](../protocol-ref/shielded-pool.md#identity-top-up-from-shielded-pool) (`22`) | Add credits to an existing identity from the shielded pool |
+| Identity Key Limits Update (`23`) | Raise the credit budget or extend the expiry of one of an [identity's keys](../explanations/identity.md#keys) |
+| Contract User Moderation (`24`) | A moderator action on a moderated data contract, such as banning, suspending, or warning an identity, or removing or restoring a document |
+| Contract Fee Claim (`25`) | Pay out the document action fees collected by a data contract to its owner or its moderation team |
+| Token Shielded Transfer With Shielded Fee (`26`) | Transfer tokens privately within a [token shielded pool](../explanations/shielded-pool.md#token-shielded-pools), paying the fee from the credit shielded pool |
+| Token Unshield With Shielded Fee (`27`) | Move tokens from a token shielded pool to an identity's token balance, paying the fee from the credit shielded pool |
+| Token Purchase From Shielded Pool (`28`) | Buy tokens at their direct purchase price into a token shielded pool, paying the price and fee from the credit shielded pool |
 
 ### Batch transitions
 
 Batch transitions (payload type `1`) carry either document or token actions:
 
 - **Document actions** — create, replace, delete, transfer, purchase, update price, and, from protocol version 14, index-only delete for index-only document types. See [Document](../explanations/platform-protocol-document.md) for details.
-- **Token actions** — mint, burn, transfer, freeze/unfreeze, claim, direct purchase, and set price, along with administrative actions. See [Tokens](../explanations/tokens.md) for details.
+- **Token actions** — mint, burn, transfer, freeze/unfreeze, claim, direct purchase, and set price, along with administrative actions. From protocol version 14, tokens with a shielded pool also support [shielded pool actions](../explanations/tokens.md#shielded-pool-actions). See [Tokens](../explanations/tokens.md) for details.
 
 ### Application Usage
 

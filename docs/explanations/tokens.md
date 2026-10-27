@@ -17,6 +17,7 @@ Dash Platform’s token functionality provides a straightforward, account-based 
 - **Built-in [Distribution](#distribution-rules)**: Manual minting or scheduled release over time
 - **Seamless Integration**: Tokens live alongside documents in a single data contract, enabling additional use cases (e.g., ticketing, digital assets, stablecoins)
 - **Token-Based Document [Fees](#token-based-fees)**: Charge tokens for an application's document actions (e.g., create, transfer), with options to burn tokens or reward the contract owner
+- **Optional [Shielded Pool](#shielded-pool)**: Let holders keep and move token balances privately in a pool dedicated to the token
 
 The following sections describe the features and configuration options available for token creators
 using Dash Platform.
@@ -41,6 +42,7 @@ The initial token implementation includes all actions required to create, use, a
 | [Token config update](#configuration-updates) | Updates token configuration settings |
 | [Set Purchase Price](#set-purchase-price) | Sets or updates the price for direct token purchases |
 | [Purchase](#purchase) | Purchases tokens at the predefined price in exchange for Platform credits |
+| [Shielded pool actions](#shielded-pool-actions) | Moves tokens into, within, or out of the token's shielded pool, or mints, burns, claims, or purchases tokens directly in the pool |
 
 #### Mint
 
@@ -53,6 +55,7 @@ The initial token implementation includes all actions required to create, use, a
   - Public note (visible to everyone)  
   - Shared encrypted note (only sender & recipient can decrypt)  
   - Private encrypted note (only sender can decrypt)
+- Not available for [non-transferable](#transferability) tokens
 
 #### Burn
 
@@ -63,6 +66,7 @@ The initial token implementation includes all actions required to create, use, a
 
 - Freeze prevents an identity from transferring tokens. This is typically used by regulated tokens (e.g., stablecoins)
 - Unfreeze (thaw) removes the restriction and enables transfers for the previously frozen identity
+- Not available for tokens with a [shielded pool](#shielded-pool)
 
 #### Destroy Frozen
 
@@ -104,6 +108,16 @@ A configuration update can point the token at a different [group](#groups), but 
 - Purchases tokens at the predefined price in exchange for Platform credits
 - Records changes to the token history if direct purchase history is enabled
 
+#### Shielded Pool Actions
+
+From protocol version 14, a token with a [shielded pool](#shielded-pool) supports additional actions that move tokens into, within, or out of its pool:
+
+- **Shield**, **shielded transfer**, and **unshield** move tokens from a holder's balance into the pool, between notes inside the pool, and from the pool to any identity's token balance.
+- **Mint to pool** and **burn from pool** follow the token's manual minting and burning rules, and can be performed by a [group](#groups). Minting into the pool also requires the token to allow choosing the mint destination, since the minter decides who receives the new notes. A burn from the pool spends notes that the burner holds; it cannot remove other holders' notes.
+- **Claim to pool** and **purchase to pool** deliver a distribution claim or a direct purchase as new notes in the pool instead of to the identity's balance.
+
+The identity that signs the transition pays the fee in credits; tokens are never used to pay fees. Every shielded pool action is rejected while the token is paused. See [Shielded Pool](./shielded-pool.md#token-shielded-pools) for how token pools relate to the credit shielded pool, including transitions that move pooled tokens without involving any identity.
+
 ### Configuration
 
 When creating a token, you define its configuration using the following parameters. Some parameters can be configured to allow modifications after data contract registration, but several are fixed permanently when the contract is registered:
@@ -118,6 +132,9 @@ When creating a token, you define its configuration using the following paramete
 | [Keep history](#history)                 | **No** | True (all history types) |
 | [Start paused](#initial-state)           | **No** | False |
 | [Allow transfer to frozen balance](#allow-transfer-to-frozen-balance) | **No** | True |
+| [Transferable](#transferability)         | **No** | True |
+| [Shielded pool](#shielded-pool)          | **No** | False |
+| [Minimum pool notes for outgoing](#shielded-pool) | Yes | None |
 | [Main control group](#main-control-group)| Yes | None |
 | Main control group can be modified       | **No** | NoOne |
 | Marketplace rules                        | Yes | NotTradeable |
@@ -155,6 +172,19 @@ When creating a token, you define its configuration using the following paramete
 
 - Allow transferring and minting of tokens to frozen identity token balances
 
+#### Transferability
+
+- From protocol version 14, a token can be made non-transferable. Holders cannot transfer it to another identity, but it can still be minted (including to a chosen recipient), claimed, purchased directly, burned, frozen, and destroyed as configured.
+- A document type can charge a non-transferable token only by burning it. Since only a contract's own token can be burned as a [token-based fee](#token-based-fees), document types in other contracts cannot charge it at all.
+- A non-transferable token cannot have a [shielded pool](#shielded-pool).
+
+#### Shielded Pool
+
+- From protocol version 14, a token can have its own shielded pool that lets holders keep and move balances privately. See [Shielded pool actions](#shielded-pool-actions) and the [Shielded Pool](./shielded-pool.md#token-shielded-pools) explanation.
+- The pool can only be enabled when the token is created. It cannot be added to or removed from an existing token.
+- Notes in the pool belong to no identity's balance, so they cannot be frozen. A token with a pool must therefore permanently disable freezing: its freeze, unfreeze, and destroy frozen funds rules must authorize no one. Pausing the token still applies to the pool.
+- The token can require the pool to hold a minimum number of notes (at most 250) before tokens may leave it. No minimum is required by default. The minimum can be changed later only if the token's change rules authorize someone to change it.
+
 #### Main Control Group
 
 - A group that can be referenced in other fields to control multiple aspects of the token with the same group.
@@ -188,6 +218,7 @@ following table summarizes the configurable rules and their default authorized p
 | Max supply change rules               | Yes             | NoOne                    |
 | Main control group can be modified    | No              | NoOne                    |
 | Marketplace trade mode change rules   | Yes             | NoOne                    |
+| Minimum pool notes for outgoing change rules | Yes      | NoOne                    |
 
 ###### Minting and Burning
 
@@ -265,6 +296,8 @@ For example, a group is defined with a required threshold of 10. The group membe
 
 In this group, Member A and Member C have a combined power of 11 and can perform actions without approval from Member B. If Member B proposes an action, Member A and C must both approve to authorize the action.
 
+When a group burns tokens, the tokens come from the balance of the member who proposed the burn. Members who only sign the action contribute their power; their own balances are not affected.
+
 ### Token-Based Fees
 
 Dash Platform allows developers to charge token fees for document-related actions (e.g., creating or transferring a document). This provides a way to monetize app usage or implement economic incentives using tokens. These fees are configured per document type in the data contract, and each document action (create, replace, delete, transfer, set price, purchase) can carry its own cost. Different document types in the same contract can therefore charge different amounts, or nothing at all.
@@ -280,9 +313,11 @@ This allows for:
 - Revenue generation for app creators
 - Deflationary models via token burning
 - Shared-currency ecosystems, by pricing document actions in a token that belongs to another contract. Such external-token payments transfer to the contract owner; burning is only permitted for a contract's own token.
-- A gasless user experience, by having the contract owner rather than the document owner pay the Platform credit cost of the action
+- A gasless user experience, by having the contract owner rather than the document owner pay the Platform credit cost of the action (from protocol version 14). The identity submitting the action still pays any [user fee increase](./fees.md#user-fee-increase) it adds.
 
 Alongside the amount and its effect, each cost in the contract specifies who pays the Platform gas fees. Separately, the client submitting the action can attach its own minimum and maximum bounds on what it is willing to pay. Clients should generally set a maximum: without one, a contract whose rules allow the price to change could charge more than the user expected between signing and execution.
+
+From protocol version 14, a token payment must also respect the token's own configuration. A paused token cannot be burned or transferred to pay for document actions. A [non-transferable](#transferability) token can only be burned. A payment to a contract owner whose token account is frozen is rejected unless the token [allows transfers to frozen balances](#allow-transfer-to-frozen-balance). If the token has a [shielded pool](#shielded-pool), the cost can instead be paid from the pool, leaving the payer's token balance untouched.
 
 ## Token Creation
 

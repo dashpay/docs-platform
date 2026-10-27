@@ -40,7 +40,7 @@ A state transition represents a change made by a user to the application and pla
 * A payload
 * Authorization data
 
-The payload varies by type and covers a range of operations including document and token updates, data contract creation, identity management, credit transfers, masternode voting, [Platform address](../protocol-ref/address-system.md) funding and transfers, and [shielded pool](../explanations/shielded-pool.md) operations.
+The payload varies by type and covers a range of operations including document and token updates, data contract creation, identity management, credit transfers, masternode voting, data contract moderation and fee claims, [Platform address](../protocol-ref/address-system.md) funding and transfers, and [shielded pool](../explanations/shielded-pool.md) operations.
 
 How a transition is authorized depends on its family. Identity-owned transitions carry a signature made for the binary representation of the state transition using a private key associated with an [identity](../explanations/identity.md). Platform address transitions are instead authorized by a witness signature on each input. Shielded pool transitions omit the generic identity transition signature but retain Orchard `spendAuthSig` and `bindingSignature` authorization; applicable transitions also carry address witnesses or an asset-lock signature. A state transition is constructed by a client-side library when the user creates documents and submits them to the platform API.
 
@@ -50,7 +50,7 @@ For additional detail, see the [State Transition](../explanations/platform-proto
 
 In addition to documents, a data contract may declare:
 
-* **Tokens** - fungible token definitions with their own configuration, distribution, and authorization rules. See the [Tokens](../explanations/tokens.md) explanation.
+* **Tokens** - fungible token definitions with their own configuration, distribution, and authorization rules. From protocol version 14, a token can also have its own [shielded pool](../explanations/shielded-pool.md#token-shielded-pools). See the [Tokens](../explanations/tokens.md) explanation.
 * **Groups** - sets of identities with assigned power that can jointly authorize token and other privileged actions on the contract.
 * **Keywords** - contract-level discovery terms that allow contracts to be searched and surfaced by clients.
 * **Description** - an optional human-readable summary of the contract, used alongside keywords when contracts are surfaced to users.

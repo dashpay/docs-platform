@@ -66,11 +66,19 @@ In addition to the usage-based costs above, most identity- and address-funded tr
 
 [Shielded pool](../explanations/shielded-pool.md) transitions that pay from the pool (shielded transfers, unshields, and shielded withdrawals) are the exception. Their costs cannot be charged to an address balance, so they pay a fixed schedule from the pool: a proof verification fee, a per-action fee, and a per-action storage allowance. Transitions that shield funds are charged for storage normally and add only the proof verification and per-action components. These constants are versioned protocol parameters and were rebalanced at protocol version 14. See the [protocol constants reference](../protocol-ref/protocol-constants.md) for the current values.
 
+[Token shielded pools](../explanations/shielded-pool.md#token-shielded-pools), available from protocol version 14, cannot pay fees in tokens. Token pool actions submitted in a batch are paid in credits by the identity that signs the batch, which is also charged the proof verification fee. The token pool transitions that involve no identity instead pay the same kind of fixed schedule from the credit shielded pool. That fee covers both the token bundle and the credit bundle that pays it.
+
 ## User Fee Increase
 
 Platform supports a user fee increase that can be used to incentivize inclusion of a state
 transition in the next block, especially during periods of high traffic. This is expressed as an
 integer percentage increase applied to the processing fee.
+
+## Gas Paid by the Contract Owner
+
+From protocol version 14, a document action paid for with a [token](../explanations/tokens.md#token-based-fees) can have its storage and processing fees paid by the data contract owner instead of the identity submitting it. The document type's token cost declares whether the contract owner pays, and the submitter can decline or request this sponsorship within what the document type offers. If the contract owner's balance cannot cover the fees, the transition either falls back to the submitter's balance or is rejected without a charge, depending on what the submitter requested. A transition that fails validation is never sponsored.
+
+The contract owner never pays a [user fee increase](#user-fee-increase). The submitter chose it, so the submitter pays the extra processing fee it adds, and a transition whose submitter cannot cover that amount is rejected. Storage refunds still go to the document's owner, even when the contract owner paid for the storage.
 
 ## Formula
 
