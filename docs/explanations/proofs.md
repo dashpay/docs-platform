@@ -103,6 +103,13 @@ Dash Platform supports proofs for all core data types:
 - Contract group owner, admins, name, and description
 - The contracts, document types, and tokens in a contract group, and the contract groups a contract belongs to
 
+**Contract Moderation** (from protocol version 14)
+
+- An identity's status on a [moderated contract's](../explanations/platform-protocol-data-contract.md#contract-moderation) banlist, suspension list, and warning list, and pages of those lists
+- Removal records of documents deleted by moderators, or the absence of a record
+- The actions an elected moderation team has proposed or carried out, who approved them, and the moderation action counts of its members
+- A contract's owner and moderators fee pots
+
 **Address System**
 
 - [Platform address](../protocol-ref/address-system.md) balances

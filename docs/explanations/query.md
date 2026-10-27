@@ -56,6 +56,8 @@ System fields are recognized by the query engine without being declared as norma
 
 A query is served only when its filters line up with a leading, gap-free run of an index's properties. Since protocol version 14, a query that skips a property in the middle of an index is rejected rather than served from a partial match. Set-membership filters can also be applied to more than one adjacent index property in a single query.
 
+Since protocol version 14, an index can also cover the elements of a typed array, which is a list property such as a post's tags. A query can then select the documents whose array holds a given element, or any of several elements. See [Typed array elements](../reference/query-syntax.md#typed-array-elements). Also from protocol version 14, unsigned integer index values are ordered by numeric value, so range filters and ordering on unsigned integer properties return results in value order.
+
 Some document types can be declared index-only in the data contract. Their documents are never stored as a body, so queries return documents reconstructed from the index entries themselves. This suits cheap relation-style rows such as likes or follows, and these types are what the chained queries described below are built on. See [indexOnly document types](../reference/data-contracts.md#indexonly-document-types) in the data contract reference.
 
 Benefits of indexed querying include:
@@ -89,6 +91,10 @@ round trip:
   use the results of one query to select the documents returned by a second, and
   [composite queries](../reference/query-syntax.md#composite-queries) return a page of documents together
   with related documents or counts derived from that page.
+
+## Invalid Queries
+
+Since Dash Platform v5.0, a query that the request itself makes invalid, such as one with malformed parameters or one that breaks the query rules, is answered with the gRPC `INVALID_ARGUMENT` status. Since Dash Platform v5.0.1, the same status is returned for a query that relies on a feature not yet active at the network's current protocol version. Every node at that height would give the same answer, so clients should treat these errors as final rather than retrying the query on another node.
 
 ## Contract Design Considerations
 
