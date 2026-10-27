@@ -71,6 +71,7 @@ The initial token implementation includes all actions required to create, use, a
 #### Destroy Frozen
 
 - Destroy tokens from a frozen identity’s balance (e.g., blacklisting stolen tokens in stablecoin systems).
+- Not available for tokens with a [shielded pool](#shielded-pool)
 
 #### Claim
 
