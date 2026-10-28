@@ -127,10 +127,10 @@ When a document type charges an [action fee](./data-contract-document.md#action-
 | - | - | - | - |
 | $formatVersion | string | | Agreement format version (`"0"`) |
 | owner | unsigned integer | 64 bits | Owner part of the fee, in credits, exactly as the document type declares it (before any fee multiplier) |
-| moderators | unsigned integer | 64 bits | Moderators part of the fee, in credits, exactly as the document type declares it (before any fee multiplier) |
+| moderators | unsigned integer | 64 bits | Moderators part of the fee, in credits, exactly as the document type declares it (before any fee multiplier). On an elected contract with a seated team, it may instead be the declared part reduced to the seated charter's `moderatorsShare` (rounded down). |
 | feeMultiplier | object | Varies | Required when the fee is priced with the fee multiplier, and omitted for fixed pricing:<br>`knownPermille` - Fee multiplier (permille) the signer priced the fee with<br>`increaseTolerancePercent` (16 bits) - How far, in percent, the multiplier of the executing epoch may exceed `knownPermille`. A lower multiplier is always accepted. |
 
-A transition for an action that charges a fee is rejected without an agreement (`DocumentActionFeeAgreementNotSetError`, 40132), with an agreement to other amounts or pricing (`DocumentActionFeeAgreementMismatchError`, 40133), or when the epoch's fee multiplier exceeds the tolerance (`DocumentActionFeeMultiplierNotToleratedError`, 40134). An agreement on an action that charges no fee is ignored.
+A transition for an action that charges a fee is rejected without an agreement (`DocumentActionFeeAgreementNotSetError`, 40132), with an agreement to other amounts or pricing (`DocumentActionFeeAgreementMismatchError`, 40133), when the epoch's fee multiplier exceeds the tolerance (`DocumentActionFeeMultiplierNotToleratedError`, 40134), or with a reduced moderators part that does not match the seated charter's share (`DocumentActionFeeModeratorsShareMismatchError`, 40139). An agreement on an action that charges no fee is ignored.
 
 #### Entropy Generation
 

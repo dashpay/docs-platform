@@ -146,7 +146,7 @@ A key can carry a credit budget (`totalBudget`), an expiry time (`expiresAt`), o
 
 Limits are allowed only on authentication keys ([purpose](#public-key-purpose) `0`) below the master [security level](#public-key-securitylevel). A limit on any other key is rejected with `IdentityPublicKeyLimitsNotAllowedError` (10536), and a `totalBudget` of `0` is rejected with `InvalidIdentityPublicKeyBudgetError` (10537). See the [key structure validation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/state_transition/state_transitions/identity/public_key_in_creation/methods/validate_identity_public_keys_structure/v1/mod.rs#L47-L68).
 
-A transition signed with a limited key is rejected once the key's remaining budget is used up or the block time reaches `expiresAt`. A key's limits can only be loosened, using the [identity key limits update](#identity-key-limits-update) transition.
+A transition signed with a limited key is rejected once the block time reaches `expiresAt`, or when its spend does not fit in the key's remaining budget (metered processing fees may exceed it). Keys with limits are also rejected in [identity create from shielded pool](shielded-pool.md#identity-create-from-shielded-pool). A key's limits can only be loosened, using the [identity key limits update](#identity-key-limits-update) transition.
 
 ### Identity balance
 
@@ -285,6 +285,7 @@ The transition must be signed by a master key or by a critical key that carries 
 
 The transition is also rejected if:
 
+- `keyId` is not a key of the identity (`MissingIdentityPublicKeyIdsError`, 40209)
 - Neither `totalBudget` nor `expiresAt` is set (`IdentityKeyLimitsUpdateEmptyError`, 10539), or `totalBudget` is `0` (`InvalidIdentityPublicKeyBudgetError`, 10537)
 - The key is disabled (`IdentityPublicKeyIsDisabledError`, 40208)
 - It sets a limit the key does not already have (`IdentityPublicKeyLimitNotSetError`, 40220). A limit cannot be added to a key or removed from it.

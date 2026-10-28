@@ -3162,7 +3162,7 @@ The `moderators` object is selected by its `$type`:
 | `appointedModerators` | `identities` - array of [identity](./identity.md) IDs | The contract owner and the named identities. The array must not be empty and may hold at most [16](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L165) identities, counting the owner if it is named. Each must be an existing identity (`ContractModeratorIdentityNotFoundError`, 41110). |
 | `elected` | See [elected moderation](#elected-moderation) | A team elected by masternodes and evonodes through the [moderation charters system contract](#moderation-charters-system-contract) once one is seated, and the declaration's interim moderators until then |
 
-Whoever may moderate the contract cannot be banned, suspended, or warned, and other moderators cannot delete their documents (`ContractModerationTargetNotAllowedError`, 41102). On an elected contract, this protection covers the seated team, and covers the contract owner only if the declaration sets `ownerProtected`.
+Whoever may moderate the contract cannot be banned, suspended, or warned, and other moderators cannot delete their documents (`ContractModerationTargetNotAllowedError`, 41102). On an elected contract, this protection covers the interim moderators until a team is seated. Once a team is seated, it covers the team, and covers the contract owner only if the declaration sets `ownerProtected`.
 
 Ban, suspend, and warn actions require the matching list (`ContractModerationNotEnabledError`, 41100). A moderation declaration must keep at least one list or include a document type whose `moderatorAbilities` grants its moderators an ability; otherwise the contract is rejected with `InvalidContractModerationConfigError` (10900).
 
@@ -3191,15 +3191,15 @@ An `elected` declaration can only be made when the contract is created. It conta
 |-------|------|----------|-------------|
 | `joinWindow` | unsigned integer (32 bits) | No | Seconds during which candidate teams may join the election. Default: 604,800 (one week). At most [2,419,200](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L171) (four weeks), and at least [86,400](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L170) (one day) on mainnet. |
 | `voteWindow` | unsigned integer (32 bits) | No | Seconds during which masternodes and evonodes vote. Same default and bounds as `joinWindow`. |
-| `seatContestable` | boolean | Yes | Whether the seat can be contested again once a team is seated |
-| `challengeCoolDown` | unsigned integer (32 bits) | If `seatContestable` is `true` | Seconds between challenges of a contestable seat, from [1,209,600](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L172) (two weeks) to [94,608,000](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L173) (three years). Rejected when `seatContestable` is `false`. |
+| `seatContestable` | boolean | Yes | Whether the seat can be contested again once a team is seated. Under protocol version 14 a seat is never contested again, whatever this says. |
+| `challengeCoolDown` | unsigned integer (32 bits) | If `seatContestable` is `true` | Cool-down, in seconds, between challenges of a contestable seat (not yet used under protocol version 14), from [1,209,600](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L172) (two weeks) to [94,608,000](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L173) (three years). Rejected when `seatContestable` is `false`. |
 | `electionDelay` | unsigned integer (32 bits) | No | Seconds after the contract's creation before candidate teams may enter the election |
 | `maxAddedModerators` | unsigned integer (16 bits) | No | How many members a seated team's leader may add after the election. Default: 0. At most [15](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L175). |
 | `moderatedDocumentTypes` | object | Yes | Maps each moderated document type of the contract to a non-empty array of the abilities the seated team holds on it: `deleteDocuments`, `ban`, `suspend`, `warn`, `changeDocumentFields` |
 | `interim` | object | Yes | Who moderates until a team is seated, selected by `$type`: `contractOwner`, `appointedModerators` (with `identities`), `notYetUsable` (nobody, and document transitions on the moderated types are rejected with `ContractModeratedDocumentTypeNotYetUsableError`, 41200), or `noModeration` (nobody, and the moderated types are used unmoderated) |
 | `ownerProtected` | boolean | No | Whether the contract owner is protected from the seated team. Default: `false`. |
 
-Each ability must be backed by the contract: `ban`, `suspend`, and `warn` need the matching list, `deleteDocuments` needs the type's `moderatorAbilities.delete`, and `changeDocumentFields` needs the type's `moderatorAbilities.changeFields`. Once a team is seated, only its leader and active members moderate, each only with the abilities the declaration grants on the type (`ContractModerationAbilityNotGrantedError`, 41201), and the interim moderators no longer may.
+Each ability must be backed by the contract: `ban`, `suspend`, and `warn` need the matching list, `deleteDocuments` needs the type's `moderatorAbilities.delete`, and `changeDocumentFields` needs the type's `moderatorAbilities.changeFields`. Once a team is seated, only its leader and active members moderate, each only with the abilities the declaration grants (`ContractModerationAbilityNotGrantedError`, 41201). A document action needs the ability on the document's type, and a ban, suspend, or warn action needs the ability on any moderated type, and the interim moderators no longer may.
 
 #### Moderation Config Updates
 
@@ -3213,7 +3213,7 @@ These changes are rejected with `DataContractConfigUpdateError` (40002). The `mo
 
 #### Contract Fee Pots
 
-A document type's [action fees](./data-contract-document.md#action-fees) are split between two pots per contract. The owner pot is claimed by the contract owner, and the moderators pot is shared by the contract's moderators. Both are paid out with the [contract fee claim](#contract-fee-claim) state transition, at most once per epoch each. A `moderators` fee part requires the contract to declare moderation (`DocumentActionFeesWithoutModerationError`, 10902). See the [fee pot implementation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/document_type/action_fees/mod.rs#L87-L151).
+A document type's [action fees](./data-contract-document.md#action-fees) are split between two pots per contract. The owner pot is claimed by the contract owner, and the moderators pot is shared by the contract's moderation team (see [contract fee claim](#contract-fee-claim)). Both are paid out with the [contract fee claim](#contract-fee-claim) state transition, at most once per epoch each. A `moderators` fee part requires the contract to declare moderation (`DocumentActionFeesWithoutModerationError`, 10902). See the [fee pot implementation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/document_type/action_fees/mod.rs#L87-L151).
 
 ### Data Contract groups
 
@@ -3395,7 +3395,7 @@ The `contractGroup` object ([rs-dpp](https://github.com/dashpay/platform/blob/v5
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `admins` | array of identifiers | (Optional) Identities that may add members alongside the owner. At most [16](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L162), not including the owner. Each must be an existing identity. |
+| `admins` | array of identifiers | (Optional) Identities that may add members alongside the owner. At most [16](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L162), not including the owner. Each must be an existing identity that is not a masternode identity. |
 | `name` | string | (Optional) 1-[64](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L163) characters |
 | `description` | string | (Optional) 1-[256](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L164) characters |
 
@@ -3477,7 +3477,7 @@ A `reason` object contains:
 | `text` | string | Free text, at most [1024](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L167) bytes of UTF-8. May be empty. |
 | `code` | unsigned integer (16 bits) | (Optional) Reserved. Stored as written and not checked. |
 | `documents` | array | (Optional) Up to [16](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L169) documents the reason is about, each as `documentTypeName` and `documentId`, without duplicates. They are not looked up. |
-| `reasonDocumentId` | array of bytes (32 bytes) | (Optional) ID of a `reason` document of the [moderation charters contract](#moderation-charters-system-contract). A seated elected team's `ban`, `suspend`, `warn`, and `deleteDocument` actions must name one that its charter lists (`ModerationReasonNotListedError`, 41203). |
+| `reasonDocumentId` | array of bytes (32 bytes) | (Optional) ID of a `reason` document of the [moderation charters contract](#moderation-charters-system-contract). Every action of a seated elected team that carries a `reason` must name one that its charter lists (`ModerationReasonNotListedError`, 41203). |
 
 See the [reason implementation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/config/moderation/reason.rs#L49-L74).
 
@@ -3493,7 +3493,7 @@ Every rejection in state validation still consumes the signer's identity contrac
 
 #### Document Removal Records
 
-A moderator's document deletion leaves a removal record under the contract, unless the document type sets `deleteKeepsRecord` to `false`. Records are never deleted ([rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/config/moderation/document_removal.rs#L33-L73)):
+A moderator's document deletion leaves a removal record under the contract, unless the document type sets `deleteKeepsRecord` to `false`. Records are not deleted; if a restored document is deleted by a moderator again, a new record replaces the old one ([rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/config/moderation/document_removal.rs#L33-L73)):
 
 | Field | Description |
 | ----- | ----------- |
@@ -3510,7 +3510,7 @@ A moderator's document deletion leaves a removal record under the contract, unle
 :::{versionadded} 5.0.0
 :::
 
-A contract's [fee pots](#contract-fee-pots) are paid out with a contract fee claim state transition (type `25`). A claim always pays out the whole pot to the recipients' identity balances; it has no amount or recipient field. The transition must be signed by a critical authentication key.
+A contract's [fee pots](#contract-fee-pots) are paid out with a contract fee claim state transition (type `25`). A claim pays out the whole pot to the recipients' identity balances, apart from any rounding remainder; it has no amount or recipient field. The transition must be signed by a critical authentication key.
 
 | Field           | Type           | Size | Description |
 | --------------- | -------------- | ---- | ----------- |
@@ -3527,7 +3527,7 @@ A contract's [fee pots](#contract-fee-pots) are paid out with a contract fee cla
 The pot determines who may claim it and who is paid:
 
 - **Owner pot** - Only the contract owner may claim it, and receives all of it.
-- **Moderators pot** - On a contract whose moderators are the owner or appointed identities, or on an elected contract with interim moderators and no seated team, any of those moderators may claim it, and it is split equally between them. On an elected contract with a seated team, the leader or an active member claims it, and it is split according to the team's charter. Shares are rounded down, and the remainder stays in the pot. If the contract declares no moderation or no one moderates in the interim, nobody can claim the pot.
+- **Moderators pot** - Paid to the contract's moderation team: the contract owner under `contractOwner`, the named identities under `appointedModerators` (the owner only if it is named), or an elected contract's `contractOwner` or `appointedModerators` interim moderators until a team is seated. Any member of that team may claim it, and it is split equally between them. On an elected contract with a seated team, the leader or an active member claims it, and it is split according to the team's charter (`rewardSplit`). Shares are rounded down, and the remainder stays in the pot. If the contract declares no moderation, nobody can claim the pot. With a `notYetUsable` or `noModeration` interim, nobody can claim it until a team is seated, and it accumulates for that team.
 
 Each pot can be paid out at most once per epoch (`ContractFeesAlreadyClaimedThisEpochError`, 41111). A claim by an identity that may not claim the pot is rejected with `ContractFeeClaimNotAllowedError` (41113), and a claim of an empty pot, or one whose shares round down to zero, with `ContractFeesNothingToClaimError` (41112). See the [contract fee claim implementation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/state_transition/state_transitions/contract/contract_fee_claim_transition/v0/mod.rs#L33-L55) for more details.
 
