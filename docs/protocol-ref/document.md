@@ -8,6 +8,8 @@
 
 Once a [data contract](./data-contract.md) has been created, data can be stored by submitting documents that comply with the document structure specified in the contract. Each document consists of one or more fields and the indices necessary to support querying. Documents are [created](#document-create-transition), [replaced](#document-replace-transition), [deleted](#document-delete-transition), [transferred](#document-transfer-transition), [purchased](#document-purchase-transition), or have their [price updated](#document-update-price-transition) by submitting them to the platform in a [batch state transition](./state-transition.md#batch).
 
+On a [moderated contract](./data-contract.md#contract-moderation), the contract's moderators act on documents with the [contract user moderation](./data-contract.md#contract-user-moderation) state transition rather than with document transitions.
+
 ## Document State Transition Details
 
 All document transitions include the [document base transition fields](#document-base-transition). Some document transitions (e.g., [document create](#document-create-transition)) require additional fields to provide their functionality.
@@ -23,12 +25,51 @@ The following fields are included in all document transitions. Note that `$actio
 | $type | string | 1-64 characters | Name of a document type found in the data contract associated with the `dataContractId`|
 | $dataContractId | array | 32 bytes | Data contract ID [generated](../protocol-ref/data-contract.md#data-contract-id) from the data contract's `ownerId` and `identity nonce` |
 | [$tokenPaymentInfo](#token-payment-info) | object | Varies | (Optional, V1+) Token-based fee payment information for this transition |
+| [$actionFeeAgreement](#action-fee-agreement) | object | Varies | (Optional, V2+) **Added in 5.0.0.** The [action fees](./data-contract-document.md#action-fees) the transition agrees to pay. Required when the document type charges a fee for the action. |
 
-Each document transition must comply with the [document base transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_base_transition/v1/mod.rs#L40-L58).
+Each document transition must comply with the document base transition defined in rs-dpp ([v1](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_base_transition/v1/mod.rs#L40-L58), [v2](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_base_transition/v2/mod.rs#L30-L55)). Starting with protocol version 14, the v2 base transition is the default; it is not accepted under earlier protocol versions.
+
+:::{versionchanged} 5.0.0
+On a contract that declares [moderation](./data-contract.md#contract-moderation), document transitions from a banned or suspended identity are rejected (`ContractUserBannedError`, 41107, or `ContractUserSuspendedError`, 41108). Delete and index-only delete transitions are still allowed, and so is a replace on a document type that declares [`retractedWhen`](./data-contract-document.md#document-configuration) when the document it writes meets that condition. A transfer to a barred identity or a purchase from a barred seller is rejected (`ContractModerationCounterpartyBarredError`, 41114). Token transitions are not affected.
+:::
 
 #### Document id
 
-The document `$id` is created by double sha256 hashing the document's `dataContractId`, `ownerId`, `type`, and `entropy` as shown in [rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/document/generate_document_id.rs).
+The document `$id` is created by double sha256 hashing the document's `dataContractId`, `ownerId`, `type`, and `entropy`, and from protocol version 14 also a domain tag and the create transition's `$identityContractNonce`, as shown in [rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/document/generate_document_id.rs).
+
+:::{versionchanged} 5.0.0
+Because an identity contract nonce is used at most once, a document ID can be produced at most once, so a deleted document cannot be recreated under the same ID. The ID is only known once the nonce of the create transition is chosen. A create transition whose ID was derived without the nonce is rejected with `InvalidDocumentTransitionIdError` (10405).
+
+```rust
+// From the Rust reference implementation (rs-dpp)
+// generate_document_id.rs (protocol version 14 and later)
+const DOCUMENT_ID_V1_DOMAIN_TAG: &[u8] = b"dash:document-id:v1";
+
+pub fn generate_document_id_v1(
+    contract_id: &Identifier,
+    owner_id: &Identifier,
+    document_type_name: &str,
+    entropy: &[u8],
+    identity_contract_nonce: IdentityNonce,
+) -> Identifier {
+    let mut buf: Vec<u8> = Vec::with_capacity(
+        DOCUMENT_ID_V1_DOMAIN_TAG.len() + 64 + document_type_name.len() + entropy.len() + 8,
+    );
+
+    buf.extend_from_slice(DOCUMENT_ID_V1_DOMAIN_TAG);
+    buf.extend_from_slice(contract_id.as_slice());
+    buf.extend_from_slice(owner_id.as_slice());
+    buf.extend_from_slice(document_type_name.as_bytes());
+    buf.extend_from_slice(entropy);
+    buf.extend_from_slice(&identity_contract_nonce.to_be_bytes());
+
+    Identifier::from(hash_double(&buf))
+}
+```
+
+:::
+
+Protocol version 13 and earlier use the original derivation:
 
 ```rust
 // From the Rust reference implementation (rs-dpp)
@@ -60,11 +101,36 @@ When a document type requires token payment (configured via [`tokenCost`](./data
 | tokenContractPosition | unsigned integer | 16 bits | Position of the token within the contract to use for payment |
 | minimumTokenCost | unsigned integer | 64 bits | (Optional) Minimum acceptable token cost. Not typically set by clients. |
 | maximumTokenCost | unsigned integer | 64 bits | (Optional) Maximum token cost the client is willing to pay. Recommended when the contract allows prices to be changed, to protect against unexpected cost increases. |
-| gasFeesPaidBy | integer | 8 bits | Who pays the gas fees for the operation:<br>`0` - Document owner (default)<br>`1` - Contract owner<br>`2` - Prefer contract owner (falls back to document owner if insufficient) |
+| gasFeesPaidBy | integer | 8 bits | Who the document owner asks to pay the gas fees for the operation:<br>`0` - Document owner (default)<br>`1` - Contract owner<br>`2` - Prefer contract owner (falls back to the document owner if the contract owner's balance is insufficient) |
+| shieldedPayment | object | Varies | (V1 only) **Added in 5.0.0.** Spend bundle that pays the token cost from the token's [shielded pool](./shielded-pool.md) instead of the document owner's token balance. The document owner still pays the credit fees. See the [V1 implementation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/tokens/token_payment_info/v1/mod.rs#L142-L157). |
 
-::: {note}
-The `gasFeesPaidBy` value must match what the data contract's `tokenCost` configuration allows for the operation type.
+:::{versionchanged} 5.0.0
+Before protocol version 14, `gasFeesPaidBy` was carried but ignored and the signer always paid. From protocol version 14, the payer is resolved from the value the document type's [`tokenCost`](./data-contract-document.md#token-costs) offers and the value the transition requests ([`GasFeesPaidBy::resolve`](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/tokens/gas_fees_paid_by.rs#L51-L83)):
+
+- A request for the document owner (`0`) is always accepted, and the document owner pays.
+- A request to prefer the contract owner (`2`) is accepted by every offer. The contract owner pays only if the offer is `1` or `2` and its balance covers the fee; otherwise the document owner pays.
+- A request for the contract owner (`1`) is accepted only when the offer is `1`. If the contract owner's balance does not cover the fee, the batch is rejected (`GasSponsorInsufficientBalanceError`, 40222).
+
+A request the offer does not allow is rejected with `GasFeesPaidByNotAllowedError` (40129), and a batch that names two different payers is rejected with `InconsistentGasFeesPaidByInBatchError` (40130). A sponsoring contract owner pays the fee without the `userFeeIncrease`, which the signer pays. A transition that fails is always paid for by its signer.
 :::
+
+A document type's `tokenCost` entry may set `optional: true`. A transition for that action may then omit `$tokenPaymentInfo`, pay no tokens, and pay the gas itself in credits.
+
+#### Action Fee Agreement
+
+:::{versionadded} 5.0.0
+:::
+
+When a document type charges an [action fee](./data-contract-document.md#action-fees) for the action, the transition's `$actionFeeAgreement` states the fee the signer saw declared, so a contract whose fees change cannot make an already signed transition pay them. The object is defined in [rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/document_type/action_fees/agreement/v0/mod.rs#L22-L34).
+
+| Field | Type | Size | Description |
+| - | - | - | - |
+| $formatVersion | string | | Agreement format version (`"0"`) |
+| owner | unsigned integer | 64 bits | Owner part of the fee, in credits, exactly as the document type declares it (before any fee multiplier) |
+| moderators | unsigned integer | 64 bits | Moderators part of the fee, in credits, exactly as the document type declares it (before any fee multiplier) |
+| feeMultiplier | object | Varies | Required when the fee is priced with the fee multiplier, and omitted for fixed pricing:<br>`knownPermille` - Fee multiplier (permille) the signer priced the fee with<br>`increaseTolerancePercent` (16 bits) - How far, in percent, the multiplier of the executing epoch may exceed `knownPermille`. A lower multiplier is always accepted. |
+
+A transition for an action that charges a fee is rejected without an agreement (`DocumentActionFeeAgreementNotSetError`, 40132), with an agreement to other amounts or pricing (`DocumentActionFeeAgreementMismatchError`, 40133), or when the epoch's fee multiplier exceeds the tolerance (`DocumentActionFeeMultiplierNotToleratedError`, 40134). An agreement on an action that charges no fee is ignored.
 
 #### Entropy Generation
 
@@ -104,7 +170,7 @@ The document create transition extends the [base transition](#document-base-tran
 | - | - | - | - |
 | $entropy | array | 32 bytes | Entropy used in creating the [document ID](#document-id). Generated as [shown here](#entropy-generation). |
 | data | object | Varies | Document data being submitted. |
-| $prefundedVotingBalance | array | 2 elements | (Optional) Contested index name and prefunded amount of credits reserved for unique index conflict resolution voting (e.g., [premium DPNS name](../explanations/dpns.md#conflict-resolution)). Starting in protocol version 14, the named index must be the contested index resolved for the submitted document values. Field rejected if another index is named or the document resolves to no contested index. |
+| $prefundedVotingBalance | array | 2 elements | (Optional) Contested index name and amount of credits for unique index conflict resolution voting (e.g., [premium DPNS name](../explanations/dpns.md#conflict-resolution)). Required when the document resolves to a contested index (`DocumentContestNotPaidForError`, 40114). Starting in protocol version 14:<br>- The named index must be the contested index resolved for the submitted document values (`DocumentContestIndexMismatchError`, 40118), and the field is rejected when the document resolves to no contested index (`DocumentContestNotRequiredError`, 40119).<br>- The amount is the most the contender is willing to pay. The contender is charged the fund to join the contest, which doubles once the contest holds 250 contenders and again for every 50 more, and keeps the rest. A smaller amount is rejected, and the identity must hold the amount it states. Before protocol version 14, the amount had to equal the contest's fund. |
 
 Each document create transition must comply with the structure defined in [rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_create_transition/v0/mod.rs#L70-L104) (in addition to the [document base transition](#document-base-transition) that is required for all document transitions).
 
@@ -176,6 +242,15 @@ The following example document replace transition and subsequent table demonstra
 ### Document Delete Transition
 
 The document delete transition only requires the fields found in the [base document transition](#document-base-transition). See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_delete_transition/v0/mod.rs#L24-L27) for details.
+
+The owner can delete a document only if its document type sets [`canBeDeleted`](./data-contract-document.md#document-removal) to `true`. Starting in protocol version 14, the stored document must also meet the type's `deleteConstraints` rules (`DocumentDeleteConstraintViolatedError`, 40147).
+
+### Expired Documents
+
+:::{versionadded} 5.0.0
+:::
+
+A document of a type with a [`ttl`](./data-contract-document.md#document-removal) expires once its `$createdAt` plus the `ttl` has passed. From then on, replace, transfer, purchase, and update price transitions on it are rejected with `DocumentExpiredError` (40140), even before the platform has removed it. Its owner may still delete it if the document type allows deletion.
 
 ### Document Transfer Transition
 
@@ -256,6 +331,8 @@ The document object represents the data provided by the platform in response to 
 | $updatedAt<br>CoreBlockHeight | unsigned integer (32 bits) | No |Core block height at the document's last update, if required by the schema |
 | $transferredAt<br>CoreBlockHeight | unsigned integer (32 bits) | No |Core block height when document was last transferred, if required by the schema |
 | $creatorId | array | No | Identity of the document creator (32 bytes), if required by the document type schema |
+| $moderatedAt | unsigned integer (64 bits) | No | **Added in 5.0.0.** Time (in milliseconds) a moderator last wrote the properties the document type lists in [`moderatorAbilities.changeFields`](./data-contract-document.md#moderator-abilities). Absent until a moderator writes them. |
+| $moderatedBy | array | No | **Added in 5.0.0.** [Identity](../protocol-ref/identity.md) of the moderator that last wrote those properties (32 bytes). Set together with `$moderatedAt`. |
 | $contractVersion | unsigned integer (32 bits) | No | Data contract version the document's stored bytes conform to. Set by platform on create and replace and kept on transfer and purchase. Present when the document type uses `requiredSince`; absent for documents stored before this field existed. |
 
 ### Example Document Object

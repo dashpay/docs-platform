@@ -45,9 +45,9 @@ There are a variety of constraints currently defined for performance and securit
 
 | Parameter | Size |
 | - | - |
-| Estimated maximum serialized data contract size | [16384 bytes (16 KB)](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L45) |
-| Maximum field value size | [5120 bytes (5 KB)](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L46) |
-| Maximum state transition size | [20480 bytes (20 KB)](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L50) |
+| Estimated maximum serialized data contract size | [16384 bytes (16 KB)](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L133) |
+| Maximum field value size | [5120 bytes (5 KB)](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L134) |
+| Maximum state transition size | [20480 bytes (20 KB)](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L145) |
 
 A document cannot exceed the maximum state transition size in any case. For example, although it is
 possible to define a data contract with 10 document fields that each support the maximum field size
@@ -101,7 +101,13 @@ Each document type defined within a data contract is validated against the docum
 | v1 | 12 |
 | v0 | 11 and earlier |
 
-This page reflects the v3 meta-schema, which adds the `refersTo` and `requiredSince` property keywords, the `indexOnly` document type flag, and the `rankedCountable`, `rankedSummable`, `rankedAverageable`, `skipIfAbsent`, `preallocated`, `terminal` and `timeRange` index keywords on top of the v2 [document history flags](./data-contract-document.md#document-history-flags). The full schema is [defined in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v3/document-meta.json) and can be viewed by expanding this dropdown:
+This page reflects the v3 meta-schema. On top of the v2 [document history flags](./data-contract-document.md#document-history-flags), it adds:
+
+- Document type keywords: `indexOnly`, `entryPayload`, `ttl`, `immutable`, `propertyConstraints`, `deleteConstraints`, `retractedWhen`, `moderatorAbilities`, `actionFees`, `ownerRefersTo`, and `creatorRefersTo`, plus the `"onlyWhenConsumed"` value of `canBeDeleted` and the `optional` flag of a `tokenCost` entry
+- Property keywords: `refersTo`, `requiredSince`, `distinctFrom`, `maxBytes`, `encryptedFor`, `generatedFrom`, and `items` for typed arrays of scalars
+- Index keywords: `rankedCountable`, `rankedSummable`, `rankedAverageable`, `timeRange`, `integerRange`, `skipIfAbsent`, `preallocated`, `terminal`, `outlivesDelete`, and `summableOffCountIndex`, plus contested index `resolution` `1`
+
+The v3 meta-schema also refuses `-` in property names. The full schema is [defined in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v3/document-meta.json) and can be viewed by expanding this dropdown:
 
 ::: {dropdown} Full schema
 
@@ -109,13 +115,652 @@ This page reflects the v3 meta-schema, which adds the `refersTo` and `requiredSi
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/dashpay/platform/blob/master/packages/rs-dpp/schema/meta_schemas/document/v1/document-meta.json",
-  "$comment": "EDITABLE UNTIL THE RELEASE CARRYING PROTOCOL V14 SHIPS — FROZEN AFTER. This v3 document meta-schema activates with protocol v14 (CONTRACT_VERSIONS_V6). It is v2 plus the ranked index keywords (rankedCountable, rankedSummable, rankedAverageable), the refersTo reference keyword on identifier properties, the requiredSince property keyword (the contract version a property is required from), and the timeRange index transform, and admits every v14+ contract written to disk. v2 stays in place for protocol v13, where those keys still fail an index entry's `additionalProperties: false`. Once the release carrying protocol v14 ships, mutating it would change historical validation results and break consensus replay. After release, any new top-level property or rule MUST go in a newer meta-schema version (v4+). The $id above deliberately still names the v1 path: v1, v2 and v3 all share that identity, and it is the exact string `enrich_with_base_schema` injects as every PV12+ document schema's `$schema`, so bumping it here would be a wire-visible change rather than a documentation fix.",
+  "$comment": "EDITABLE UNTIL 4.2 (PROTOCOL V14) IS LIVE ON MAINNET; FROZEN AFTER. This v3 document meta-schema activates with protocol v14 (CONTRACT_VERSIONS_V6). It is v2 plus the ranked index keywords (rankedCountable, rankedSummable, rankedAverageable), the refersTo reference keyword on identifier properties (and, for an identityPublicKey reference with identityProperty, on the key id integer property), declaring one target or a reference expression of anyOf and allOf, and its ownerRefersTo and creatorRefersTo forms on the document type, whose value is the writer or the creator (an identity, a document found by findBy, or an expression of them), the requiredSince property keyword (the contract version a property is required from), the propertyConstraints doctype keyword (named conditions over the document's properties, comparisons between integer expressions, of a string or identifier property with constants or with another property of its kind, in (value membership), present or absent tests and countPresent (how many of a group of properties the document holds) combined with anyOf, allOf and not, which every created or replaced document must meet), the deleteConstraints doctype keyword (named conditions in the same grammar the stored document must meet for its owner to delete it), the maxBytes property keyword (the most UTF-8 bytes a string, or each string element of a typed array, may take), the generatedFrom property keyword (a string property whose value a built-in function generates from other properties of the same document, on arrival when a document leaves it out), refersTo findBy and where (findBy the properties of a unique index of the referenced document type mapped to where each value comes from, where what the document found must hold, both keyed by the referenced document's property; a findBy entry may be a sys.hash function of values the document reveals, for a commit and reveal checked on create, on an identifier or on the string or byte array property whose value it reveals, with consume and constraints (minimumAgeBlocks, chooseFirst) beside findBy), the timeRange and integerRange index transforms, and typed arrays (an array property whose items schema names one scalar element type instead of byteArray, stored inline as an element count followed by the elements, whose identifier elements may carry a refersTo), refuses `-` in property and document type names (word characters only; a census of every contract on mainnet and testnet found none), refuses a dotted path in summable, averageable, documentsSummable and documentsAverageable, whose value is read from the top level of the document (the same word-character pattern; no contract on mainnet or testnet names one), and admits every v14+ contract written to disk. v2 stays in place for protocol v13, where those keys still fail an index entry's `additionalProperties: false`. Once 4.2 is live on mainnet, mutating it would change historical validation results and break consensus replay, and any new top-level property or rule MUST go in a newer meta-schema version (v4+). The $id above deliberately still names the v1 path: v1, v2 and v3 all share that identity, and it is the exact string `enrich_with_base_schema` injects as every PV12+ document schema's `$schema`, so bumping it here would be a wire-visible change rather than a documentation fix.",
   "type": "object",
   "$defs": {
+    "rankedAtLevels": {
+      "description": "The `at` of a level-addressed ranking (rankedCountable, rankedSummable, rankedAverageable): the name of an index property, or an array of them (an index has at most 10, hence maxItems).",
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "minItems": 1,
+          "maxItems": 10,
+          "uniqueItems": true
+        }
+      ]
+    },
+    "referenceOperands": {
+      "description": "The operands of a refersTo anyOf or allOf: two or more, no two alike, each a leaf or an expression of the other combinator. At most SystemLimits max_reference_operands of them in one list, and at most SystemLimits max_reference_expression_depth combinators on any path from the declaration to a leaf (4 and 4 from protocol version 14), checked at contract registration; every leaf counts against max_references_per_document, since each may be read for each value. A leaf is an identity target, a permanentDocument by id, by findBy or with inList, or a deletableDocument found by findBy. The first two are existence checks against entities that are never deleted (inList reads a list that never changes on a document that is never deleted), so an expression of only them holds for good once it holds and is re-validated on replace only when its value or a property bound to one of its leaves changes, as a single target is; a deletableDocument leaf found by findBy is an existence check against a document that may be deleted, so an expression holding one is re-validated on every replace, and an immutable property may not hold it. The exception is a leaf whose key a findBy function computes (see findBy): it is judged when the document is created only and holds on a replace without a read, so an immutable property may hold it, and on a document type whose documents can be replaced it may not be an operand of an anyOf, which would then hold on every replace whichever operand held on the create. The other types do not compose with other operands: deletableDocument by id is re-validated on every replace and may be cleared once its document is deleted, which assumes the property refers to that one target; identityPublicKey pairs the value with a key id property no other operand reads; a contract target's requirements are gates judged against the block time and the writer rather than an existence check, and a contract or token id is never also an identity or document id. A where belongs to its leaf and is checked only against that leaf's document. Allowed on identifier properties and on the items of a typed array of identifiers; a changed expression is an incompatible schema change on update",
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/documentSchema/properties/refersTo",
+        "properties": {
+          "type": {
+            "enum": [
+              "identity",
+              "permanentDocument",
+              "deletableDocument"
+            ]
+          },
+          "identityProperty": false
+        },
+        "if": {
+          "properties": {
+            "type": {
+              "const": "deletableDocument"
+            }
+          },
+          "required": [
+            "type"
+          ]
+        },
+        "then": {
+          "required": [
+            "findBy"
+          ]
+        }
+      }
+    },
+    "findByFunction": {
+      "description": "The function of a findBy entry, the same function and params shape as generatedFrom: a sys.hash function (sys.hash.sha256d, SHA-256 of SHA-256, 32 bytes) of the params' bytes joined in order with nothing between them, the value of the referenced property the entry names that finds the document. A param is the dotted path of a string (its UTF-8), byte array (its bytes) or identifier (its 32 bytes) property of the referring document type, the property carrying the reference included; { \"const\": text }, fixed UTF-8 text of 1 to 64 bytes; \".\", the value carrying the reference where it has no path (each element of a typed array, the writer of an ownerRefersTo, the creator of a creatorRefersTo); or \"$ownerId\", the writer's 32-byte id, which binds the commitment to the identity that may reveal it. See findBy for what the computed key means.",
+      "type": "object",
+      "properties": {
+        "function": {
+          "enum": ["sys.hash.sha256d"]
+        },
+        "params": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 16,
+          "items": {
+            "anyOf": [
+              {
+                "type": "string",
+                "const": "."
+              },
+              {
+                "type": "string",
+                "const": "$ownerId"
+              },
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256,
+                "pattern": "^[a-zA-Z0-9_]{1,64}(\\.[a-zA-Z0-9_]{1,64})*$"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "const": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 64
+                  }
+                },
+                "required": ["const"],
+                "additionalProperties": false
+              }
+            ]
+          }
+        }
+      },
+      "required": ["function", "params"],
+      "additionalProperties": false
+    },
+    "propertyConstraint": {
+      "description": "A rule of propertyConstraints, or a condition inside one: an object with one key, either a comparison listing the two integer expressions it compares, left then right (equal and notEqual may instead compare the path of a string property with a const string or with the path of another string property, and likewise the path of an identifier property with a const base58 identifier or another identifier property), in listing an expression and the values it may take, startsWith or endsWith listing two strings, or two byte arrays, the first starting or ending with the second, contains listing a typed array property and a value its elements must include, present or absent naming a property (the document holds it, or leaves it out), anyOf (at least one of its conditions holds), allOf (every one of its conditions holds), not (its one condition does not hold), ifThen (its second condition holds whenever its first does) or ifThenElse (its second condition holds when its first does, its third when it does not); notIn is in negated",
+      "type": "object",
+      "properties": {
+        "equal": {
+          "$ref": "#/$defs/propertyConstraintOperandPair"
+        },
+        "notEqual": {
+          "$ref": "#/$defs/propertyConstraintOperandPair"
+        },
+        "lessThan": {
+          "$ref": "#/$defs/propertyConstraintOperandPair"
+        },
+        "lessThanOrEqual": {
+          "$ref": "#/$defs/propertyConstraintOperandPair"
+        },
+        "greaterThan": {
+          "$ref": "#/$defs/propertyConstraintOperandPair"
+        },
+        "greaterThanOrEqual": {
+          "$ref": "#/$defs/propertyConstraintOperandPair"
+        },
+        "in": {
+          "description": "Holds if the expression listed first takes one of the values listed second: two or more, no two alike, all integers or all strings. With integers the expression is any integer expression; with strings it is the path of a string property, which one the document leaves out holds none of, or the path of an identifier property, the strings then being base58 identifiers. It says what an anyOf of equal comparisons says, in one node per value rather than three",
+          "type": "array",
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/propertyConstraintExpression"
+            },
+            {
+              "type": "array",
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  }
+                },
+                {
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              ],
+              "minItems": 2,
+              "uniqueItems": true
+            }
+          ],
+          "items": false,
+          "minItems": 2
+        },
+        "notIn": {
+          "description": "Holds if the expression listed first takes none of the values listed second, the in of the same values negated, in as many nodes: two or more, no two alike, all integers or all strings. With integers the expression is any integer expression; with strings it is the path of a string property, which one the document leaves out holds none of, or the path of an identifier property, the strings then being base58 identifiers. It says what an allOf of notEqual comparisons, or a not over the in, says, in as many nodes as the in",
+          "type": "array",
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/propertyConstraintExpression"
+            },
+            {
+              "type": "array",
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  }
+                },
+                {
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              ],
+              "minItems": 2,
+              "uniqueItems": true
+            }
+          ],
+          "items": false,
+          "minItems": 2
+        },
+        "startsWith": {
+          "description": "Holds if the string listed first starts with the string listed second, byte for byte, with no case folding: each a const string or a string property (or an ifAbsent giving one a default), at least one a property, never the same one twice. A string property the document leaves out without a default takes no string, and the condition does not hold for it. Beside a byte array property it tests byte arrays instead: each side a byte array property or a const written in hex (two digits a byte, \"0001\"), with no default, and a byte array property the document leaves out takes no bytes",
+          "$ref": "#/$defs/propertyConstraintOperandPair"
+        },
+        "endsWith": {
+          "description": "Holds if the string, or byte array, listed first ends with the one listed second, as startsWith does at the start",
+          "$ref": "#/$defs/propertyConstraintOperandPair"
+        },
+        "contains": {
+          "description": "Holds if the typed array property at the path listed first holds an element equal to the value listed second: an integer expression among integers, a const string or a string property (or an ifAbsent giving one a default) among strings, a const base58 identifier, an identifier property or $ownerId among identifiers, as the array's elements are. An array the document leaves out holds nothing, and so does a string or identifier property it leaves out",
+          "type": "array",
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/propertyConstraintPath"
+            },
+            {
+              "$ref": "#/$defs/propertyConstraintExpression"
+            }
+          ],
+          "items": false,
+          "minItems": 2
+        },
+        "present": {
+          "description": "Holds if the document holds the property at this path, of any type, an object included, with a value other than null and, for an object, with a member that is present: a stored document does not keep an object without one. Unlike an operand, which reads a property the document leaves out as 0, it tells a property left out from one set to 0",
+          "$ref": "#/$defs/propertyConstraintPath"
+        },
+        "absent": {
+          "description": "Holds if the document leaves the property at this path out, sets it to null, or gives an object there no member that is present",
+          "$ref": "#/$defs/propertyConstraintPath"
+        },
+        "anyOf": {
+          "description": "Holds if at least one of its conditions holds, checked in declared order and stopping at the first that holds: two or more conditions, no two alike, none of them directly an anyOf (it says what one flat list says)",
+          "$ref": "#/$defs/propertyConstraintConditions",
+          "items": {
+            "properties": {
+              "anyOf": false
+            }
+          }
+        },
+        "allOf": {
+          "description": "Holds if every one of its conditions holds, checked in declared order and stopping at the first that fails: two or more conditions, no two alike, none of them directly an allOf (it says what one flat list says)",
+          "$ref": "#/$defs/propertyConstraintConditions",
+          "items": {
+            "properties": {
+              "allOf": false
+            }
+          }
+        },
+        "not": {
+          "description": "Holds if its one condition does not hold; a fault evaluating the condition still breaks the rule. The condition may not be directly another not, nor a notIn (an in of the same values says it)",
+          "$ref": "#/$defs/propertyConstraint",
+          "properties": {
+            "not": false,
+            "notIn": false
+          }
+        },
+        "ifThen": {
+          "description": "Holds if the second condition holds whenever the first does: the second is evaluated only when the first holds, and a fault in either breaks the rule. The two may not be alike",
+          "type": "array",
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/propertyConstraint"
+            },
+            {
+              "$ref": "#/$defs/propertyConstraint"
+            }
+          ],
+          "items": false,
+          "minItems": 2
+        },
+        "ifThenElse": {
+          "description": "Holds if the second condition holds when the first does, and the third when it does not: only the branch the first selects is evaluated, and a fault in it or in the first breaks the rule. No two of the three may be alike",
+          "type": "array",
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/propertyConstraint"
+            },
+            {
+              "$ref": "#/$defs/propertyConstraint"
+            },
+            {
+              "$ref": "#/$defs/propertyConstraint"
+            }
+          ],
+          "items": false,
+          "minItems": 3
+        }
+      },
+      "minProperties": 1,
+      "maxProperties": 1,
+      "additionalProperties": false
+    },
+    "propertyConstraintConditions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/propertyConstraint"
+      },
+      "minItems": 2,
+      "uniqueItems": true
+    },
+    "propertyConstraintExpression": {
+      "description": "An expression of a propertyConstraints rule: an integer value; the dotted path of a property of the document type, whose value it takes: an integer or boolean one (1 for true, 0 for false), 0 when the document leaves it out, or a string one compared with a const or another string property; a system time or height the document type records ($createdAt, $updatedAtBlockHeight, ...); or an object with one key: ifAbsent, a property path and the value it takes when the document leaves it out, an integer, or a string for a string property compared with strings; add, multiply, min or max, two or more operands; subtract, divide, modulo or power, exactly two; abs, one; length or byteLength, the characters or UTF-8 bytes of a string property, or count, the items of an array or byte array property, each 0 when the document leaves the property out; byteAt, the byte (0 to 255) at an index of a byte array property, 0 when the array does not hold it; countPresent, how many of two or more properties the document holds, each as present tests it; countOf or sumOf, how many documents of a document type of this contract match a filter or the total of an integer property over them, as its count or sum trees keep it; referenced, a value of the document a reference of the type points at; const, a string constant compared with a string property, or a hex constant a byte array starts or ends with",
+      "type": [
+        "integer",
+        "string",
+        "object"
+      ],
+      "if": {
+        "type": "string"
+      },
+      "then": {
+        "$ref": "#/$defs/propertyConstraintPath"
+      },
+      "else": {
+        "if": {
+          "type": "object"
+        },
+        "then": {
+          "properties": {
+            "referenced": {
+              "$ref": "#/$defs/propertyConstraintReferenced"
+            },
+            "ifAbsent": {
+              "description": "A property path and the value it takes when the document leaves the property out: an integer for an integer or boolean property, read as an integer operand, or a string for a string property, read as one side of a comparison of strings",
+              "type": "array",
+              "prefixItems": [
+                {
+                  "$ref": "#/$defs/propertyConstraintPath"
+                },
+                {
+                  "type": [
+                    "integer",
+                    "string"
+                  ]
+                }
+              ],
+              "items": false,
+              "minItems": 2
+            },
+            "add": {
+              "$ref": "#/$defs/propertyConstraintOperands"
+            },
+            "multiply": {
+              "$ref": "#/$defs/propertyConstraintOperands"
+            },
+            "subtract": {
+              "$ref": "#/$defs/propertyConstraintOperandPair"
+            },
+            "divide": {
+              "$ref": "#/$defs/propertyConstraintOperandPair"
+            },
+            "modulo": {
+              "$ref": "#/$defs/propertyConstraintOperandPair"
+            },
+            "power": {
+              "$ref": "#/$defs/propertyConstraintOperandPair"
+            },
+            "min": {
+              "description": "The least of two or more operands, every one evaluated",
+              "$ref": "#/$defs/propertyConstraintOperands"
+            },
+            "max": {
+              "description": "The greatest of two or more operands, every one evaluated",
+              "$ref": "#/$defs/propertyConstraintOperands"
+            },
+            "abs": {
+              "description": "The absolute value of its one operand",
+              "$ref": "#/$defs/propertyConstraintExpression"
+            },
+            "length": {
+              "description": "The number of characters of the string property at this path, as maxLength counts them, or 0 when the document leaves it out",
+              "$ref": "#/$defs/propertyConstraintPath"
+            },
+            "byteLength": {
+              "description": "The number of UTF-8 bytes of the string property at this path, as maxBytes counts them, or 0 when the document leaves it out",
+              "$ref": "#/$defs/propertyConstraintPath"
+            },
+            "count": {
+              "description": "The number of items of the array property at this path, or of bytes of the byte array property, as maxItems counts them, or 0 when the document leaves it out",
+              "$ref": "#/$defs/propertyConstraintPath"
+            },
+            "countPresent": {
+              "description": "How many of the properties at these paths the document holds, each as present tests it: two or more paths, no two alike, of properties of any type. It bounds how many of a group a document sets: { \"equal\": [{ \"countPresent\": [\"email\", \"phone\", \"handle\"] }, 1] } holds a document to exactly one of them, and { \"in\": [{ \"countPresent\": [\"email\", \"phone\", \"handle\"] }, [1, 2]] } to one or two",
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/propertyConstraintPath"
+              },
+              "minItems": 2,
+              "uniqueItems": true
+            },
+            "byteAt": {
+              "description": "The byte, 0 to 255, at an index (counted from 0) of the byte array property at a path: the path, then the index, below the property's maxItems when it declares one. A byte the array does not hold, or one of an array the document leaves out, reads as 0",
+              "type": "array",
+              "prefixItems": [
+                {
+                  "$ref": "#/$defs/propertyConstraintPath"
+                },
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 65535
+                }
+              ],
+              "items": false,
+              "minItems": 2
+            },
+            "countOf": {
+              "description": "How many documents of a document type of this contract there are, as its count trees will keep it once the write is done: every one, which needs documentsCountable on that type, or those matching a filter, which needs a countable index of that type whose properties are exactly the filter's keys",
+              "type": "array",
+              "prefixItems": [
+                {
+                  "$ref": "#/$defs/propertyConstraintAggregateType"
+                },
+                {
+                  "$ref": "#/$defs/propertyConstraintAggregateFilter"
+                }
+              ],
+              "items": false,
+              "minItems": 1
+            },
+            "sumOf": {
+              "description": "The total of an integer property over the documents of a document type of this contract, as its sum trees will keep it once the write is done: over every one, which needs documentsSummable naming the property on that type, or over those matching a filter, which needs an index of that type summable by the property whose properties are exactly the filter's keys",
+              "type": "array",
+              "prefixItems": [
+                {
+                  "$ref": "#/$defs/propertyConstraintAggregateType"
+                },
+                {
+                  "description": "The integer property of that type to total",
+                  "type": "string",
+                  "pattern": "^[a-zA-Z0-9_]{1,64}(\\.[a-zA-Z0-9_]{1,64})*$"
+                },
+                {
+                  "$ref": "#/$defs/propertyConstraintAggregateFilter"
+                }
+              ],
+              "items": false,
+              "minItems": 2
+            },
+            "const": {
+              "description": "A constant, only as one side of an equal or notEqual whose other side is the path of a string property (a string), or of an identifier property or $ownerId (a base58 identifier), or of a startsWith or endsWith whose other side is the path of a byte array property (hex, two digits a byte): a string on its own is a path, and an integer is written as itself",
+              "type": "string"
+            }
+          },
+          "minProperties": 1,
+          "maxProperties": 1,
+          "additionalProperties": false
+        }
+      }
+    },
+    "propertyConstraintAggregateType": {
+      "description": "The name of the document type of this contract a countOf or sumOf totals, the declaring type included",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "propertyConstraintAggregateFilter": {
+      "description": "Which documents a countOf or sumOf totals: those whose value at each key, a property path of the totalled type or $ownerId, equals the value given for it, read from the document being written (or, for a deleteConstraints rule, deleted): a property path of it, $ownerId, $id (its id, so that { \"pollId\": \"$id\" } matches the documents pointing at it), an integer, or a { const } string or base58 identifier",
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "pattern": "^(\\$ownerId|[a-zA-Z0-9_]{1,64}(\\.[a-zA-Z0-9_]{1,64})*)$"
+      },
+      "additionalProperties": {
+        "type": [
+          "integer",
+          "string",
+          "object"
+        ],
+        "if": {
+          "type": "string"
+        },
+        "then": {
+          "pattern": "^(\\$ownerId|\\$id|[a-zA-Z0-9_]{1,64}(\\.[a-zA-Z0-9_]{1,64})*)$"
+        },
+        "else": {
+          "if": {
+            "type": "object"
+          },
+          "then": {
+            "properties": {
+              "const": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "const"
+            ],
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    "propertyConstraintPath": {
+      "description": "The dotted path of a property of the document type, a nested one through the objects around it: an integer or boolean property when an operand reads its value, a string property when length or byteLength measures it, an array or byte array property when count counts its items, a byte array property when byteAt reads one of its bytes or startsWith or endsWith tests it, any property when present, absent or countPresent tests it. Or $ownerId, the document's owner, which only a comparison of identifiers reads, a system time or height an integer operand reads ($createdAt, $updatedAt, $transferredAt, and each with BlockHeight or CoreBlockHeight appended), one the document type lists in required, or $revision, which an integer operand reads on a document type that keeps a revision. Any of them may follow $old., which reads the stored version of the document a write replaces instead of the version it writes (absent on a create), in a propertyConstraints rule but not a deleteConstraints one, which is judged on the stored document itself. Or { \"referenced\": [reference, field] }, a value of the document a reference of the type points at, read as a property of that type is",
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^(\\$old\\.)?(\\$ownerId|\\$revision|\\$(created|updated|transferred)At(BlockHeight|CoreBlockHeight)?|[a-zA-Z0-9_]{1,64}(\\.[a-zA-Z0-9_]{1,64})*)$"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "referenced": {
+              "$ref": "#/$defs/propertyConstraintReferenced"
+            }
+          },
+          "required": [
+            "referenced"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "propertyConstraintReferenced": {
+      "description": "A value of the document a reference of the document type points at, standing wherever a property path does in a propertyConstraints rule: the dotted path of a property of the type (a nested one through the objects around it) whose refersTo finds one document, by id or by a findBy without a function (a permanentDocument, moderatedDocument or deletableDocument reference, not on the elements of a typed array, nor an anyOf, allOf or inList), then a field of that document: a property path of its type, read as that property's type says, its $id, $ownerId or $creatorId, compared as identifiers, or a time or height its type lists in required. A rule reading one is judged once the references are checked, with the document their check read, so it costs no read; its reference is checked again on every replace. Through a moderatedDocument reference only $id, $ownerId and the fields the type keeps under deleteKeepsFields are read. Available from protocol version 14",
+      "type": "array",
+      "prefixItems": [
+        {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_]{1,64}(\\.[a-zA-Z0-9_]{1,64})*$"
+        },
+        {
+          "type": "string",
+          "pattern": "^(\\$id|\\$ownerId|\\$creatorId|\\$(created|updated|transferred)At(BlockHeight|CoreBlockHeight)?|[a-zA-Z0-9_]{1,64}(\\.[a-zA-Z0-9_]{1,64})*)$"
+        }
+      ],
+      "items": false,
+      "minItems": 2
+    },
+    "referenceWhereCondition": {
+      "description": "A refersTo where entry that is not an equality with a referring value: an object with one key. const, a literal the referenced side must equal (an integer or true or false for such a property, a string for a string property, a base58 identifier for an identifier, $ownerId, $creatorId or $id, hex for a byte array); a referenced side the document leaves out equals none. notEqual, what it must differ from: a property of the referring document type, \"$ownerId\" (the writer, checked on every replace) or a { const }; the negation of an equality, so two absent sides are equal. in, two to thirty distinct literals of one kind, one of which it must equal; an absent side is in none. greaterThan, greaterThanOrEqual, lessThan or lessThanOrEqual, an integer property the referenced side must compare with this way: bounded by an integer property of the referring document type, an integer { const }, or a time or height the referring type lists in required ($createdAt as written by the create; $updatedAt and $transferredAt, and their heights, change without a write to the referring document, so an entry bounded by one is checked on every replace); it holds only when both sides have a value. contains, of a typed array, a value it must hold an element equal to: a property of the referring document type of the element kind, or \"$ownerId\" (the writer, among identifier elements, checked on every replace); a list the document leaves out holds nothing, and a value the write leaves out is held by no list. containsAll, of a typed array, a typed array of the referring document type of the same element kind whose every element it must hold, in any order; every list holds all of an empty one, and a list left out is empty. Elements compare by value, never floats. A document found that fails an entry refuses the write with ReferencedDocumentPropertyMismatchError (40127). Available from protocol version 14",
+      "type": "object",
+      "minProperties": 1,
+      "maxProperties": 1,
+      "properties": {
+        "const": {
+          "type": [
+            "integer",
+            "boolean",
+            "string"
+          ]
+        },
+        "notEqual": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256,
+              "pattern": "^(\\$ownerId|[a-zA-Z0-9_]{1,64}(\\.[a-zA-Z0-9_]{1,64})*)$"
+            },
+            {
+              "$ref": "#/$defs/referenceWhereConst"
+            }
+          ]
+        },
+        "in": {
+          "type": "array",
+          "anyOf": [
+            {
+              "items": {
+                "type": "integer"
+              }
+            },
+            {
+              "items": {
+                "type": "boolean"
+              }
+            },
+            {
+              "items": {
+                "type": "string"
+              }
+            }
+          ],
+          "minItems": 2,
+          "maxItems": 30,
+          "uniqueItems": true
+        },
+        "greaterThan": {
+          "$ref": "#/$defs/referenceWhereOrderingBound"
+        },
+        "greaterThanOrEqual": {
+          "$ref": "#/$defs/referenceWhereOrderingBound"
+        },
+        "lessThan": {
+          "$ref": "#/$defs/referenceWhereOrderingBound"
+        },
+        "lessThanOrEqual": {
+          "$ref": "#/$defs/referenceWhereOrderingBound"
+        },
+        "contains": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^(\\$ownerId|[a-zA-Z0-9_]{1,64}(\\.[a-zA-Z0-9_]{1,64})*)$"
+        },
+        "containsAll": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^[a-zA-Z0-9_]{1,64}(\\.[a-zA-Z0-9_]{1,64})*$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "referenceWhereConst": {
+      "type": "object",
+      "properties": {
+        "const": {
+          "type": [
+            "integer",
+            "boolean",
+            "string"
+          ]
+        }
+      },
+      "required": [
+        "const"
+      ],
+      "additionalProperties": false
+    },
+    "referenceWhereOrderingBound": {
+      "description": "The integer bound of a where ordering: the path of an integer property of the referring document type, one of its times or heights its type lists in required, or { \"const\": integer }",
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^(\\$(created|updated|transferred)At(BlockHeight|CoreBlockHeight)?|[a-zA-Z0-9_]{1,64}(\\.[a-zA-Z0-9_]{1,64})*)$"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "const": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "const"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "propertyConstraintOperands": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/propertyConstraintExpression"
+      },
+      "minItems": 2
+    },
+    "propertyConstraintOperandPair": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/propertyConstraintExpression"
+      },
+      "minItems": 2,
+      "maxItems": 2
+    },
     "documentProperties": {
       "type": "object",
       "patternProperties": {
-        "^[a-zA-Z0-9-_]{1,64}$": {
+        "^[a-zA-Z0-9_]{1,64}$": {
           "type": "object",
           "allOf": [
             {
@@ -126,7 +771,7 @@ This page reflects the v3 meta-schema, which adds the `refersTo` and `requiredSi
         }
       },
       "propertyNames": {
-        "pattern": "^[a-zA-Z0-9-_]{1,64}$"
+        "pattern": "^[a-zA-Z0-9_]{1,64}$"
       },
       "minProperties": 1,
       "maxProperties": 100
@@ -199,7 +844,45 @@ This page reflects the v3 meta-schema, which adds the `refersTo` and `requiredSi
         "uniqueItems": {
           "$ref": "https://json-schema.org/draft/2020-12/meta/validation#/properties/uniqueItems"
         },
+        "items": {
+          "description": "typed arrays only: the schema every element of the array has",
+          "$ref": "#/$defs/documentArrayItem"
+        },
+        "encryptedFor": {
+          "description": "byte array properties that are not identifiers only: how the property's ciphertext was produced, so wallets and SDKs read the recipe from the contract. recipient names an identifier property of the same document type whose value is the recipient identity's id, or is \"$ownerId\" for a message the writer encrypts to themself; recipientKey and senderKey name integer properties of the same document type (minimum at least 0, maximum at most 4294967295) carrying the recipient's and the sender's identity key ids; scheme names how the bytes were made. Under ecdh-secp256k1-aes256-cbc, the scheme of the dashpay contact request, the shared key is the libsecp256k1 ECDH of the sender's private key and the recipient's public key (SHA256 of the product point's parity byte and x coordinate) and the value is a random 16-byte IV followed by the plaintext under AES-256-CBC with PKCS7 padding and that IV, so at least 32 bytes and a multiple of 16. All four keys are required; the three named properties must exist with those types, and none of them may be transient or inside a transient object (a transient value is never stored, so the stored document would lose its recipe). Consensus checks only that shape on every create and replace (InvalidEncryptedPropertyShapeError, 10420): who can decrypt the bytes, and whether they decrypt at all, is not verifiable on chain",
+          "type": "object",
+          "properties": {
+            "recipient": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "recipientKey": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "senderKey": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "scheme": {
+              "enum": [
+                "ecdh-secp256k1-aes256-cbc"
+              ]
+            }
+          },
+          "required": [
+            "recipient",
+            "recipientKey",
+            "senderKey",
+            "scheme"
+          ],
+          "additionalProperties": false
+        },
         "refersTo": {
+          "description": "What an identifier property (or, for an identityPublicKey reference with identityProperty, a key id property) refers to: one target, declared by its type and the keys that type takes, or a reference expression, an object holding only anyOf (at least one operand holds) or only allOf (every operand holds)",
           "type": "object",
           "properties": {
             "type": {
@@ -208,8 +891,28 @@ This page reflects the v3 meta-schema, which adds the `refersTo` and `requiredSi
                 "contract",
                 "token",
                 "permanentDocument",
-                "identityPublicKey"
+                "identityPublicKey",
+                "deletableDocument",
+                "moderatedDocument"
               ]
+            },
+            "anyOf": {
+              "description": "A reference expression holding if at least one operand holds: two or more operands, each a leaf (an ordinary identity target, a permanentDocument by id, by findBy or with inList, or a deletableDocument found by findBy, with its own keys) or an allOf (an anyOf directly inside an anyOf says what one flat list says). When the referring document is created or replaced, consensus checks the operands in declared order and stops at the first that holds; every read is billed, including those of the operands that failed, and when none holds the write is refused with the error of the last operand, so the order of the list decides which failure a writer sees. See referenceOperands for the limits and the leaf types. Available from protocol version 14.",
+              "$ref": "#/$defs/referenceOperands",
+              "items": {
+                "properties": {
+                  "anyOf": false
+                }
+              }
+            },
+            "allOf": {
+              "description": "A reference expression holding if every operand holds for the same value: two or more operands, each a leaf (an ordinary identity target, a permanentDocument by id, by findBy or with inList, or a deletableDocument found by findBy, with its own keys) or an anyOf (an allOf directly inside an allOf says what one flat list says). When the referring document is created or replaced, consensus checks the operands in declared order and stops at the first that fails, refusing the write with that operand's error; every read is billed. See referenceOperands for the limits and the leaf types. Available from protocol version 14.",
+              "$ref": "#/$defs/referenceOperands",
+              "items": {
+                "properties": {
+                  "allOf": false
+                }
+              }
             },
             "contractId": {
               "description": "The id of the data contract the referenced document lives in, as a base58 string or a 32-byte array; when absent the reference targets the declaring contract itself",
@@ -233,43 +936,299 @@ This page reflects the v3 meta-schema, which adds the `refersTo` and `requiredSi
               ]
             },
             "documentType": {
-              "description": "The name of the referenced document type; it must forbid deletion (canBeDeleted: false)",
+              "description": "The name of the referenced document type, whose documents must leave state only as the reference type says: for permanentDocument never (canBeDeleted: false, no moderatorAbilities.delete and no ttl; canBeDeleted: \"onlyWhenConsumed\" is not false); for moderatedDocument only through a moderator's recorded removal (canBeDeleted: false, no ttl, moderatorAbilities.delete with deleteKeepsRecord not false), so the reference resolves to the document or to its removal record, which a replace keeps; for deletableDocument in any other way; a deletableDocument reference is re-validated on every replace of the referring document, so one whose target was deleted has to be repointed at an existing document or cleared. With inList, the document type holding the list; the document is the one findBy's $id names",
               "type": "string",
               "minLength": 1,
               "maxLength": 64,
-              "pattern": "^[a-zA-Z0-9-_]{1,64}$"
+              "pattern": "^[a-zA-Z0-9_]{1,64}$"
+            },
+            "contractRequirements": {
+              "description": "contract references only: what the referenced contract must declare beyond existing, checked when the referring document is written against the contract already fetched for the existence check and the block time, so a requirement costs no further read. Each key names an aspect of the referenced contract and its value the requirement: moderation \"elected\" requires the contract to declare an elected moderation team and \"electionOpen\" one whose own electionDelay, counted from the contract's creation, has passed at the block time of the write (or which declares none); minimumAgeSeconds requires the contract's recorded creation time to be at least that many seconds before the block time of the write, and minimumSecondsSinceUpdate the later of its recorded creation and last update times (a contract without a recorded creation time never meets either); owner \"self\" requires the contract to be owned by the writer of the referring document (its $ownerId), \"other\" by anyone else; readonly true requires the contract's config to be readonly (one that can never be updated again) and keepsHistory true its config to keep history, only true being declarable for either; ownerProtected requires the contract's elected moderation declaration to protect (true) or not protect (false) the contract owner from the team, a contract without elected moderation meeting neither. An unmet requirement refuses the write (ReferencedContractRequirementNotMetError, 40135)",
+              "type": "object",
+              "properties": {
+                "moderation": {
+                  "enum": [
+                    "elected",
+                    "electionOpen"
+                  ]
+                },
+                "minimumAgeSeconds": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 4294967295
+                },
+                "minimumSecondsSinceUpdate": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 4294967295
+                },
+                "owner": {
+                  "enum": [
+                    "self",
+                    "other"
+                  ]
+                },
+                "readonly": {
+                  "const": true
+                },
+                "keepsHistory": {
+                  "const": true
+                },
+                "ownerProtected": {
+                  "type": "boolean"
+                }
+              },
+              "minProperties": 1,
+              "additionalProperties": false
             },
             "keyIdProperty": {
-              "description": "The property of the same document type whose value carries the referenced key id; the reference property's value carries the identity id",
+              "description": "identityPublicKey references on an identifier property: the property of the same document type whose value carries the referenced key id; the reference property's value carries the identity id. Takes the place of identityProperty",
               "type": "string",
               "minLength": 1,
               "maxLength": 256,
-              "pattern": "^[a-zA-Z0-9-_]{1,64}(\\.[a-zA-Z0-9-_]{1,64})*$"
+              "pattern": "^[a-zA-Z0-9_]{1,64}(\\.[a-zA-Z0-9_]{1,64})*$"
             },
-            "propertyAgreement": {
-              "description": "permanentDocument references only: each { referring property: referenced property } pair must hold as an equality between the referring document's value and the referenced document's value, enforced by consensus at document write time; both properties must exist and share one property type, validated at contract registration",
+            "identityProperty": {
+              "description": "identityPublicKey references on the key id property itself, the inverse form: the declaring property is an integer from 0 to 4294967295 (a key id) whose value must be the id of a key of the named identity that exists and is not disabled when the document is written (ReferencedIdentityKeyNotFoundError, 40123; ReferencedIdentityKeyDisabledError, 40124). \"$ownerId\" names the writer, the document's owner, and \"$creatorId\" its creator (only on a document type that records creator ids, checked at contract registration), whose existence is already proven, so only the key is fetched; any other value is the path of an identifier property of the same document type (it must exist, be an identifier and not carry an identityPublicKey reference of its own, checked at registration), whose value is the identity, and a key id set while it is not is refused (ReferencedKeyIdPropertyInvalidError, 40125). Takes the place of keyIdProperty",
+              "anyOf": [
+                {
+                  "enum": [
+                    "$ownerId",
+                    "$creatorId"
+                  ]
+                },
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256,
+                  "pattern": "^[a-zA-Z0-9_]{1,64}(\\.[a-zA-Z0-9_]{1,64})*$"
+                }
+              ]
+            },
+            "keyRequirements": {
+              "description": "identityPublicKey references only: what the referenced key must be beyond existing and not being disabled, checked when the referring document is written against the key already fetched for the existence check, so a requirement costs no further read. Each key names an aspect of the referenced key and its value the requirement: purpose requires the key's purpose to be the named one (any but system); boundTo names a document type of the declaring contract and requires the key's contract bounds to be exactly the declaring contract and that document type (a whole-contract or contract group bound never meets it). At registration boundTo must name a document type the contract has, and one a key of the required purpose can be bound to: only authentication, encryption and decryption keys carry a document type bound, and an encryption or decryption key only where the type declares requiresIdentityEncryptionBoundedKey or requiresIdentityDecryptionBoundedKey. An unmet requirement refuses the write (ReferencedIdentityKeyRequirementNotMetError, 40136)",
+              "type": "object",
+              "properties": {
+                "purpose": {
+                  "enum": [
+                    "authentication",
+                    "encryption",
+                    "decryption",
+                    "transfer",
+                    "voting",
+                    "owner"
+                  ]
+                },
+                "boundTo": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 64,
+                  "pattern": "^[a-zA-Z0-9_]{1,64}$"
+                }
+              },
+              "minProperties": 1,
+              "additionalProperties": false
+            },
+            "findBy": {
+              "description": "permanentDocument and deletableDocument references only: how the referenced document is found when the property's value is not its id. Each entry maps a property of the referenced document type (by its name there, system ones such as $ownerId included) to where its value comes from: \".\", the value of the property carrying the reference (on an array element, the element; the writer for ownerRefersTo, the creator for creatorRefersTo), which must be read exactly once; \"$ownerId\", the referring document's owner; a property path of the referring document type; or a function computing it (findByFunction). The entries must name exactly the properties of one unique index of the referenced document type, in any order, that carries no timeRange or integerRange on its first property and does not belong to an indexOnly type: that index finds the document, at most one. Its key must stay with the document it found (every schema property it names fixed by an immutable document type or the immutable list, $ownerId only on a type whose documents can be neither transferred nor traded), so the reference never dangles. A property an entry reads must be required (and so must every object around it), not transient nor inside a transient object, and hold the same kind of value as the property it fills, so findBy never runs with a missing part; all of this is validated at contract registration. When the referring document is created or replaced, consensus queries that index for the key, billed as a document fetch, and refuses the write with ReferencedEntityNotFoundError (40120) if it finds no document; where is checked against the document found. A replace re-validates a permanentDocument found by findBy when a property an entry reads changed, and on every replace when an entry reads $ownerId. On a deletableDocument reference findBy says less: once the document it found is deleted the same key may find another filed later, so the reference means a document with this key exists now; every replace re-validates it, as it does a deletableDocument reference by id, and an immutable property may not hold one, except one found by a function, judged when the document is created only, as below. Without findBy the value is the referenced document's $id; { \"$id\": <property> } is the one entry naming $id, with inList: it finds the document holding the list by the id the property holds. A function entry, { referenced property: { \"function\": \"sys.hash.sha256d\", \"params\": [...] } }, fills a byte array property of exactly 32 bytes with the hash of the params' bytes joined in order, for a commit and reveal: the document such a key finds is a commitment made earlier, and the reference is checked when the referring document is created only, never on a replace: every stored property it reads (the function's params, the other entries, the property carrying the reference, the where values) must be fixed once written: a property carrying it or read by it is set when the document is created and never changes, so one listed under immutable with a condition is refused. A param may be transient, being read from the create, and optional, a create missing a param being refused (DocumentReferencePreimageInvalidError, 10423), as is one whose param sits behind a key repeated in an object on the way. So the joined bytes split into the params one way only, every variable-length param (a string, or a byte array without a fixed size) with another variable-length param anywhere after it must be followed directly by a one-byte const, its separator, which its value may not hold (refused the same way). At most one entry is a function; the value carrying the reference is read exactly once, as \".\" or a param of the function, which names a single property carrying the reference by its path and uses \".\" only for a value without one (each element of a typed array, the writer, the creator), and \"$ownerId\" for the writer's id, except beside a function of an ownerRefersTo or creatorRefersTo, which may leave it out. A string or byte array property may carry a refersTo only with findBy, its value read as \".\", filling an index property holding the same kind of value (a string or a byte array), or by its path as a param of the function: it is not an id. Read as \".\", it is re-validated as an identifier's value is. Beside a function, or on a document type whose documents are never replaced (documentsMutable: false, where no replace judges the reference again), the refersTo may declare consume and constraints.minimumAgeBlocks, and on a deletableDocument whose findBy is exactly the entry \"$ownerId\": \"$ownerId\" and a function of the revealed values, constraints.chooseFirst (see constraints), never beside inList. A where entry { \"$ownerId\": \"$ownerId\" } demands that the commitment be the writer's own (ReferencedDocumentPropertyMismatchError, 40127, otherwise); without it anyone who learns the params may reveal them. Available from protocol version 14.",
               "type": "object",
               "minProperties": 1,
               "maxProperties": 10,
               "propertyNames": {
-                "pattern": "^[a-zA-Z0-9-_]{1,64}(\\.[a-zA-Z0-9-_]{1,64})*$"
+                "minLength": 1,
+                "maxLength": 256
               },
               "additionalProperties": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 256,
-                "pattern": "^[a-zA-Z0-9-_]{1,64}(\\.[a-zA-Z0-9-_]{1,64})*$"
+                "anyOf": [
+                  {
+                    "const": "."
+                  },
+                  {
+                    "const": "$ownerId"
+                  },
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256,
+                    "pattern": "^[a-zA-Z0-9_]{1,64}(\\.[a-zA-Z0-9_]{1,64})*$"
+                  },
+                  {
+                    "$ref": "#/$defs/findByFunction"
+                  }
+                ]
               }
+            },
+            "where": {
+              "description": "permanentDocument, moderatedDocument and deletableDocument references only: what the referenced document must hold once found, checked by consensus when the referring document is written. Each entry maps a property of the referenced document type, or one of its $ownerId, $creatorId and $id system identifiers, to the referring document's value it must equal: a schema property of the declaring document type, or \"$ownerId\", the writer, which turns the entry into a write gate: only an identity whose id equals the referenced side may create or replace the document. A referring value may be compared once. $creatorId needs a referenced document type that records creator ids (transferable or tradeable types of a format-1 contract), and $ownerId, $creatorId or $id an identifier on the referring side. Both sides must exist and share one value kind, validated at contract registration; two typed arrays of one element kind (not floats, both stored) are equal as lists, the same elements in the same order compared by value, a list the document leaves out the empty one, and a typed array is equal to nothing else. $ownerId follows the referenced document through transfers while $creatorId and $id never change; each is checked when the referring document is written, not when the referenced document later moves. A document found that fails an entry refuses the write with ReferencedDocumentPropertyMismatchError (40127). An entry may instead hold an object with one key (see referenceWhereCondition): const, a literal the referenced side must equal; notEqual, a referring property, \"$ownerId\" or a const it must differ from; in, two or more literals it must be one of; greaterThan, greaterThanOrEqual, lessThan or lessThanOrEqual, an integer bound it must compare with; or, of a typed array, contains, a referring value or \"$ownerId\" it must hold, or containsAll, a referring typed array whose every element it must hold. The one-comparison-per-referring-value rule holds for the equalities only. Beside a findBy function the declaration is judged when the document is created only, so its entries gate the create alone, and every referring value other than $ownerId must be transient or fixed once written (not listed under immutable with a condition). where never finds the document: \".\" and functions belong to findBy. Available from protocol version 14.",
+              "type": "object",
+              "minProperties": 1,
+              "maxProperties": 10,
+              "propertyNames": {
+                "maxLength": 256,
+                "anyOf": [
+                  {
+                    "pattern": "^[a-zA-Z0-9_]{1,64}(\\.[a-zA-Z0-9_]{1,64})*$"
+                  },
+                  {
+                    "enum": ["$ownerId", "$creatorId", "$id"]
+                  }
+                ]
+              },
+              "additionalProperties": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256,
+                    "pattern": "^[a-zA-Z0-9_]{1,64}(\\.[a-zA-Z0-9_]{1,64})*$"
+                  },
+                  {
+                    "const": "$ownerId"
+                  },
+                  {
+                    "$ref": "#/$defs/referenceWhereCondition"
+                  }
+                ]
+              }
+            },
+            "inList": {
+              "description": "permanentDocument references only: the typed array of identifiers of documentType (a dotted path when nested) the value must be an element of. The document holding it is found by findBy { \"$id\": <property> }, the id an identifier property of the referring document type holds (stored, not transient nor inside a transient object, checked at contract registration; it may be optional). At contract registration documentType must forbid deletion, and the list must be stored and fixed once a document is written: documentType is immutable (documentsMutable: false) or lists the list's top-level property under immutable, so a value accepted as an element stays one. When the referring document is created or replaced, consensus fetches that document by its id (once per write, shared with any other reference of the same document), checks where against it, and requires the value (on a typed array, every element) to be an element of its list; a value that is not, or one set while the $id property is not, refuses the write with ReferencedEntityNotFoundError (40120). A replace checks it again when the value or a property findBy or where reads changed. Available from protocol version 14.",
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256,
+              "pattern": "^[a-zA-Z0-9_]{1,64}(\\.[a-zA-Z0-9_]{1,64})*$"
+            },
+            "consume": {
+              "description": "Beside findBy, never with inList, on a reference judged when the referring document is created only (a findBy function, or a document type whose documents are never replaced, documentsMutable: false; the parser refuses any other): the create deletes the document findBy finds, in the same state transition, its storage refunded to its owner as a delete by that owner would. Only on a deletableDocument reference whose where compares \"$ownerId\" with \"$ownerId\", so a create consumes the writer's own commitment and no other, into a document type of the declaring contract whose documents their owner may delete (canBeDeleted: true) or that only a consume removes (canBeDeleted: \"onlyWhenConsumed\"), that declares no delete token cost and no delete action fee (no delete transition charges them) and requires no stricter signature security level than the declaring type, checked at contract registration. A key bound to a contract or a document type must be allowed to act on every document type the create may consume (ContractBoundedKeyOutOfBoundsError, 20014). A batch that consumes the same document twice, or also deletes, replaces, transfers, reprices or buys it, refuses the create that would consume it (ReferencedEntityNotFoundError, 40120). Available from protocol version 14.",
+              "const": true
+            },
+            "constraints": {
+              "description": "Beside findBy, never with inList: what the document findBy finds must meet when the referring document is created, minimumAgeBlocks and chooseFirst. Available from protocol version 14.",
+              "type": "object",
+              "minProperties": 1,
+              "properties": {
+                "minimumAgeBlocks": {
+                  "description": "Inside constraints beside findBy, never with inList, on a reference judged when the referring document is created only (a findBy function, or a document type whose documents are never replaced, documentsMutable: false; the parser refuses any other): how many blocks before the create the document findBy finds must have been created, judged against its $createdAtBlockHeight, so that 1 keeps a commitment and the create revealing it out of the same block. The referenced document type must list $createdAtBlockHeight in its required, checked at contract registration; a found document recording no creation height never meets it. An unmet age refuses the create (ReferencedDocumentRequirementNotMetError, 40142). Available from protocol version 14.",
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 4294967295
+                },
+                "chooseFirst": {
+                  "description": "Inside constraints, on a deletableDocument reference whose findBy holds exactly the entry \"$ownerId\": \"$ownerId\" and a function filling \"among\" that reads neither \"$ownerId\" nor \".\" (so the reference is judged when the referring document is created only, and finds the writer's commitment to the revealed values), never beside inList, on the elements of a typed array or on an operand of anyOf or allOf, at most one per document type, with no where entry but \"$ownerId\": \"$ownerId\", on a type whose creates offer no gas sponsorship (gasFeesPaidBy). The found document must be the first valid commitment among the documents holding the same value at \"among\". \"validWhen\" holds one entry, a byte array property of the referenced type mapped to a function of the findByFunction shape reading \"$ownerId\" (each commitment's owner), no \".\", and exactly the properties the findBy function reads: a commitment is valid when it holds there that function computed with its owner, which a copy of another identity's cannot. \"by\" lists the properties the commitments are ordered by, each a name (ascending) or { \"<name>\": \"asc\" | \"desc\" }, $id only last and in the direction of the entry before it (ascending alone), the way the index keeps ids. When the referring document is created, after findBy finds the writer's commitment: a commitment past its ttl, or not valid itself, is refused as not found (ReferencedEntityNotFoundError, 40120); consensus reads, in one billed query, the documents holding the same value in that order, at most SystemLimits max_choose_first_candidates (1,000 at protocol version 14); one coming before the found document in that order, not past its type's ttl and valid (validWhen billed as a double SHA-256) refuses the create (ReferencedDocumentPrecededError, 40149). Two commitments equal on every by property precede neither other, and when none of those read refuses, the create stands. Checked at contract registration: the validWhen property is a byte array of exactly the function's 32 bytes, fixed once written and not transient, and not one findBy names; the type declares a ttl; every by property is recorded on every document (listed in required, $ownerId aside), fixed once written and not transient; the type has an index over exactly among followed by the by properties, in that order, a last $id aside, which then stands outside a non-unique index; and no unique index holding among or the validWhen property without $ownerId. Available from protocol version 14.",
+                  "type": "object",
+                  "properties": {
+                    "among": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "pattern": "^[a-zA-Z0-9_]{1,64}(\\.[a-zA-Z0-9_]{1,64})*$"
+                    },
+                    "validWhen": {
+                      "type": "object",
+                      "minProperties": 1,
+                      "maxProperties": 1,
+                      "propertyNames": {
+                        "minLength": 1,
+                        "maxLength": 256,
+                        "pattern": "^[a-zA-Z0-9_]{1,64}(\\.[a-zA-Z0-9_]{1,64})*$"
+                      },
+                      "additionalProperties": {
+                        "$ref": "#/$defs/findByFunction"
+                      }
+                    },
+                    "by": {
+                      "type": "array",
+                      "minItems": 1,
+                      "maxItems": 10,
+                      "items": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 256
+                          },
+                          {
+                            "type": "object",
+                            "minProperties": 1,
+                            "maxProperties": 1,
+                            "propertyNames": {
+                              "minLength": 1,
+                              "maxLength": 256
+                            },
+                            "additionalProperties": {
+                              "type": "string",
+                              "enum": ["asc", "desc"]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "required": ["among", "validWhen", "by"],
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
             }
           },
-          "required": [
-            "type"
-          ],
+          "if": {
+            "required": [
+              "anyOf"
+            ]
+          },
+          "then": {
+            "maxProperties": 1
+          },
+          "else": {
+            "if": {
+              "required": [
+                "allOf"
+              ]
+            },
+            "then": {
+              "maxProperties": 1
+            },
+            "else": {
+              "required": [
+                "type"
+              ]
+            }
+          },
           "additionalProperties": false,
           "allOf": [
             {
+              "$comment": "constraints (minimumAgeBlocks and chooseFirst) and consume describe the document findBy finds when the referring document is created: they need findBy and no inList (a list element reference has nothing to hold them), and the parser requires the reference to be judged on the create alone (a findBy function, or a document type whose documents are never replaced; chooseFirst needs the function)",
               "if": {
-                "properties": { "type": { "const": "permanentDocument" } },
+                "anyOf": [
+                  { "required": ["constraints"] },
+                  { "required": ["consume"] }
+                ]
+              },
+              "then": {
+                "required": ["findBy"],
+                "not": { "required": ["inList"] }
+              }
+            },
+            {
+              "$comment": "Only a deletable document can be consumed, and only one can expire, as the commitments chooseFirst reads must",
+              "if": {
+                "anyOf": [
+                  { "required": ["consume"] },
+                  { "properties": { "constraints": { "required": ["chooseFirst"] } }, "required": ["constraints"] }
+                ]
+              },
+              "then": {
+                "required": ["type"],
+                "properties": { "type": { "const": "deletableDocument" } }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "enum": ["permanentDocument", "deletableDocument", "moderatedDocument"]
+                  }
+                },
                 "required": ["type"]
               },
               "then": {
@@ -278,9 +1237,40 @@ This page reflects the v3 meta-schema, which adds the `refersTo` and `requiredSi
               "else": {
                 "properties": {
                   "contractId": false,
-                  "documentType": false
+                  "documentType": false,
+                  "findBy": false,
+                  "where": false
                 }
               }
+            },
+            {
+              "$comment": "A moderated document is referred to by its id alone: a moderator's removal frees the unique index keys a findBy finds by",
+              "if": {
+                "properties": { "type": { "const": "moderatedDocument" } },
+                "required": ["type"]
+              },
+              "then": {
+                "properties": { "findBy": false }
+              }
+            },
+            {
+              "$comment": "inList names a list on the document findBy finds by its $id, which never changes on a document never deleted: a permanentDocument alone",
+              "if": { "required": ["inList"] },
+              "then": {
+                "required": ["type", "findBy"],
+                "properties": {
+                  "type": { "const": "permanentDocument" },
+                  "findBy": { "required": ["$id"], "maxProperties": 1 }
+                }
+              }
+            },
+            {
+              "$comment": "findBy names $id only to find the document holding the list of inList",
+              "if": {
+                "properties": { "findBy": { "required": ["$id"] } },
+                "required": ["findBy"]
+              },
+              "then": { "required": ["inList"] }
             },
             {
               "if": {
@@ -288,11 +1278,38 @@ This page reflects the v3 meta-schema, which adds the `refersTo` and `requiredSi
                 "required": ["type"]
               },
               "then": {
-                "required": ["type", "keyIdProperty"]
+                "oneOf": [
+                  {
+                    "required": ["type", "keyIdProperty"],
+                    "properties": {
+                      "identityProperty": false
+                    }
+                  },
+                  {
+                    "required": ["type", "identityProperty"],
+                    "properties": {
+                      "keyIdProperty": false
+                    }
+                  }
+                ]
               },
               "else": {
                 "properties": {
-                  "keyIdProperty": false
+                  "keyIdProperty": false,
+                  "identityProperty": false,
+                  "keyRequirements": false
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": { "type": { "const": "contract" } },
+                "required": ["type"]
+              },
+              "then": {},
+              "else": {
+                "properties": {
+                  "contractRequirements": false
                 }
               }
             }
@@ -332,6 +1349,7 @@ This page reflects the v3 meta-schema, which adds the `refersTo` and `requiredSi
           "uniqueItems": true
         },
         "type": {
+          "description": "A JSON Schema type. The property type shorthands never reach this meta-schema: from protocol version 14, \"type\": \"identifier\" and \"type\": \"bytes\" with a \"size\" are rewritten into the byte array they stand for (DocumentType::expand_property_type_shorthands) before it runs, and the contract is stored as sent",
           "$ref": "https://json-schema.org/draft/2020-12/meta/validation#/properties/type"
         },
         "format": {
@@ -347,6 +1365,50 @@ This page reflects the v3 meta-schema, which adds the `refersTo` and `requiredSi
         "position": {
           "type": "integer",
           "minimum": 0
+        },
+        "distinctFrom": {
+          "description": "Only on identifier properties: the value must differ from the value of the named property of the same document (a dotted path for a nested one) or, as \"$ownerId\", from the document's owner. Checked on document create and replace against the transition alone; an equal pair is refused (DocumentPropertyNotDistinctError, 10419). When the named property is absent from the document there is nothing to differ from, so the rule passes. A transfer to, or a purchase by, the identity a $ownerId declaration names is refused the same way, judged against the stored document. The named property must exist on the document type, be an identifier, and not be the declaring property itself. On a typed array of identifiers the keyword goes on the items and applies to every element. Available from protocol version 14.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "maxBytes": {
+          "description": "Only on string properties, and on the items of a typed array of strings, where it bounds every element: the most bytes the value may take in UTF-8. maxLength counts characters, which are up to four bytes each, so it cannot bound the stored size on its own. An integer from 1 to 65535, no lower than minLength (checked at contract registration). Checked wherever a document's properties are validated, every create and replace included, after the JSON schema; a longer value is refused (DocumentPropertyMaxBytesExceededError, 10421), naming the element (tags[2]) for an item. Available from protocol version 14.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "generatedFrom": {
+          "description": "Only on string properties: the platform generates the property's value with function from params, other properties of the same document. function names a system function, under sys.; the sys.stringTransformations functions take one string and change ASCII characters only, keeping every other character as it is: lowercase and uppercase change the case of A to Z; capitalize makes the first character uppercase and the rest lowercase; camelCase and snakeCase split the string into words (at every ASCII character that is neither a letter nor a digit, and before an ASCII uppercase letter that starts a word, as in helloWorld or XMLHttp) and join them as helloWorld or hello_world; homographSafeASCII lowercases, then turns o into 0 and i and l into 1 (the DPNS label normalization over ASCII, so it only resists homographs where the param's pattern admits ASCII alone). params lists, in order, as many properties as the function takes, each the dotted path of a property of the same document type. A function never refuses a value: which characters a param may hold is the param's pattern's job, and the generated property needs no pattern of its own. When a created or replaced document (or the values of an indexOnly delete) leaves the property out and supplies every param, the platform generates the value on arrival, before anything reads the document; a value the document supplies must equal the generated one, and the property must be absent when a param is. Checked wherever a document's properties are validated, every create and replace included, after the JSON schema (DocumentPropertyNotGeneratedError, 10424). At contract registration every param must be another string property of the document type that is not generated itself, neither the property nor a param may be transient or inside a transient object, and every param must sit inside every object that holds this property (a top-level property may take any param), so a document supplying the params always holds the object the value is written into. Not allowed on the items of a typed array, nor beside $ref, whose definition replaces every keyword written next to it: declare it in the definition. Adding, removing or changing it is an incompatible schema change on update, and a property an update adds may declare it only when one of its params is new too (documents stored before the update were never generated). Available from protocol version 14.",
+          "type": "object",
+          "properties": {
+            "function": {
+              "type": "string",
+              "enum": [
+                "sys.stringTransformations.camelCase",
+                "sys.stringTransformations.capitalize",
+                "sys.stringTransformations.homographSafeASCII",
+                "sys.stringTransformations.lowercase",
+                "sys.stringTransformations.snakeCase",
+                "sys.stringTransformations.uppercase"
+              ]
+            },
+            "params": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 16,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              }
+            }
+          },
+          "required": [
+            "function",
+            "params"
+          ],
+          "additionalProperties": false
         },
         "requiredSince": {
           "type": "integer",
@@ -364,6 +1426,18 @@ This page reflects the v3 meta-schema, which adds the `refersTo` and `requiredSi
             }
           }
         },
+        "items": {
+          "description": "should be used only with array type",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "array"
+            }
+          },
+          "required": [
+            "type"
+          ]
+        },
         "contentMediaType": {
           "if": {
             "properties": {
@@ -373,6 +1447,7 @@ This page reflects the v3 meta-schema, which adds the `refersTo` and `requiredSi
             }
           },
           "then": {
+            "$comment": "an identifier is one value, not a list of bytes: uniqueItems would refuse every identifier that repeats a byte, most of them",
             "properties": {
               "byteArray": {
                 "const": true
@@ -382,7 +1457,8 @@ This page reflects the v3 meta-schema, which adds the `refersTo` and `requiredSi
               },
               "maxItems": {
                 "const": 32
-              }
+              },
+              "uniqueItems": false
             },
             "required": [
               "byteArray",
@@ -404,8 +1480,8 @@ This page reflects the v3 meta-schema, which adds the `refersTo` and `requiredSi
             "maxLength"
           ]
         },
-        "refersTo": {
-          "description": "refersTo is only allowed on identifier properties",
+        "distinctFrom": {
+          "description": "distinctFrom is only allowed on identifier properties",
           "properties": {
             "type": {
               "const": "array"
@@ -429,6 +1505,135 @@ This page reflects the v3 meta-schema, which adds the `refersTo` and `requiredSi
             "contentMediaType",
             "minItems",
             "maxItems"
+          ]
+        },
+        "maxBytes": {
+          "description": "maxBytes is only allowed on string properties; on a typed array it goes on the items",
+          "properties": {
+            "type": {
+              "const": "string"
+            }
+          },
+          "required": [
+            "type"
+          ]
+        },
+        "generatedFrom": {
+          "description": "generatedFrom is only allowed on string properties, and not beside $ref, whose definition replaces every keyword written next to it",
+          "properties": {
+            "type": {
+              "const": "string"
+            }
+          },
+          "required": [
+            "type"
+          ],
+          "not": {
+            "required": [
+              "$ref"
+            ]
+          }
+        },
+        "refersTo": {
+          "description": "refersTo is only allowed on identifier properties, except an identityPublicKey reference with identityProperty, which sits on the key id property: an integer with minimum 0 and maximum 4294967295, the range of a key id; and a document reference with findBy, which may sit on a string or byte array property whose value its findBy reads, as \".\" or a param of its function (the parser checks that it reads it)",
+          "if": {
+            "properties": {
+              "refersTo": {
+                "required": ["identityProperty"]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "type": {
+                "const": "integer"
+              },
+              "minimum": {
+                "const": 0
+              },
+              "maximum": {
+                "const": 4294967295
+              }
+            },
+            "required": [
+              "type",
+              "minimum",
+              "maximum"
+            ]
+          },
+          "else": {
+            "if": {
+              "properties": {
+                "refersTo": {
+                  "required": ["findBy"]
+                }
+              }
+            },
+            "then": {
+              "anyOf": [
+                {
+                  "properties": {
+                    "type": {
+                      "const": "string"
+                    }
+                  },
+                  "required": ["type"]
+                },
+                {
+                  "properties": {
+                    "type": {
+                      "const": "array"
+                    },
+                    "byteArray": {
+                      "const": true
+                    }
+                  },
+                  "required": ["type", "byteArray"]
+                }
+              ]
+            },
+            "else": {
+                "properties": {
+                  "type": {
+                    "const": "array"
+                  },
+                  "byteArray": {
+                    "const": true
+                  },
+                  "contentMediaType": {
+                    "const": "application/x.dash.dpp.identifier"
+                  },
+                  "minItems": {
+                    "const": 32
+                  },
+                  "maxItems": {
+                    "const": 32
+                  }
+                },
+                "required": [
+                  "type",
+                  "byteArray",
+                  "contentMediaType",
+                  "minItems",
+                  "maxItems"
+                ]
+              }
+          }
+        },
+        "encryptedFor": {
+          "description": "encryptedFor is only allowed on byte array properties that are not identifiers",
+          "properties": {
+            "type": {
+              "const": "array"
+            },
+            "byteArray": {
+              "const": true
+            },
+            "contentMediaType": false
+          },
+          "required": [
+            "type",
+            "byteArray"
           ]
         },
         "format": {
@@ -476,7 +1681,7 @@ This page reflects the v3 meta-schema, which adds the `refersTo` and `requiredSi
           }
         },
         {
-          "$comment": "allow only byte arrays",
+          "$comment": "an array is a byte array or a typed array. A byte array declares byteArray: true, its minItems and maxItems count bytes, and it takes no items (an identifier byte array takes no uniqueItems either, see contentMediaType). A typed array declares items, the schema of every element, instead; its minItems and maxItems count elements, and maxItems is required",
           "if": {
             "properties": {
               "type": {
@@ -488,12 +1693,25 @@ This page reflects the v3 meta-schema, which adds the `refersTo` and `requiredSi
             ]
           },
           "then": {
-            "properties": {
-              "byteArray": true
+            "if": {
+              "required": [
+                "byteArray"
+              ]
             },
-            "required": [
-              "byteArray"
-            ]
+            "then": {
+              "properties": {
+                "items": false
+              }
+            },
+            "else": {
+              "properties": {
+                "contentMediaType": false
+              },
+              "required": [
+                "items",
+                "maxItems"
+              ]
+            }
           }
         },
         {
@@ -526,6 +1744,349 @@ This page reflects the v3 meta-schema, which adds the `refersTo` and `requiredSi
               "properties",
               "additionalProperties"
             ]
+          }
+        }
+      ]
+    },
+    "documentArrayItem": {
+      "$comment": "The element schema of a typed array: one scalar, an integer, a number, a string, a boolean, or a byte array (byteArray: true), which with the identifier contentMediaType is an identifier. Objects and arrays of arrays are refused. An element carries no position, requiredSince, uniqueItems, const or examples of its own (a one-value enum does what const would, and an update can widen it; examples annotate nothing an element needs). An identifier element may carry a refersTo, which every element then declares. An enum's members are values of the element type (a byte array or identifier element takes none), and an integer element's minimum and maximum are integers; the parser reads them so random documents stay inside them",
+      "type": "object",
+      "properties": {
+        "$comment": {
+          "$ref": "https://json-schema.org/draft/2020-12/meta/core#/properties/$comment"
+        },
+        "description": {
+          "$ref": "https://json-schema.org/draft/2020-12/meta/meta-data#/properties/description"
+        },
+        "type": {
+          "description": "An element of one scalar type. As on a property, an \"identifier\" or \"bytes\" shorthand element is rewritten into its long form, a byte array, before this meta-schema runs",
+          "enum": [
+            "integer",
+            "number",
+            "string",
+            "boolean",
+            "array"
+          ]
+        },
+        "multipleOf": {
+          "$ref": "https://json-schema.org/draft/2020-12/meta/validation#/properties/multipleOf"
+        },
+        "maximum": {
+          "$ref": "https://json-schema.org/draft/2020-12/meta/validation#/properties/maximum"
+        },
+        "exclusiveMaximum": {
+          "$ref": "https://json-schema.org/draft/2020-12/meta/validation#/properties/exclusiveMaximum"
+        },
+        "minimum": {
+          "$ref": "https://json-schema.org/draft/2020-12/meta/validation#/properties/minimum"
+        },
+        "exclusiveMinimum": {
+          "$ref": "https://json-schema.org/draft/2020-12/meta/validation#/properties/exclusiveMinimum"
+        },
+        "maxLength": {
+          "$ref": "https://json-schema.org/draft/2020-12/meta/validation#/properties/maxLength"
+        },
+        "minLength": {
+          "$ref": "https://json-schema.org/draft/2020-12/meta/validation#/properties/minLength"
+        },
+        "pattern": {
+          "$ref": "https://json-schema.org/draft/2020-12/meta/validation#/properties/pattern"
+        },
+        "maxItems": {
+          "$ref": "https://json-schema.org/draft/2020-12/meta/validation#/properties/maxItems"
+        },
+        "minItems": {
+          "$ref": "https://json-schema.org/draft/2020-12/meta/validation#/properties/minItems"
+        },
+        "enum": {
+          "type": "array",
+          "items": true,
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "format": {
+          "$ref": "https://json-schema.org/draft/2020-12/meta/format-annotation#/properties/format"
+        },
+        "contentMediaType": {
+          "$ref": "https://json-schema.org/draft/2020-12/meta/content#/properties/contentMediaType"
+        },
+        "byteArray": {
+          "type": "boolean",
+          "const": true
+        },
+        "distinctFrom": {
+          "description": "Only on identifier elements: every element must differ from the value of the named property of the same document (a dotted path for a nested one) or, as \"$ownerId\", from the document's owner, exactly as distinctFrom on an identifier property. The declaration belongs on the items, not on the array. Available from protocol version 14.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "maxBytes": {
+          "description": "Only on string elements: the most bytes every element may take in UTF-8, exactly as maxBytes on a string property. The declaration belongs on the items, not on the array. Available from protocol version 14.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "refersTo": {
+          "description": "Only on identifier elements: what every element refers to, the refersTo declaration of an identifier property with the same keys and the same checks (a reference expression included, which each element must meet on its own), except that identityPublicKey is refused: its keyIdProperty names one sibling key id, which cannot pair with many elements. When a document is created or replaced each element is checked as a single reference is, and the first one that fails refuses the write, its error naming the element by its list path (reasons[2] for the third). A where value is still a property of the referring document or its $ownerId, the same for every element, and its key a property of that element's referenced document. The declaration belongs on the items, not on the array. Available from protocol version 14.",
+          "$ref": "#/$defs/documentSchema/properties/refersTo",
+          "properties": {
+            "type": {
+              "not": {
+                "const": "identityPublicKey"
+              }
+            }
+          }
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "additionalProperties": false,
+      "dependentSchemas": {
+        "refersTo": {
+          "description": "refersTo is only allowed on identifier elements",
+          "properties": {
+            "type": {
+              "const": "array"
+            },
+            "byteArray": {
+              "const": true
+            },
+            "contentMediaType": {
+              "const": "application/x.dash.dpp.identifier"
+            },
+            "minItems": {
+              "const": 32
+            },
+            "maxItems": {
+              "const": 32
+            }
+          },
+          "required": [
+            "type",
+            "byteArray",
+            "contentMediaType",
+            "minItems",
+            "maxItems"
+          ]
+        },
+        "distinctFrom": {
+          "description": "distinctFrom is only allowed on identifier elements",
+          "properties": {
+            "type": {
+              "const": "array"
+            },
+            "byteArray": {
+              "const": true
+            },
+            "contentMediaType": {
+              "const": "application/x.dash.dpp.identifier"
+            },
+            "minItems": {
+              "const": 32
+            },
+            "maxItems": {
+              "const": 32
+            }
+          },
+          "required": [
+            "type",
+            "byteArray",
+            "contentMediaType",
+            "minItems",
+            "maxItems"
+          ]
+        },
+        "maxBytes": {
+          "description": "maxBytes is only allowed on string elements",
+          "properties": {
+            "type": {
+              "const": "string"
+            }
+          },
+          "required": [
+            "type"
+          ]
+        },
+        "byteArray": {
+          "description": "should be used only with array type",
+          "properties": {
+            "type": {
+              "const": "array"
+            }
+          }
+        },
+        "contentMediaType": {
+          "if": {
+            "properties": {
+              "contentMediaType": {
+                "const": "application/x.dash.dpp.identifier"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "byteArray": {
+                "const": true
+              },
+              "minItems": {
+                "const": 32
+              },
+              "maxItems": {
+                "const": 32
+              }
+            },
+            "required": [
+              "byteArray",
+              "minItems",
+              "maxItems"
+            ]
+          }
+        },
+        "pattern": {
+          "description": "prevent slow pattern matching of large strings",
+          "properties": {
+            "maxLength": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 50000
+            }
+          },
+          "required": [
+            "maxLength"
+          ]
+        },
+        "format": {
+          "description": "prevent slow format validation of large strings",
+          "properties": {
+            "maxLength": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 50000
+            }
+          },
+          "required": [
+            "maxLength"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "$comment": "an array element is a byte array: a typed array cannot hold another typed array. A byte array or identifier element takes no enum",
+          "if": {
+            "properties": {
+              "type": {
+                "const": "array"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "enum": false
+            },
+            "required": [
+              "byteArray"
+            ]
+          }
+        },
+        {
+          "$comment": "a string element's enum members are strings",
+          "if": {
+            "properties": {
+              "type": {
+                "const": "string"
+              }
+            },
+            "required": [
+              "type",
+              "enum"
+            ]
+          },
+          "then": {
+            "properties": {
+              "enum": {
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        {
+          "$comment": "an integer element's enum members, minimum and maximum are integers",
+          "if": {
+            "properties": {
+              "type": {
+                "const": "integer"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "enum": {
+                "items": {
+                  "type": "integer"
+                }
+              },
+              "minimum": {
+                "type": "integer"
+              },
+              "maximum": {
+                "type": "integer"
+              }
+            }
+          }
+        },
+        {
+          "$comment": "a number element's enum members are numbers",
+          "if": {
+            "properties": {
+              "type": {
+                "const": "number"
+              }
+            },
+            "required": [
+              "type",
+              "enum"
+            ]
+          },
+          "then": {
+            "properties": {
+              "enum": {
+                "items": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        },
+        {
+          "$comment": "a boolean element's enum members are booleans",
+          "if": {
+            "properties": {
+              "type": {
+                "const": "boolean"
+              }
+            },
+            "required": [
+              "type",
+              "enum"
+            ]
+          },
+          "then": {
+            "properties": {
+              "enum": {
+                "items": {
+                  "type": "boolean"
+                }
+              }
+            }
           }
         }
       ]
@@ -565,13 +2126,36 @@ This page reflects the v3 meta-schema, which adds the `refersTo` and `requiredSi
             1,
             2
           ],
-          "description": "0 - DocumentOwner (default), 1 - ContractOwner, 2 - PreferContractOwner"
+          "description": "Who the contract owner offers to have pay the gas (storage and processing fee) of this token-paid action: 0 - DocumentOwner (default, the contract owner never pays), 1 - ContractOwner (pays, and accepts every request), 2 - PreferContractOwner (pays when their balance covers the fee, but refuses a transition that insists on them). The transition asks with the same values in $tokenPaymentInfo.gasFeesPaidBy: DocumentOwner always pays itself, PreferContractOwner is accepted by every offer, and ContractOwner is accepted only by offer 1, else the transition is rejected (GasFeesPaidByNotAllowedError, code 40129). Acted on from protocol version 14; a failed transition is always paid for by its signer."
+        },
+        "optional": {
+          "type": "boolean",
+          "description": "True if a transition may leave $tokenPaymentInfo out for this action and pay no token, in which case its signer pays the gas in credits as for an action without a token cost and no gas sponsorship applies; with $tokenPaymentInfo present the token is charged exactly as for a required cost, and an insufficient token balance is a rejection, never a fallback to credits. Default false: the token payment is required (RequiredTokenPaymentInfoNotSetError, code 40115). Available from protocol version 14."
         }
       },
       "required": [
         "tokenPosition",
         "amount"
       ],
+      "additionalProperties": false
+    },
+    "documentActionFee": {
+      "type": "object",
+      "properties": {
+        "owner": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9223372036854775807,
+          "description": "Credits added to the contract's owner pot, which the contract owner claims."
+        },
+        "moderators": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9223372036854775807,
+          "description": "Credits added to the contract's moderators pot, which the contract's moderation team shares equally. Requires the contract config to declare moderation."
+        }
+      },
+      "minProperties": 1,
       "additionalProperties": false
     }
   },
@@ -652,9 +2236,10 @@ This page reflects the v3 meta-schema, which adds the `refersTo` and `requiredSi
               "resolution": {
                 "type": "integer",
                 "enum": [
-                  0
+                  0,
+                  1
                 ],
-                "description": "Resolution. 0 - Masternode Vote"
+                "description": "Resolution. 0 - Masternode Vote. 1 - Masternode Vote without a Lock choice: the contest always ends with a winner, a tie goes to the earliest contender, and a contest with a single contender at the end of the join window is awarded at once"
               },
               "description": {
                 "type": "string",
@@ -683,23 +2268,25 @@ This page reflects the v3 meta-schema, which adds the `refersTo` and `requiredSi
           },
           "rangeCountable": {
             "type": "boolean",
-            "description": "When true, the property-name level becomes a ProvableCountTree and value trees become CountTrees so range-count queries on the indexed property are O(log n). Requires `countable` to be \"countable\" or \"countableAllowingOffset\"."
+            "description": "When true, the property-name level becomes a ProvableCountTree and value trees become CountTrees so range-count queries on the indexed property are O(log n). Implies `countable: \"countable\"` when `countable` is omitted, as the doctype-level `rangeCountable` implies `documentsCountable`; an explicit `\"countableAllowingOffset\"` is kept, and an explicit `\"notCountable\"` is rejected as a contradiction."
           },
           "summable": {
             "type": "string",
             "minLength": 1,
             "maxLength": 64,
-            "description": "Name of an integer document property whose values are aggregated into a sum at the index. When set, the index's value trees become SumTrees and each per-document index reference is a ReferenceWithSumItem contributing the named property's value to ancestor sum-bearing trees. The property must exist on the document type, be in `required`, and have an integer type."
+            "pattern": "^[a-zA-Z0-9_]{1,64}$",
+            "description": "Name of an integer document property whose values are aggregated into a sum at the index. When set, the index's value trees become SumTrees and each per-document index reference is a ReferenceWithSumItem contributing the named property's value to ancestor sum-bearing trees. The property must exist on the document type, be in `required`, and have an integer type. It must be a top-level property: the value is read from the top level of the document, so a dotted path to a property nested in an object is refused (from protocol version 14)."
           },
           "rangeSummable": {
             "type": "boolean",
-            "description": "When true, the property-name level becomes a ProvableSumTree (or ProvableCountProvableSumTree when paired with `rangeCountable: true`) so range-sum queries on the indexed property are O(log n) via the `AggregateSumOnRange` proof primitive. Requires `summable` to be set."
+            "description": "When true, the property-name level becomes a ProvableSumTree (or ProvableCountProvableSumTree when paired with `rangeCountable: true`) so range-sum queries on the indexed property are O(log n) via the `AggregateSumOnRange` proof primitive. Requires `summable` to be set; `averageable` satisfies this, since it implies `summable`."
           },
           "averageable": {
             "type": "string",
             "minLength": 1,
             "maxLength": 64,
-            "description": "Syntactic sugar: `averageable: \"<prop>\"` is shorthand for `countable: \"countable\"` + `summable: \"<prop>\"`. Enables average queries (which return `(count, sum)` pairs the client divides) without forcing authors to think in terms of count + sum. Same on-disk layout as setting both underlying flags. If you set both `averageable` and `summable`, they must name the same property."
+            "pattern": "^[a-zA-Z0-9_]{1,64}$",
+            "description": "Syntactic sugar: `averageable: \"<prop>\"` is shorthand for `countable: \"countable\"` + `summable: \"<prop>\"`. Enables average queries (which return `(count, sum)` pairs the client divides) without forcing authors to think in terms of count + sum. Same on-disk layout as setting both underlying flags. If you set both `averageable` and `summable`, they must name the same property. Like `summable`, it names a top-level property, never a dotted path (from protocol version 14)."
           },
           "rangeAverageable": {
             "type": "boolean",
@@ -709,47 +2296,64 @@ This page reflects the v3 meta-schema, which adds the `refersTo` and `requiredSi
             "oneOf": [
               {
                 "type": "boolean",
-                "description": "When true, the index's terminal property-name tree also carries an ordered secondary tree keyed by each group's document count, so \"top / bottom K groups by count\" queries are O(log n + k) with proofs."
+                "description": "When true, the index's terminal property-name tree also carries an ordered secondary tree keyed by each group's document count, so \"top / bottom K groups by count\" queries are O(log n + k) with proofs. On a summableOffCountIndex index the document count is its sums, so this declares the Sum ranking (as rankedSummable does)."
               },
               {
                 "type": "object",
                 "properties": {
                   "at": {
-                    "oneOf": [
-                      {
-                        "type": "string",
-                        "minLength": 1,
-                        "maxLength": 256
-                      },
-                      {
-                        "type": "array",
-                        "items": {
-                          "type": "string",
-                          "minLength": 1,
-                          "maxLength": 256
-                        },
-                        "minItems": 1,
-                        "maxItems": 10,
-                        "uniqueItems": true
-                      }
-                    ],
+                    "$ref": "#/$defs/rankedAtLevels",
                     "description": "Name of the index property (or array of properties) whose levels carry Count rankings. Each must be one of the index's properties (an index has at most 10, hence maxItems); naming the last property is equivalent to the boolean form. A non-terminal property places a ranking at that prefix level: its values are ranked by whole-subtree document count (e.g. on [hashtag, postId], at: \"hashtag\" ranks hashtags by total count across all their posts), and every level from the shallowest ranked one down to the terminal is laid out count-bearing so each write's delta propagates up through the chain. ANY subset of levels may be named — e.g. [\"hashtag\", \"postId\"] declares both rankings on one index, and a fully ranked index ranks every level."
                   }
                 },
                 "required": ["at"],
                 "additionalProperties": false,
-                "description": "Level-addressed form: places Count rankings at the named properties' levels. Cannot be combined with rankedSummable or rankedAverageable when a non-terminal level is named, and no other index of the document type may share a non-terminal ranked level or any level below it."
+                "description": "Level-addressed form: places Count rankings at the named properties' levels. Cannot be combined with rankedSummable or rankedAverageable when a non-terminal level is named, except on a summableOffCountIndex index, and no other index of the document type may share a non-terminal ranked level or any level below it. On a summableOffCountIndex index a document count is its sums, so rankedCountable (either form) declares the same ranking as rankedSummable and needs no rangeCountable."
               }
             ],
-            "description": "Count ranking axis. Requires `rangeCountable: true`. Independent of the Sum and Avg axes (`rankedSummable` / `rankedAverageable`), which stay terminal-level booleans."
+            "description": "Count ranking axis. Requires `rangeCountable: true`, except on a summableOffCountIndex index, where it is the Sum ranking. Independent of the Sum and Avg axes (`rankedSummable` / `rankedAverageable`), which take the level-addressed form only on a summableOffCountIndex index."
           },
           "rankedSummable": {
-            "type": "boolean",
-            "description": "When true, the index's terminal property-name tree also carries an ordered secondary tree keyed by each group's sum of the `summable` property, so \"top / bottom K groups by sum\" queries are O(log n + k) with proofs. Requires `rangeSummable: true`. Adds the Sum ranking axis only."
+            "oneOf": [
+              {
+                "type": "boolean",
+                "description": "When true, the index's terminal property-name tree also carries an ordered secondary tree keyed by each group's sum of the `summable` property (on a summableOffCountIndex index, of the source index's entries), so \"top / bottom K groups by sum\" queries are O(log n + k) with proofs. Requires `rangeSummable: true` (or `rangeAverageable: true`, which implies it). Adds the Sum ranking axis only."
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "at": {
+                    "$ref": "#/$defs/rankedAtLevels",
+                    "description": "Name of the index property (or array of properties) whose levels carry Sum rankings. Each must be one of the index's properties; naming the last property is equivalent to the boolean form. A non-terminal property ranks that property's values by the total of the counters beneath them."
+                  }
+                },
+                "required": ["at"],
+                "additionalProperties": false,
+                "description": "Level-addressed form, only on a summableOffCountIndex index: places Sum rankings at the named properties' levels."
+              }
+            ],
+            "description": "Sum ranking axis. Requires `rangeSummable: true`. The level-addressed form is only allowed on a summableOffCountIndex index."
           },
           "rankedAverageable": {
-            "type": "boolean",
-            "description": "When true, the index's terminal property-name tree also carries an ordered secondary tree keyed by each group's average (count + sum pair) of the `averageable` property, so \"top / bottom K groups by average\" queries are O(log n + k) with proofs. Requires `rangeAverageable: true` (which itself implies `rangeCountable` + `rangeSummable`). Adds the Avg ranking axis only — it does NOT imply `rankedCountable` or `rankedSummable`; each ranking axis costs its own secondary tree and is opted into separately."
+            "oneOf": [
+              {
+                "type": "boolean",
+                "description": "When true, the index's terminal property-name tree also carries an ordered secondary tree keyed by each group's average (count + sum pair) of the `averageable` property, so \"top / bottom K groups by average\" queries are O(log n + k) with proofs. Requires `rangeAverageable: true` (which itself implies `rangeCountable` + `rangeSummable`), or the explicit `rangeCountable: true` + `rangeSummable: true` pair. Adds the Avg ranking axis only — it does NOT imply `rankedCountable` or `rankedSummable`; each ranking axis costs its own secondary tree and is opted into separately."
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "at": {
+                    "$ref": "#/$defs/rankedAtLevels",
+                    "description": "Name of the index property (or array of properties) whose levels carry Avg rankings. Each must be one of the index's properties; naming the last property is equivalent to the boolean form. A non-terminal property ranks that property's values by the average per group of the counters beneath them."
+                  }
+                },
+                "required": ["at"],
+                "additionalProperties": false,
+                "description": "Level-addressed form, only on a summableOffCountIndex index: places Avg rankings at the named properties' levels."
+              }
+            ],
+            "description": "Avg ranking axis. Requires `rangeCountable: true` and `rangeSummable: true`. The level-addressed form is only allowed on a summableOffCountIndex index."
           },
           "timeRange": {
             "type": "object",
@@ -785,32 +2389,110 @@ This page reflects the v3 meta-schema, which adds the `refersTo` and `requiredSi
             "additionalProperties": false,
             "description": "Buckets the first index property's timestamp into fixed-length, regularly-spaced (possibly overlapping) time ranges. The window parameters (`range`, `step`, `phase`) are declared in seconds, since a bucket is selected from block time and the target block interval is five seconds; the stored key is the range start as a u64 millisecond timestamp, so it stays directly comparable to the source timestamp it buckets. Enables trending/leaderboard queries within the newest/oldest active range. A system-timestamp source must be listed in the document type's required fields. Several indexes may bucket the same timestamp with different grids — each grid gets its own index subtree, keyed by the property name qualified with the grid parameters. Available from protocol version 14."
           },
+          "integerRange": {
+            "type": "object",
+            "properties": {
+              "on": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "Name of the integer property to bucket. Must be this index's first property, an integer property of the document type of at most 64 bits, and listed in the document type's required fields. An integerRange index may be unique only when range equals step (non-overlapping windows)."
+              },
+              "range": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Length of each window, in the property's own units. Must be an exact multiple of `step`."
+              },
+              "step": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Interval between successive window starts. When `range` > `step` the windows overlap and a document is indexed under `range / step` window starts, bounded by a protocol-versioned cap (24 at protocol version 14)."
+              },
+              "phase": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Grid alignment: window starts are `phase + k * step` for every integer k. Must be strictly less than `step`. Defaults to 0."
+              }
+            },
+            "required": ["on", "range", "step"],
+            "additionalProperties": false,
+            "description": "Buckets the first index property's integer value into fixed-length, regularly-spaced (possibly overlapping) windows; a document is indexed under the start of every window containing its value, stored like a value of the property. A window that would start below the lowest value the property's integer type holds (0 for a property with a non-negative minimum) starts at that value instead, so every value is in at least one window. Queries select one window by its start with an IN_INTEGER_RANGE clause, and the index's counts, sums and rankings are then per window. Several indexes may bucket the same property with different grids; each grid gets its own index subtree. Cannot be combined with timeRange, and not allowed on indexOnly document types. Available from protocol version 14."
+          },
           "terminal": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 256,
-            "description": "Only on indexOnly document types: names the property whose value is this index entry's member key — the docId-analog terminal key under the index's storage marker, stored as an Item instead of a Reference because there is no primary-storage row. Either \"$ownerId\" (the default when omitted) or an identifier property carrying a refersTo declaration (identity, contract, token, or permanentDocument). Must not repeat one of the index's listed properties. Available from protocol version 14."
+            "oneOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "minItems": 1,
+                "maxItems": 10,
+                "uniqueItems": true
+              }
+            ],
+            "description": "Only on indexOnly document types: the property, or the ordered list of properties (a composite terminal), whose encoded values, concatenated, are this index entry's member key — the docId-analog terminal key under the index's storage marker, stored as an Item instead of a Reference because there is no primary-storage row. Each component is \"$ownerId\" (the default when the keyword is omitted) or any schema property a prefix position could carry (no arrays or objects; byte arrays of at most 255 bytes, strings of at most 63 characters); every component but the last must be fixed width (a byte array with minItems equal to maxItems, an identifier, an integer, a boolean or a date), and the whole key at most 255 bytes. One entry exists per (prefix values, terminal values). No other system property may be a component, and none may repeat one of the index's listed properties. An index with no properties is a flat index keyed by its terminal alone, admitting no aggregate, ranking, timeRange, integerRange, skipIfAbsent or preallocated keyword. Available from protocol version 14."
           },
           "preallocated": {
             "type": "boolean",
-            "description": "Only on indexOnly document types whose index path is fully determined by a same-contract permanentDocument refersTo declaration: every index property must be either the referring property itself (its value is the referenced document's $id) or a key of that declaration's propertyAgreement (consensus-equal to a referenced-document property). When true, creating a referenced document also creates this index's dynamic trees for entries referencing it — paid by the referenced document's creator — and deleting the last entry keeps them, so every entry insert costs the same as the first. Available from protocol version 14."
+            "description": "Only on indexOnly document types whose index path is fully determined by a same-contract permanentDocument or moderatedDocument refersTo declaration: every index property must be either the referring property itself (its value is the referenced document's $id) or a referring value of that declaration's where (consensus-equal to a referenced-document property; through moderatedDocument, the referenced $ownerId or a property the referenced type keeps under moderatorAbilities.deleteKeepsFields). When true, creating a referenced document also creates this index's dynamic trees for entries referencing it — paid by the referenced document's creator — and deleting the last entry keeps them, so every entry insert costs the same as the first. Available from protocol version 14."
+          },
+          "outlivesDelete": {
+            "type": "boolean",
+            "description": "Only on a timeRange index with a ttl of an indexOnly document type, without a sum and on a type without entryPayload: a delete of a document leaves its entries in this index to expire with their window, and a create whose entry here already exists writes over it rather than being refused as a duplicate. The index's key (its properties but $createdAt, and its terminal) must hold the whole key of an index a delete clears that skips no document. A value only such indexes use ($createdAt, when every index involving it outlives deletes) is neither carried by a delete nor part of the row commitment. Available from protocol version 14."
           },
           "skipIfAbsent": {
-            "type": "boolean",
-            "description": "Only on indexOnly document types: when true, a document that omits this index's first property writes no entry into this index (and a delete recomputes the same skip), so the index holds only documents carrying the property. The first property is the skip trigger: it must be a top-level schema property NOT listed in `required` (making it the only way an indexOnly property may be optional), and every index involving an optional property must be skipIfAbsent with that property first. Every other property that is not a skip trigger must still appear in at least one non-skipIfAbsent index, and at least one $createdAt-free index must remain non-skipIfAbsent (the executed-transition proof index). An absent trigger is distinct from an empty value: absence skips the index, while any present value — empty included — indexes normally. Available from protocol version 14."
+            "oneOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "minItems": 1,
+                "maxItems": 10,
+                "uniqueItems": true
+              }
+            ],
+            "description": "Conditional participation: a document that omits a property of this index's skip set writes no entry into this index (and a delete, or on a stored type a replace, recomputes the same skip), so the index holds only documents carrying every skip property. `true` makes the skip set every optional property of the index; an array names the skip set (each must be one of the index's properties; an index has at most 10, hence maxItems). A skip property may sit at any position of the index, and must be a top-level schema property NOT listed in `required` (system properties are never optional), or, on a stored type and in the array form only, a derived index property (`<reference property>.<field>`) that can be absent: its reference property is optional, or the field is a schema property the referenced type does not require (nor every object around it); a document holding no value for it, null included, is skipped. On an indexOnly type the skip set must hold every optional property of the index (an index path has no representation for an absent value), every optional property needs a skip index whose skip set is that property alone, and at least one $createdAt-free index must remain non-skipIfAbsent (the executed-transition proof index); on a stored type the array may name a subset, the index's other optional properties keeping the null layout, and a skip index cannot be contested or set nullSearchable: false. No rankedCountable `at` level may sit above the deepest skip property. An absent property is distinct from an empty value: absence skips the index, while any present value — empty included — indexes normally. Available from protocol version 14."
+          },
+          "summableOffCountIndex": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 32,
+            "description": "Only on indexOnly document types: makes the index sum the count of another index. It names an index of the type, the source, and keeps per group of its own properties one counter holding the number of the source's entries in that group, with no entry per document. In the tree of the last property each group adds its counter, so its trees sum the source's entries in them, and with rangeCountable each group also counts one, so they count groups too: a count query over the index reads those sums, the source's entries, as does a sum query (which names the source index), and its average (with rangeCountable) is the entries per group. The sums are lossless: the source keeps entries, skips nothing, outlives no delete and involves no $createdAt; every source property is a property of this index; every other property of this index is a referring value of a `where` on a same-contract permanentDocument or moderatedDocument reference by id (no findBy or inList) held by a source property, to a value that never changes (the referenced $id or $creatorId, an $ownerId no transfer or purchase changes, or a property no replace or moderator can change: an unconditionally immutable one that is no optional deletableDocument reference by id (a replace may clear that once its document is deleted), or any of a documentsMutable: false type that no moderator's changeFields lists; kept on removal through moderatedDocument). This index may skip only on those other properties, needs rangeSummable: true, takes no terminal, summable, averageable, timeRange, integerRange or outlivesDelete, and is the only kind of index whose rankedSummable and rankedAverageable take the level-addressed form. Available from protocol version 14."
           }
         },
         "required": [
-          "properties",
           "name"
         ],
         "dependentRequired": {
-          "rangeCountable": ["countable"],
-          "rangeSummable": ["summable"],
           "rangeAverageable": ["averageable"]
         },
-        "$comment": "The ranked prerequisites are value-sensitive, unlike the range* rows above: `dependentRequired` fires on key *presence*, so listing them there would make an explicit `\"rankedCountable\": false` — a written-out opt-out, which the structural parser accepts as such — demand a `rangeCountable` the index does not need. The range* rows keep presence semantics because that is what they shipped with in v2 and changing them would move historical validation results.",
+        "$comment": "Every prerequisite here is sugar-aware, matching the structural parser, which expands `averageable` into `countable` + `summable` and `rangeAverageable` into `rangeCountable` + `rangeSummable` before it checks the same prerequisites on the resolved flags. `rangeSummable` accepts `averageable` or `summableOffCountIndex` in place of `summable`, and each `ranked*` flag accepts `rangeAverageable` in place of its own range axis (`rankedAverageable` also accepts the explicit `rangeCountable` + `rangeSummable` pair; `rankedCountable` on a summableOffCountIndex index needs no `rangeCountable`, being its Sum ranking). They are `if`/`then` pairs rather than `dependentRequired` rows only because `dependentRequired` cannot express the alternative. `rangeCountable` has no row at all: it implies `countable`, as it does at the doctype level, and the parser promotes an omitted `countable`. The remaining range rows keep the presence semantics they shipped with in v2 (an explicit `\"rangeSummable\": false` still needs a `summable` or an `averageable`); the ranked pairs are value-sensitive so that an explicit `\"rankedCountable\": false`, a written-out opt-out the structural parser accepts as such, demands nothing.",
         "allOf": [
+          {
+            "if": {
+              "required": ["rangeSummable"],
+              "not": {
+                "anyOf": [
+                  { "required": ["averageable"] },
+                  { "required": ["summableOffCountIndex"] }
+                ]
+              }
+            },
+            "then": { "required": ["summable"] }
+          },
           {
             "if": {
               "properties": {
@@ -818,23 +2500,68 @@ This page reflects the v3 meta-schema, which adds the `refersTo` and `requiredSi
                   "anyOf": [{ "const": true }, { "type": "object" }]
                 }
               },
-              "required": ["rankedCountable"]
+              "required": ["rankedCountable"],
+              "not": {
+                "anyOf": [
+                  { "required": ["rangeAverageable"] },
+                  { "required": ["summableOffCountIndex"] }
+                ]
+              }
             },
             "then": { "required": ["rangeCountable"] }
           },
           {
             "if": {
-              "properties": { "rankedSummable": { "const": true } },
-              "required": ["rankedSummable"]
+              "properties": {
+                "rankedSummable": {
+                  "anyOf": [{ "const": true }, { "type": "object" }]
+                }
+              },
+              "required": ["rankedSummable"],
+              "not": { "required": ["rangeAverageable"] }
             },
             "then": { "required": ["rangeSummable"] }
           },
           {
             "if": {
-              "properties": { "rankedAverageable": { "const": true } },
-              "required": ["rankedAverageable"]
+              "properties": {
+                "rankedAverageable": {
+                  "anyOf": [{ "const": true }, { "type": "object" }]
+                }
+              },
+              "required": ["rankedAverageable"],
+              "not": { "required": ["rangeCountable", "rangeSummable"] }
             },
             "then": { "required": ["rangeAverageable"] }
+          },
+          {
+            "if": {
+              "anyOf": [
+                {
+                  "properties": { "rankedSummable": { "type": "object" } },
+                  "required": ["rankedSummable"]
+                },
+                {
+                  "properties": { "rankedAverageable": { "type": "object" } },
+                  "required": ["rankedAverageable"]
+                }
+              ]
+            },
+            "then": { "required": ["summableOffCountIndex"] }
+          },
+          {
+            "if": { "required": ["summableOffCountIndex"] },
+            "then": {
+              "properties": { "rangeSummable": { "const": true } },
+              "required": ["rangeSummable"],
+              "not": {
+                "anyOf": [
+                  { "required": ["terminal"] },
+                  { "required": ["summable"] },
+                  { "required": ["averageable"] }
+                ]
+              }
+            }
           }
         ],
         "additionalProperties": false
@@ -872,8 +2599,8 @@ This page reflects the v3 meta-schema, which adds the `refersTo` and `requiredSi
       "description": "True if the documents are mutable, default is true"
     },
     "canBeDeleted": {
-      "type": "boolean",
-      "description": "True if the documents can be deleted, default is true"
+      "enum": [true, false, "onlyWhenConsumed"],
+      "description": "True if the documents' owners can delete them, default is the contract config's documentsCanBeDeletedContractDefault. \"onlyWhenConsumed\": the owner can not delete a document, but a create of the same contract whose refersTo declares consume deletes it, so the documents can still leave state and the type is a deletableDocument target, never a permanentDocument or moderatedDocument one. Refused on a type that keeps history or is indexOnly, whose documents nothing can consume. Fixed: an update may not change it. \"onlyWhenConsumed\" is available from protocol version 14."
     },
     "transferable": {
       "type": "integer",
@@ -930,25 +2657,146 @@ This page reflects the v3 meta-schema, which adds the `refersTo` and `requiredSi
       "type": "string",
       "minLength": 1,
       "maxLength": 64,
-      "description": "Name of an integer document property aggregated into the primary-key SumTree (one sum per document type). Stores documents as `ItemWithSumItem` so the primary-key tree's root sum is the total of the named property across all docs of this type. Property must exist on the document type, be in `required`, and have an integer type. Composes with `documentsKeepHistory: true` — keep-history doctypes get a `SumTree` per-document subtree with a `ReferenceWithSumItem` on the `0`-key carrying the current version's value, so the doctype-level root aggregate reflects current versions only (historical versions don't double-count)."
+      "pattern": "^[a-zA-Z0-9_]{1,64}$",
+      "description": "Name of an integer document property aggregated into the primary-key SumTree (one sum per document type). Stores documents as `ItemWithSumItem` so the primary-key tree's root sum is the total of the named property across all docs of this type. Property must exist on the document type, be in `required`, and have an integer type. It must be a top-level property: the value is read from the top level of the document, so a dotted path to a property nested in an object is refused (from protocol version 14). Composes with `documentsKeepHistory: true` — keep-history doctypes get a `SumTree` per-document subtree with a `ReferenceWithSumItem` on the `0`-key carrying the current version's value, so the doctype-level root aggregate reflects current versions only (historical versions don't double-count)."
     },
     "rangeSummable": {
       "type": "boolean",
-      "description": "When true, the primary key tree uses a ProvableSumTree (or ProvableCountProvableSumTree paired with rangeCountable: true) enabling O(log n) range-sum queries over the primary axis. Requires `documentsSummable` to be set. Rarely useful — range-sum on the primary key with no where-clause filter is unusual; most callers want per-index `rangeSummable` instead. Set this only when you need a provable global range-sum tree."
+      "description": "When true, the primary key tree uses a ProvableSumTree (or ProvableCountProvableSumTree paired with rangeCountable: true) enabling O(log n) range-sum queries over the primary axis. Requires `documentsSummable` to be set; `documentsAverageable` satisfies this, since it implies `documentsSummable`. Rarely useful — range-sum on the primary key with no where-clause filter is unusual; most callers want per-index `rangeSummable` instead. Set this only when you need a provable global range-sum tree."
     },
     "documentsAverageable": {
       "type": "string",
       "minLength": 1,
       "maxLength": 64,
-      "description": "Syntactic sugar: `documentsAverageable: \"<prop>\"` is shorthand for `documentsCountable: true` + `documentsSummable: \"<prop>\"`. Enables doctype-wide average queries (returns `(count, sum)` the client divides) without authors having to compose the count + sum flags. Same on-disk layout. If you set both `documentsAverageable` and `documentsSummable`, they must name the same property. Composes with `documentsKeepHistory: true` via the per-doc SumTree + ReferenceWithSumItem layout described under `documentsSummable`."
+      "pattern": "^[a-zA-Z0-9_]{1,64}$",
+      "description": "Syntactic sugar: `documentsAverageable: \"<prop>\"` is shorthand for `documentsCountable: true` + `documentsSummable: \"<prop>\"`. Enables doctype-wide average queries (returns `(count, sum)` the client divides) without authors having to compose the count + sum flags. Same on-disk layout. If you set both `documentsAverageable` and `documentsSummable`, they must name the same property. Like `documentsSummable`, it names a top-level property, never a dotted path (from protocol version 14). Composes with `documentsKeepHistory: true` via the per-doc SumTree + ReferenceWithSumItem layout described under `documentsSummable`."
     },
     "rangeAverageable": {
       "type": "boolean",
       "description": "Syntactic sugar: `rangeAverageable: true` is shorthand for `rangeCountable: true` + `rangeSummable: true`. Requires `documentsAverageable` to be set. Same caveat as `rangeSummable` — rarely useful on the primary key; per-index `rangeAverageable` is what most callers want."
     },
+    "moderatorAbilities": {
+      "type": "object",
+      "properties": {
+        "delete": {
+          "type": "boolean",
+          "description": "When true, the contract's moderators (its owner and the identities its moderation config appoints, or its seated team) may delete documents of this type with a contract user moderation transition, leaving a removal record under the contract, and restore them. Independent of `canBeDeleted`, which rules what a document's own owner may do. Refused on a type that keeps history, is indexOnly, restricts document creation or has a contested index. For references a type carrying it is no longer permanent: a permanentDocument reference refuses it; a moderatedDocument reference is the one it takes when canBeDeleted is false, it declares no ttl and deleteKeepsRecord is not false, every document leaving state then leaving a removal record behind; a deletableDocument reference is the one it takes otherwise."
+        },
+        "deleteWithin": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4294967295,
+          "description": "For how many seconds after a document's last modification the moderators may still delete it. The last modification is the document's `$updatedAt`, or its `$createdAt` on a type that carries no `$updatedAt`. Once block time is later than that plus this many seconds the document is settled: no moderator can delete it alone any more, the contract owner included; `deleteSettled` may let the members of a seated team delete it together. A replace or a price update moves `$updatedAt` and opens the window again; a transfer, a purchase or a moderator's field change does not. Absent means no limit. Requires `delete: true` and `$updatedAt` in `required`; a type with `documentsMutable: false`, whose documents never change after their creation, may list `$createdAt` instead. Says nothing about what a document's own owner may do."
+        },
+        "deleteKeepsRecord": {
+          "type": "boolean",
+          "description": "Whether a moderator's deletion leaves a removal record under the contract: whose document it was, the moderator, the reason, the block time and a hash of the document, readable with getContractDocumentRemovals and never deleted. A deleted document can only be restored from its record, so false also means a deletion can not be undone, and the type has no removal records tree. A type keeping records whose owners can not delete their documents (canBeDeleted: false) and that declares no ttl is referred to by a moderatedDocument reference, which resolves to the record once the document is removed; false makes it a deletableDocument target. Default true. Requires `delete: true`."
+        },
+        "deleteRefundsOwner": {
+          "type": "boolean",
+          "description": "Whether the owner of a document a moderator deletes is refunded the part of its storage fee not yet paid out to past epochs, as an owner deleting it themselves is. Default false: the owner forfeits it, and the credits stay in the storage pools. A type with a `ttl` refunds nothing either way. Requires `delete: true`."
+        },
+        "deleteSettled": {
+          "type": "object",
+          "properties": {
+            "leader": {
+              "type": "boolean",
+              "description": "Whether the seated team's leader must be among the approvals. Default false."
+            },
+            "approvals": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 31,
+              "description": "How many members of the seated team must approve, the leader counted among them. Default 1. At registration, at most the members the declared team can hold: its leader, the 15 members a charter elects and the elected declaration's maxAddedModerators."
+            },
+            "approversPredateDocument": {
+              "type": "boolean",
+              "description": "Whether a member the leader added (an addedModerator) proposes or approves the deletion of a document only when its addition was made before the document was created; one added in the same block does not count. The leader and the elected members always count. Without it, the leader could add members who approve whatever it proposes, and take them off again once they had. Default true when `approvals` is above 1 (false otherwise: a rule one approval meets, the leader meets alone), and true needs `$createdAt` in `required`. What the rule needs is not lowered for it: a team whose members from before a document are too few never deletes that document once settled. Every addition comes after the seat, so under a rule asking for more approvals than the leader and the members a charter elects, no document older than the seat is ever deleted once settled."
+            }
+          },
+          "additionalProperties": false,
+          "minProperties": 1,
+          "description": "Who must approve a moderator's deletion of a settled document, one past `deleteWithin`: a member of the contract's seated team proposes it with deleteSettledDocument, which is its own approval, the others approve the proposal by its action id with approveTeamAction, and the approval that meets the rule deletes the document, as `delete` would. `{\"leader\": true}` is the leader alone; `{\"leader\": true, \"approvals\": 3}` the leader and two others, any member the leader added among them added before the document was created unless `approversPredateDocument` is false. The proposals and their approvals are kept under the contract as team actions, readable with getContractTeamActions and getContractTeamActionSigners; nothing lapses, but an approval is refused once the document has changed since the proposal. Requires `deleteWithin` and a contract whose moderators are an elected team, which must give the team `deleteDocuments` on the type; no interim moderator deletes a settled document."
+        },
+        "deleteKeepsFields": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true,
+          "description": "Property paths whose values a moderator's removal record keeps, copied from the document as it was deleted: what of the document stays public once it is gone (the hashtag of a removed post, say). Each entry names a declared property at any depth (`hashtag`, `meta.tags`, or an object kept whole), or one of the timestamps and block heights the type lists in `required` (`$createdAt`, `$updatedAtBlockHeight`, ...); not a transient property, not `$id` or `$ownerId` (every record holds them already), and not a path inside another listed one. A document without a value at a path leaves it out of the record. The values are read with the record (getContractDocumentRemovals), and the moderator pays for their storage. Requires `delete: true` and a record (`deleteKeepsRecord` not false)."
+        },
+        "changeFields": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true,
+          "description": "Top-level properties only the moderators write. A moderator sets or removes them with a contract user moderation transition (changeDocumentFields), which bumps `$revision` and leaves `$updatedAt` and every other property as it was. A document's owner can neither set them in a create nor change or remove them in a replace (DocumentModeratorFieldNotWritableError, code 41124), unless the owner moderates the contract. Every entry must name a declared top-level property that is optional, not transient, not listed under `immutable`, neither a reference nor read by one (a where value, a findBy source or function param, a key id), neither generated nor read by a generated property, and in no contested index; refused on an indexOnly type. A type listing any keeps `$revision` on its documents even when `documentsMutable` is false."
+        }
+      },
+      "additionalProperties": false,
+      "minProperties": 1,
+      "description": "What the contract's moderators may do to documents of this type with a contract user moderation transition: delete them (`delete`, within `deleteWithin` seconds of their last modification when given, leaving a removal record unless `deleteKeepsRecord` is false, keeping in it the values `deleteKeepsFields` lists, refunding the owner when `deleteRefundsOwner` is true), and write the fields only they write (`changeFields`). Requires the contract to declare `moderation` in its config. Fixed when the document type is created: an update may not add, remove or change it. Available from protocol version 14."
+    },
+    "ttl": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 4294967295,
+      "description": "Time to live, in seconds: the platform deletes each document of this type once its `$createdAt` plus this many seconds has passed, whoever owns it and whatever `canBeDeleted` says, at most a protocol-versioned number of documents per block (128 at protocol version 14) after the block's state transitions. Its documents are stored without storage flags and refund nothing when deleted: instead of the perpetual storage price, each byte they write pays a price for the time they will live (five tiers up to seven days, then per 9.125 days spanned), paid out as storage fees to the epochs they live in (at most one era of them), and a document prepays its deletion as processing when it is created. From its expiry on, a document can no longer be replaced, transferred, bought, repriced or restored by a moderator; its owner may still delete it where `canBeDeleted` allows. Requires `$createdAt` in `required`; refused together with `documentsKeepHistory`, `indexOnly` and a contested index. A `permanentDocument` reference, one found by `findBy` or with `inList` included, and a `moderatedDocument` reference may not target the type; a `deletableDocument` reference, one found by `findBy` included, may. At least and at most protocol-versioned bounds (3600, one hour, and 31536000, one year, at protocol version 14). Fixed when the document type is created: an update may not add, remove or change it. Available from protocol version 14."
+    },
     "indexOnly": {
       "type": "boolean",
-      "description": "When true, documents of this type are never written to primary storage: the index entries are the rows, each terminating in an Item keyed by the index's `terminal` property instead of a Reference keyed by the document id. Only what is in the indexes exists and is recoverable. Requires: every property required and appearing in at least one index (except a `skipIfAbsent` index's optional first property), $ownerId in at least one index (as a property or terminal), documentsMutable: false, no transfers/trading/history/transient properties, and no doctype-level aggregate keywords (use the index-level count flags). Available from protocol version 14."
+      "description": "When true, documents of this type are never written to primary storage: the index entries are the rows, each terminating in an Item keyed by the index's `terminal` property instead of a Reference keyed by the document id. Only what is in the indexes exists and is recoverable. Requires: every property required and appearing in at least one index (except a skip property of a `skipIfAbsent` index, which may be optional), $ownerId in at least one index (as a property or terminal), documentsMutable: false, no transfers/trading/history/transient properties, and no doctype-level aggregate keywords (use the index-level count flags). Available from protocol version 14."
+    },
+    "entryPayload": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 64
+      },
+      "minItems": 1,
+      "maxItems": 16,
+      "uniqueItems": true,
+      "description": "Only on indexOnly document types: the top-level properties stored in every entry's value, after the 32-byte row commitment, instead of in a key — the type's value slot. Each is length-framed in property-name order and recovered by decoding the proved element: raw bytes for byte arrays, UTF-8 for strings, and tree-key encoding for other scalars. Empty byte arrays and strings remain distinct from null, and an empty string remains distinct from a NUL string. Listed properties must be required, bounded (maxItems on byte arrays, maxLength on strings), scalar, and must not appear in any index as a property or a terminal component; their summed bounds are capped by the field value limit. With more than one index the payload rides in every entry. Fixed when the document type is created. Available from protocol version 14."
+    },
+    "actionFees": {
+      "type": "object",
+      "description": "A fixed fee in credits charged, on top of the gas, for actions on documents of this type, split between the contract's owner pot and its moderators pot (each paid out by a ContractFeeClaim state transition). Whoever pays the gas of the action pays its fee. A transition on a priced action must name the declared owner and moderators amounts, and for feeMultiplier pricing the fee multiplier its signer knew with the increase in percent they accept, in $actionFeeAgreement; it is refused without one (DocumentActionFeeAgreementNotSetError, code 40132), with other amounts or another pricing (code 40133), or when the epoch's multiplier rose beyond the accepted increase (code 40134). At least one action must be priced and a priced action must charge something. Fixed when the document type is published: a contract update cannot add, change or remove the fees of an existing document type. Available from protocol version 14.",
+      "properties": {
+        "pricing": {
+          "type": "string",
+          "enum": [
+            "feeMultiplier",
+            "fixed"
+          ],
+          "description": "feeMultiplier (default): the declared amounts are scaled by the fee multiplier of the epoch the action executes in. fixed: the declared amounts are charged as written."
+        },
+        "create": {
+          "$ref": "#/$defs/documentActionFee"
+        },
+        "replace": {
+          "$ref": "#/$defs/documentActionFee"
+        },
+        "delete": {
+          "$ref": "#/$defs/documentActionFee"
+        },
+        "transfer": {
+          "$ref": "#/$defs/documentActionFee"
+        },
+        "update_price": {
+          "$ref": "#/$defs/documentActionFee"
+        },
+        "purchase": {
+          "$ref": "#/$defs/documentActionFee"
+        }
+      },
+      "additionalProperties": false
     },
     "tokenCost": {
       "type": "object",
@@ -1003,7 +2851,7 @@ This page reflects the v3 meta-schema, which adds the `refersTo` and `requiredSi
         "oneOf": [
           {
             "type": "string",
-            "pattern": "^[a-zA-Z0-9-_]{1,64}$"
+            "pattern": "^[a-zA-Z0-9_]{1,64}$"
           },
           {
             "type": "string",
@@ -1031,7 +2879,127 @@ This page reflects the v3 meta-schema, which adds the `refersTo` and `requiredSi
       "type": "array",
       "items": {
         "type": "string"
+      },
+      "description": "Names of top-level properties whose values are validated on the transition but never stored: a create, and from protocol version 14 a replace, drops them before the document is written. From protocol version 14 every entry must name a top-level property (list the object around a nested one); no index may read a transient property or one inside a transient object; a refersTo findBy may not read one on either side (a findBy function's params may), a where may not name one on its referenced side, and a stored key id may not pair with a transient identity; encryptedFor may not name one; generatedFrom may neither name one nor sit on one. Adding, removing or changing an entry on contract update is an incompatible schema change."
+    },
+    "immutable": {
+      "type": "array",
+      "items": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "property": {
+                "type": "string"
+              },
+              "when": {
+                "type": "object",
+                "minProperties": 1,
+                "maxProperties": 1
+              }
+            },
+            "required": [
+              "property",
+              "when"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "description": "The top-level properties of a mutable document type a replace may not change, add or remove. An entry naming a property freezes it at document creation; an entry { \"property\": ..., \"when\": condition } freezes it for any replace the condition holds for, and leaves it free for any other. A condition takes the grammar of a propertyConstraints rule (comparisons, arithmetic, in, present, absent, anyOf, allOf, not, ifThen, ifThenElse, the system times and heights the type requires, $revision, $ownerId) and is judged on the document the replace writes: its $updatedAt is the replace's block time, so { \"greaterThan\": [{ \"subtract\": [\"$updatedAt\", \"$createdAt\"] }, 300000] } freezes a property five minutes after the document was created. A path, $ownerId, a time, a height or $revision under $old. reads the stored document instead: { \"present\": \"$old.trackingCode\" } lets an absent trackingCode be set once, and { \"equal\": [\"$old.status\", { \"const\": \"published\" }] } freezes a property once the stored document is published. A condition may read no countOf or sumOf total. A replace changing a frozen property is rejected (DocumentImmutablePropertyChangedError, code 40128), except one removing a refersTo deletableDocument reference by id, listed without a condition, whose referenced document has been deleted. Only allowed when documentsMutable is true (the default). Every property must be a declared top-level property that is not transient, listed once: system properties ($-prefixed) are excluded because the platform manages them, and nested paths are not accepted (list the containing object to freeze it whole). A deletableDocument reference by id may be listed only without a condition. On contract update a property may be added, with a condition or without, and one listed with a condition may lose it; one listed without a condition stays, a condition never changes, and no property is dropped. Replaces immutableAllowSetting, which is refused. Available from protocol version 14."
+    },
+    "retractedWhen": {
+      "type": "object",
+      "minProperties": 1,
+      "maxProperties": 1,
+      "description": "The condition under which a replace writes a retracted document: on a moderated contract, the one replace a banned or suspended owner may still make. A barred owner can write nothing new, but may still delete its documents and, on a type declaring retractedWhen, replace one when the document the replace writes meets the condition; any other replace by it is refused with ContractUserBannedError (41107) or ContractUserSuspendedError (41108). So an author whose documents can not be deleted (canBeDeleted: false) can still take back what it wrote. The condition is an immutable entry's when: the grammar of a propertyConstraints rule, judged on the document the replace writes, with the stored document read through $old., and no countOf or sumOf. A condition that cannot be evaluated counts as not met. What a retracted document holds is for the type's other rules to say: { \"present\": \"deleted\" } with a propertyConstraints rule that a document carrying deleted carries no content, and an immutable entry { \"property\": \"deleted\", \"when\": { \"present\": \"$old.deleted\" } } that keeps it retracted. Only allowed when documentsMutable is true and the contract keeps a banlist or a suspension list. Adding, removing or changing it on contract update is an incompatible change. Available from protocol version 14."
+    },
+    "ownerRefersTo": {
+      "description": "A refersTo declaration whose value is the document's $ownerId, the writer, instead of a property's value: the declaration of an identifier property, with the same keys and the same checks, for the targets a writer can be: identity, a permanentDocument or a deletableDocument found by findBy, where \".\" is the writer, or a permanentDocument with inList, the writer an element of the list, or an anyOf or allOf expression whose every leaf is one of them and \"$ownerId\" names the writer as well. A deletableDocument leaf gates the writer on the document findBy finds existing now: every replace checks it again, so a writer whose document is gone can no longer replace theirs (it may still delete it). contract, token and a document by id are refused, since the writer's identity id is never one of those ids, and identityPublicKey pairs the value with a key id, which the writer does not carry. A where value is still a property of the document or its $ownerId, the same writer. Only on a document type whose documents can be neither transferred nor traded, so the writer stays the owner; on a type whose documents can, creatorRefersTo checks the creator instead. When a document is created, and when a replace changes a property findBy or where reads (every replace for a where value $ownerId), consensus checks the writer against the target exactly as a property's value is checked, and refuses the write with the error that target reports for a property (ReferencedEntityNotFoundError, 40120, and the rest), naming $ownerId as the path. It counts as one reference against the references a document may carry. Fixed when the document type is created: adding, removing or changing it is an incompatible schema change on update. Available from protocol version 14.",
+      "$ref": "#/$defs/documentSchema/properties/refersTo",
+      "properties": {
+        "type": {
+          "enum": [
+            "identity",
+            "permanentDocument",
+            "deletableDocument"
+          ]
+        }
+      },
+      "if": {
+        "properties": {
+          "type": {
+            "enum": [
+              "permanentDocument",
+              "deletableDocument"
+            ]
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "then": {
+        "required": [
+          "findBy"
+        ]
       }
+    },
+    "creatorRefersTo": {
+      "description": "A refersTo declaration whose value is the document's $creatorId, its creator, instead of a property's value: the counterpart of ownerRefersTo for a document type whose documents can be transferred or traded, since the creator never changes. The declaration of an identifier property, with the same keys and the same checks, for the targets a creator can be: identity, a permanentDocument found by findBy, where \".\" is the creator, a permanentDocument with inList, the creator an element of the list, a deletableDocument found by a findBy function (a commitment the creator reveals, checked when the document is created only, see findBy) or declared on a document type whose documents are never replaced (documentsMutable: false, so also checked when the document is created only), or an anyOf or allOf expression whose every leaf is one of them. contract, token, a document by id and any other deletableDocument (the creator never changes, and a document a transfer handed on could not be replaced once the one findBy found is deleted) are refused, since the creator's identity id is never one of those ids, and identityPublicKey pairs the value with a key id, which the creator does not carry. A where value is still a property of the document or its $ownerId, the writer. Only on a document type that records creator ids: a transferable or tradeable document type of a format-1 contract; a type declares at most one of ownerRefersTo and creatorRefersTo. When a document is created (by its creator) and when a replace changes a property findBy or where reads (every replace for a where value $ownerId), consensus checks the creator against the target exactly as a property's value is checked, and refuses the write with the error that target reports for a property (ReferencedEntityNotFoundError, 40120, and the rest), naming $creatorId as the path. A transfer or a purchase needs no check: it does not change the creator. It counts as one reference against the references a document may carry. Fixed when the document type is created: adding, removing or changing it is an incompatible schema change on update. Available from protocol version 14.",
+      "$ref": "#/$defs/documentSchema/properties/refersTo",
+      "properties": {
+        "type": {
+          "enum": [
+            "identity",
+            "permanentDocument",
+            "deletableDocument"
+          ]
+        }
+      },
+      "if": {
+        "properties": {
+          "type": {
+            "enum": [
+              "permanentDocument",
+              "deletableDocument"
+            ]
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "then": {
+        "required": [
+          "findBy"
+        ]
+      }
+    },
+    "propertyConstraints": {
+      "description": "Rules every created or replaced document of the type must meet, by name (1 to 64 letters, digits or underscores). A rule is a condition: an object with one key, either a comparison (equal, notEqual, lessThan, lessThanOrEqual, greaterThan or greaterThanOrEqual) listing the two integer expressions it compares, left then right, equal or notEqual of the path of a string property and a const string ({ \"equal\": [\"status\", { \"const\": \"closed\" }] }, either way round) or of the paths of two string properties, which compares their strings, and likewise for identifier properties, whose constants are base58 identifiers, in listing an integer expression and two or more distinct integer values it may take or the path of a string property and two or more distinct strings, startsWith or endsWith listing two strings, a const or a string property each, at least one a property, and holding if the first starts or ends with the second, byte for byte (a constant looked for in a string property that declares enum must start or end one of its values), contains listing the path of a typed array property and the value one of its elements must equal (an integer expression among integers, a const string or string property among strings, a const base58 identifier, identifier property or $ownerId among identifiers; an array left out holds nothing, and a constant must be one of the elements' enum values when they declare one), present or absent naming a property of any type (the document holds it, or leaves it out or sets it to null), or anyOf, allOf, not, ifThen or ifThenElse over conditions: anyOf holds if at least one of its two or more conditions holds, allOf if every one does, not if its one condition does not, ifThen if its second condition holds whenever its first does (the second evaluated only then), ifThenElse if its second holds when its first does and its third when it does not (only that branch evaluated); notIn lists what in lists and holds if the expression takes none of the values. An expression is an integer value, the dotted path of an integer or boolean property of the document type, whose value it takes (a boolean reading as 1 for true and 0 for false), 0 when the document leaves it out, a system time or height the document type records by listing it in required ($createdAt, $updatedAt and $transferredAt, block times in milliseconds, and each with BlockHeight or CoreBlockHeight appended, the Platform and Core block heights: those of the create, of the last create, replace or price update, and of the last create, transfer or purchase), or an object with one key: ifAbsent, a property path and the value it takes when the document leaves it out (an integer, or a string for a string property compared with strings); add, multiply, min or max, two or more operands; subtract, divide, modulo or power, exactly two; abs, one; length or byteLength, the characters or UTF-8 bytes of a string property, or count, the items of an array or byte array property, each 0 when the document leaves the property out ({ \"lessThanOrEqual\": [{ \"count\": \"tags\" }, \"maxTags\"] }); countOf or sumOf, how many documents of a document type of this contract match a filter (keys of that type or $ownerId, each mapped to a value read from the document written, $id its id) or the total of an integer property over them, as that type's count or sum trees keep it once the write is done, which needs documentsCountable or documentsSummable for a whole type and otherwise an index whose properties are exactly the filter's keys ({ \"lessThanOrEqual\": [{ \"countOf\": [\"listing\", { \"$ownerId\": \"$ownerId\" }] }, 10] }). A string property the document leaves out equals no constant and no other string property, not even one also left out, unless an ifAbsent gives it a string default ({ \"ifAbsent\": [\"status\", \"open\"] }), which it then reads as, and a constant compared with a string property that declares enum must be one of its values. The arithmetic is exact over 128-bit signed integers, operands evaluated left to right: divide and modulo are Euclidean (the remainder is never negative), 0 to the power 0 is 1, and a value or intermediate result that does not fit, a zero divisor, a negative exponent or a property value that is not an integer breaks the rule. Conditions are checked in declared order and no further than the outcome needs (anyOf stops at the first that holds, allOf at the first that fails), and a fault met in a condition that is checked breaks the rule whatever the others would say (not does not turn it into a pass), so an earlier condition can guard a later one. Every property an operand reads must be an integer or boolean property, every property length or byteLength measures a string property, every property count counts an array or byte array property, every property compared with a string a string property, present and absent may test a property of any type, and no property a rule reads may be transient or inside a transient object; every comparison and in must read at least one property, an anyOf or allOf may not hold two alike conditions or directly another of its kind, a not may not hold directly another not or a notIn, a literal 0 divisor or negative exponent is refused, and no condition or operand may nest deeper than 64 levels; a type declares at most SystemLimits max_property_constraints rules (16 from protocol version 14) of at most max_property_constraint_nodes nodes each (32), counting every comparison and logical operator, every in and each value it lists, every contains and its array, every const, every present or absent, every arithmetic operator and every operand, a size included; all checked at contract registration. When a document is created or replaced, consensus checks every rule not reading a referenced document, in name order, after the schema validation, then, once the references hold, every rule reading one, in name order, and refuses the first one the document breaks (DocumentPropertyConstraintViolatedError, 10422); a reference that does not hold is refused before any rule reading through it. $ownerId, the document's owner, is an identifier operand (never a property: not in present, absent or an integer operand, and not on an indexOnly type), and a transfer or a purchase, which gives the document a new owner, is refused when it would break a rule reading it. Likewise a transfer or a purchase is judged against the rules reading the transfer's time and heights, and a price update against those reading the update's, since each sets them; an indexOnly type reads no system time or height. On a type that keeps a revision (documents mutable, transferable, sold at a price their owner sets, or keeping fields for their moderators), $revision is an integer operand: 1 on a create and one more for each later write, so a transfer, a purchase and a price update are judged against the rules reading it too. A path, $ownerId, a time, a height or $revision under $old. reads the stored version of the document a write replaces instead ({ \"greaterThanOrEqual\": [\"counter\", { \"ifAbsent\": [\"$old.counter\", 0] }] }): on a create there is none, so a property under it is absent, $old.$ownerId equals no identifier and a stored time, height or revision reads 0; on a replace it is the document replaced; on a transfer, a purchase or a price update it is the document before it, whose properties are the same, so such a write is judged only against the rules reading what it changes, of either version. Only on a type that keeps a revision, and never in a countOf or sumOf filter. A moderator's change of a document's fields is judged against the rules reading a field it changes, of either version, $revision or a total, and a moderator's restore against the rules reading a total, $old. reading the document as it was. The rules change nothing stored, and read state only for countOf and sumOf, each total a billed read of a count or sum tree, at most max_property_constraint_aggregates distinct totals per type (4); a type with a contested index totals no documents of its own type, since a document a contest awards is stored without the rules judged. Fixed when the document type is created: adding, removing or changing a rule is an incompatible schema change on update. Available from protocol version 14.",
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[a-zA-Z0-9_]{1,64}$"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/propertyConstraint"
+      },
+      "minProperties": 1
+    },
+    "deleteConstraints": {
+      "description": "Rules the stored document must meet for its owner to delete it, by name (1 to 64 letters, digits or underscores), in the grammar of a propertyConstraints rule and held to the same limits, counted apart from propertyConstraints (16 rules of 32 nodes each, reading 4 distinct totals). When the owner deletes a document, consensus checks every rule, in name order, against the stored document (its properties, its $ownerId, the system times and heights the type requires and its $revision, as stored, which the rule's plain paths read: $old. is refused) and refuses the delete at the first rule it breaks (DocumentDeleteConstraintViolatedError, 40147), paid. A countOf or sumOf reads the total as it will be once the document is gone, so a rule over the type's own documents no longer counts it, and a filter may match by the document's own id: { \"noVotes\": { \"equal\": [{ \"countOf\": [\"vote\", { \"pollId\": \"$id\" }] }, 0] } } lets a poll be deleted only while no vote points at it. Only the owner's delete is judged: the contract's moderators and a ttl delete as before. Only on a document type whose owner may delete its documents (canBeDeleted true, not \"onlyWhenConsumed\") and that is not indexOnly, and a refersTo with consume may not target the type, since a consume deletes without the rules. Fixed when the document type is created: adding, removing or changing a rule is an incompatible schema change on update. Available from protocol version 14.",
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[a-zA-Z0-9_]{1,64}$"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/propertyConstraint"
+      },
+      "minProperties": 1
     },
     "additionalProperties": {
       "type": "boolean",
@@ -1076,9 +3044,18 @@ This page reflects the v3 meta-schema, which adds the `refersTo` and `requiredSi
     "additionalProperties"
   ],
   "dependentRequired": {
-    "rangeSummable": ["documentsSummable"],
     "rangeAverageable": ["documentsAverageable"]
   },
+  "allOf": [
+    {
+      "$comment": "`documentsAverageable` is sugar for `documentsCountable` + `documentsSummable`, so it satisfies `rangeSummable`'s prerequisite exactly as `documentsSummable` does; an `if`/`then` pair because `dependentRequired` cannot express the alternative, with the presence semantics the row shipped with in v2.",
+      "if": {
+        "required": ["rangeSummable"],
+        "not": { "required": ["documentsAverageable"] }
+      },
+      "then": { "required": ["documentsSummable"] }
+    }
+  ],
   "additionalProperties": false
 }
 ```
@@ -1127,6 +3104,7 @@ The data contract config defines configuration options for data contracts, contr
 | `readonly`                              | `false` | Determines if the contract is read-only. Read-only contracts cannot be updated. |
 | `keepsHistory`                          | `false` | Determines if changes to the contract itself are tracked, maintaining a historical record of contract modifications. |
 | `sizedIntegerTypes`                     | `true`  | Enables sized integer types for the contract. |
+| [`moderation`](#contract-moderation)    | None    | **Added in 5.0.0.** (Optional) Declares the contract's [moderation](#contract-moderation) lists and moderators. |
 
 | Document default option                 | Default | Description |
 |-----------------------------------------|---------|-------------|
@@ -1158,7 +3136,84 @@ The following example (from the [DashPay contract's `contactRequest` document](h
 }
 ```
 
-See the data contract [config implementation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/config/v1/mod.rs#L23-L50) for more details, and the [config update rules](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/config/methods/validate_update/v1/mod.rs) for what may change after registration.
+See the data contract config implementation in rs-dpp ([v1](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/config/v1/mod.rs#L23-L50), [v2](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/config/v2/mod.rs#L22-L55)) for more details, and the [config update rules](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/config/methods/validate_update/v2/mod.rs) for what may change after registration. Starting with protocol version 14, new contracts use config format version `2`, which adds `moderation`.
+
+### Contract Moderation
+
+:::{versionadded} 5.0.0
+:::
+
+A data contract can declare moderation in its config (`config.moderation`, config format version `2`). Moderation lets the contract keep lists of identities that are barred from writing its documents, and lets its moderators act on its documents as each document type's [`moderatorAbilities`](./data-contract-document.md#moderator-abilities) allow. Moderators act with the [contract user moderation](#contract-user-moderation) state transition. A contract config carrying `moderation` is rejected before protocol version 14.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `banlist` | boolean | `false` | The contract keeps a banlist. A banned identity cannot submit document transitions for the contract, other than the exceptions described in [document state transitions](./document.md#document-base-transition). |
+| `suspensions` | boolean | `false` | The contract keeps a suspension list. A suspended identity is barred like a banned one until the block time set when it was suspended. |
+| `warnings` | boolean | `false` | The contract keeps a warning list. Warnings record a reason but bar nothing. |
+| `moderators` | object | `{"$type": "contractOwner"}` | Who moderates the contract (see below) |
+
+Unknown fields are rejected. See the [moderation config implementation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/config/moderation/mod.rs#L541-L563) for more details.
+
+The `moderators` object is selected by its `$type`:
+
+| `$type` | Fields | Who moderates |
+|---------|--------|---------------|
+| `contractOwner` | None | The contract owner only |
+| `appointedModerators` | `identities` - array of [identity](./identity.md) IDs | The contract owner and the named identities. The array must not be empty and may hold at most [16](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L165) identities, counting the owner if it is named. Each must be an existing identity (`ContractModeratorIdentityNotFoundError`, 41110). |
+| `elected` | See [elected moderation](#elected-moderation) | A team elected by masternodes and evonodes through the [moderation charters system contract](#moderation-charters-system-contract) once one is seated, and the declaration's interim moderators until then |
+
+Whoever may moderate the contract cannot be banned, suspended, or warned, and other moderators cannot delete their documents (`ContractModerationTargetNotAllowedError`, 41102). On an elected contract, this protection covers the seated team, and covers the contract owner only if the declaration sets `ownerProtected`.
+
+Ban, suspend, and warn actions require the matching list (`ContractModerationNotEnabledError`, 41100). A moderation declaration must keep at least one list or include a document type whose `moderatorAbilities` grants its moderators an ability; otherwise the contract is rejected with `InvalidContractModerationConfigError` (10900).
+
+**Example**
+
+```json
+"config": {
+  "$formatVersion": "2",
+  "moderation": {
+    "banlist": true,
+    "suspensions": true,
+    "warnings": false,
+    "moderators": {
+      "$type": "appointedModerators",
+      "identities": ["<identity_id_1>", "<identity_id_2>"]
+    }
+  }
+}
+```
+
+#### Elected Moderation
+
+An `elected` declaration can only be made when the contract is created. It contains the following fields ([rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/config/moderation/elected.rs#L316-L376)):
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `joinWindow` | unsigned integer (32 bits) | No | Seconds during which candidate teams may join the election. Default: 604,800 (one week). At most [2,419,200](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L171) (four weeks), and at least [86,400](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L170) (one day) on mainnet. |
+| `voteWindow` | unsigned integer (32 bits) | No | Seconds during which masternodes and evonodes vote. Same default and bounds as `joinWindow`. |
+| `seatContestable` | boolean | Yes | Whether the seat can be contested again once a team is seated |
+| `challengeCoolDown` | unsigned integer (32 bits) | If `seatContestable` is `true` | Seconds between challenges of a contestable seat, from [1,209,600](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L172) (two weeks) to [94,608,000](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L173) (three years). Rejected when `seatContestable` is `false`. |
+| `electionDelay` | unsigned integer (32 bits) | No | Seconds after the contract's creation before candidate teams may enter the election |
+| `maxAddedModerators` | unsigned integer (16 bits) | No | How many members a seated team's leader may add after the election. Default: 0. At most [15](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L175). |
+| `moderatedDocumentTypes` | object | Yes | Maps each moderated document type of the contract to a non-empty array of the abilities the seated team holds on it: `deleteDocuments`, `ban`, `suspend`, `warn`, `changeDocumentFields` |
+| `interim` | object | Yes | Who moderates until a team is seated, selected by `$type`: `contractOwner`, `appointedModerators` (with `identities`), `notYetUsable` (nobody, and document transitions on the moderated types are rejected with `ContractModeratedDocumentTypeNotYetUsableError`, 41200), or `noModeration` (nobody, and the moderated types are used unmoderated) |
+| `ownerProtected` | boolean | No | Whether the contract owner is protected from the seated team. Default: `false`. |
+
+Each ability must be backed by the contract: `ban`, `suspend`, and `warn` need the matching list, `deleteDocuments` needs the type's `moderatorAbilities.delete`, and `changeDocumentFields` needs the type's `moderatorAbilities.changeFields`. Once a team is seated, only its leader and active members moderate, each only with the abilities the declaration grants on the type (`ContractModerationAbilityNotGrantedError`, 41201), and the interim moderators no longer may.
+
+#### Moderation Config Updates
+
+A [data contract update](#data-contract-update) is validated against the moderation rules as follows ([config update rules in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/config/methods/validate_update/v2/mod.rs#L18-L91)):
+
+- The lists a contract keeps are fixed: an update cannot turn `banlist`, `suspensions`, or `warnings` on or off.
+- An `elected` declaration can only be made when the contract is created. An update cannot add, change, or remove one.
+- On a contract that is not elected, an update may switch between `contractOwner` and `appointedModerators` and change the appointed identities. Newly named identities must exist.
+
+These changes are rejected with `DataContractConfigUpdateError` (40002). The `moderatorAbilities` and [`actionFees`](./data-contract-document.md#action-fees) of an existing document type cannot be changed either.
+
+#### Contract Fee Pots
+
+A document type's [action fees](./data-contract-document.md#action-fees) are split between two pots per contract. The owner pot is claimed by the contract owner, and the moderators pot is shared by the contract's moderators. Both are paid out with the [contract fee claim](#contract-fee-claim) state transition, at most once per epoch each. A `moderators` fee part requires the contract to declare moderation (`DocumentActionFeesWithoutModerationError`, 10902). See the [fee pot implementation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/document_type/action_fees/mod.rs#L87-L151).
 
 ### Data Contract groups
 
@@ -1176,7 +3231,7 @@ Groups can be used to distribute contract configuration and update authorization
 | Constant | Value | Description |
 |----------|-------|-------------|
 | Minimum group size | [2](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/group/v0/mod.rs#L111-L114) | Minimum members per group |
-| `max_contract_group_size` | [256](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L149) | Maximum members per group |
+| `max_group_member_count` | [256](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L160) | Maximum members per group. Named `max_contract_group_size` before protocol version 14. |
 | Maximum member power | 65,535 (u32; cap enforced at u16::MAX) | Maximum voting power per member. Each member's power must also not exceed the group's [`requiredPower`](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/group/v0/mod.rs#L133-L138) value. |
 | Maximum required power | 65,535 (u32; cap enforced at u16::MAX) | Maximum threshold power |
 
@@ -1257,9 +3312,59 @@ Its documents are written by the protocol while applying the corresponding docum
 
 See the [contract schema in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/document-history-contract/schema/v1/document-history-contract-documents.json).
 
+### App connect system contract
+
+:::{versionadded} 5.0.0
+:::
+
+The app connect contract is a [system data contract](https://github.com/dashpay/platform/blob/v5.0.1/packages/data-contracts/src/lib.rs#L40-L60) that carries a wallet's encrypted response to an application's login request. It is registered from protocol version 14.
+
+| Property | Value |
+| - | - |
+| Contract ID | `H8F9mP1BM55TE1ShsxPZHzhyinaMdY9bMmP85mkDhcJJ` |
+| Owner ID | `11111111111111111111111111111111` |
+
+Its single document type, `loginKeyResponse`, is an [`indexOnly`](./data-contract-document.md#document-configuration) type whose documents are immutable and can be deleted by their owner. Its one index, `byRequest`, is keyed by `appEphemeralPubKeyHash` and the owner's identity, and stores `walletEphemeralPubKey` and `encryptedPayload` as its `entryPayload`.
+
+| Property | Size | Description |
+| - | - | - |
+| `appEphemeralPubKeyHash` | 20 bytes | hash160 of the ephemeral public key in the application's connect request. Identifies the request. |
+| `walletEphemeralPubKey` | 33 bytes | The wallet's compressed ephemeral public key, from which the application derives the shared secret |
+| `encryptedPayload` | 60-572 bytes | The granted private keys encrypted to the application |
+
+See the [contract schema in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/app-connect-contract/schema/v1/app-connect-contract-documents.json).
+
+### Moderation charters system contract
+
+:::{versionadded} 5.0.0
+:::
+
+The moderation charters contract is a [system data contract](https://github.com/dashpay/platform/blob/v5.0.1/packages/data-contracts/src/lib.rs#L40-L60) that holds the charters of moderation teams that masternodes and evonodes elect for contracts declaring [elected moderation](#elected-moderation). It is registered from protocol version 14.
+
+| Property | Value |
+| - | - |
+| Contract ID | `EG7RGfV8fDTayC2FyVr8HwdpJh3fXDbVztcfE94UmN88` |
+| Owner ID | `11111111111111111111111111111111` |
+
+All of its document types are immutable (`documentsMutable` false). The four that make up a charter cannot be deleted, while the three that change a seated team can be deleted.
+
+| Document type | Deletable | Purpose and key properties |
+| - | - | - |
+| `reason` | No | A ground for moderation actions: a `code` of three uppercase letters, unique per owner, a `label` (1-64 characters), and an optional `description` (1-1024 characters) |
+| `submittedCharter` | No | A team leader's proposal to moderate a contract: `targetContractId` (a contract declaring elected moderation), `description` (up to 4096 characters and 4096 bytes), `reasons` (up to 64 `reason` documents the team may act on), an optional `moderatorsShare` (0-100 percent of the declared moderators fee taken), and `rewardSplit` (`leader`, `equal`, and `actions` percentages summing to 100) |
+| `joinRequest` | No | An identity's encrypted offer to serve on a proposal, one per identity per proposal, addressed to the proposal's leader |
+| `electedCharter` | No | A proposal put to the vote with its team: `targetContractId`, `submittedCharterId`, and `members` (up to 15 identities besides the leader, each of which filed a join request). Its `byTargetContract` index is a [contested index](./data-contract-document.md#contested-indices) with `resolution` `1`, so creating an elected charter opens or joins the masternode vote for the contract's seat. |
+| `addedModerator` | Yes | A member the seated team's leader adds after the election, from the proposal's join requests, up to the contract's `maxAddedModerators`. Deleting it removes the member. |
+| `removedModerator` | Yes | An elected member the leader removes. Deleting it restores the member. |
+| `resignationRequest` | Yes | A member's encrypted request to leave the team, addressed to the leader |
+
+The contest winner's `electedCharter` is the seated charter for its target contract. The active team is its owner (the leader) and `members`, minus removed members, plus added members.
+
+See the [contract schema in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/moderation-charters-contract/schema/v1/moderation-charters-contract-documents.json).
+
 ## Data Contract State Transition Details
 
-There are two data contract-related state transitions: [data contract create](#data-contract-create) and [data contract update](#data-contract-update). Details are provided in this section.
+There are four data contract-related state transitions: [data contract create](#data-contract-create), [data contract update](#data-contract-update), [contract user moderation](#contract-user-moderation), and [contract fee claim](#contract-fee-claim). Details are provided in this section.
 
 ### Data Contract Create
 
@@ -1267,15 +3372,34 @@ Data contracts are created on the platform by submitting the [data contract obje
 
 | Field           | Type           | Size | Description |
 | --------------- | -------------- | ---- | ----------- |
-| $formatVersion  | unsigned integer | 16 bits | The state transition format version (currently `0`) |
+| $formatVersion  | unsigned integer | 16 bits | The state transition format version (`0`, or `1` from protocol version 14) |
 | type            | unsigned integer | 8 bits  | State transition type (`0` for data contract create)  |
 | dataContract    | [data contract object](#data-contract-object) | Varies | Object containing the data contract details |
 | identityNonce   | unsigned integer | 64 bits | Identity nonce for this transition to prevent replay attacks |
+| contractGroup   | object | Varies | (Optional, V1 only) **Added in 5.0.0.** Registers a new [contract group](#contract-groups) owned by the signer |
+| contractGroupMemberships | array | Varies | (Optional, V1 only) **Added in 5.0.0.** Adds the created contract, one of its document types, or one of its tokens to [contract groups](#contract-groups) |
 | userFeeIncrease | unsigned integer | 16 bits | Extra fee to prioritize processing if the mempool is full. Typically set to zero. |
 | signaturePublicKeyId | unsigned integer | 32 bits | The `id` of the [identity public key](../protocol-ref/identity.md#identity-publickeys) that signed the state transition (`=> 0`) |
 | signature            | array of bytes | 65 bytes | Signature of state transition data |
 
-See the [data contract create implementation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/state_transition/state_transitions/contract/data_contract_create_transition/v0/mod.rs#L36-L44) for more details.
+See the data contract create implementation in rs-dpp ([v0](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/state_transition/state_transitions/contract/data_contract_create_transition/v0/mod.rs#L36-L44), [v1](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/state_transition/state_transitions/contract/data_contract_create_transition/v1/mod.rs#L40-L52)) for more details. Version `1` is the default from protocol version 14 and is rejected under earlier protocol versions.
+
+#### Contract Groups
+
+:::{versionadded} 5.0.0
+:::
+
+A contract group is an identity-owned collection of contracts, document types, and tokens. Authentication keys can be [bound](./identity.md#identity-publickeys) to a contract group (`contractGroup` contract bounds), which limits them to batch transitions on the group's members at the time they sign. Contract groups are separate from the [groups](#data-contract-groups) defined inside a contract. They are created and joined only by a data contract create transition and cannot be modified afterwards.
+
+The `contractGroup` object ([rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/contract_group/mod.rs#L165-L176)) registers a group owned by the signer. Its ID is the double SHA-256 of `contract_group`, the owner ID, and the identity nonce ([rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/contract_group/mod.rs#L35-L43)).
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `admins` | array of identifiers | (Optional) Identities that may add members alongside the owner. At most [16](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L162), not including the owner. Each must be an existing identity. |
+| `name` | string | (Optional) 1-[64](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L163) characters |
+| `description` | string | (Optional) 1-[256](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L164) characters |
+
+Each entry of `contractGroupMemberships` ([rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/contract_group/mod.rs#L121-L153)) names a `contractGroupId` and a `member`: the whole created contract (`contract`), one of its document types (`documentType`), or one of its tokens by position (`token`). A transition may declare at most [16](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L161) memberships. The signer must be the owner or an admin of each group it joins, or the group must be the one the same transition registers.
 
 ### Data Contract Update
 
@@ -1290,7 +3414,9 @@ of a data contract can be updated:
 - Changing the `keywords` array
 - Changing the `description`
 - Enabling `sizedIntegerTypes`. This is a one-way change; it cannot be disabled once enabled
-- Changing `canBeDeleted` from `true` to `false` on a document type whose `documentsKeepHistory` is `true`. This is the only document type config change allowed after registration
+- Changing `canBeDeleted` from `true` to `false` on a document type whose `documentsKeepHistory` is `true`
+- Adding properties to a document type's `immutable` list, or removing the condition from a conditional `immutable` entry (added in 5.0.0)
+- Changing the moderators of a contract that is not elected (added in 5.0.0). See [Moderation Config Updates](#moderation-config-updates) for what cannot change.
 
 Existing tokens and groups cannot be removed or modified once the contract is registered.
 
@@ -1309,9 +3435,105 @@ object](#data-contract-object) in a data contract update state transition consis
 
 See the [data contract update implementation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/state_transition/state_transitions/contract/data_contract_update_transition/v0/mod.rs#L31-L43) for more details.
 
+### Contract User Moderation
+
+:::{versionadded} 5.0.0
+:::
+
+The moderators of a [moderated contract](#contract-moderation) act on its users and documents by submitting a contract user moderation state transition (type `24`). The transition must be signed by a critical authentication key of a moderator.
+
+| Field           | Type           | Size | Description |
+| --------------- | -------------- | ---- | ----------- |
+| $formatVersion  | unsigned integer | 16 bits | The state transition format version (currently `0`) |
+| type            | unsigned integer | 8 bits  | State transition type (`24` for contract user moderation) |
+| ownerId         | array of bytes | 32 bytes | [Identity](./identity.md) of the moderator submitting the transition |
+| dataContractId  | array of bytes | 32 bytes | ID of the moderated data contract |
+| identityContractNonce | unsigned integer | 64 bits | Identity contract nonce for replay protection |
+| action          | object | Varies | The moderation action, selected by its `$type` (see below) |
+| userFeeIncrease | unsigned integer | 16 bits | Extra fee to prioritize processing if the mempool is full. Typically set to zero. |
+| signaturePublicKeyId | unsigned integer | 32 bits | The `id` of the [identity public key](../protocol-ref/identity.md#identity-publickeys) that signed the state transition |
+| signature            | array of bytes | 65 bytes | Signature of state transition data |
+
+The `action` is one of the following ([rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/state_transition/state_transitions/contract/contract_user_moderation_transition/v0/mod.rs#L31-L139)):
+
+| `$type` | Fields | Description |
+| ------- | ------ | ----------- |
+| `ban` | `identityId`, `reason` | Adds the identity to the banlist, removing any suspension |
+| `unban` | `identityId` | Removes the identity from the banlist |
+| `suspend` | `identityId`, `until`, `reason` | Suspends the identity until `until`, a block time in milliseconds that must be in the future and at most [2^53 - 1](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L166). Replaces any existing suspension. Rejected for a banned identity. |
+| `unsuspend` | `identityId` | Removes the identity's suspension |
+| `warn` | `identityId`, `reason` | Adds a warning, stamped with the block time, to the identity's entry on the warning list. An identity can hold at most [16](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L168) warnings. |
+| `clearWarnings` | `identityId` | Removes all of the identity's warnings |
+| `deleteDocument` | `documentTypeName`, `documentId`, `reason` | Deletes a document of a type whose `moderatorAbilities` allows deletion, within its `deleteWithin` window if any. Unless the type sets `deleteKeepsRecord` to `false`, the deletion leaves a [removal record](#document-removal-records). The document's owner is not refunded its storage unless the type sets `deleteRefundsOwner`. |
+| `restoreDocument` | `documentTypeName`, `document` | Restores a document a moderator deleted, from its serialized bytes, within [7 days](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L174) of the removal. The bytes must hash to the removal record's `documentHash`. The signer pays the storage. |
+| `changeDocumentFields` | `documentTypeName`, `documentId`, `fields`, `reason` | Sets or removes (with `null`) properties the type lists in `moderatorAbilities.changeFields`. Updates `$moderatedAt` and `$moderatedBy`. |
+| `deleteSettledDocument` | `documentTypeName`, `documentId`, `reason` | On an elected contract, proposes that the seated team delete a document past its `deleteWithin` window, as the type's `moderatorAbilities.deleteSettled` allows. The proposal counts as the proposer's approval. |
+| `approveTeamAction` | `actionId` | Approves a pending team action of the seated team. The action runs once it has enough approvals. |
+
+A `reason` object contains:
+
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `text` | string | Free text, at most [1024](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L167) bytes of UTF-8. May be empty. |
+| `code` | unsigned integer (16 bits) | (Optional) Reserved. Stored as written and not checked. |
+| `documents` | array | (Optional) Up to [16](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L169) documents the reason is about, each as `documentTypeName` and `documentId`, without duplicates. They are not looked up. |
+| `reasonDocumentId` | array of bytes (32 bytes) | (Optional) ID of a `reason` document of the [moderation charters contract](#moderation-charters-system-contract). A seated elected team's `ban`, `suspend`, `warn`, and `deleteDocument` actions must name one that its charter lists (`ModerationReasonNotListedError`, 41203). |
+
+See the [reason implementation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/config/moderation/reason.rs#L49-L74).
+
+Key validation rules:
+
+- A moderator cannot target itself (`ContractModerationSelfTargetError`, 10901), and a protected identity cannot be banned, suspended, or warned, nor its documents deleted (`ContractModerationTargetNotAllowedError`, 41102).
+- The signer must be a moderator of the contract (`IdentityNotContractModeratorError`, 41101), and the contract must keep the list the action uses (`ContractModerationNotEnabledError`, 41100).
+- Status changes must make sense for the identity's current status, for example banning an already banned identity (`ContractUserAlreadyBannedError`, 41103) or unbanning one that is not banned (`ContractUserNotBannedError`, 41104).
+- A document deletion is rejected if the type does not allow moderator deletion (`DocumentTypeNotDeletableByModeratorsError`, 41115) or its window has elapsed (`DocumentModerationWindowElapsedError`, 41116). Neither the type's [token cost](./data-contract-document.md#token-costs) nor its [action fee](./data-contract-document.md#action-fees) for deletion is charged.
+- A restore is rejected without a removal record (`ContractDocumentRemovalNotFoundError`, 41119), after the restore window (`DocumentRestoreWindowElapsedError`, 41120), on a hash mismatch (`DocumentRestoreHashMismatchError`, 41121), if the document was already restored (`ContractDocumentAlreadyRestoredError`, 41122), or if the seated team deleted it as a settled document (`SettledDeletionNotRestorableError`, 41209).
+
+Every rejection in state validation still consumes the signer's identity contract nonce. See the [contract user moderation implementation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/state_transition/state_transitions/contract/contract_user_moderation_transition/v0/mod.rs#L465-L487) for more details.
+
+#### Document Removal Records
+
+A moderator's document deletion leaves a removal record under the contract, unless the document type sets `deleteKeepsRecord` to `false`. Records are never deleted ([rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/config/moderation/document_removal.rs#L33-L73)):
+
+| Field | Description |
+| ----- | ----------- |
+| `documentOwnerId` | Owner of the deleted document |
+| `moderatorId` | Moderator that deleted it |
+| `reason` | The deletion's `reason` |
+| `removedAt` | Block time of the deletion, in milliseconds |
+| `documentHash` | Double SHA-256 of the document as serialized at the deletion |
+| `restoration` | (Optional) `moderatorId` and `restoredAt` of the restore, once the document is restored |
+| `keptFields` | (Optional) Serialized values of the properties the type lists in `moderatorAbilities.deleteKeepsFields` |
+
+### Contract Fee Claim
+
+:::{versionadded} 5.0.0
+:::
+
+A contract's [fee pots](#contract-fee-pots) are paid out with a contract fee claim state transition (type `25`). A claim always pays out the whole pot to the recipients' identity balances; it has no amount or recipient field. The transition must be signed by a critical authentication key.
+
+| Field           | Type           | Size | Description |
+| --------------- | -------------- | ---- | ----------- |
+| $formatVersion  | unsigned integer | 16 bits | The state transition format version (currently `0`) |
+| type            | unsigned integer | 8 bits  | State transition type (`25` for contract fee claim) |
+| ownerId         | array of bytes | 32 bytes | [Identity](./identity.md) submitting the claim |
+| dataContractId  | array of bytes | 32 bytes | ID of the data contract whose pot is paid out |
+| identityContractNonce | unsigned integer | 64 bits | Identity contract nonce for replay protection |
+| pot             | string | | The pot to pay out: `owner` or `moderators` |
+| userFeeIncrease | unsigned integer | 16 bits | Extra fee to prioritize processing if the mempool is full. Typically set to zero. |
+| signaturePublicKeyId | unsigned integer | 32 bits | The `id` of the [identity public key](../protocol-ref/identity.md#identity-publickeys) that signed the state transition |
+| signature            | array of bytes | 65 bytes | Signature of state transition data |
+
+The pot determines who may claim it and who is paid:
+
+- **Owner pot** - Only the contract owner may claim it, and receives all of it.
+- **Moderators pot** - On a contract whose moderators are the owner or appointed identities, or on an elected contract with interim moderators and no seated team, any of those moderators may claim it, and it is split equally between them. On an elected contract with a seated team, the leader or an active member claims it, and it is split according to the team's charter. Shares are rounded down, and the remainder stays in the pot. If the contract declares no moderation or no one moderates in the interim, nobody can claim the pot.
+
+Each pot can be paid out at most once per epoch (`ContractFeesAlreadyClaimedThisEpochError`, 41111). A claim by an identity that may not claim the pot is rejected with `ContractFeeClaimNotAllowedError` (41113), and a claim of an empty pot, or one whose shares round down to zero, with `ContractFeesNothingToClaimError` (41112). See the [contract fee claim implementation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/state_transition/state_transitions/contract/contract_fee_claim_transition/v0/mod.rs#L33-L55) for more details.
+
 ### Data Contract State Transition Signing
 
-Data contract state transitions must be signed by a private key associated with the contract owner's identity. See the [state transition signing](./state-transition.md#state-transition-signing) page for full signing details.
+Data contract create and update state transitions must be signed by a private key associated with the contract owner's identity. Contract user moderation and contract fee claim transitions are signed by the moderator or claimant. See the [state transition signing](./state-transition.md#state-transition-signing) page for full signing details.
 
 ```{toctree}
 :maxdepth: 2

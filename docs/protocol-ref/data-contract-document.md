@@ -138,17 +138,42 @@ The following example (from the [DPNS contract's `domain` document](https://gith
 :::{versionadded} 5.0.0
 :::
 
-An identifier property (`type: array`, `byteArray: true`, `contentMediaType: application/x.dash.dpp.identifier`, `minItems` and `maxItems` of 32) may declare a `refersTo` object. Platform then checks at document write time that the referenced entity exists. Setting `refersTo` on any other property type is rejected.
+An identifier property (`type: array`, `byteArray: true`, `contentMediaType: application/x.dash.dpp.identifier`, `minItems` and `maxItems` of 32) may declare a `refersTo` object. Platform then checks, when a document is created or replaced, that the referenced entity exists and meets the declaration. A missing target rejects the write with `ReferencedEntityNotFoundError` (40120). `refersTo` may also be declared on the identifier elements of a typed array, on an integer key ID property (`identityPublicKey` with `identityProperty`), and on a string or byte array property whose value a `findBy` reads. At the document type level, `ownerRefersTo` and `creatorRefersTo` apply a declaration to the document's `$ownerId` or `$creatorId`. The full grammar is defined in the [v3 meta-schema](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v3/document-meta.json#L770-L1203).
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `type` | string | Yes | `identity`, `contract`, `token`, `permanentDocument`, or `identityPublicKey` |
-| `contractId` | string or array (32 bytes) | No | `permanentDocument` only. Contract holding the referenced document type. Defaults to the declaring contract. |
-| `documentType` | string (1-64 chars) | Yes, for `permanentDocument` | Name of the referenced document type. The referenced type must set `canBeDeleted: false`. |
-| `propertyAgreement` | object (1-10 entries) | No | `permanentDocument` only. Maps a property of this document to a property of the referenced document. Both values must be equal when the document is written, and both properties must have the same type. |
-| `keyIdProperty` | string (1-256 chars) | Yes, for `identityPublicKey` | Property of this document that holds the referenced key id. The `refersTo` property itself holds the identity id. |
+The `type` field selects the target:
 
-`contractId`, `documentType`, and `propertyAgreement` are rejected unless `type` is `permanentDocument`; `keyIdProperty` is rejected unless `type` is `identityPublicKey`.
+| `type` | Target |
+|--------|--------|
+| `identity` | An existing identity |
+| `contract` | An existing data contract |
+| `token` | An existing token |
+| `identityPublicKey` | An existing, enabled key of an identity |
+| `permanentDocument` | A document of a type whose documents can never be removed |
+| `moderatedDocument` | A document of a type whose documents only moderators remove, always leaving a removal record. The reference resolves to the document or to its record. |
+| `deletableDocument` | A document of any other type. The reference is checked again on every replace. |
+
+See [Document Removal](#document-removal) for which document types each document reference type accepts. The other fields of a declaration are:
+
+| Field | Applies to | Description |
+|-------|------------|-------------|
+| `contractId` | Document references | Contract holding the referenced document type, as a base58 string or 32-byte array. Defaults to the declaring contract. |
+| `documentType` | Document references (required) | Name of the referenced document type (1-64 characters) |
+| `findBy` | `permanentDocument`, `deletableDocument` | Finds the referenced document through a unique index when the property's value is not its `$id`. Maps every property of one unique index of the referenced type to its source: `"."` (the value carrying the reference), `"$ownerId"`, a property path of the referring document, or a function (`sys.hash.sha256d`) for commit-and-reveal schemes. |
+| `where` | Document references | Values the referenced document must hold. Maps a property of the referenced type (or its `$ownerId`, `$creatorId`, or `$id`) to a property of the referring document or `"$ownerId"`, which it must equal, or to a condition object (`const`, `notEqual`, `in`, `greaterThan`, `greaterThanOrEqual`, `lessThan`, `lessThanOrEqual`, `contains`, or `containsAll`). A mismatch rejects the write (`ReferencedDocumentPropertyMismatchError`, 40127). |
+| `inList` | `permanentDocument` | Path of a typed array of identifiers on the referenced document, found by `findBy: {"$id": "<property>"}`. The value must be an element of that list. |
+| `consume` | `deletableDocument` with `findBy` | `true` makes the create delete the document `findBy` finds, which must be the writer's own (`where` compares `"$ownerId"` with `"$ownerId"`). |
+| `constraints` | References with `findBy` judged only on create | `minimumAgeBlocks`: how many blocks before the create the referenced document must have been created. `chooseFirst`: requires the referenced commitment to be the first valid one among competing commitments. |
+| `contractRequirements` | `contract` | What the referenced contract must declare: `moderation` (`elected` or `electionOpen`), `minimumAgeSeconds`, `minimumSecondsSinceUpdate`, `owner` (`self` or `other`), `readonly: true`, `keepsHistory: true`, or `ownerProtected`. An unmet requirement rejects the write (`ReferencedContractRequirementNotMetError`, 40135). |
+| `keyIdProperty` | `identityPublicKey` | Property of the same document that holds the referenced key ID. The `refersTo` property holds the identity ID. |
+| `identityProperty` | `identityPublicKey` | Declared on the key ID property instead: names the identity as `$ownerId`, `$creatorId`, or an identifier property path. Takes the place of `keyIdProperty`. |
+| `keyRequirements` | `identityPublicKey` | What the referenced key must be: `purpose` and/or `boundTo` (a document type of the declaring contract the key must be bound to). An unmet requirement rejects the write (`ReferencedIdentityKeyRequirementNotMetError`, 40136). |
+| `anyOf`, `allOf` | Reference expressions | Instead of `type`, an object holding only `anyOf` (at least one operand holds) or only `allOf` (every operand holds), with 2 or more operands that are `identity`, `permanentDocument`, or `deletableDocument` (with `findBy`) declarations or nested expressions. At most [4](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L140) operands per list and [4](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L141) levels of nesting. |
+
+A document may carry at most [256](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L139) references, a typed array of references counting its `maxItems`. A changed reference declaration is an incompatible change on contract update.
+
+:::{note}
+Pre-release builds of Dash Platform 5.0 used the `lookup` and `propertyAgreement` keywords and a `listElement` reference type. These were replaced by `findBy`, `where` (keyed by the referenced document's property), and `permanentDocument` with `inList`, and are [rejected](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/mod.rs#L1102-L1119) by the released protocol.
+:::
 
 ### Property Constraints
 
@@ -156,11 +181,11 @@ There are a variety of constraints currently defined for performance and securit
 
 | Description | Value |
 | ----------- | ----- |
-| Minimum number of properties | [1](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json#L23) |
-| Maximum number of properties | [100](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json#L24) |
-| Minimum property name length | [1](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json#L21) |
-| Maximum property name length | [64](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json#L21) |
-| Property name characters     | Alphanumeric (`A-Z`, `a-z`, `0-9`)<br>Hyphen (`-`) <br>Underscore (`_`) |
+| Minimum number of properties | [1](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v3/document-meta.json#L662) |
+| Maximum number of properties | [100](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v3/document-meta.json#L663) |
+| Minimum property name length | [1](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v3/document-meta.json#L660) |
+| Maximum property name length | [64](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v3/document-meta.json#L660) |
+| Property name characters     | Alphanumeric (`A-Z`, `a-z`, `0-9`)<br>Underscore (`_`)<br>Hyphen (`-`) is refused from protocol version 14 (5.0.0) |
 
 ## Document Indices
 
@@ -192,11 +217,14 @@ In addition to `name` and `properties`, an index may contain the following optio
 | Aggregate flags | Enable count, sum, and average fast paths. | `countable`, `rangeCountable`, `summable`, `rangeSummable`, `averageable`, and `rangeAverageable`. See [Aggregate Query Flags](#aggregate-query-flags). |
 | Ranked aggregate flags | Enable top or bottom K queries. Added in 5.0.0. | `rankedCountable`, `rankedSummable`, and `rankedAverageable`. See [Index-level Flags](#index-level-flags). |
 | `timeRange` | Buckets the first index property into fixed-length time windows. Added in 5.0.0. | See [Time-Range Indices](#time-range-indices). |
-| `skipIfAbsent` | Omits an index entry when the first property is absent. Added in 5.0.0. | Available only on `indexOnly` document types. See [Index-Only Options](#index-only-options). |
+| `integerRange` | Buckets the first index property's integer value into fixed-length windows. Added in 5.0.0. | Cannot be combined with `timeRange` or used on `indexOnly` document types. See the [meta-schema](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v3/document-meta.json#L2278-L2306). |
+| `skipIfAbsent` | Omits a document's entry when it lacks a property of the index's skip set. Added in 5.0.0. | `true` (every optional property of the index) or an array of index properties, each not in `required`. On a stored type, a skip index cannot be `contested` or set `nullSearchable: false`. See [Index-Only Options](#index-only-options) for `indexOnly` rules. |
 | `terminal` | Selects the value that keys each index entry. Added in 5.0.0. | Available only on `indexOnly` document types. See [Index-Only Options](#index-only-options). |
 | `preallocated` | Creates index trees before referenced documents produce entries. Added in 5.0.0. | Available only on `indexOnly` document types. See [Index-Only Options](#index-only-options). |
+| `outlivesDelete` | Keeps a deleted document's entries until their time window expires. Added in 5.0.0. | Available only on a `timeRange` index with a `ttl` of an `indexOnly` document type. |
+| `summableOffCountIndex` | Makes the index count the entries of another index. Added in 5.0.0. | Available only on `indexOnly` document types. Names the source index. |
 
-Index objects do not accept any properties beyond those listed above. Starting with Dash Platform 5.0.0 (protocol version 14), index objects also accept the ranked aggregate keywords, `timeRange`, and the `indexOnly`-specific keywords `terminal`, `preallocated`, and `skipIfAbsent`. Under earlier protocol versions those keywords are rejected.
+Index objects do not accept any properties beyond those listed above. Starting with Dash Platform 5.0.0 (protocol version 14), index objects also accept the ranked aggregate keywords, `timeRange`, `integerRange`, `skipIfAbsent`, `outlivesDelete`, and the `indexOnly`-specific keywords `terminal`, `preallocated`, and `summableOffCountIndex`. Under earlier protocol versions those keywords are rejected.
 
 The following template shows the required shape and commonly used optional fields:
 
@@ -279,13 +307,13 @@ A time-range index may be `unique` only when `range` equals `step` and `on` is `
 
 #### Index-Only Options
 
-The following options are available only on document types with [`indexOnly: true`](#document-configuration):
+The following options apply to document types with [`indexOnly: true`](#document-configuration). `terminal` and `preallocated` are available only on those types, while `skipIfAbsent` has additional rules on them:
 
 | Option | Behavior and constraints |
 | --- | --- |
-| `skipIfAbsent` | When true, a document that omits the index's first property writes no entry into this index. The first property must be a top-level property that is not in `required`, and every index containing an optional property must place that property first and set `skipIfAbsent`. Every other property must still appear in at least one index without `skipIfAbsent`, and at least one index without `$createdAt` must not use `skipIfAbsent`. |
-| `terminal` | Names the property whose value keys each index entry. It may be `$ownerId` (the default) or an identifier property with a `refersTo` type of `identity`, `contract`, `token`, or `permanentDocument`. It must not repeat an index property. |
-| `preallocated` | Creates the index trees for entries referencing a document when that document is created. Every index property must be either the referring property of a same-contract `permanentDocument` reference or a key of its `propertyAgreement`. It cannot be combined with `timeRange`. |
+| `skipIfAbsent` | On an `indexOnly` type, the skip set must hold every optional property of the index, every optional property needs a skip index whose skip set is that property alone, and at least one index without `$createdAt` must not use `skipIfAbsent`. |
+| `terminal` | The property, or ordered list of up to 10 properties, whose values key each index entry. Each component is `$ownerId` (the default) or a schema property an index could hold (no arrays or objects); every component but the last must be fixed width, and the whole key is at most 255 bytes. It must not repeat an index property. An index with no properties is keyed by its terminal alone. |
+| `preallocated` | Creates the index trees for entries referencing a document when that document is created, paid by that document's creator. Every index property must be either the referring property of a same-contract `permanentDocument` or `moderatedDocument` reference or a referring value of that reference's `where`. It cannot be combined with `timeRange`. |
 
 #### Contested Indices
 
@@ -300,7 +328,7 @@ The table below describes the properties used to configure a contested index:
 | fieldMatches | array | Array containing conditions to check |
 | fieldMatches.field | string | Name of the field to check for matches (1-256 characters) |
 | fieldMatches.regexPattern | string | Regex used to check for matches (1-256 characters) |
-| resolution | integer | Method to resolve the contest:<br>`0` - masternode voting |
+| resolution | integer | Method to resolve the contest:<br>`0` - masternode voting<br>`1` - masternode voting without a Lock choice (added in 5.0.0). The contest always ends with a winner, a tie goes to the earliest contender, and a contest that still has a single contender when the join window ends is awarded without a vote. |
 | description | string | Optional free-text note (1-256 characters) |
 
 **Example**
@@ -326,17 +354,19 @@ For performance and security reasons, indices have the following constraints. Th
 
 | Description | Value |
 | ----------- | ----- |
-| Minimum/maximum length of index `name` | [1](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json#L358) / [32](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json#L359) |
-| Maximum number of indices | [10](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json#L482) |
-| Maximum number of unique indices | [10](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/dpp_versions/dpp_validation_versions/v2.rs#L28) |
-| Maximum number of contested indices | [1](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/dpp_versions/dpp_validation_versions/v2.rs#L27) |
-| Maximum number of properties in a single index | [10](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json#L378) |
-| Maximum `timeRange` overlap factor (`range / step`) (added in 5.0.0) | [24](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L162) |
-| Maximum `timeRange` `ttl` (added in 5.0.0) | [604,800](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L163) seconds (1 week) |
+| Minimum/maximum length of index `name` | [1](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v3/document-meta.json#L2067) / [32](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v3/document-meta.json#L2068) |
+| Maximum number of indices | [10](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v3/document-meta.json#L2456) |
+| Maximum number of unique indices | [10](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/dpp_versions/dpp_validation_versions/v3.rs#L29) |
+| Maximum number of contested indices | [1](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/dpp_versions/dpp_validation_versions/v3.rs#L28) |
+| Maximum number of properties in a single index | [10](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v3/document-meta.json#L2087) |
+| Maximum `timeRange` overlap factor (`range / step`) (added in 5.0.0) | [24](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L189) |
+| Maximum `timeRange` `ttl` (added in 5.0.0) | [604,800](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L190) seconds (1 week) |
 | Maximum length of indexed string property | [63](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/mod.rs#L77) |
 | Usage of `$id` in an index [disallowed](https://github.com/dashpay/platform/pull/178) | N/A |
-| **Note: Dash Platform [does not allow indices for arrays](https://github.com/dashpay/platform/pull/225).**<br>Maximum length of indexed byte array property | [255](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/mod.rs#L78) |
-| **Note: Dash Platform [does not allow indices for arrays](https://github.com/dashpay/platform/pull/225).**<br>Maximum number of indexed array items         | [1024](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/mod.rs#L79) |
+| Typed arrays per index (added in 5.0.0) | 1. An index naming a typed array cannot be `unique` or `contested`, or set `nullSearchable: false`. |
+| Maximum length of indexed byte array property | [255](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/mod.rs#L78) |
+| Maximum number of elements in an indexed [typed array](#keyword-constraints) (added in 5.0.0) | [16](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L198), or [4](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L199) when the index also has a `timeRange` or `integerRange` |
+| Maximum index entries one document writes, on a type with an indexed typed array (added in 5.0.0) | [256](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L200) |
 
 :::{seealso}
 For all protocol constants, see [Protocol Constants](protocol-constants.md).
@@ -350,7 +380,7 @@ Documents support the following configuration options to provide flexibility in 
 |-----------------|------|-------------|
 | `documentsKeepHistory`               | boolean  | If true, documents keep a history of all changes. Default: false. |
 | `documentsMutable`                   | boolean  | If true, documents are mutable. Default: true. |
-| `canBeDeleted`                       | boolean  | If true, documents can be deleted. Default: true. |
+| [`canBeDeleted`](#document-removal) | boolean or string | Whether a document's owner can delete it:<br>`true` - The owner can delete it<br>`false` - The owner cannot delete it<br>`"onlyWhenConsumed"` - **Added in 5.0.0.** The owner cannot delete it directly, but a create that [consumes](#property-references) it deletes it<br>Default: the contract config's `documentsCanBeDeletedContractDefault` (true unless set). |
 | `transferable`                       | integer  | Transferable without a marketplace sell:<br>`0` - Never<br>`1` - Always<br>See the [NFT page](../explanations/nft.md#transfer-and-trade) for more details |
 | `tradeMode`                          | integer  | Built-in marketplace system:<br>`0` - None<br>`1` - Direct purchase (the purchaser can buy the item without requiring approval)<br>See the [NFT page](../explanations/nft.md#transfer-and-trade) for more details |
 | `creationRestrictionMode`            | integer  | Restriction of document creation:<br>`0` - No restrictions<br>`1` - Contract owner only<br>`2` - No Creation Allowed<br>See the [NFT page](../explanations/nft.md#creation-restrictions) for more details |
@@ -358,6 +388,14 @@ Documents support the following configuration options to provide flexibility in 
 | `keepsPurchaseHistory`               | boolean  | If true, purchases of these documents are recorded in the [document history contract](#document-history-flags). Default: false. |
 | `keepsPricingHistory`                | boolean  | If true, price updates on these documents are recorded in the [document history contract](#document-history-flags). Default: false. |
 | `indexOnly`                          | boolean  | **Added in 5.0.0.** If true, documents of this type are stored only as index entries; there is no primary document row. Requires `documentsMutable: false`, `transferable: 0`, `tradeMode: 0`, no history flags, no `transient` properties, no document-type aggregate flags, at least one index, and every property required and indexed (see `skipIfAbsent` for the one exception). Indices on such a type cannot be `unique`, `contested`, or set `nullSearchable: false`, and every index must include `$ownerId` as a property or as its terminal. Default: false. |
+| `entryPayload` | array of strings | **Added in 5.0.0.** Only on `indexOnly` types. 1-16 unique top-level property names whose values are stored in the value of every index entry instead of in a key. Listed properties must be required, bounded (`maxItems` on byte arrays, `maxLength` on strings), scalar, and not used by any index as a property or terminal component. Fixed when the document type is created. |
+| [`ttl`](#document-removal) | integer | **Added in 5.0.0.** Time to live in seconds. Platform deletes each document once its `$createdAt` plus `ttl` has passed. |
+| [`deleteConstraints`](#document-removal) | object | **Added in 5.0.0.** Named rules the stored document must meet before its owner may delete it. |
+| [`moderatorAbilities`](#moderator-abilities) | object | **Added in 5.0.0.** What the moderators of a [moderated contract](./data-contract.md#contract-moderation) may do with documents of this type. |
+| [`actionFees`](#action-fees) | object | **Added in 5.0.0.** Fixed credit fees charged for actions on documents of this type. |
+| `immutable` | array | **Added in 5.0.0.** Top-level properties of a mutable document type that a replace cannot change, add, or remove. An entry is a property name, which freezes the property when the document is created, or `{"property": "<name>", "when": <condition>}`, which freezes it for any replace where the condition holds. A replace that changes a frozen property is rejected (`DocumentImmutablePropertyChangedError`, 40128). Only allowed when `documentsMutable` is true. |
+| `propertyConstraints` | object | **Added in 5.0.0.** Named rules (1-64 letters, digits, or underscores per name) that every created or replaced document must meet, such as comparisons between properties or `present`/`absent` checks. At most [16 rules](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L142) of [32 nodes](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L143) each. See the [meta-schema](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v3/document-meta.json#L2868-L2878) for the rule grammar. |
+| `retractedWhen` | object | **Added in 5.0.0.** A condition, in the grammar of an `immutable` entry's `when`, that lets a banned or suspended owner on a [moderated contract](./data-contract.md#contract-moderation) still replace a document when the document it writes meets the condition. Only allowed when `documentsMutable` is true and the contract keeps a banlist or a suspension list. Fixed when the document type is created. |
 
 | Security option | Type | Description |
 |-----------------|------|-------------|
@@ -371,7 +409,7 @@ A document type with `documentsKeepHistory: true` must also set `canBeDeleted: f
 
 ### Token Costs
 
-The `tokenCost` option allows document types to require token payment for operations. When configured, users must pay a specified amount of tokens to perform each operation type. Each operation cost is defined as a [documentActionTokenCost](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json#L294-L337) object with the following properties:
+The `tokenCost` option allows document types to require token payment for operations. When configured, users must pay a specified amount of tokens to perform each operation type. Each operation cost is defined as a [documentActionTokenCost](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v3/document-meta.json#L1980-L2027) object with the following properties:
 
 | Property | Type | Required | Description |
 |----------|------|----------|-------------|
@@ -379,7 +417,8 @@ The `tokenCost` option allows document types to require token payment for operat
 | `tokenPosition` | integer (0–65535) | Yes | Position of the token within the contract |
 | `amount` | integer (1–281474976710655) | Yes | Number of tokens required for the operation |
 | `effect` | integer | No | Token disposition after payment:<br>`0` - Transfer to contract owner (default)<br>`1` - Burn (tokens destroyed). Burning is allowed only for a token in the current contract, so `1` is rejected when `contractId` is set. |
-| `gasFeesPaidBy` | integer | No | Who pays gas fees for the operation:<br>`0` - Document owner (default)<br>`1` - Contract owner<br>`2` - Prefer contract owner (falls back to document owner if insufficient) |
+| `gasFeesPaidBy` | integer | No | Who the contract owner offers to have pay the gas fees for the operation:<br>`0` - Document owner (default; the contract owner never pays)<br>`1` - Contract owner (pays, and accepts every request)<br>`2` - Prefer contract owner (pays when its balance covers the fee, but rejects a transition that requires the contract owner to pay)<br>Acted on from protocol version 14. See [Token Payment Info](./document.md#token-payment-info). |
+| `optional` | boolean | No | **Added in 5.0.0.** If true, a transition may omit `$tokenPaymentInfo` for this operation and pay no tokens; its signer then pays the gas in credits. With `$tokenPaymentInfo` present, the token cost is charged as if it were required. Default: false (`RequiredTokenPaymentInfoNotSetError`, 40115, if omitted). |
 
 The following operation types can each have an independent cost configuration:
 
@@ -392,9 +431,79 @@ The following operation types can each have an independent cost configuration:
 | `update_price` | Updating a document's purchase price |
 | `purchase` | Purchasing a document |
 
+### Document Removal
+
+:::{versionadded} 5.0.0
+:::
+
+A document type declares every way its documents can leave the platform state. These choices are fixed when the document type is created and cannot be changed by a contract update, except that a type that keeps history may change `canBeDeleted` from `true` to `false`.
+
+| Removed by | Controlled by |
+|------------|---------------|
+| The document's owner, with a [delete transition](./document.md#document-delete-transition) | `canBeDeleted: true`. `deleteConstraints` can add rules the stored document must meet first. |
+| A create that consumes it | A [`refersTo`](#property-references) declaration with `consume`, on a type with `canBeDeleted` `true` or `"onlyWhenConsumed"` |
+| The contract's moderators | [`moderatorAbilities`](#moderator-abilities) on a [moderated contract](./data-contract.md#contract-moderation) |
+| The platform, on expiry | `ttl` |
+
+**`canBeDeleted: "onlyWhenConsumed"`** - The owner cannot delete a document directly, but a create of the same contract whose `refersTo` declares `consume` deletes it. It is rejected on a type that keeps history or is `indexOnly`. See the [meta-schema](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v3/document-meta.json#L2487-L2490).
+
+**`deleteConstraints`** - An object of named rules (1-64 letters, digits, or underscores per name), in the grammar of a `propertyConstraints` rule, that the stored document must meet for its owner to delete it. The owner's delete is rejected at the first rule it breaks, in name order (`DocumentDeleteConstraintViolatedError`, 40147). A `countOf` or `sumOf` total is read as it will be once the document is gone, so a rule such as `{"noVotes": {"equal": [{"countOf": ["vote", {"pollId": "$id"}]}, 0]}}` allows a poll to be deleted only while no vote refers to it. Deletions by moderators and by `ttl` expiry are not checked. Allowed only when `canBeDeleted` is `true` and the type is not `indexOnly`. See the [meta-schema](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v3/document-meta.json#L2879-L2889).
+
+**`ttl`** - Time to live in seconds, from [3,600](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L192) (one hour) to [31,536,000](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L193) (one year). Platform deletes each document once its `$createdAt` plus `ttl` has passed, whoever owns it and whatever `canBeDeleted` says, deleting at most [128](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L194) documents per block. From its expiry, a document can no longer be replaced, transferred, bought, repriced, or restored by a moderator (`DocumentExpiredError`, 40140). Its documents are stored without storage flags and refund nothing when deleted; instead of the perpetual storage price, they pay for the time they will live. Requires `$createdAt` in `required`, and is rejected together with `documentsKeepHistory`, `indexOnly`, or a contested index. See the [meta-schema](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v3/document-meta.json#L2632-L2637).
+
+How a type's documents can be removed also determines how other documents may [reference](#property-references) it:
+
+| Reference type | Target document type |
+|----------------|----------------------|
+| `permanentDocument` | Documents can never be removed: `canBeDeleted: false` (not `"onlyWhenConsumed"`), no `moderatorAbilities.delete`, and no `ttl` |
+| `moderatedDocument` | Documents are removed only by a moderator, always leaving a removal record: `canBeDeleted: false`, no `ttl`, and `moderatorAbilities.delete` with `deleteKeepsRecord` not `false`. The reference resolves to the document or to its removal record. |
+| `deletableDocument` | Any other type. The reference is checked again on every replace of the referring document, so one whose target was deleted must be repointed or cleared. |
+
+### Moderator Abilities
+
+:::{versionadded} 5.0.0
+:::
+
+On a contract that declares [moderation](./data-contract.md#contract-moderation), the `moderatorAbilities` object sets what the contract's moderators may do with documents of the type using the [contract user moderation](./data-contract.md#contract-user-moderation) transition. Granting any ability requires the contract to declare moderation. The object must not be empty and is fixed when the document type is created. See the [meta-schema](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v3/document-meta.json#L2564-L2631).
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `delete` | boolean | If true, moderators may delete documents of this type and restore them. Independent of `canBeDeleted`. Rejected on a type that keeps history, is `indexOnly`, restricts document creation, or has a contested index. Default: false. |
+| `deleteWithin` | integer (1-4294967295) | Seconds after a document's last modification (`$updatedAt`, or `$createdAt` on a type without `$updatedAt`) during which moderators may delete it. After that the document is settled and no moderator can delete it alone. A replace or a price update opens the window again. Requires `delete: true` and the timestamp in `required`. Default: no limit. |
+| `deleteKeepsRecord` | boolean | Whether a moderator's deletion leaves a [removal record](./data-contract.md#document-removal-records). Without a record, a deletion cannot be undone. Requires `delete: true`. Default: true. |
+| `deleteRefundsOwner` | boolean | Whether the owner of a deleted document is refunded its storage as if the owner had deleted it. Requires `delete: true`. Default: false. |
+| `deleteKeepsFields` | array of strings | Property paths whose values the removal record keeps, such as the hashtag of a removed post. Not `$id`, `$ownerId`, or a transient property. Requires `delete: true` and a kept record. |
+| `deleteSettled` | object | On an [elected](./data-contract.md#elected-moderation) contract, who must approve a seated team's deletion of a settled document: `leader` (boolean, default false), `approvals` (1-31, default 1, the leader counted), and `approversPredateDocument`. Requires `deleteWithin`. |
+| `changeFields` | array of strings | Top-level properties that only moderators write. A moderator sets or removes them with `changeDocumentFields`, which updates the document's `$moderatedAt` and `$moderatedBy`. The owner cannot set them unless the owner moderates the contract (`DocumentModeratorFieldNotWritableError`, 41124). Each must be optional, stored, not `immutable`, and not used by a reference, a generated property, or a contested index. |
+
+On a contract that declares moderation, a document type may also declare [`retractedWhen`](#document-configuration) to let barred owners retract their documents.
+
+### Action Fees
+
+:::{versionadded} 5.0.0
+:::
+
+The `actionFees` option charges a fee in credits, on top of the processing fees, for actions on documents of the type. Each fee is split between the contract's owner pot and its moderators pot, which are paid out with the [contract fee claim](./data-contract.md#contract-fee-claim) transition. Whoever pays the gas of the action pays its fee, and the contract owner never pays into its own owner pot. See the [meta-schema](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v3/document-meta.json#L2654-L2686).
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `pricing` | string | `feeMultiplier` (default): the declared amounts are scaled by the fee multiplier of the epoch in which the action executes.<br>`fixed`: the declared amounts are charged as written. |
+| `create`, `replace`, `delete`, `transfer`, `update_price`, `purchase` | object | (Optional) The fee for that action: `owner` and/or `moderators`, each an amount of credits from 0 to 9223372036854775807. An index-only delete pays the `delete` fee. |
+
+At least one action must be priced, and a priced action must charge something. A `moderators` part requires the contract to declare [moderation](./data-contract.md#contract-moderation) (`DocumentActionFeesWithoutModerationError`, 10902). The fees of an existing document type cannot be added, changed, or removed by a contract update.
+
+A transition for a priced action must state the declared fee in its [`$actionFeeAgreement`](./document.md#action-fee-agreement). A moderator's deletion or restore pays no action fee.
+
+```json
+"actionFees": {
+  "pricing": "fixed",
+  "create": { "owner": 1000000, "moderators": 500000 }
+}
+```
+
 :::{dropdown} List of all usable document properties
 
-  This list of properties is defined in the [Rust DPP implementation](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/document_type/mod.rs#L51) and the [document meta-schema](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json).
+  This list of properties is defined in the [Rust DPP implementation](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/document_type/mod.rs#L51) and the [document meta-schema](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v3/document-meta.json).
 
   | Property Name | Type | Description |
   |---------------|------|-------------|
@@ -405,7 +514,7 @@ The following operation types can each have an independent cost configuration:
   | `signatureSecurity`<br>`LevelRequirement`  | integer  | Public key security level:<br>`1` - Critical<br>`2` - High<br>`3` - Medium. Default is High if none specified. |
   | `documentsKeepHistory`               | boolean  | If true, documents keep a history of all changes. Default: false. |
   | `documentsMutable`                   | boolean  | If true, documents are mutable. Default: true. |
-  | `canBeDeleted`                       | boolean  | If true, documents can be deleted. Default: true. |
+  | [`canBeDeleted`](#document-removal) | boolean or string | Whether the owner can delete documents: `true`, `false`, or `"onlyWhenConsumed"`. Default: the contract's `documentsCanBeDeletedContractDefault`. |
   | `transferable`                       | integer  | Transferable without a marketplace sell:<br>`0` - Never<br>`1` - Always |
   | `tradeMode`                          | integer  | Built-in marketplace system:<br>`0` - None<br>`1` - Direct purchase (the purchaser can buy the item without requiring approval) |
   | `creationRestrictionMode`            | integer  | Restriction of document creation:<br>`0` - No restrictions<br>`1` - Contract owner only<br>`2` - No Creation Allowed. |
@@ -413,7 +522,17 @@ The following operation types can each have an independent cost configuration:
   | [`requiresIdentity`<br>`DecryptionBoundedKey`](./data-contract.md#key-management) | integer  | Key requirements for identity decryption:<br>`0` - Unique non-replaceable<br>`1` - Multiple<br>`2` - Multiple with reference to latest key |
   | [`properties`](#document-properties) | object   | Defines the properties of the document. |
   | [`transient`](#transient-properties) | array    | An array of strings specifying transient properties that are validated by Platform but not stored. |
-  | `tokenCost`                          | object   | Defines token costs for document operations (create, replace, update_price, delete, transfer, purchase) |
+  | [`tokenCost`](#token-costs)          | object   | Defines token costs for document operations (create, replace, update_price, delete, transfer, purchase) |
+  | [`actionFees`](#action-fees) | object | Credit fees for document operations, paid into the contract's fee pots |
+  | [`moderatorAbilities`](#moderator-abilities) | object | What the contract's moderators may do with documents of this type |
+  | [`ttl`](#document-removal) | integer | Seconds after `$createdAt` at which the platform deletes each document |
+  | [`deleteConstraints`](#document-removal) | object | Rules the stored document must meet for its owner to delete it |
+  | [`immutable`](#document-configuration) | array | Properties a replace cannot change, unconditionally or under a condition |
+  | [`propertyConstraints`](#document-configuration) | object | Rules every created or replaced document must meet |
+  | [`retractedWhen`](#document-configuration) | object | Condition under which a barred owner may still replace a document |
+  | [`ownerRefersTo`](#property-references) | object | A `refersTo` declaration applied to the document's `$ownerId` |
+  | [`creatorRefersTo`](#property-references) | object | A `refersTo` declaration applied to the document's `$creatorId` |
+  | [`entryPayload`](#document-configuration) | array | Properties an `indexOnly` type stores in its index entry values |
   | [`documentsCountable`](#aggregate-query-flags) | boolean | Doctype-wide count support. See [Aggregate Query Flags](#aggregate-query-flags). |
   | [`rangeCountable`](#aggregate-query-flags) | boolean | Per-index range counts. See [Aggregate Query Flags](#aggregate-query-flags). |
   | [`documentsSummable`](#aggregate-query-flags) | string | Doctype-wide sums of the named integer property. See [Aggregate Query Flags](#aggregate-query-flags). |
@@ -531,8 +650,8 @@ schema](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/m
 | `if`, `then`, `else`, `allOf`, `anyOf`, `oneOf`, `not` | Disabled for data contracts |
 | `dependencies`              | Not supported. Use `dependentRequired` instead |
 | `dependentSchemas`          | Not supported. Schema-based dependencies are not available in document schemas; use `dependentRequired` for property-presence dependencies |
-| `type: array`               | Only byte arrays are supported. `byteArray: true` must be defined; schemas for individual array items are not available |
-| `additionalItems`           | Not supported. Per-item array schemas (`items` / `prefixItems`) are not available in document schemas; constrain arrays with `minItems`, `maxItems`, `uniqueItems`, `contains`, and `byteArray` |
+| `type: array`               | Must be a byte array (`byteArray: true`) or, from protocol version 14 (5.0.0), a typed array whose `items` is an element schema of one scalar type: integer, number, string, boolean, or byte array (including identifiers). Objects and arrays of arrays are not allowed as elements. A typed array must define `maxItems`, at most [1024](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L138), and `minItems` and `maxItems` count elements. See the [`documentArrayItem` definition](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v3/document-meta.json#L1637) |
+| `additionalItems`           | Not supported. `prefixItems` is not available in document schemas, and `items` is limited to the typed array element schema described above |
 | `patternProperties`         | Restricted - cannot be used for data contracts |
 | `pattern`                   | Patterns are compiled with the Rust [`regex`](https://docs.rs/regex/latest/regex/) crate, whose semantics match [RE2](https://github.com/google/re2/wiki/Syntax) (no backtracking, lookaround, or backreferences), with a 5 MiB compiled-pattern size limit. Patterns using unsupported constructs or exceeding the size limit are rejected as JSON schema compilation errors |
 
@@ -591,4 +710,4 @@ This example syntax shows the structure of a documents object that defines two d
 
 ## Document Schema
 
-See full document schema details in the rs-dpp document meta schema. Protocol version 13 (Dash Platform 4.1) validates against the [v2 meta-schema](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json). Protocol version 14 (Dash Platform 5.0.0) validates against the [v3 meta-schema](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v3/document-meta.json), which adds the ranked index keywords, `refersTo`, `requiredSince`, `timeRange`, and the `indexOnly` keywords.
+See full document schema details in the rs-dpp document meta schema. Protocol version 13 (Dash Platform 4.1) validates against the [v2 meta-schema](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v2/document-meta.json). Protocol version 14 (Dash Platform 5.0.0) validates against the [v3 meta-schema](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v3/document-meta.json). See the [document type meta-schema](./data-contract.md#document-type-meta-schema) section for the keywords it adds.
