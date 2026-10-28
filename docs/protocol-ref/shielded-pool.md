@@ -24,8 +24,13 @@ The shielded pool is implemented through state transition types that share a com
 | 20 | [Identity Create From Shielded Pool](#identity-create-from-shielded-pool) | Create a new identity funded from the shielded pool |
 | 21 | [Shield from Identity](#shield-from-identity) | Move credits from an identity balance into the shielded pool (protocol version 14+) |
 | 22 | [Identity Top Up From Shielded Pool](#identity-top-up-from-shielded-pool) | Move credits from the shielded pool to an existing identity's balance (protocol version 14+) |
+| 26 | [Token Shielded Transfer With Shielded Fee](#token-shielded-transfer-with-shielded-fee) | Move tokens within a token's shielded pool, paying the fee from the credit shielded pool (protocol version 14+) |
+| 27 | [Token Unshield With Shielded Fee](#token-unshield-with-shielded-fee) | Move tokens from a token's shielded pool to an identity's token balance, paying the fee from the credit shielded pool (protocol version 14+) |
+| 28 | [Token Purchase From Shielded Pool](#token-purchase-from-shielded-pool) | Buy tokens at the direct purchase price and mint them into the token's shielded pool, paying from the credit shielded pool (protocol version 14+) |
 
 All transitions share a common Orchard bundle (anchor, actions, proof, binding signature). Transitions that touch the transparent side (Shield, Unshield, Shield from Asset Lock, Shielded Withdrawal, Identity Create From Shielded Pool, Shield from Identity, Identity Top Up From Shielded Pool) layer the transparent fields on top of that bundle. Shielded Transfer has no transparent surface beyond the bundle itself.
+
+Types 15-22 operate on the credit shielded pool. From protocol version 14, a token whose configuration sets [`hasShieldedPool`](data-contract-token.md#shielded-pool) also has its own shielded pool of that token, laid out like the credit pool. Types 26-28 carry two bundles: one in the token's pool and one in the credit pool that pays the fee, so no identity signs or pays. Identity-signed token pool operations are [batch token transitions](token.md#token-shielded-pool-transitions) instead. For the conceptual overview, see [Token Shielded Pools](../explanations/shielded-pool.md#token-shielded-pools).
 
 ## Common Components
 
@@ -57,7 +62,9 @@ Each action publishes:
 | cvNet | array of bytes | 32 bytes | Net value commitment (Pedersen commitment to the action's value contribution) |
 | spendAuthSig | array of bytes | 64 bytes | Per-action spend authorization signature — see [Shielded Transition Signing](#shielded-transition-signing) |
 
-Each action permanently stores [344 bytes](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/drive_abci_versions/drive_abci_validation_versions/v9.rs#L424) (312 bytes in the note commitment tree + 32 bytes in the nullifier tree). The minimum shielded fee charges a per-action storage allowance of `shielded_storage_bytes_per_action` bytes at the storage rate: 344 bytes through protocol version 13, and 550 bytes from protocol version 14 to cover tree framing overhead.
+Each action permanently stores [344 bytes](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/drive_abci_versions/drive_abci_validation_versions/v9.rs#L423-L425) (312 bytes in the note commitment tree + 32 bytes in the nullifier tree). The minimum shielded fee charges a per-action storage allowance of `shielded_storage_bytes_per_action` bytes at the storage rate: 344 bytes through protocol version 13, and [550 bytes](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/drive_abci_versions/drive_abci_validation_versions/v10.rs#L496) from protocol version 14 to cover tree framing overhead.
+
+From protocol version 14, the nullifiers revealed by the dummy spends of outputs-only bundles (Shield, Shield from Asset Lock, Shield from Identity, and the token pool transitions that only create notes) are recorded like the nullifiers of real spends. A bundle that repeats one within itself or reuses one already recorded is rejected with [`NullifierAlreadySpentError`](errors.md).
 
 See the [serialized action implementation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/shielded/mod.rs).
 
@@ -65,17 +72,39 @@ See the [serialized action implementation in rs-dpp](https://github.com/dashpay/
 
 An **anchor** is the Sinsemilla root of the note commitment tree at the time the bundle was constructed. Each shielded transition specifies the anchor it was built against; the platform validates that the anchor was previously published. Clients fetch anchors using [`getShieldedAnchors`](../reference/dapi-endpoints-platform-endpoints.md#getshieldedanchors) or [`getMostRecentShieldedAnchor`](../reference/dapi-endpoints-platform-endpoints.md#getmostrecentshieldedanchor).
 
-Anchors are not retained indefinitely. Nodes keep a rolling window governed by [`shielded_anchor_retention_blocks` and `shielded_anchor_pruning_interval`](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/drive_abci_versions/drive_abci_validation_versions/v1.rs#L364-L365), pruning anchors older than the retention window at each pruning boundary. A prover selecting an anchor must therefore choose one from the current window, not from arbitrary history.
+Anchors are not retained indefinitely. Nodes keep a rolling window governed by [`shielded_anchor_retention_blocks` and `shielded_anchor_pruning_interval`](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/drive_abci_versions/drive_abci_validation_versions/v10.rs#L471-L472), pruning anchors older than the retention window at each pruning boundary. A prover selecting an anchor must therefore choose one from the current window, not from arbitrary history.
 
 ### Platform Sighash
 
-Transitions with transparent fields (Unshield, Shielded Withdrawal, etc.) bind those fields to the Orchard signatures via a platform sighash computed as:
+Every Orchard bundle is signed over a platform sighash computed as:
 
 ```
 SHA-256(SIGHASH_DOMAIN || bundle_commitment || extra_data)
 ```
 
-This prevents replay attacks where an attacker substitutes transparent fields while reusing a valid Orchard bundle. See the [platform sighash implementation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/shielded/sighash.rs#L62-L90).
+`SIGHASH_DOMAIN` is the ASCII string [`DashPlatformSighash`](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/shielded/sighash.rs#L25-L26). The `extra_data` binds the bundle to the transition that carries it. For transitions with transparent fields it carries those fields, which prevents replay attacks where an attacker substitutes transparent fields while reusing a valid Orchard bundle. For outputs-only bundles, which have no spends and so are never checked against a pool's anchors, it carries a kind tag and whatever funds the bundle, so a third party cannot wrap a proved bundle in a transition of their own. See the [platform sighash implementation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/shielded/sighash.rs#L62-L90).
+
+:::{versionchanged} 5.0.0
+Protocol version 14 binds the outputs-only bundles of Shield and Shield from Asset Lock to a kind tag and their funding source. Earlier protocol versions use empty `extra_data` for both. Shield from Identity, added in the same version, is bound from the start.
+:::
+
+Protocol version 14 uses the following `extra_data` layouts (`||` is concatenation; integers are little-endian):
+
+| Transition | `extra_data` |
+| --- | --- |
+| [Shield](#shield) | [Tag `0x84` \|\| SHA-256 of the input addresses](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/shielded/sighash.rs#L791-L819), each in its 21-byte [Platform address](address-system.md#platform-address) encoding, in `inputs` map order |
+| [Shielded Transfer](#shielded-transfer) | Empty. The bundle spends notes, so its anchor and nullifiers already pin it to the pool |
+| [Unshield](#unshield) | [`outputAddress` (21 bytes) \|\| `unshieldingAmount` (u64)](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/shielded/sighash.rs#L183-L188) |
+| [Shield from Asset Lock](#shield-from-asset-lock) | [Tag `0x86` \|\| asset lock identifier](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/shielded/sighash.rs#L866-L882) (the double SHA-256 of the locked outpoint) |
+| [Shielded Withdrawal](#shielded-withdrawal) | [`outputScript` \|\| `unshieldingAmount` (u64) \|\| `coreFeePerByte` (u32) \|\| `pooling` (u8)](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/shielded/sighash.rs#L142-L154) |
+| [Identity Create From Shielded Pool](#identity-create-from-shielded-pool) | [`identityId` \|\| `denomination` (u64) \|\| `sendToAddressOnCreationFailure` \|\| the full public key set](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/shielded/sighash.rs#L288-L348) |
+| [Shield from Identity](#shield-from-identity) | [Tag `0x85` \|\| `identityId`](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/shielded/sighash.rs#L832-L848) |
+| [Identity Top Up From Shielded Pool](#identity-top-up-from-shielded-pool) | [`identityId` \|\| `topUpAmount` (u64)](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/shielded/sighash.rs#L218-L226) |
+| [Token Shielded Transfer With Shielded Fee](#token-shielded-transfer-with-shielded-fee) | Token bundle: [type `26` (u8) \|\| `tokenId`](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/shielded/sighash.rs#L501-L509). Fee bundle: see below |
+| [Token Unshield With Shielded Fee](#token-unshield-with-shielded-fee) | Token bundle: [type `27` (u8) \|\| `tokenId` \|\| `recipientId` \|\| `amount` (u64)](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/shielded/sighash.rs#L534-L547). Fee bundle: see below |
+| [Token Purchase From Shielded Pool](#token-purchase-from-shielded-pool) | Token bundle: [type `28` (u8) \|\| `tokenId` \|\| `tokenCount` (u64) \|\| `totalAgreedPrice` (u64)](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/shielded/sighash.rs#L571-L584). Fee bundle: see below |
+
+The credit pool fee bundle of types 26-28 binds [the transition type (u8) \|\| `tokenId` \|\| the SHA-256 digest of the token bundle's serialized actions](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/shielded/sighash.rs#L609-L621), so a fee bundle can only pay for the exact token bundle it was built with. The layouts of the batch token pool transitions are listed under [Token Shielded Pool Transitions](token.md#token-shielded-pool-transitions).
 
 ## Shielded State Transition Details
 
@@ -96,12 +125,12 @@ Move credits from one or more [Platform addresses](address-system.md#platform-ad
 | inputWitnesses | array | Varies | [Address witnesses](address-system.md#address-witness) for each input |
 
 :::{note}
-Maximum actions per transition: [`max_shielded_transition_actions`](protocol-constants.md). Address witness signatures are excluded from the signable bytes used by the platform sighash.
+Maximum actions per transition: [`max_shielded_transition_actions`](protocol-constants.md). Address witness signatures are excluded from the signable bytes used by the platform sighash. From protocol version 14, the bundle is bound to the input addresses through the [platform sighash](#platform-sighash).
 
 **Constraints:** Minimum inputs: 1. Maximum inputs: `max_address_inputs`. Minimum per input: 100,000 credits. One witness per input. `amount` must be greater than zero and at most `i64::MAX`, and the input sum must cover the amount plus the minimum shielded fee. The fee strategy must be non-empty, contain no duplicate steps, and have at most `max_address_fee_strategies` steps.
 :::
 
-See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/state_transition/state_transitions/shielded/shield_transition/v0/mod.rs#L37-L67).
+See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/state_transition/state_transitions/shielded/shield_transition/v0/mod.rs#L41-L71).
 
 ### Shielded Transfer
 
@@ -119,7 +148,7 @@ Move credits within the pool between notes. There is no transparent surface — 
 Maximum actions per transition: [`max_shielded_transition_actions`](protocol-constants.md).
 :::
 
-See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/state_transition/state_transitions/shielded/shielded_transfer_transition/v0/mod.rs#L31-L42).
+See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/state_transition/state_transitions/shielded/shielded_transfer_transition/v0/mod.rs#L35-L50).
 
 ### Unshield
 
@@ -138,7 +167,7 @@ Move credits from the pool to a [Platform address](address-system.md#platform-ad
 The `outputAddress` is bound to the Orchard bundle through the [platform sighash](#platform-sighash) to prevent substitution attacks. Maximum actions per transition: [`max_shielded_transition_actions`](protocol-constants.md).
 :::
 
-See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/state_transition/state_transitions/shielded/unshield_transition/v0/mod.rs#L32-L45).
+See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/state_transition/state_transitions/shielded/unshield_transition/v0/mod.rs#L36-L53).
 
 ### Shield from Asset Lock
 
@@ -156,10 +185,14 @@ Move credits from a Dash Core (L1) asset-lock transaction directly into the shie
 | signature | array of bytes | 65 bytes | ECDSA signature over the signable bytes proving control of the asset-locked output |
 
 :::{note}
-`valueBalance` must be greater than zero and at most `i64::MAX`. The ECDSA signature is excluded from the signable bytes used by the platform sighash. Maximum actions per transition: [`max_shielded_transition_actions`](protocol-constants.md).
+`valueBalance` must be greater than zero and at most `i64::MAX`. The ECDSA signature is excluded from the signable bytes used by the platform sighash. From protocol version 14, the bundle is bound to the asset lock through the [platform sighash](#platform-sighash). Maximum actions per transition: [`max_shielded_transition_actions`](protocol-constants.md).
 :::
 
-See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/state_transition/state_transitions/shielded/shield_from_asset_lock_transition/v0/mod.rs#L35-L64).
+:::{versionchanged} 5.0.0
+Protocol version 14 accepts only transition version 1 of Shield from Asset Lock, which has the same fields as version 0 but carries a bundle proved against the bound platform sighash. A version 0 transition is rejected when it is decoded, without a fee, and its asset lock remains unspent.
+:::
+
+See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/state_transition/state_transitions/shielded/shield_from_asset_lock_transition/v1/mod.rs#L49-L74).
 
 ### Shielded Withdrawal
 
@@ -216,7 +249,7 @@ The `denomination` field must exactly match one of the values accepted by the ac
 | 14 | 0.03 DASH (3,000,000,000 credits), 0.1 DASH (10,000,000,000), 0.25 DASH (25,000,000,000), 0.5 DASH (50,000,000,000), 1 DASH (100,000,000,000) |
 | 12 | 0.1 DASH (10,000,000,000 credits), 0.3 DASH (30,000,000,000), 0.5 DASH (50,000,000,000), 1 DASH (100,000,000,000) |
 
-Protocol version 13 added 0.03 and 0.25 DASH and retired 0.3 DASH. Protocol version 14 keeps the version 13 set unchanged. The protocol version 12 set is retained for chain replay. See the [denomination set in rs-platform-version](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/drive_abci_versions/drive_abci_validation_versions/v10.rs#L494-L508).
+Protocol version 13 added 0.03 and 0.25 DASH and retired 0.3 DASH. Protocol version 14 keeps the version 13 set unchanged. The protocol version 12 set is retained for chain replay. See the [denomination set in rs-platform-version](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/drive_abci_versions/drive_abci_validation_versions/v10.rs#L506-L512).
 
 See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/state_transition/state_transitions/shielded/identity_create_from_shielded_pool_transition/v0/mod.rs#L31-L68).
 
@@ -242,7 +275,7 @@ Move credits from an identity's balance directly into the shielded pool. The tra
 | signature | array of bytes | 65 or 96 bytes | Identity signature over the signable bytes: 65 bytes for ECDSA keys or 96 bytes for BLS keys |
 
 :::{note}
-`signature` and `signaturePublicKeyId` are the only fields excluded from the signable bytes. The Orchard bundle uses empty `extra_sighash_data`; the identity signature binds the bundle to this identity and nonce. Maximum actions per transition: [`max_shielded_transition_actions`](protocol-constants.md).
+`signature` and `signaturePublicKeyId` are the only fields excluded from the signable bytes. The Orchard bundle is bound to the funding identity through the [platform sighash](#platform-sighash), and the identity signature binds the transition to this identity and nonce. Maximum actions per transition: [`max_shielded_transition_actions`](protocol-constants.md).
 
 **Constraints:** `amount` must be greater than zero and at most `i64::MAX`. The identity balance must cover `amount` plus the minimum shielded fee for the action count plus a 20-byte balance write at the storage rate. At execution the identity pays the metered fee plus the shielded compute fee (proof verification and per-action processing). A bundle that fails verification charges the proof failure penalty and bumps the identity nonce.
 :::
@@ -274,6 +307,103 @@ Move credits from the shielded pool to an existing identity's balance. The spend
 
 See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/state_transition/state_transitions/shielded/identity_top_up_from_shielded_pool_transition/v0/mod.rs#L41-L58).
 
+### Token Shielded Transfer With Shielded Fee
+
+:::{versionadded} 5.0.0
+Protocol version 14 added this transition.
+:::
+
+Move tokens within a token's shielded pool without involving any identity. The token bundle spends and recreates notes in the token pool with a value balance of zero, and a second bundle spends notes in the credit shielded pool to pay the fee.
+
+| Field | Type | Size | Description |
+| --- | --- | --- | --- |
+| dataContractId | array of bytes | 32 bytes | The [data contract](data-contract.md) that defines the token |
+| tokenContractPosition | unsigned integer | 16 bits | The token's position in the contract |
+| tokenId | array of bytes | 32 bytes | The [token ID](token.md#token-id). Must equal the ID derived from `dataContractId` and `tokenContractPosition` |
+| tokenActions | array | Varies | Orchard [actions](#actions) of the bundle in the token's shielded pool |
+| tokenAnchor | array of bytes | 32 bytes | [Anchor](#anchors) of the token pool's note commitment tree |
+| tokenProof | array of bytes | Varies | Halo 2 proof of the token bundle |
+| tokenBindingSignature | array of bytes | 64 bytes | RedPallas binding signature of the token bundle |
+| feeActions | array | Varies | Orchard [actions](#actions) of the spend bundle in the credit shielded pool that pays the fee |
+| feeAnchor | array of bytes | 32 bytes | [Anchor](#anchors) of the credit pool's note commitment tree |
+| feeProof | array of bytes | Varies | Halo 2 proof of the fee bundle |
+| feeBindingSignature | array of bytes | 64 bytes | RedPallas binding signature of the fee bundle |
+| creditAmount | unsigned integer | 64 bits | Credits leaving the credit pool (the fee bundle's value balance). This is the fee |
+
+:::{note}
+The token bundle and the fee bundle are each bound to this transition through the [platform sighash](#platform-sighash).
+
+**Constraints:** Both bundles must pass the stateless checks every shielded bundle passes: at most [`max_shielded_transition_actions`](protocol-constants.md) actions, correctly sized encrypted notes, a non-empty proof, and a non-zero anchor. `tokenId` must match the contract and position (`InvalidTokenIdError`). `creditAmount` must be greater than zero and at most `i64::MAX`. `creditAmount` must equal the [fee for both bundles](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/shielded/compute_minimum_shielded_fee/mod.rs#L262-L270) exactly. The token must have a [shielded pool](data-contract-token.md#shielded-pool) ([`TokenShieldedPoolNotEnabledError`](errors.md)) and must not be paused. The fee bundle's anchor must be recorded for the credit pool, its nullifiers must be unspent, and the credit pool must hold `creditAmount`. Each transition is unique by the nullifiers of both bundles. The token bundle's anchor must be recorded for the token pool and its nullifiers must be unspent there.
+:::
+
+See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/state_transition/state_transitions/shielded/token_shielded_transfer_with_shielded_fee_transition/v0/mod.rs#L45-L78) and the [state validation in rs-drive-abci](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/token_shielded_transfer_with_shielded_fee/transform_into_action/v0/mod.rs#L30-L79).
+
+### Token Unshield With Shielded Fee
+
+:::{versionadded} 5.0.0
+Protocol version 14 added this transition.
+:::
+
+Move tokens from a token's shielded pool into an identity's token balance without a transition-level signature. The token bundle spends notes in the token pool (value balance `amount`), and a second bundle spends notes in the credit shielded pool to pay the fee.
+
+| Field | Type | Size | Description |
+| --- | --- | --- | --- |
+| dataContractId | array of bytes | 32 bytes | The [data contract](data-contract.md) that defines the token |
+| tokenContractPosition | unsigned integer | 16 bits | The token's position in the contract |
+| tokenId | array of bytes | 32 bytes | The [token ID](token.md#token-id). Must equal the ID derived from `dataContractId` and `tokenContractPosition` |
+| recipientId | array of bytes | 32 bytes | The [identity](identity.md#identity-id) whose token balance receives `amount` |
+| amount | unsigned integer | 64 bits | Tokens leaving the token pool (the token bundle's value balance) |
+| tokenActions | array | Varies | Orchard [actions](#actions) of the bundle in the token's shielded pool |
+| tokenAnchor | array of bytes | 32 bytes | [Anchor](#anchors) of the token pool's note commitment tree |
+| tokenProof | array of bytes | Varies | Halo 2 proof of the token bundle |
+| tokenBindingSignature | array of bytes | 64 bytes | RedPallas binding signature of the token bundle |
+| feeActions | array | Varies | Orchard [actions](#actions) of the spend bundle in the credit shielded pool that pays the fee |
+| feeAnchor | array of bytes | 32 bytes | [Anchor](#anchors) of the credit pool's note commitment tree |
+| feeProof | array of bytes | Varies | Halo 2 proof of the fee bundle |
+| feeBindingSignature | array of bytes | 64 bytes | RedPallas binding signature of the fee bundle |
+| creditAmount | unsigned integer | 64 bits | Credits leaving the credit pool (the fee bundle's value balance). This is the fee |
+
+:::{note}
+`recipientId` and `amount` are bound to the token bundle through the [platform sighash](#platform-sighash), so the tokens cannot be redirected.
+
+**Constraints:** Both bundles must pass the stateless checks every shielded bundle passes: at most [`max_shielded_transition_actions`](protocol-constants.md) actions, correctly sized encrypted notes, a non-empty proof, and a non-zero anchor. `tokenId` must match the contract and position (`InvalidTokenIdError`). `creditAmount` must be greater than zero and at most `i64::MAX`. `amount` must be from 1 to 2^48 - 1. `creditAmount` must equal the [fee for both bundles](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/shielded/compute_minimum_shielded_fee/mod.rs#L272-L291) exactly, which includes the storage for a new token balance whether or not the recipient already holds the token. The token must have a [shielded pool](data-contract-token.md#shielded-pool) ([`TokenShieldedPoolNotEnabledError`](errors.md)) and must not be paused. The fee bundle's anchor must be recorded for the credit pool, its nullifiers must be unspent, and the credit pool must hold `creditAmount`. Each transition is unique by the nullifiers of both bundles. The recipient identity must exist (`TokenTransferRecipientIdentityNotExistError`). The token pool must hold at least the token's [`minimumPoolNotesForOutgoing`](data-contract-token.md#shielded-pool) notes ([`InsufficientPoolNotesError`](errors.md)). The token bundle's anchor must be recorded for the token pool, its nullifiers must be unspent there, and the pool must hold `amount`.
+:::
+
+See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/state_transition/state_transitions/shielded/token_unshield_with_shielded_fee_transition/v0/mod.rs#L46-L83) and the [state validation in rs-drive-abci](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/token_unshield_with_shielded_fee/transform_into_action/v0/mod.rs#L34-L112).
+
+### Token Purchase From Shielded Pool
+
+:::{versionadded} 5.0.0
+Protocol version 14 added this transition.
+:::
+
+Buy tokens at the token's [direct purchase price](token.md#token-set-purchase-price-transition) and mint them straight into the token's shielded pool, paid from the credit shielded pool. The token bundle is outputs-only (value balance `-tokenCount`). The credit bundle spends notes whose value covers the price plus the fee. The price is credited to the contract owner, and no identity signs.
+
+| Field | Type | Size | Description |
+| --- | --- | --- | --- |
+| dataContractId | array of bytes | 32 bytes | The [data contract](data-contract.md) that defines the token |
+| tokenContractPosition | unsigned integer | 16 bits | The token's position in the contract |
+| tokenId | array of bytes | 32 bytes | The [token ID](token.md#token-id). Must equal the ID derived from `dataContractId` and `tokenContractPosition` |
+| tokenCount | unsigned integer | 64 bits | Tokens bought and minted into the token pool |
+| totalAgreedPrice | unsigned integer | 64 bits | Credits the buyer agrees to pay for `tokenCount`, paid to the contract owner |
+| tokenActions | array | Varies | Orchard [actions](#actions) of the bundle in the token's shielded pool |
+| tokenAnchor | array of bytes | 32 bytes | [Anchor](#anchors) of the token pool's note commitment tree |
+| tokenProof | array of bytes | Varies | Halo 2 proof of the token bundle |
+| tokenBindingSignature | array of bytes | 64 bytes | RedPallas binding signature of the token bundle |
+| feeActions | array | Varies | Orchard [actions](#actions) of the spend bundle in the credit shielded pool that pays the fee |
+| feeAnchor | array of bytes | 32 bytes | [Anchor](#anchors) of the credit pool's note commitment tree |
+| feeProof | array of bytes | Varies | Halo 2 proof of the fee bundle |
+| feeBindingSignature | array of bytes | 64 bytes | RedPallas binding signature of the fee bundle |
+| creditAmount | unsigned integer | 64 bits | Credits leaving the credit pool (the fee bundle's value balance): `totalAgreedPrice` plus the fee |
+
+:::{note}
+`tokenCount` and `totalAgreedPrice` are bound to the token bundle through the [platform sighash](#platform-sighash).
+
+**Constraints:** Both bundles must pass the stateless checks every shielded bundle passes: at most [`max_shielded_transition_actions`](protocol-constants.md) actions, correctly sized encrypted notes, a non-empty proof, and a non-zero anchor. `tokenId` must match the contract and position (`InvalidTokenIdError`). `creditAmount` must be greater than zero and at most `i64::MAX`. `tokenCount` must be from 1 to 2^48 - 1, and `totalAgreedPrice` must not exceed `creditAmount`. `creditAmount` minus `totalAgreedPrice` must equal the [fee for both bundles](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/shielded/compute_minimum_shielded_fee/mod.rs#L293-L307) exactly. The token must have a [shielded pool](data-contract-token.md#shielded-pool) ([`TokenShieldedPoolNotEnabledError`](errors.md)) and must not be paused. The fee bundle's anchor must be recorded for the credit pool, its nullifiers must be unspent, and the credit pool must hold `creditAmount`. Each transition is unique by the nullifiers of both bundles. The token must have a direct purchase price, and `totalAgreedPrice` must cover the price for `tokenCount` under the current pricing schedule. The total supply plus `tokenCount` must not exceed `maxSupply` (or `i64::MAX` when no maximum is set). The token bundle's dummy nullifiers must not already be recorded in the token pool. Because the price leaves the credit pool for the contract owner, the credit pool must hold at least [250 notes](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/drive_abci_versions/drive_abci_validation_versions/v10.rs#L470), the same threshold other transitions that move value out of the credit pool must meet ([`InsufficientPoolNotesError`](errors.md)).
+:::
+
+See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/state_transition/state_transitions/shielded/token_purchase_from_shielded_pool_transition/v0/mod.rs#L46-L83) and the [state validation in rs-drive-abci](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/token_purchase_from_shielded_pool/transform_into_action/v0/mod.rs#L39-L174).
+
 ## Shielded Transition Signing
 
 With one exception, shielded transitions are not signed by an identity public key, and the identity-signed `signature` and `signaturePublicKeyId` fields listed in the [common fields](state-transition.md#common-fields) do not appear on them. The exception is [Shield from Identity](#shield-from-identity), which the funding identity signs with a CRITICAL transfer key. Authorization is instead carried by cryptographic primitives attached to the Orchard bundle and, where applicable, to the transparent side of the transition. This includes the asset-lock ECDSA `signature` carried by [Shield from Asset Lock](#shield-from-asset-lock) described below.
@@ -287,7 +417,7 @@ Every shielded transition includes:
 
 ### Platform sighash
 
-Unshield, Shielded Withdrawal, Identity Create From Shielded Pool, and Identity Top Up From Shielded Pool bind their transparent fields to the Orchard bundle through the [platform sighash](#platform-sighash) (non-empty `extra_sighash_data`). Any modification to those transparent fields invalidates the Orchard signatures, preventing replay attacks that substitute transparent fields while reusing a valid bundle. Shield, Shield from Asset Lock, and Shield from Identity use empty `extra_sighash_data`; their transparent side is authorized by address witnesses (Shield), the asset-lock ECDSA signature (Shield from Asset Lock), or the identity signature (Shield from Identity) over the signable bytes instead.
+Unshield, Shielded Withdrawal, Identity Create From Shielded Pool, Identity Top Up From Shielded Pool, and the token bundles of types 26-28 bind their transparent fields to the Orchard bundle through the [platform sighash](#platform-sighash) (non-empty `extra_sighash_data`). Any modification to those transparent fields invalidates the Orchard signatures, preventing replay attacks that substitute transparent fields while reusing a valid bundle. From protocol version 14, Shield, Shield from Asset Lock, and Shield from Identity bind a kind tag and their funding source (input addresses, asset lock, or identity), so a bundle cannot be moved into another transition. Their transparent side is still authorized by address witnesses (Shield), the asset-lock ECDSA signature (Shield from Asset Lock), or the identity signature (Shield from Identity) over the signable bytes. Shielded Transfer is the only transition with empty `extra_sighash_data`.
 
 ### Transparent signatures
 
@@ -295,9 +425,9 @@ Several shielded transitions also carry transparent signatures over the transpar
 
 - **Shield** includes an array of [address witnesses](address-system.md#address-witness) (`inputWitnesses`) — one per address input. Each witness proves control of its corresponding Platform address. Address witness signatures are excluded from the bytes that feed the platform sighash (they sign the platform sighash output, not vice-versa).
 - **Shield from Asset Lock** includes a 65-byte ECDSA `signature` proving control of the L1 asset-locked output, in the same form used by [Identity Create](identity.md#identity-create). The signature is excluded from the bytes that feed the platform sighash.
-- **Shield from Identity** includes an identity `signature` and `signaturePublicKeyId`, in the same form used by [identity credit transfer](identity.md#identity-credit-transfer). Both are excluded from the signable bytes; the signature binds the Orchard bundle to the identity and nonce.
+- **Shield from Identity** includes an identity `signature` and `signaturePublicKeyId`, in the same form used by [identity credit transfer](identity.md#identity-credit-transfer). Both are excluded from the signable bytes; the signature covers the Orchard bundle together with the identity and nonce.
 
-Shielded Transfer, Unshield, Shielded Withdrawal, and Identity Top Up From Shielded Pool have no transparent signatures; the Orchard bundle signatures plus the platform sighash provide full authorization.
+Shielded Transfer, Unshield, Shielded Withdrawal, Identity Top Up From Shielded Pool, and the token transitions of types 26-28 have no transparent signatures; the Orchard bundle signatures plus the platform sighash provide full authorization.
 
 ## Querying shielded state
 
