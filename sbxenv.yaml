@@ -74,6 +74,9 @@ lifecycle:
   postCreate:
     - name: Configure sandbox network allowances
       command: |
+        # These commands only add allowances; they do not restrict outbound traffic
+        # to this list or set/verify the baseline policy. Effective access also
+        # depends on the active preset, existing rules, kits, and org governance.
         # Add future allowed destinations here (one host:port per line).
         # Python/uv and npm downloads, Sphinx inventories, and Read the Docs redirects.
         for destination in \
