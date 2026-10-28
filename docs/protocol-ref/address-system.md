@@ -4,15 +4,13 @@
 
 # Platform Address System
 
-:::{attention}
 Address-based state transitions were [enabled in Protocol Version 11](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/feature_initial_protocol_versions.rs). These transitions enable direct operations using Platform addresses without requiring a pre-existing identity for some operations.
-:::
 
 ## Overview
 
 Address-based state transitions provide an alternative funding and transfer mechanism using Platform addresses. Unlike identity-signed transactions that require an existing identity with keys, address-based operations can work directly with cryptographic proofs tied to address ownership.
 
-There are six address-based state transition types:
+The address-based state transition types are:
 
 | Type | Name | Description |
 |------|------|-------------|
