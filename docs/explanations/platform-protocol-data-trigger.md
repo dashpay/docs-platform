@@ -16,7 +16,7 @@ Given a number of technical considerations (security, masternode processing capa
 
 ## Details
 
-Since all application data is submitted in the form of documents, data triggers are defined in the context of documents. To provide even more granularity, they also incorporate the document `action`, so a separate trigger can be created for any [document transition action](../explanations/platform-protocol-document.md#document-submission): `create`, `replace`, `delete`, `transfer`, `purchase`, `updatePrice`, and (from protocol version 14) `indexOnlyDelete`.
+Since all application data is submitted in the form of documents, data triggers are defined in the context of documents. To provide even more granularity, they also incorporate the document `action`, so a separate trigger can be created for any [document transition action](../explanations/platform-protocol-document.md#document-submission): `create`, `replace`, `delete`, `transfer`, `purchase`, `updatePrice`, and `indexOnlyDelete`.
 
 Which trigger runs for a given contract, document type, and action is defined in the data trigger [binding list](https://github.com/dashpay/platform/blob/master/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/batch/data_triggers/bindings/list/v2/mod.rs). The binding list is versioned with the protocol, so the set of active triggers can change when a new protocol version activates. The trigger implementations linked in the tables below (for example the shared `reject` trigger) are generic and do not name the contracts that use them - the binding list is what associates each action with its trigger.
 
@@ -40,11 +40,11 @@ In addition to DPNS, Drive ships data triggers for a small set of other system c
 | Data Contract | Document | Action(s) | Trigger Description |
 | - | - | - | - |
 | DashPay | `contactRequest` | [`CREATE`](https://github.com/dashpay/platform/tree/master/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/batch/data_triggers/triggers/dashpay) | Enforces DashPay-specific rules on outgoing contact requests |
-| DashPay | `profile` | [`CREATE`/`REPLACE`](https://github.com/dashpay/platform/tree/master/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/batch/data_triggers/triggers/dashpay) | Validates that the optional core and Platform payment address fields carry a supported address type byte (P2PKH or P2SH), a rule the schema alone cannot express (protocol version 14+) |
+| DashPay | `profile` | [`CREATE`/`REPLACE`](https://github.com/dashpay/platform/tree/master/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/batch/data_triggers/triggers/dashpay) | Validates that the optional core and Platform payment address fields carry a supported address type byte (P2PKH or P2SH), a rule the schema alone cannot express |
 | ---- | ---- | ---- | ---- |
 | Masternode Rewards | `rewardShare` | [`CREATE`/`REPLACE`/`DELETE`](https://github.com/dashpay/platform/blob/master/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/batch/data_triggers/triggers/reject/v0/mod.rs) | Rejects all three actions so ordinary identities cannot write reward share records |
 | ---- | ---- | ---- | ---- |
 | Withdrawals | `withdrawal` | [`REPLACE`](https://github.com/dashpay/platform/blob/master/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/batch/data_triggers/triggers/reject/v0/mod.rs) | Prevents direct external mutation of withdrawal documents |
-| Withdrawals | `withdrawal` | [`DELETE`](https://github.com/dashpay/platform/tree/master/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/batch/data_triggers/triggers/withdrawals) | Allows deletion in `COMPLETE` status, and from protocol version 14 also in terminal `FAILED` status |
+| Withdrawals | `withdrawal` | [`DELETE`](https://github.com/dashpay/platform/tree/master/packages/rs-drive-abci/src/execution/validation/state_transition/state_transitions/batch/data_triggers/triggers/withdrawals) | Allows deletion in `COMPLETE` status or terminal `FAILED` status |
 
 When document state transitions are received, Drive checks if there is a trigger associated with the document type and action. If a trigger is found, Drive executes the trigger logic. Successful execution of the trigger logic is necessary for the document to be accepted and applied to the [platform state](../explanations/drive-platform-state.md).

@@ -12,7 +12,7 @@ Documents are defined in an application's [Data Contract](../explanations/platfo
 
 ## Details
 
-Most document types store each document as a JSON body with the base fields described below. Since protocol version 14, a data contract can instead declare a document type as index-only: its documents are never stored as a body and exist only as entries in the type's indices, with reads reconstructed from those entries. In exchange, index-only documents are immutable, cannot be transferred or traded, keep no history, and have no revision. See the [data contract explanation](../explanations/platform-protocol-data-contract.md#structure) and [indexOnly document types](../reference/data-contracts.md#indexonly-document-types) in the data contract reference.
+Most document types store each document as a JSON body with the base fields described below. A data contract can instead declare a document type as index-only: its documents are never stored as a body and exist only as entries in the type's indices, with reads reconstructed from those entries. In exchange, index-only documents are immutable, cannot be transferred or traded, keep no history, and have no revision. See the [data contract explanation](../explanations/platform-protocol-data-contract.md#structure) and [indexOnly document types](../reference/data-contracts.md#indexonly-document-types) in the data contract reference.
 
 ### Base Fields
 
@@ -46,9 +46,9 @@ Timestamp and block height fields are present only when included in the document
 
 `$price` is present only while a document whose trade mode supports seller-set pricing is listed, and is cleared when the document is purchased or transferred. `$creatorId` is present on transferable or tradeable document types and is preserved when ownership changes.
 
-Since protocol version 14, `$contractVersion` records which contract version supplied the document's required properties. This allows contract updates to add required properties without invalidating older documents.
+`$contractVersion` records which contract version supplied the document's required properties. This allows contract updates to add required properties without invalidating older documents.
 
-`$moderatedAt` and `$moderatedBy` (protocol version 14+) are present only on document types that keep fields for the contract's moderators, once a moderator has written those fields. See [Contract Moderation](../explanations/platform-protocol-data-contract.md#contract-moderation).
+`$moderatedAt` and `$moderatedBy` are present only on document types that keep fields for the contract's moderators, once a moderator has written those fields. See [Contract Moderation](../explanations/platform-protocol-data-contract.md#contract-moderation).
 
 `$type` and `$dataContractId` identify the document rather than being stored with its data. Platform supplies them when the document is fetched.
 
@@ -108,7 +108,7 @@ On a contract that declares [moderation](../explanations/platform-protocol-data-
 | - | - |
 | type | State transition type (`1` for a Batch) |
 | ownerId | Identity submitting the batch |
-| transitions | Document and token transitions bundled in the batch (e.g. document `create`, `replace`, `delete`, `transfer`, `purchase`, `updatePrice`, and, from protocol version 14, `indexOnlyDelete`) |
+| transitions | Document and token transitions bundled in the batch (e.g. document `create`, `replace`, `delete`, `transfer`, `purchase`, `updatePrice`, and `indexOnlyDelete`) |
 | userFeeIncrease | Optional amount the submitter adds to the fee to raise the priority of the batch and improve its chance of timely inclusion |
 | signaturePublicKeyId | The `id` of the identity public key that signed the state transition |
 | signature | Signature of state transition data |
@@ -151,13 +151,13 @@ If the data contract sets the updated at timestamp as required for the document 
 
 The document delete transition is used to delete an existing Dash Platform document. It only requires the fields found in the [transition base](#document-transition-base).
 
-Documents of [index-only document types](#details) have no stored body to reference by ID. Since protocol version 14 they are instead removed with an index-only delete transition (`indexOnlyDelete`) that carries the property values identifying the index entry to remove.
+Documents of [index-only document types](#details) have no stored body to reference by ID. They are removed with an index-only delete transition (`indexOnlyDelete`) that carries the property values identifying the index entry to remove.
 
-The document type decides whether its owner may delete a document. Since protocol version 14, a document can also leave the platform state in other ways, and each document type declares which of them apply:
+The document type decides whether its owner may delete a document. A document can also leave the platform state in other ways, and each document type declares which of them apply:
 
 | Removed by | Controlled by |
 | - | - |
-| The document's owner, with a delete transition | `canBeDeleted`. Since protocol version 14, `deleteConstraints` can add rules the stored document must meet before its owner may delete it, such as "only before anyone has voted on it". |
+| The document's owner, with a delete transition | `canBeDeleted`. `deleteConstraints` can add rules the stored document must meet before its owner may delete it, such as "only before anyone has voted on it". |
 | A create that consumes it | A `refersTo` reference declaring `consume` deletes the writer's own referenced document when the referring document is created, as in a commit-and-reveal scheme. `canBeDeleted: "onlyWhenConsumed"` stops the owner from deleting such a document directly, so consuming it is the only way the owner can remove it. |
 | The contract's moderators | `moderatorAbilities` on a [moderated contract](../explanations/platform-protocol-data-contract.md#contract-moderation). By default, the deletion leaves a removal record and does not refund the owner's storage. |
 | The platform, on expiry | `ttl`. The document is deleted automatically once the given number of seconds has passed since its `$createdAt`. Once it has expired, it can no longer be replaced, transferred, bought, or repriced, but it can still be queried until the platform removes it. |

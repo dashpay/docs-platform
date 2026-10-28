@@ -111,7 +111,7 @@ A configuration update can point the token at a different [group](#groups), but 
 
 #### Shielded Pool Actions
 
-From protocol version 14, a token with a [shielded pool](#shielded-pool) supports additional actions that move tokens into, within, or out of its pool:
+A token with a [shielded pool](#shielded-pool) supports additional actions that move tokens into, within, or out of its pool:
 
 - **Shield**, **shielded transfer**, and **unshield** move tokens from a holder's balance into the pool, between notes inside the pool, and from the pool to any identity's token balance.
 - **Mint to pool** and **burn from pool** follow the token's manual minting and burning rules, and can be performed by a [group](#groups). Minting into the pool also requires the token to allow choosing the mint destination, since the minter decides who receives the new notes. A burn from the pool spends notes that the burner holds; it cannot remove other holders' notes.
@@ -175,13 +175,13 @@ When creating a token, you define its configuration using the following paramete
 
 #### Transferability
 
-- From protocol version 14, a token can be made non-transferable. Holders cannot transfer it to another identity, but it can still be minted (including to a chosen recipient), claimed, purchased directly, burned, frozen, and destroyed as configured.
+- A token can be made non-transferable. Holders cannot transfer it to another identity, but it can still be minted (including to a chosen recipient), claimed, purchased directly, burned, frozen, and destroyed as configured.
 - A document type can charge a non-transferable token only by burning it. Since only a contract's own token can be burned as a [token-based fee](#token-based-fees), document types in other contracts cannot charge it at all.
 - A non-transferable token cannot have a [shielded pool](#shielded-pool).
 
 #### Shielded Pool
 
-- From protocol version 14, a token can have its own shielded pool that lets holders keep and move balances privately. See [Shielded pool actions](#shielded-pool-actions) and the [Shielded Pool](./shielded-pool.md#token-shielded-pools) explanation.
+- A token can have its own shielded pool that lets holders keep and move balances privately. See [Shielded pool actions](#shielded-pool-actions) and the [Shielded Pool](./shielded-pool.md#token-shielded-pools) explanation.
 - The pool can only be enabled when the token is created. It cannot be added to or removed from an existing token.
 - Notes in the pool belong to no identity's balance, so they cannot be frozen. A token with a pool must therefore permanently disable freezing: its freeze, unfreeze, and destroy frozen funds rules must authorize no one. Pausing the token still applies to the pool.
 - The token can require the pool to hold a minimum number of notes (at most 250) before tokens may leave it. No minimum is required by default. The minimum can be changed later only if the token's change rules authorize someone to change it.
@@ -314,11 +314,11 @@ This allows for:
 - Revenue generation for app creators
 - Deflationary models via token burning
 - Shared-currency ecosystems, by pricing document actions in a token that belongs to another contract. Such external-token payments transfer to the contract owner; burning is only permitted for a contract's own token.
-- A gasless user experience, by having the contract owner rather than the document owner pay the Platform credit cost of the action (from protocol version 14). The identity submitting the action still pays any [user fee increase](./fees.md#user-fee-increase) it adds.
+- A gasless user experience, by having the contract owner rather than the document owner pay the Platform credit cost of the action. The identity submitting the action still pays any [user fee increase](./fees.md#user-fee-increase) it adds.
 
 Alongside the amount and its effect, each cost in the contract specifies who pays the Platform gas fees. Separately, the client submitting the action can attach its own minimum and maximum bounds on what it is willing to pay. Clients should generally set a maximum: without one, a contract whose rules allow the price to change could charge more than the user expected between signing and execution.
 
-From protocol version 14, a token payment must also respect the token's own configuration. A paused token cannot be burned or transferred to pay for document actions. A [non-transferable](#transferability) token can only be burned. A payment to a contract owner whose token account is frozen is rejected unless the token [allows transfers to frozen balances](#allow-transfer-to-frozen-balance). If the token has a [shielded pool](#shielded-pool), the cost can instead be paid from the pool, leaving the payer's token balance untouched.
+A token payment must also respect the token's own configuration. A paused token cannot be burned or transferred to pay for document actions. A [non-transferable](#transferability) token can only be burned. A payment to a contract owner whose token account is frozen is rejected unless the token [allows transfers to frozen balances](#allow-transfer-to-frozen-balance). If the token has a [shielded pool](#shielded-pool), the cost can instead be paid from the pool, leaving the payer's token balance untouched.
 
 ## Token Creation
 

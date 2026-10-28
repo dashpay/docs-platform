@@ -72,8 +72,8 @@ The following table contains a list of currently defined payload types:
 
 Batch transitions (payload type `1`) carry either document or token actions:
 
-- **Document actions** — create, replace, delete, transfer, purchase, update price, and, from protocol version 14, index-only delete for index-only document types. See [Document](../explanations/platform-protocol-document.md) for details.
-- **Token actions** — mint, burn, transfer, freeze/unfreeze, claim, direct purchase, and set price, along with administrative actions. From protocol version 14, tokens with a shielded pool also support [shielded pool actions](../explanations/tokens.md#shielded-pool-actions). See [Tokens](../explanations/tokens.md) for details.
+- **Document actions** — create, replace, delete, transfer, purchase, update price, and index-only delete for index-only document types. See [Document](../explanations/platform-protocol-document.md) for details.
+- **Token actions** — mint, burn, transfer, freeze/unfreeze, claim, direct purchase, and set price, along with administrative actions. Tokens with a shielded pool also support [shielded pool actions](../explanations/tokens.md#shielded-pool-actions). See [Tokens](../explanations/tokens.md) for details.
 
 ### Application Usage
 

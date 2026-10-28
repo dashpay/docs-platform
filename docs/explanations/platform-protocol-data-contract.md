@@ -41,13 +41,13 @@ For a practical example, see the [DashPay contract](#example-contract).
 
 ### Contract Groups
 
-From protocol version 14, contract groups organize contracts, document types, and tokens into an identity-owned collection. They can scope [authentication keys](../explanations/identity.md#keys) to those members. These are separate from [token groups](../explanations/tokens.md#groups), whose member identities jointly authorize token actions.
+Contract groups organize contracts, document types, and tokens into an identity-owned collection. They can scope [authentication keys](../explanations/identity.md#keys) to those members. These are separate from [token groups](../explanations/tokens.md#groups), whose member identities jointly authorize token actions.
 
 When registering a contract, the creation transition can also register a contract group, optionally with admins, and declare memberships for the new contract, its document types, or its tokens in groups the creating identity owns or administers.
 
 ### Contract Moderation
 
-From protocol version 14, a data contract can declare moderation when it is registered. Moderation gives an application a consensus-enforced way to keep abusive identities out and to take down content, rather than relying on client-side blocklists that bind only the clients that keep them.
+A data contract can declare moderation when it is registered. Moderation gives an application a consensus-enforced way to keep abusive identities out and to take down content, rather than relying on client-side blocklists that bind only the clients that keep them.
 
 A moderated contract can keep any of three lists of identities:
 
@@ -90,7 +90,7 @@ Existing data contracts can be updated by their owner in backwards-compatible wa
 Permitted changes include:
 
 * Adding new document types, including their indices
-* Adding new properties to existing document types. New properties are normally optional; from protocol version 14 a new property may be marked as required starting with the contract version that introduces it, without invalidating documents created under earlier versions
+* Adding new properties to existing document types. A new property can be optional, or required starting with the contract version that introduces it. Requiring it does not invalidate documents created under earlier contract versions
 * Adding new tokens to the contract
 * Adding new groups to the contract
 * Updating contract keywords and description
@@ -99,7 +99,7 @@ Restricted changes include modifications that would break existing stored docume
 
 A contract update cannot remove or modify an existing token or group. Changing an existing token's configuration is done with a [token configuration update transition](../explanations/tokens.md#configuration-updates), governed by that token's own change control rules, and existing groups are immutable once the contract is registered.
 
-Optional contract revision history storage allows contracts to retain a record of their revisions that can be retrieved and verified. Identity key access rules also allow an encryption or decryption key to be bound to a specific contract or document type for more granular key management. From protocol version 14, non-master authentication keys can also be bound to a contract, document type, or contract group, restricting them to batch transitions within those bounds. See [Identity keys](../explanations/identity.md#keys).
+Optional contract revision history storage allows contracts to retain a record of their revisions that can be retrieved and verified. Identity key access rules also allow an encryption or decryption key to be bound to a specific contract or document type for more granular key management. Non-master authentication keys can also be bound to a contract, document type, or contract group, restricting them to batch transitions within those bounds. See [Identity keys](../explanations/identity.md#keys).
 
 :::{note}
 For more detailed information, see the [Platform Protocol Reference - Data Contract](../protocol-ref/data-contract.md) page.

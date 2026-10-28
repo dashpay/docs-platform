@@ -37,7 +37,7 @@ In the registration phase, the domain name (e.g. `alice.dash`) is once again sub
 
 ### Conflict resolution
 
-Since some names may be popular, the registration process includes a voting mechanism to resolve conflicts when multiple identities request the same name. Identities requesting premium names must pay a fee to cover the masternode voting costs. Since protocol version 14 (introduced in Dash Platform v5.0), the fee is 0.1 DASH, down from 0.2 DASH. Once a contest has 250 contenders, the fee for each new contender doubles, and it doubles again for every 50 contenders after that, up to the limit of 1,000 contenders per contest.
+Since some names may be popular, the registration process includes a voting mechanism to resolve conflicts when multiple identities request the same name. Identities requesting premium names must pay a fee of 0.1 DASH to cover the masternode voting costs. Once a contest has 250 contenders, the fee for each new contender doubles, and it doubles again for every 50 contenders after that, up to the limit of 1,000 contenders per contest.
 
 :::{note}
 This process only applies to valid names that meet the following conditions:
@@ -72,7 +72,7 @@ Locked names cannot currently be re-requested or awarded. This policy may be rev
 
 ### Name transfers and sales
 
-Registering a name is not necessarily the end of its lifecycle. A registered name can be transferred to another identity or offered for sale and bought by another identity. The DPNS contract has always declared names transferable and available for direct purchase, but Platform's validation rules rejected those operations until protocol version 13 (introduced in Dash Platform v4.1) lifted the restriction. Once ownership changes, the name resolves to its new owner, and that identity's private keys are what prove ownership from then on.
+Registering a name is not necessarily the end of its lifecycle. A registered name can be transferred to another identity or offered for sale and bought by another identity. Once ownership changes, the name resolves to its new owner, and that identity's private keys are what prove ownership from then on.
 
 The name record itself remains immutable and permanent: it cannot be edited or deleted, only transferred or sold. A name's transfer, purchase, and listing history is recorded, so the chain of ownership and the prices it was offered at can be retrieved and verified.
 

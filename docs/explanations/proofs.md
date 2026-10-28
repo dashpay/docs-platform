@@ -68,14 +68,14 @@ Dash Platform supports proofs for all core data types:
 - Identity existence and full details
 - Identity balance and revision
 - Public keys associated with an identity
-- Remaining credit budget of identity keys that carry one (from protocol version 14)
+- Remaining credit budget of identity keys that carry one
 - Identity nonces (for replay protection)
 
 **Data Contracts**
 
 - Contract existence and contents
 - Contract history (for contracts that track changes)
-- Contract version on its own, without the contract contents, so a client can check whether a cached contract is current (from protocol version 14; earlier versions prove the whole contract)
+- Contract version on its own, without the contract contents, so a client can check whether a cached contract is current
 
 **Documents**
 
@@ -98,12 +98,12 @@ Dash Platform supports proofs for all core data types:
 - Group state and member powers
 - Group action status and the votes recorded against it
 
-**Contract Groups** (from protocol version 14)
+**Contract Groups**
 
 - Contract group owner, admins, name, and description
 - The contracts, document types, and tokens in a contract group, and the contract groups a contract belongs to
 
-**Contract Moderation** (from protocol version 14)
+**Contract Moderation**
 
 - An identity's status on a [moderated contract's](../explanations/platform-protocol-data-contract.md#contract-moderation) banlist, suspension list, and warning list, and pages of those lists
 - Removal records of documents deleted by moderators, or the absence of a record
@@ -135,7 +135,7 @@ Three aggregate primitives are supported:
 - **Sum** — sum of an integer field across matching documents.
 - **Average** — average of an integer field across matching documents.
 
-Some aggregate queries can return either one total or grouped totals, depending on the query shape. Since protocol version 14, grouped results can also be [ranked](../reference/query-syntax.md#ranked-aggregate-queries) (returning only the top or bottom groups by their aggregate) or [filtered by value](../reference/query-syntax.md#having-range-queries) (returning only the groups whose aggregate falls within a range), and each of these results is provable in the same way.
+Some aggregate queries can return either one total or grouped totals, depending on the query shape. Grouped results can also be [ranked](../reference/query-syntax.md#ranked-aggregate-queries) (returning only the top or bottom groups by their aggregate) or [filtered by value](../reference/query-syntax.md#having-range-queries) (returning only the groups whose aggregate falls within a range), and each of these results is provable in the same way.
 
 Aggregate queries use the same two-layer verification as any other proof (GroveDB Merkle proof plus Tenderdash consensus signature), so the result carries the same trust model as other proven Platform responses.
 
@@ -143,7 +143,7 @@ For the exact request and response shapes, see the [DAPI Platform endpoints refe
 
 ## Composed Proofs
 
-With the query capabilities available in protocol version 14, multiple related reads can be answered with a single merged proof. A [chained query](../reference/query-syntax.md#chained-queries) uses the results of one query to select documents returned by another, while a [composite query](../reference/query-syntax.md#composite-queries) returns a page together with related documents, counts, or independent sibling results.
+Multiple related reads can be answered with a single merged proof. A [chained query](../reference/query-syntax.md#chained-queries) uses the results of one query to select documents returned by another, while a [composite query](../reference/query-syntax.md#composite-queries) returns a page together with related documents, counts, or independent sibling results.
 
 All result sets are proven against the same quorum-signed state root. For dependent reads, the client reconstructs the derived query from the proven source results and verifies that the complete response matches the requested composition. This enables applications to verify multi-step reads in one round trip instead of requesting and joining separately proven results.
 

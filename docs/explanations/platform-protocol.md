@@ -50,7 +50,7 @@ For additional detail, see the [State Transition](../explanations/platform-proto
 
 In addition to documents, a data contract may declare:
 
-* **Tokens** - fungible token definitions with their own configuration, distribution, and authorization rules. From protocol version 14, a token can also have its own [shielded pool](../explanations/shielded-pool.md#token-shielded-pools). See the [Tokens](../explanations/tokens.md) explanation.
+* **Tokens** - fungible token definitions with their own configuration, distribution, and authorization rules. A token can also have its own [shielded pool](../explanations/shielded-pool.md#token-shielded-pools). See the [Tokens](../explanations/tokens.md) explanation.
 * **Groups** - sets of identities with assigned power that can jointly authorize token and other privileged actions on the contract.
 * **Keywords** - contract-level discovery terms that allow contracts to be searched and surfaced by clients.
 * **Description** - an optional human-readable summary of the contract, used alongside keywords when contracts are surfaced to users.

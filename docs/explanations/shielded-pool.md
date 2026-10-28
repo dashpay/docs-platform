@@ -6,7 +6,7 @@
 
 ## Overview
 
-The shielded pool is an optional privacy layer on Dash Platform that lets users hold and move credits without revealing balances, sender, or recipient on-chain. Funds move *into* the pool through a shield transition, move *within* the pool privately, and exit through an unshield, a shielded withdrawal, or by funding a newly created identity. While funds remain inside the pool, only their owner can see them. The shielded pool became available at protocol version 12. From protocol version 14, a token can also have its own [token shielded pool](#token-shielded-pools) that holds the token instead of credits.
+The shielded pool is an optional privacy layer on Dash Platform that lets users hold and move credits without revealing balances, sender, or recipient on-chain. Funds move *into* the pool through a shield transition, move *within* the pool privately, and exit through an unshield, a shielded withdrawal, or by funding a newly created identity. While funds remain inside the pool, only their owner can see them. A token can also have its own [token shielded pool](#token-shielded-pools) that holds the token instead of credits.
 
 The pool uses the [Orchard](https://zips.z.cash/protocol/protocol.pdf) shielded protocol — the same zero-knowledge design (Halo 2 proofs, with no trusted setup) used by Zcash for its current shielded pool. Transactions inside the pool prove their own validity without disclosing the amounts or parties involved.
 
@@ -36,7 +36,7 @@ When a note is spent, the spender publishes a unique **nullifier** derived from 
 
 Nullifiers are unlinkable to their notes' commitments. An observer can see that *some* note was spent but cannot tell which one. This is how the pool prevents double-spends while preserving privacy.
 
-Transitions that only add notes to the pool also reveal a nullifier for each action. From protocol version 14, the platform records these as well, so resubmitting the same shield cannot create a duplicate note that could never be spent. When protocol version 14 activates, the nullifiers of credit pool notes created before then are added to the record.
+Transitions that only add notes to the pool also reveal a nullifier for each action. The platform records these as well, so resubmitting the same shield cannot create a duplicate note that could never be spent.
 
 ### Encrypted notes
 
@@ -80,19 +80,19 @@ The funding amount cannot be chosen freely: it must be one of a small fixed set 
 
 The notes being spent do not have to add up to the chosen denomination exactly - any excess is returned to the pool as a new note, so change stays shielded. If identity creation then fails a stateful check, the denomination still leaves the pool: it lands, less a penalty, at a fallback Platform address named in the transition.
 
-From protocol version 14, keys with a budget, an expiry, or a contract group binding cannot be registered when creating an identity from the pool. Add these keys afterward through an identity update.
+Keys with a budget, an expiry, or a contract group binding cannot be registered when creating an identity from the pool. Add these keys afterward through an identity update.
 
 ### Shield from identity
 
-Moves credits *into* the pool from an identity's balance, without first moving them to a Platform address. Available from protocol version 14.
+Moves credits *into* the pool from an identity's balance, without first moving them to a Platform address.
 
 ### Identity top up from shielded pool
 
-Moves credits *out of* the pool into the balance of an identity that already exists. Like an unshield, the amount and the destination identity are visible; only the source notes stay private. Available from protocol version 14.
+Moves credits *out of* the pool into the balance of an identity that already exists. Like an unshield, the amount and the destination identity are visible; only the source notes stay private.
 
 ## Token shielded pools
 
-From protocol version 14, a token can have its own shielded pool. The pool uses the same Orchard design as the credit pool but keeps a separate note commitment tree, nullifier set, and anchors, because a note records only an amount and not which asset it holds. Tokens in one pool can therefore never be spent as credits or as another token.
+A token can have its own shielded pool. The pool uses the same Orchard design as the credit pool but keeps a separate note commitment tree, nullifier set, and anchors, because a note records only an amount and not which asset it holds. Tokens in one pool can therefore never be spent as credits or as another token.
 
 A token gets a pool only if its configuration enables one when the token is created. The setting cannot be changed later. See [Tokens](./tokens.md#shielded-pool) for the configuration rules, including why pooled tokens cannot be frozen.
 
