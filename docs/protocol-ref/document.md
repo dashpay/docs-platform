@@ -30,7 +30,7 @@ The following fields are included in all document transitions. Note that `$actio
 Each document transition must comply with the document base transition defined in rs-dpp ([v1](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_base_transition/v1/mod.rs#L40-L58), [v2](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_base_transition/v2/mod.rs#L30-L55)). Starting with protocol version 14, the v2 base transition is the default; it is not accepted under earlier protocol versions.
 
 :::{versionchanged} 5.0.0
-On a contract that declares [moderation](./data-contract.md#contract-moderation), document transitions from a banned or suspended identity are rejected (`ContractUserBannedError`, 41107, or `ContractUserSuspendedError`, 41108). Delete and index-only delete transitions are still allowed, and so is a replace on a document type that declares [`retractedWhen`](./data-contract-document.md#document-configuration) when the document it writes meets that condition. A transfer to a barred identity or a purchase from a barred seller is rejected (`ContractModerationCounterpartyBarredError`, 41114). Token transitions are not affected.
+On a contract that declares [moderation](./data-contract.md#contract-moderation), document transitions from a banned or suspended identity are rejected. Delete and index-only delete transitions are still allowed, and so is a replace on a document type that declares [`retractedWhen`](./data-contract-document.md#document-configuration) when the document it writes meets that condition. A transfer to a barred identity or a purchase from a barred seller is rejected. Token transitions are not affected.
 :::
 
 #### Document id
@@ -38,7 +38,7 @@ On a contract that declares [moderation](./data-contract.md#contract-moderation)
 The document `$id` is created by double sha256 hashing the document's `dataContractId`, `ownerId`, `type`, and `entropy`, and from protocol version 14 also a domain tag and the create transition's `$identityContractNonce`, as shown in [rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/document/generate_document_id.rs).
 
 :::{versionchanged} 5.0.0
-Because an identity contract nonce is used at most once, a document ID can be produced at most once, so a deleted document cannot be recreated under the same ID. The ID is only known once the nonce of the create transition is chosen. A create transition whose ID was derived without the nonce is rejected with `InvalidDocumentTransitionIdError` (10405).
+Because an identity contract nonce is used at most once, a document ID can be produced at most once, so a deleted document cannot be recreated under the same ID. The ID is only known once the nonce of the create transition is chosen. A create transition whose ID was derived without the nonce is rejected.
 
 ```rust
 // From the Rust reference implementation (rs-dpp)
@@ -109,9 +109,9 @@ Before protocol version 14, `gasFeesPaidBy` was carried but ignored and the sign
 
 - A request for the document owner (`0`) is always accepted, and the document owner pays.
 - A request to prefer the contract owner (`2`) is accepted by every offer. The contract owner pays only if the offer is `1` or `2` and its balance covers the fee; otherwise the document owner pays.
-- A request for the contract owner (`1`) is accepted only when the offer is `1`. If the contract owner's balance does not cover the fee, the batch is rejected (`GasSponsorInsufficientBalanceError`, 40222).
+- A request for the contract owner (`1`) is accepted only when the offer is `1`. If the contract owner's balance does not cover the fee, the batch is rejected.
 
-A request the offer does not allow is rejected with `GasFeesPaidByNotAllowedError` (40129), and a batch that names two different payers is rejected with `InconsistentGasFeesPaidByInBatchError` (40130). A sponsoring contract owner pays the fee without the `userFeeIncrease`, which the signer pays. A transition that fails is always paid for by its signer.
+A request the offer does not allow is rejected, and so is a batch that names two different payers. A sponsoring contract owner pays the fee without the `userFeeIncrease`, which the signer pays. A transition that fails is always paid for by its signer.
 :::
 
 A document type's `tokenCost` entry may set `optional: true`. A transition for that action may then omit `$tokenPaymentInfo`, pay no tokens, and pay the gas itself in credits.
@@ -130,7 +130,7 @@ When a document type charges an [action fee](./data-contract-document.md#action-
 | moderators | unsigned integer | 64 bits | Moderators part of the fee, in credits, exactly as the document type declares it (before any fee multiplier). On an elected contract with a seated team, it may instead be the declared part reduced to the seated charter's `moderatorsShare` (rounded down). |
 | feeMultiplier | object | Varies | Required when the fee is priced with the fee multiplier, and omitted for fixed pricing:<br>`knownPermille` - Fee multiplier (permille) the signer priced the fee with<br>`increaseTolerancePercent` (16 bits) - How far, in percent, the multiplier of the executing epoch may exceed `knownPermille`. A lower multiplier is always accepted. |
 
-A transition for an action that charges a fee is rejected without an agreement (`DocumentActionFeeAgreementNotSetError`, 40132), with an agreement to other amounts or pricing (`DocumentActionFeeAgreementMismatchError`, 40133), when the epoch's fee multiplier exceeds the tolerance (`DocumentActionFeeMultiplierNotToleratedError`, 40134), or with a reduced moderators part that does not match the seated charter's share (`DocumentActionFeeModeratorsShareMismatchError`, 40139). An agreement on an action that charges no fee is ignored.
+A transition for an action that charges a fee is rejected without an agreement, with an agreement to other amounts or pricing, when the epoch's fee multiplier exceeds the tolerance, or with a reduced moderators part that does not match the seated charter's share. An agreement on an action that charges no fee is ignored.
 
 #### Entropy Generation
 
@@ -170,7 +170,7 @@ The document create transition extends the [base transition](#document-base-tran
 | - | - | - | - |
 | $entropy | array | 32 bytes | Entropy used in creating the [document ID](#document-id). Generated as [shown here](#entropy-generation). |
 | data | object | Varies | Document data being submitted. |
-| $prefundedVotingBalance | array | 2 elements | (Optional) Contested index name and amount of credits for unique index conflict resolution voting (e.g., [premium DPNS name](../explanations/dpns.md#conflict-resolution)). Required when the document resolves to a contested index (`DocumentContestNotPaidForError`, 40114). Starting in protocol version 14:<br>- The named index must be the contested index resolved for the submitted document values (`DocumentContestIndexMismatchError`, 40118), and the field is rejected when the document resolves to no contested index (`DocumentContestNotRequiredError`, 40119).<br>- The amount is the most the contender is willing to pay. The contender is charged the fund to join the contest, which doubles once the contest holds 250 contenders and again for every 50 more, and keeps the rest. A smaller amount is rejected, and the identity must hold the amount it states.<br>- A contest holds at most [1,000](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L177) contenders; the next one is rejected (`DocumentContestMaximumContendersReachedError`, 40141).<br>Before protocol version 14, the amount had to equal the contest's fund. |
+| $prefundedVotingBalance | array | 2 elements | (Optional) Contested index name and amount of credits for unique index conflict resolution voting (e.g., [premium DPNS name](../explanations/dpns.md#conflict-resolution)). Required when the document resolves to a contested index. Starting in protocol version 14:<br>- The named index must be the contested index resolved for the submitted document values, and the field is rejected when the document resolves to no contested index.<br>- The amount is the most the contender is willing to pay. The contender is charged the fund to join the contest, which doubles once the contest holds 250 contenders and again for every 50 more, and keeps the rest. A smaller amount is rejected, and the identity must hold the amount it states.<br>- A contest holds at most [1,000](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L177) contenders; the next one is rejected.<br>Before protocol version 14, the amount had to equal the contest's fund. |
 
 Each document create transition must comply with the structure defined in [rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_create_transition/v0/mod.rs#L70-L104) (in addition to the [document base transition](#document-base-transition) that is required for all document transitions).
 
@@ -243,14 +243,14 @@ The following example document replace transition and subsequent table demonstra
 
 The document delete transition only requires the fields found in the [base document transition](#document-base-transition). See the [implementation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/document_delete_transition/v0/mod.rs#L24-L27) for details.
 
-The owner can delete a document only if its document type sets [`canBeDeleted`](./data-contract-document.md#document-removal) to `true`. Starting in protocol version 14, the stored document must also meet the type's `deleteConstraints` rules (`DocumentDeleteConstraintViolatedError`, 40147).
+The owner can delete a document only if its document type sets [`canBeDeleted`](./data-contract-document.md#document-removal) to `true`. Starting in protocol version 14, the stored document must also meet the type's `deleteConstraints` rules.
 
 ### Expired Documents
 
 :::{versionadded} 5.0.0
 :::
 
-A document of a type with a [`ttl`](./data-contract-document.md#document-removal) expires once block time reaches its `$createdAt` plus the `ttl`. From then on, replace, transfer, purchase, and update price transitions on it, and a moderator's restore or field change, are rejected with `DocumentExpiredError` (40140), even before the platform has removed it ([rs-drive-abci](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-drive-abci/src/execution/validation/state_transition/common/validate_document_not_expired.rs#L31-L43)). Its owner may still delete it if the document type allows deletion.
+A document of a type with a [`ttl`](./data-contract-document.md#document-removal) expires once block time reaches its `$createdAt` plus the `ttl`. From then on, replace, transfer, purchase, and update price transitions on it, and a moderator's restore or field change, are rejected, even before the platform has removed it ([rs-drive-abci](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-drive-abci/src/execution/validation/state_transition/common/validate_document_not_expired.rs#L31-L43)). Its owner may still delete it if the document type allows deletion.
 
 ### Document Transfer Transition
 

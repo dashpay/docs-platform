@@ -66,7 +66,7 @@ Each item in the `publicKeys` array consists of an object containing:
 | [id](#public-key-id) | integer        | The key id (all public keys must be unique) |
 | [purpose](#public-key-purpose) | integer        | Public key purpose (`0` - Authentication, `1` - Encryption, `2` - Decryption, `3` - Transfer) |
 | [securityLevel](#public-key-securitylevel) | integer        | Public key security level (`0` - Master, `1` - Critical, `2` - High, `3` - Medium) |
-| contractBounds | object (optional) | Restricts this key to a single data contract (`$type`: `singleContract`), a document type of a data contract (`documentType`), or, **added in 5.0.0**, the members of a contract group (`contractGroup`). From protocol version 14, a contract-bound authentication key can sign only [batch](./state-transition.md#batch) transitions (`ContractBoundedKeyNonBatchError`, 20013, [rs-drive-abci](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-drive-abci/src/execution/validation/state_transition/common/validate_state_transition_identity_signed/v1/mod.rs#L66-L75)), a batch member outside the key's bounds is rejected (`ContractBoundedKeyOutOfBoundsError`, 20014), and binding a key to a contract group that does not exist is rejected (`ContractGroupNotFoundError`, 41001). See the [contract bounds implementation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/identity/identity_public_key/contract_bounds/mod.rs#L51-L65). |
+| contractBounds | object (optional) | Restricts this key to a single data contract (`$type`: `singleContract`), a document type of a data contract (`documentType`), or, **added in 5.0.0**, the members of a contract group (`contractGroup`). From protocol version 14, a contract-bound authentication key can sign only [batch](./state-transition.md#batch) transitions ([rs-drive-abci](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-drive-abci/src/execution/validation/state_transition/common/validate_state_transition_identity_signed/v1/mod.rs#L66-L75)), a batch member outside the key's bounds is rejected, and binding a key to a contract group that does not exist is rejected. See the [contract bounds implementation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/identity/identity_public_key/contract_bounds/mod.rs#L51-L65). |
 | [type](#public-key-type) | integer        | Type of key (default: `0` - ECDSA) |
 | [readOnly](#public-key-readonly) | boolean        | Identity public key can’t be modified with `readOnly` set to `true`. This can’t be changed after adding a key. |
 | [data](#public-key-data)          | array of bytes | Public key (`0` - ECDSA: 33 bytes, `1` - BLS: 48 bytes, `2` - ECDSA Hash160: 20 bytes, `3` - [BIP13](https://github.com/bitcoin/bips/blob/master/bip-0013.mediawiki) Hash160: 20 bytes, `4` - EDDSA_25519_HASH160: 20 bytes) |
@@ -144,9 +144,9 @@ The `disabledAt` field indicates that the key has been disabled. Its value equal
 
 A key can carry a credit budget (`totalBudget`), an expiry time (`expiresAt`), or both. A key with either limit is serialized as an [`IdentityPublicKeyV1`](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/identity/identity_public_key/v1/mod.rs#L17-L58) (`$formatVersion` `1`). A key without limits is still serialized as `IdentityPublicKeyV0`.
 
-Limits are allowed only on authentication keys ([purpose](#public-key-purpose) `0`) below the master [security level](#public-key-securitylevel). A limit on any other key is rejected with `IdentityPublicKeyLimitsNotAllowedError` (10536), and a `totalBudget` of `0` is rejected with `InvalidIdentityPublicKeyBudgetError` (10537). See the [key structure validation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/state_transition/state_transitions/identity/public_key_in_creation/methods/validate_identity_public_keys_structure/v1/mod.rs#L47-L68).
+Limits are allowed only on authentication keys ([purpose](#public-key-purpose) `0`) below the master [security level](#public-key-securitylevel). A limit on any other key is rejected, and so is a `totalBudget` of `0`. See the [key structure validation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/state_transition/state_transitions/identity/public_key_in_creation/methods/validate_identity_public_keys_structure/v1/mod.rs#L47-L68).
 
-A transition signed with a limited key is rejected once the block time reaches `expiresAt` (`PublicKeyExpiredError`, 20016), once the key's budget is spent (`PublicKeyBudgetExhaustedError`, 20015), or when its spend does not fit in the key's remaining budget (`IdentityPublicKeyBudgetExceededError`, 40218; metered processing fees may exceed it). Adding a key whose `expiresAt` the block time has already reached is rejected with `IdentityPublicKeyAlreadyExpiredError` (40219). Keys with limits, and keys bound to a contract group, are also rejected in [identity create from shielded pool](shielded-pool.md#identity-create-from-shielded-pool). A key's limits can only be loosened, using the [identity key limits update](#identity-key-limits-update) transition.
+A transition signed with a limited key is rejected once the block time reaches `expiresAt`, once the key's budget is spent, or when its spend does not fit in the key's remaining budget (metered processing fees may exceed it). Adding a key whose `expiresAt` the block time has already reached is rejected. Keys with limits, and keys bound to a contract group, are also rejected in [identity create from shielded pool](shielded-pool.md#identity-create-from-shielded-pool). A key's limits can only be loosened, using the [identity key limits update](#identity-key-limits-update) transition.
 
 ### Identity balance
 
@@ -194,7 +194,7 @@ For all protocol constants, see [Protocol Constants](protocol-constants.md).
 
 ## Identity State Transition Details
 
-The following state transitions create, fund, update, or transfer credits to or from identities. Six are documented on this page; this section also covers the relevant [asset-lock](#asset-lock) and [signing](#identity-state-transition-signing) mechanisms. The remaining transitions are documented with the feature they belong to.
+The following state transitions create, fund, update, or transfer credits to or from identities. Some are documented on this page, along with the relevant [asset-lock](#asset-lock) and [signing](#identity-state-transition-signing) mechanisms; the others are documented with the feature they belong to.
 
 | Type | Name | Supported protocol versions |
 | --- | --- | --- |
@@ -281,16 +281,16 @@ An identity raises the [limits](#public-key-limits) of one of its keys by submit
 | signaturePublicKeyId | integer              | The ID of public key used to sign the state transition |
 | signature            | array of bytes       | Signature of state transition data (65 bytes) |
 
-The transition must be signed by a master key or by a critical key that carries no limits of its own. Signing with a limited key is rejected with `PublicKeyWithLimitsCannotUpdateKeyLimitsError` (20017).
+The transition must be signed by a master key or by a critical key that carries no limits of its own. Signing with a limited key is rejected.
 
 The transition is also rejected if:
 
-- `keyId` is not a key of the identity (`MissingIdentityPublicKeyIdsError`, 40209)
-- Neither `totalBudget` nor `expiresAt` is set (`IdentityKeyLimitsUpdateEmptyError`, 10539), or `totalBudget` is `0` (`InvalidIdentityPublicKeyBudgetError`, 10537)
-- The key is disabled (`IdentityPublicKeyIsDisabledError`, 40208)
-- It sets a limit the key does not already have (`IdentityPublicKeyLimitNotSetError`, 40220). A limit cannot be added to a key or removed from it.
-- A new value does not raise the current one (`IdentityPublicKeyLimitNotRaisedError`, 40221)
-- The key would still be expired after the update (`IdentityPublicKeyAlreadyExpiredError`, 40219)
+- `keyId` is not a key of the identity
+- Neither `totalBudget` nor `expiresAt` is set, or `totalBudget` is `0`
+- The key is disabled
+- It sets a limit the key does not already have. A limit cannot be added to a key or removed from it.
+- A new value does not raise the current one
+- The key would still be expired after the update
 
 To give an application less, disable its key with an [identity update](#identity-update) and add a new one.
 

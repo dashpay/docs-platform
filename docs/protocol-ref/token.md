@@ -133,7 +133,7 @@ The token transfer transition extends the [base transition](#token-base-transiti
 | privateEncryptedNote | [PrivateEncryptedNote object](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/tokens/mod.rs#L21-L25) | [<= 2048 bytes](#token-notes) | Optional private encrypted note |
 
 :::{versionadded} 5.0.0
-A token whose configuration sets [`transferable: false`](data-contract-token.md#operational-controls) rejects every transfer transition with [`TokenNotTransferableError`](errors.md) (code 40726). Such a token also cannot be a document [token cost](data-contract-document.md#token-costs) that pays the contract owner; it can only be burned. Contract registration rejects such a cost ([`NonTransferableTokenPaymentMustBurnError`](errors.md), code 10280, for the contract's own token; code 40726 for another contract's token), and a payment to the contract owner is refused with code 40726.
+A token whose configuration sets [`transferable: false`](data-contract-token.md#operational-controls) rejects every transfer transition. Such a token also cannot be a document [token cost](data-contract-document.md#token-costs) that pays the contract owner; it can only be burned. Contract registration rejects such a cost, and a payment to the contract owner is refused.
 :::
 
 Each token transfer transition must comply with the [token transfer transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_transfer_transition/v0/mod.rs#L39-L55).
@@ -181,7 +181,7 @@ The token claim transition extends the [base transition](#token-base-transition)
 | publicNote | string | [<= 2048 bytes](#token-notes) | Optional public note (only saved for historical contracts) |
 
 :::{versionadded} 5.0.0
-Protocol version 14 added the `OncePerIdentity` distribution type for tokens with a [once-per-identity distribution](data-contract-token.md#once-per-identity-distribution). Each identity can claim it once and receives the configured amount. A second claim by the same identity is rejected with [`TokenOncePerIdentityDistributionAlreadyClaimedError`](errors.md) (code 40722). Earlier protocol versions reject a `OncePerIdentity` claim.
+Protocol version 14 added the `OncePerIdentity` distribution type for tokens with a [once-per-identity distribution](data-contract-token.md#once-per-identity-distribution). Each identity can claim it once and receives the configured amount. A second claim by the same identity is rejected. Earlier protocol versions reject a `OncePerIdentity` claim.
 :::
 
 Each token claim transition must comply with the [token claim transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_claim_transition/v0/mod.rs#L21-L29).
@@ -280,10 +280,10 @@ Each transition carries an Orchard bundle (`actions`, `anchor`, `proof`, `bindin
 The following rules apply to every token shielded pool transition:
 
 - Structure validation checks the bundle like other shielded bundles: at most [`max_shielded_transition_actions`](protocol-constants.md) actions, correctly sized encrypted notes, a non-empty proof, and a non-zero anchor.
-- The token must have a shielded pool ([`TokenShieldedPoolNotEnabledError`](errors.md), code 40723) and must not be paused. Pausing blocks every pool operation, including transitions that move tokens into the pool.
-- A bundle that spends notes must use an anchor recorded for the token pool, and its nullifiers must be unspent ([`InvalidAnchorError`](errors.md), [`NullifierAlreadySpentError`](errors.md)). An outputs-only bundle's dummy nullifiers must not repeat or already be recorded in the pool.
+- The token must have a shielded pool and must not be paused. Pausing blocks every pool operation, including transitions that move tokens into the pool.
+- A bundle that spends notes must use an anchor recorded for the token pool, and its nullifiers must be unspent. An outputs-only bundle's dummy nullifiers must not repeat or already be recorded in the pool.
 - The proof verification fee is charged before the proof is checked, so a batch whose proof fails is still charged and its nonce advances.
-- Transitions that move tokens out of the pool to a visible destination (Unshield and Burn From Pool) require the pool to hold at least the token's [`minimumPoolNotesForOutgoing`](data-contract-token.md#shielded-pool) notes ([`InsufficientPoolNotesError`](errors.md), code 40903). The same minimum applies to a document [token cost](data-contract-document.md#token-costs) paid from the token's pool ([`$tokenPaymentInfo.shieldedPayment`](document.md#token-payment-info)) and to [Token Unshield With Shielded Fee](shielded-pool.md#token-unshield-with-shielded-fee) (type 27). Transfers inside the pool are not limited.
+- Transitions that move tokens out of the pool to a visible destination (Unshield and Burn From Pool) require the pool to hold at least the token's [`minimumPoolNotesForOutgoing`](data-contract-token.md#shielded-pool) notes. The same minimum applies to a document [token cost](data-contract-document.md#token-costs) paid from the token's pool ([`$tokenPaymentInfo.shieldedPayment`](document.md#token-payment-info)) and to [Token Unshield With Shielded Fee](shielded-pool.md#token-unshield-with-shielded-fee) (type 27). Transfers inside the pool are not limited.
 
 #### Token Shield Transition
 

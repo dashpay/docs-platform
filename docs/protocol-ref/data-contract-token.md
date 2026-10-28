@@ -143,7 +143,7 @@ From protocol version 14, a token added to an existing contract by a [contract u
 |----------|------|---------|-------------|
 | `startAsPaused` | boolean | false | Whether the token begins in a paused state where tokens cannot be transferred |
 | `allowTransferToFrozenBalance` | boolean | true | Whether minting and transfers to frozen balances are permitted |
-| `transferable` | boolean | true | **Added in 5.0.0.** Whether holders may transfer the token to another identity. When `false`, every [token transfer](token.md#token-transfer-transition) is rejected with `TokenNotTransferableError`, only document types in the token's own contract may charge it as a [token cost](data-contract-document.md#token-costs), and only by burning it, and the token cannot have a [shielded pool](#shielded-pool). Minting, claims, direct purchases, burns, and freezes work as configured. Fixed when the token is created. Requires token configuration format version `1` |
+| `transferable` | boolean | true | **Added in 5.0.0.** Whether holders may transfer the token to another identity. When `false`, every [token transfer](token.md#token-transfer-transition) is rejected, only document types in the token's own contract may charge it as a [token cost](data-contract-document.md#token-costs), and only by burning it, and the token cannot have a [shielded pool](#shielded-pool). Minting, claims, direct purchases, burns, and freezes work as configured. Fixed when the token is created. Requires token configuration format version `1` |
 
 ### Control Group Management
 
@@ -168,7 +168,7 @@ From protocol version 14, a token added to an existing contract by a [contract u
 ### Shielded Pool
 
 :::{versionadded} 5.0.0
-Protocol version 14 added token configuration format version `1` (`"$formatVersion": "1"`), which carries the shielded pool settings and `transferable`. Earlier protocol versions reject format version `1` with `UnsupportedVersionError`.
+Protocol version 14 added token configuration format version `1` (`"$formatVersion": "1"`), which carries the shielded pool settings and `transferable`. Earlier protocol versions reject format version `1`.
 :::
 
 A token can have its own [shielded pool](shielded-pool.md) that holds that token instead of credits. Holders and issuers use it through the [token shielded pool transitions](token.md#token-shielded-pool-transitions).
@@ -181,8 +181,8 @@ A token can have its own [shielded pool](shielded-pool.md) that holds that token
 
 A token with `hasShieldedPool: true` must meet the following [constraints](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/associated_token/token_configuration/mod.rs#L100-L149), checked on contract create and update:
 
-- `freezeRules`, `unfreezeRules`, and `destroyFrozenFundsRules` must each have `authorizedToMakeChange` and `adminActionTakers` set to `{"$type": "noOne"}`, because notes in the pool belong to no identity and cannot be frozen. Otherwise registration fails with `TokenShieldedPoolIncompatibleRulesError`.
-- `transferable` must be `true`. Otherwise registration fails with `NonTransferableTokenShieldedPoolError`.
+- `freezeRules`, `unfreezeRules`, and `destroyFrozenFundsRules` must each have `authorizedToMakeChange` and `adminActionTakers` set to `{"$type": "noOne"}`, because notes in the pool belong to no identity and cannot be frozen. Otherwise registration fails.
+- `transferable` must be `true`. Otherwise registration fails.
 
 In every format version `1` configuration, with or without a pool, `minimumPoolNotesForOutgoing` must not exceed 250 (`KeyWrongBounds`), checked on contract create and update ([rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/associated_token/token_configuration/mod.rs#L180-L200)).
 
@@ -341,7 +341,7 @@ The `distributionType` field accepts one of three schedule types:
 
 Each type wraps an `interval` (the period length) and a `function` (the emission pattern from the options below). There is no separate `start` field on the distribution type; the schedule begins at contract registration by default and a later start can be set through the function's start offset parameter (`start_step`, `start_moment`, or `start_decreasing_offset`, depending on the function).
 
-The `interval` has a network specific minimum, checked when the contract is registered or updated. Block based intervals must be at least 100 blocks on mainnet (5 on testnet, 2 on devnet, 1 on regtest). Time based intervals must be at least 3,600,000 ms (1 hour) on mainnet (600,000 ms on testnet, 60,000 ms on devnet and regtest) and must be a multiple of 60,000 ms. Epoch based intervals must be [at least 1 epoch](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/associated_token/token_perpetual_distribution/reward_distribution_type/validation/v1/mod.rs#L72-L83) starting with protocol version 14 (Dash Platform 5.0.0); a zero interval is rejected with `InvalidTokenDistributionEpochIntervalTooShortError`. Earlier protocol versions have no epoch interval minimum.
+The `interval` has a network specific minimum, checked when the contract is registered or updated. Block based intervals must be at least 100 blocks on mainnet (5 on testnet, 2 on devnet, 1 on regtest). Time based intervals must be at least 3,600,000 ms (1 hour) on mainnet (600,000 ms on testnet, 60,000 ms on devnet and regtest) and must be a multiple of 60,000 ms. Epoch based intervals must be [at least 1 epoch](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/associated_token/token_perpetual_distribution/reward_distribution_type/validation/v1/mod.rs#L72-L83) starting with protocol version 14 (Dash Platform 5.0.0); a zero interval is rejected. Earlier protocol versions have no epoch interval minimum.
 
 #### Perpetual Distribution Options
 
@@ -569,7 +569,7 @@ Pre-programmed distribution allows scheduling specific token allocations at pred
 ```
 
 :::{versionchanged} 5.0.0
-From protocol version 14, a release whose amounts sum to more than `i64::MAX` is rejected with [`PreProgrammedDistributionAmountOverLimitError`](errors.md) (code 10277). The check runs on contract create and, for tokens that a contract update adds, on contract update. See the [validation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/associated_token/token_pre_programmed_distribution/methods/validate_amounts/v0/mod.rs#L10-L31).
+From protocol version 14, a release whose amounts sum to more than `i64::MAX` is rejected. The check runs on contract create and, for tokens that a contract update adds, on contract update. See the [validation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/associated_token/token_pre_programmed_distribution/methods/validate_amounts/v0/mod.rs#L10-L31).
 :::
 
 ### Once-Per-Identity Distribution
@@ -592,7 +592,7 @@ A once-per-identity distribution lets every identity claim a fixed amount of the
 
 The `distributionRules` object must use format version `1` to carry `oncePerIdentityDistribution`, and a version `1` object must include it. Version `1` accepts the same properties as version `0`. The [validation rules in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/associated_token/token_distribution_rules/methods/validate_once_per_identity_distribution/v0/mod.rs#L14-L39) also require:
 
-- `amount` must be from 1 to `i64::MAX`. Otherwise registration fails with `InvalidTokenOncePerIdentityDistributionAmountError`.
+- `amount` must be from 1 to `i64::MAX`. Otherwise registration fails.
 - The distribution is fixed at registration. It has no change control rule and no configuration update item.
 
 Adding a once-per-identity distribution incurs the [once-per-identity distribution fee](#token-creation-fees). See the [distribution rules version 1 in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/associated_token/token_distribution_rules/v1/mod.rs#L27-L48).
