@@ -46,7 +46,7 @@ Timestamp and block height fields are present only when included in the document
 
 `$price` is present only while a document whose trade mode supports seller-set pricing is listed, and is cleared when the document is purchased or transferred. `$creatorId` is present on transferable or tradeable document types and is preserved when ownership changes.
 
-`$contractVersion` records which contract version supplied the document's required properties. This allows contract updates to add required properties without invalidating older documents.
+`$contractVersion` records which contract version supplied the document's required properties. This allows contract updates to add required properties without invalidating older documents. Documents stored before this field existed have no value for it and are treated as predating every conditionally required property.
 
 `$moderatedAt` and `$moderatedBy` are present only on document types that keep fields for the contract's moderators, once a moderator has written those fields. See [Contract Moderation](../explanations/platform-protocol-data-contract.md#contract-moderation).
 

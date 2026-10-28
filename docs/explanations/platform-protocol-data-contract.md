@@ -90,7 +90,7 @@ Existing data contracts can be updated by their owner in backwards-compatible wa
 Permitted changes include:
 
 * Adding new document types, including their indices
-* Adding new properties to existing document types. A new property can be optional, or required starting with the contract version that introduces it. Requiring it does not invalidate documents created under earlier contract versions
+* Adding new properties to existing document types. A new property can be optional, or it can be required from the contract version that introduces it onward. Requiring it does not invalidate documents created under earlier contract versions
 * Adding new tokens to the contract
 * Adding new groups to the contract
 * Updating contract keywords and description
