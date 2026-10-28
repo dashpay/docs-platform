@@ -66,7 +66,7 @@ Each item in the `publicKeys` array consists of an object containing:
 | [id](#public-key-id) | integer        | The key id (all public keys must be unique) |
 | [purpose](#public-key-purpose) | integer        | Public key purpose (`0` - Authentication, `1` - Encryption, `2` - Decryption, `3` - Transfer) |
 | [securityLevel](#public-key-securitylevel) | integer        | Public key security level (`0` - Master, `1` - Critical, `2` - High, `3` - Medium) |
-| contractBounds | object (optional) | Restricts this key to a single data contract (`$type`: `singleContract`), a document type of a data contract (`documentType`), or, **added in 5.0.0**, the members of a contract group (`contractGroup`). See the [contract bounds implementation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/identity/identity_public_key/contract_bounds/mod.rs#L51-L65). |
+| contractBounds | object (optional) | Restricts this key to a single data contract (`$type`: `singleContract`), a document type of a data contract (`documentType`), or, **added in 5.0.0**, the members of a contract group (`contractGroup`). From protocol version 14, a contract-bound authentication key can sign only [batch](./state-transition.md#batch) transitions (`ContractBoundedKeyNonBatchError`, 20013, [rs-drive-abci](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-drive-abci/src/execution/validation/state_transition/common/validate_state_transition_identity_signed/v1/mod.rs#L66-L75)), a batch member outside the key's bounds is rejected (`ContractBoundedKeyOutOfBoundsError`, 20014), and binding a key to a contract group that does not exist is rejected (`ContractGroupNotFoundError`, 41001). See the [contract bounds implementation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/identity/identity_public_key/contract_bounds/mod.rs#L51-L65). |
 | [type](#public-key-type) | integer        | Type of key (default: `0` - ECDSA) |
 | [readOnly](#public-key-readonly) | boolean        | Identity public key can’t be modified with `readOnly` set to `true`. This can’t be changed after adding a key. |
 | [data](#public-key-data)          | array of bytes | Public key (`0` - ECDSA: 33 bytes, `1` - BLS: 48 bytes, `2` - ECDSA Hash160: 20 bytes, `3` - [BIP13](https://github.com/bitcoin/bips/blob/master/bip-0013.mediawiki) Hash160: 20 bytes, `4` - EDDSA_25519_HASH160: 20 bytes) |
@@ -123,7 +123,7 @@ The `securityLevel` field indicates how securely the key should be stored by cli
 
 | Level | Description | Security Practice |
 | :---: | ----------- | ----------------- |
-|   0   | Master      | Should always require a user to authenticate when signing a transition. Can only be used to update an identity. |
+|   0   | Master      | Should always require a user to authenticate when signing a transition. Can only be used to update an identity or, from protocol version 14, to sign an [identity key limits update](#identity-key-limits-update). |
 |   1   | Critical    | Should always require a user to authenticate when signing a transition |
 |   2   | High        | Should be available as long as the user has authenticated at least once during a session. Typically used to sign state transitions, but cannot be used for identity update transitions. |
 |   3   | Medium      | Should not require user authentication but must require access to the client device |
@@ -146,7 +146,7 @@ A key can carry a credit budget (`totalBudget`), an expiry time (`expiresAt`), o
 
 Limits are allowed only on authentication keys ([purpose](#public-key-purpose) `0`) below the master [security level](#public-key-securitylevel). A limit on any other key is rejected with `IdentityPublicKeyLimitsNotAllowedError` (10536), and a `totalBudget` of `0` is rejected with `InvalidIdentityPublicKeyBudgetError` (10537). See the [key structure validation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/state_transition/state_transitions/identity/public_key_in_creation/methods/validate_identity_public_keys_structure/v1/mod.rs#L47-L68).
 
-A transition signed with a limited key is rejected once the block time reaches `expiresAt`, or when its spend does not fit in the key's remaining budget (metered processing fees may exceed it). Keys with limits are also rejected in [identity create from shielded pool](shielded-pool.md#identity-create-from-shielded-pool). A key's limits can only be loosened, using the [identity key limits update](#identity-key-limits-update) transition.
+A transition signed with a limited key is rejected once the block time reaches `expiresAt` (`PublicKeyExpiredError`, 20016), once the key's budget is spent (`PublicKeyBudgetExhaustedError`, 20015), or when its spend does not fit in the key's remaining budget (`IdentityPublicKeyBudgetExceededError`, 40218; metered processing fees may exceed it). Adding a key whose `expiresAt` the block time has already reached is rejected with `IdentityPublicKeyAlreadyExpiredError` (40219). Keys with limits, and keys bound to a contract group, are also rejected in [identity create from shielded pool](shielded-pool.md#identity-create-from-shielded-pool). A key's limits can only be loosened, using the [identity key limits update](#identity-key-limits-update) transition.
 
 ### Identity balance
 
@@ -177,8 +177,8 @@ Total = identity_create_base_cost + asset_lock_base_cost + (number_of_keys × id
 **Examples:**
 
 - 1 key: 2,000,000 + 200,000,000 + 6,500,000 = **208,500,000 credits** (0.002085 Dash)
-- 2 keys: 2,000,000 + 13,000,000 = **15,000,000 credits** (0.00015 Dash)
-- 6 keys: 2,000,000 + 39,000,000 = **41,000,000 credits** (0.00041 Dash)
+- 2 keys: 2,000,000 + 200,000,000 + 13,000,000 = **215,000,000 credits** (0.00215 Dash)
+- 6 keys: 2,000,000 + 200,000,000 + 39,000,000 = **241,000,000 credits** (0.00241 Dash)
 
 ### Minimum Funding Requirements
 
@@ -337,7 +337,7 @@ Credits can be withdrawn from an identity to an external Core wallet using an id
 | signature            | array of bytes | Signature of state transition data (65 bytes) |
 
 :::{note}
-**Constraints:** `pooling` must be `0` (Never); `1` (IfAvailable) and `2` (Standard) are not yet implemented. `coreFeePerByte` must be a non-zero [Fibonacci number](https://en.wikipedia.org/wiki/Fibonacci_sequence). `outputScript`, when set, must be P2PKH or P2SH. `amount` must be within the [min and max withdrawal amount](protocol-constants.md) limits.
+**Constraints:** `pooling` must be `0` (Never); `1` (IfAvailable) and `2` (Standard) are not yet implemented. `coreFeePerByte` must be a non-zero [Fibonacci number](https://en.wikipedia.org/wiki/Fibonacci_sequence), and at most [6,765](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L159) from protocol version 14. `outputScript`, when set, must be P2PKH or P2SH. `amount` must be within the [min and max withdrawal amount](protocol-constants.md) limits. Starting in protocol version 14, the Core transaction fee is deducted from `amount`, so `amount` must be at least the min withdrawal amount plus the Core fee (190-byte asset unlock transaction × `coreFeePerByte` × 1,000 credits; [rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/withdrawal/mod.rs#L61-L111)).
 :::
 
 See the [identity credit withdrawal implementation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/state_transition/state_transitions/identity/identity_credit_withdrawal_transition/v1/mod.rs#L31-L48) for more details.
