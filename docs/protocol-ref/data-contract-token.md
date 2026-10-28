@@ -175,7 +175,7 @@ A token can have its own [shielded pool](shielded-pool.md) that holds that token
 | `minimumPoolNotesForOutgoing` | unsigned integer | null | Number of notes the token's pool must hold before tokens may leave it for a visible destination (unshielding to an identity, burning from the pool, or paying a document's token cost from the pool). Transfers inside the pool are not limited. `null` means no threshold. At most [250](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L188) |
 | `minimumPoolNotesForOutgoingChangeRules` | object | No one | [Change control rules](#change-rule-structure) for changing `minimumPoolNotesForOutgoing` with a [token config update](token.md#token-config-update-transition) |
 
-A token with `hasShieldedPool: true` must meet the following [constraints](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/associated_token/token_configuration/mod.rs#L100-L132), checked on contract create and update:
+A token with `hasShieldedPool: true` must meet the following [constraints](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/associated_token/token_configuration/mod.rs#L100-L149), checked on contract create and update:
 
 - `freezeRules`, `unfreezeRules`, and `destroyFrozenFundsRules` must each have `authorizedToMakeChange` and `adminActionTakers` set to `{"$type": "noOne"}`, because notes in the pool belong to no identity and cannot be frozen. Otherwise registration fails with `TokenShieldedPoolIncompatibleRulesError`.
 - `transferable` must be `true`. Otherwise registration fails with `NonTransferableTokenShieldedPoolError`.

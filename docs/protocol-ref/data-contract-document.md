@@ -172,7 +172,7 @@ See [Document Removal](#document-removal) for which document types each document
 A document may carry at most [256](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L139) references, a typed array of references counting its `maxItems`. A changed reference declaration is an incompatible change on contract update.
 
 :::{note}
-Pre-release builds of Dash Platform 5.0 used the `lookup` and `propertyAgreement` keywords and a `listElement` reference type. These were replaced by `findBy`, `where` (keyed by the referenced document's property), and `permanentDocument` with `inList`, and are [rejected](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/mod.rs#L1098-L1121) by the released protocol.
+Pre-release builds of Dash Platform 5.0 used the `lookup` and `propertyAgreement` keywords and a `listElement` reference type. These were replaced by `findBy`, `where` (keyed by the referenced document's property), and `permanentDocument` with `inList`, and are [rejected](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/mod.rs#L1098-L1128) by the released protocol.
 :::
 
 ### Property Constraints
