@@ -12,14 +12,14 @@ Platform error codes are organized into four categories. Each category may be fu
 
 | Category                       |  Code range | Description |
 | ------------------------------ | :---------: | ----------- |
-| [Basic](#basic-errors)                | 10000 - 10999 | Errors encountered while validating structure and data |
+| [Basic](#basic-errors)                | 10000 - 11099 | Errors encountered while validating structure and data |
 | [Signature](#signature-errors) | 20000 - 20999 | Errors encountered while validating identity existence and state transition signature |
 | [Fee](#fee-errors)             | 30000 - 30999 | Errors encountered while validating an identity's balance is sufficient to pay fees |
-| [State](#state-errors)         | 40000 - 40999 | Errors encounter while validating state transitions against the platform state |
+| [State](#state-errors)         | 40000 - 41299 | Errors encounter while validating state transitions against the platform state |
 
 ## Basic Errors
 
-Basic errors occupy the codes ranging from 10000 to 10999. This range is divided into several categories for clarity.
+Basic errors occupy the codes ranging from 10000 to 11099. This range is divided into several categories for clarity.
 
 ### Versioning
 
@@ -129,6 +129,10 @@ Code range:  10200-10349
 | 10274 | InvalidTokenDistributionTimeIntervalNotMinuteAlignedError |        |
 | 10275 | RedundantDocumentPaidForByTokenWithContractId            |         |
 | 10276 | DataContractInvalidRequiredFieldsUpdateError             |         |
+| 10277 | PreProgrammedDistributionAmountOverLimitError   |         |
+| 10278 | TokenShieldedPoolIncompatibleRulesError         |         |
+| 10279 | NonTransferableTokenShieldedPoolError           |         |
+| 10280 | NonTransferableTokenPaymentMustBurnError        |         |
 
 ### Group
 
@@ -146,6 +150,14 @@ Code range:  10350-10399
 | 10357 |MainGroupIsNotDefinedError                                |         |
 | 10358 |GroupRequiredPowerIsInvalidError                           |         |
 | 10359 |GroupHasTooFewMembersError                                 |         |
+| 10360 | ContractGroupMembershipsOverLimitError                    |         |
+| 10361 | DuplicateContractGroupMembershipError                     |         |
+| 10362 | RedundantContractGroupMembershipError                     |         |
+| 10363 | ContractGroupMemberNotInContractError                     |         |
+| 10364 | InvalidContractGroupAdminsError                           |         |
+| 10365 | *(reserved/unassigned)*                                   |         |
+| 10366 | InvalidContractGroupNameLengthError                       |         |
+| 10367 | InvalidContractGroupDescriptionLengthError                |         |
 
 ### Document
 
@@ -172,6 +184,12 @@ Code range:  10400-10449
 | 10416 | DocumentCreationNotAllowedError                      |         |
 | 10417 | DocumentFieldMaxSizeExceededError                    |         |
 | 10418 | ContestedDocumentsTemporarilyNotAllowedError         |         |
+| 10419 | DocumentPropertyNotDistinctError                     |         |
+| 10420 | InvalidEncryptedPropertyShapeError                   |         |
+| 10421 | DocumentPropertyMaxBytesExceededError                |         |
+| 10422 | DocumentPropertyConstraintViolatedError              |         |
+| 10423 | DocumentReferencePreimageInvalidError                |         |
+| 10424 | DocumentPropertyNotGeneratedError                    |         |
 
 ### Token
 
@@ -233,6 +251,11 @@ Code range:  10500-10599
 | 10532 | WithdrawalOutputScriptNotAllowedWhenSigningWithOwnerKeyError  |         |
 | 10533 | InvalidKeyPurposeForContractBoundsError                       |         |
 | 10534 | IdentityAssetLockTransactionTooManyInputsError                |         |
+| 10535 | ContractGroupBoundKeyNotAllowedInShieldedIdentityCreationError |         |
+| 10536 | IdentityPublicKeyLimitsNotAllowedError                        |         |
+| 10537 | InvalidIdentityPublicKeyBudgetError                           |         |
+| 10538 | IdentityPublicKeyLimitsNotAllowedInShieldedIdentityCreationError |         |
+| 10539 | IdentityKeyLimitsUpdateEmptyError                             |         |
 
 ### State Transition
 
@@ -287,6 +310,30 @@ Code range: 10800-10899
 | 10825 | ShieldedTooManyActionsError                    |         |
 | 10826 | ShieldedImplicitFeeCapExceededError            |         |
 | 10827 | ShieldedInvalidDenominationError               |         |
+| 10828 | InvalidTokenDistributionEpochIntervalTooShortError | Token distribution validation |
+| 10829 | InvalidTokenOncePerIdentityDistributionAmountError | Token distribution validation |
+
+### Contract Moderation
+
+Code range: 10900-10949
+
+| Code  | Error Description                             | Comment |
+| :---: | --------------------------------------------- | ------- |
+| 10900 | InvalidContractModerationConfigError          |         |
+| 10901 | ContractModerationSelfTargetError             |         |
+| 10902 | DocumentActionFeesWithoutModerationError      |         |
+| 10903 | ContractModerationReasonTooLongError          |         |
+| 10904 | InvalidContractModerationReasonDocumentsError |         |
+| 10905 | InvalidContractModerationDocumentFieldsError  |         |
+
+### Moderation Team
+
+Code range: 11000-11099
+
+| Code  | Error Description                              | Comment |
+| :---: | ---------------------------------------------- | ------- |
+| 11000 | ModerationCharterMalformedFieldError           |         |
+| 11001 | ModerationCharterRewardSplitNotOneHundredError |         |
 
 ## Signature Errors
 
@@ -305,6 +352,11 @@ Code range: 10800-10899
 | 20010 | BasicBLSError                               |                |
 | 20011 | InvalidSignaturePublicKeyPurposeError       |                |
 | 20012 | UncompressedPublicKeyNotAllowedError        |                |
+| 20013 | ContractBoundedKeyNonBatchError             |                |
+| 20014 | ContractBoundedKeyOutOfBoundsError          |                |
+| 20015 | PublicKeyBudgetExhaustedError               |                |
+| 20016 | PublicKeyExpiredError                       |                |
+| 20017 | PublicKeyWithLimitsCannotUpdateKeyLimitsError |                |
 
 ## Fee Errors
 
@@ -365,6 +417,28 @@ Code range:  40100-40199
 | 40125 | ReferencedKeyIdPropertyInvalidError                    |         |
 | 40126 | ReferencedDocumentPropertyAgreementInvalidError        |         |
 | 40127 | ReferencedDocumentPropertyMismatchError                |         |
+| 40128 | DocumentImmutablePropertyChangedError                  |         |
+| 40129 | GasFeesPaidByNotAllowedError                           |         |
+| 40130 | InconsistentGasFeesPaidByInBatchError                  |         |
+| 40131 | ReferencedDocumentTypeNotDeletableError                |         |
+| 40132 | DocumentActionFeeAgreementNotSetError                  |         |
+| 40133 | DocumentActionFeeAgreementMismatchError                |         |
+| 40134 | DocumentActionFeeMultiplierNotToleratedError           |         |
+| 40135 | ReferencedContractRequirementNotMetError               |         |
+| 40136 | ReferencedIdentityKeyRequirementNotMetError            |         |
+| 40137 | ReferencedDocumentLookupInvalidError                   |         |
+| 40138 | ReferencedDocumentListInvalidError                     |         |
+| 40139 | DocumentActionFeeModeratorsShareMismatchError          |         |
+| 40140 | DocumentExpiredError                                   |         |
+| 40141 | DocumentContestMaximumContendersReachedError           |         |
+| 40142 | ReferencedDocumentRequirementNotMetError               |         |
+| 40143 | ReferencedDocumentTypeNotModeratedError                |         |
+| 40144 | ReferencedDocumentTypeModeratedError                   |         |
+| 40145 | ReferencedDocumentRemovedError                         |         |
+| 40146 | ReferencedDocumentTypeIndexOnlyError                   |         |
+| 40147 | DocumentDeleteConstraintViolatedError                  |         |
+| 40148 | ReferencedDocumentRuleReadInvalidError                 |         |
+| 40149 | ReferencedDocumentPrecededError                        |         |
 
 ### Token State
 
@@ -394,6 +468,11 @@ Code range: 40700-40799
 | 40719 | TokenDirectPurchaseUserPriceTooLow                     |         |
 | 40720 | TokenAmountUnderMinimumSaleAmount                      |         |
 | 40721 | TokenNotForDirectSale                                  |         |
+| 40722 | TokenOncePerIdentityDistributionAlreadyClaimedError    |         |
+| 40723 | TokenShieldedPoolNotEnabledError                       |         |
+| 40724 | TokenShieldedPaymentAmountMismatchError                |         |
+| 40725 | TokenShieldedPaymentNotRequiredError                   |         |
+| 40726 | TokenNotTransferableError                              |         |
 
 ### Identity State
 
@@ -418,6 +497,11 @@ Code range:  40200-40299
 | 40215 | NoTransferKeyForCoreWithdrawalAvailableError               |         |
 | 40216 | RecipientIdentityDoesNotExistError                         |         |
 | 40217 | IdentityToFreezeDoesNotExistError                          |         |
+| 40218 | IdentityPublicKeyBudgetExceededError                       |         |
+| 40219 | IdentityPublicKeyAlreadyExpiredError                       |         |
+| 40220 | IdentityPublicKeyLimitNotSetError                          |         |
+| 40221 | IdentityPublicKeyLimitNotRaisedError                       |         |
+| 40222 | GasSponsorInsufficientBalanceError                         |         |
 
 ### Voting State
 
@@ -432,6 +516,7 @@ Code range:  40300-40399
 | 40304 | MasternodeVoteAlreadyPresentError       |         |
 | 40305 | MasternodeIncorrectVotingAddressError   |         |
 | 40306 | MasternodeIncorrectVoterIdentityIdError |         |
+| 40307 | VoteChoiceNotAllowedForVotePollError    |         |
 
 ### Prefunded Specialized Balances State
 
@@ -486,3 +571,66 @@ Code range: 40900-40999
 | 40902 | InvalidShieldedProofError       |         |
 | 40903 | InsufficientPoolNotesError      |         |
 | 40904 | InsufficientShieldedFeeError    |         |
+
+### Contract Group State
+
+Code range: 41000-41099
+
+| Code  | Error Description                         | Comment |
+| :---: | ----------------------------------------- | ------- |
+| 41000 | ContractGroupAlreadyExistsError           |         |
+| 41001 | ContractGroupNotFoundError                |         |
+| 41002 | IdentityNotContractGroupOwnerOrAdminError |         |
+| 41003 | ContractGroupAdminNotFoundError           |         |
+
+### Contract Moderation State
+
+Code range: 41100-41199
+
+| Code  | Error Description                           | Comment |
+| :---: | ------------------------------------------- | ------- |
+| 41100 | ContractModerationNotEnabledError           |         |
+| 41101 | IdentityNotContractModeratorError           |         |
+| 41102 | ContractModerationTargetNotAllowedError     |         |
+| 41103 | ContractUserAlreadyBannedError              |         |
+| 41104 | ContractUserNotBannedError                  |         |
+| 41105 | ContractUserNotSuspendedError               |         |
+| 41106 | ContractSuspensionNotInFutureError          |         |
+| 41107 | ContractUserBannedError                     |         |
+| 41108 | ContractUserSuspendedError                  |         |
+| 41109 | ContractModerationTargetNotFoundError       |         |
+| 41110 | ContractModeratorIdentityNotFoundError      |         |
+| 41111 | ContractFeesAlreadyClaimedThisEpochError    |         |
+| 41112 | ContractFeesNothingToClaimError             |         |
+| 41113 | ContractFeeClaimNotAllowedError             |         |
+| 41114 | ContractModerationCounterpartyBarredError   |         |
+| 41115 | DocumentTypeNotDeletableByModeratorsError   |         |
+| 41116 | DocumentModerationWindowElapsedError        |         |
+| 41117 | ContractUserNotWarnedError                  |         |
+| 41118 | ContractUserWarningLimitReachedError        |         |
+| 41119 | ContractDocumentRemovalNotFoundError        |         |
+| 41120 | DocumentRestoreWindowElapsedError           |         |
+| 41121 | DocumentRestoreHashMismatchError            |         |
+| 41122 | ContractDocumentAlreadyRestoredError        |         |
+| 41123 | DocumentFieldNotChangeableByModeratorsError |         |
+| 41124 | DocumentModeratorFieldNotWritableError      |         |
+
+### Contract Moderation Team State
+
+Code range: 41200-41299
+
+| Code  | Error Description                                | Comment |
+| :---: | ------------------------------------------------ | ------- |
+| 41200 | ContractModeratedDocumentTypeNotYetUsableError   |         |
+| 41201 | ContractModerationAbilityNotGrantedError         |         |
+| 41202 | ModerationCharterAddedModeratorLimitReachedError |         |
+| 41203 | ModerationReasonNotListedError                   |         |
+| 41204 | DocumentTypeNotDeletableOnceSettledError         |         |
+| 41205 | ContractModerationTeamNotSeatedError             |         |
+| 41206 | DocumentNotSettledError                          |         |
+| 41207 | ContractTeamActionDoesNotExistError              |         |
+| 41208 | ContractTeamActionAlreadySignedError             |         |
+| 41209 | SettledDeletionNotRestorableError                |         |
+| 41210 | ContractTeamActionAlreadyCompletedError          |         |
+| 41211 | ContractTeamActionDocumentChangedError           |         |
+| 41212 | ContractTeamMemberAddedAfterDocumentError        |         |

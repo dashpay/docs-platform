@@ -214,14 +214,14 @@ Withdraw credits from Platform addresses back to the Core chain.
 | inputs          | map              | Varies   | Map of source [Platform addresses](#platform-address) to (nonce, credits) pairs                                      |
 | output          | tuple            | Varies   | (Optional) Change output as (Platform address, credits)                                                              |
 | feeStrategy     | array            | Varies   | [Fee deduction strategy](#fee-strategy)                                                                              |
-| coreFeePerByte  | unsigned integer | 32 bits  | Core transaction fee per byte (must be a [Fibonacci number](https://en.wikipedia.org/wiki/Fibonacci_sequence) ≥ 1)   |
+| coreFeePerByte  | unsigned integer | 32 bits  | Core transaction fee per byte (must be a [Fibonacci number](https://en.wikipedia.org/wiki/Fibonacci_sequence) ≥ 1; at most 6,765 from protocol version 14) |
 | pooling         | unsigned integer | 8 bits   | Pooling mode: `0` = Never (required), `1` = IfAvailable, `2` = Standard                                              |
 | outputScript    | array of bytes   | Varies   | Core chain destination script (P2PKH or P2SH only)                                                                   |
 | userFeeIncrease | unsigned integer | 16 bits  | Extra fee to prioritize processing if the mempool is full                                                            |
 | inputWitnesses  | array            | Varies   | [Address witnesses](#address-witness) for each input                                                                 |
 
 :::{note}
-**Constraints:** Minimum inputs: 1. Maximum inputs: `max_address_inputs`. Minimum per input: 100,000 credits. Minimum output: 500,000 credits. Pooling must be `Never` (others not yet implemented). Output script must be P2PKH or P2SH. The withdrawn amount (input sum minus the change output) must be greater than zero and within the [min and max withdrawal amount](protocol-constants.md) limits.
+**Constraints:** Minimum inputs: 1. Maximum inputs: `max_address_inputs`. Minimum per input: 100,000 credits. Minimum output: 500,000 credits. Pooling must be `Never` (others not yet implemented). Output script must be P2PKH or P2SH. The withdrawn amount (input sum minus the change output) must be greater than zero and within the [min and max withdrawal amount](protocol-constants.md) limits. Starting in protocol version 14, the Core transaction fee is deducted from the withdrawn amount, so the withdrawn amount must be at least the min withdrawal amount plus the Core fee (190-byte asset unlock transaction × `coreFeePerByte` × 1,000 credits).
 
 **Fee:** 400,000,000 credits + 500,000 per input + 6,000,000 for the change output (if present). Withdrawal fees are significantly higher due to the complexity and finality of moving funds back to the Core chain.
 :::
