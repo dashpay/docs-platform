@@ -4,11 +4,9 @@
 
 # Shielded Pool
 
-:::{attention}
 Shielded state transitions were [enabled in Protocol Version 12](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/feature_initial_protocol_versions.rs#L4). They use the [Orchard](https://zips.z.cash/protocol/protocol.pdf) shielded protocol to move credits into, within, and out of a pool that hides amounts, senders, and recipients.
 
 For the conceptual overview of how the pool works and when to use it, see [Shielded Pool](../explanations/shielded-pool.md).
-:::
 
 ## Overview
 
