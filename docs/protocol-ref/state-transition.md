@@ -30,10 +30,10 @@ The list of common fields used by multiple state transitions is defined in [rs-d
 | userFeeIncrease | unsigned integer | 16 bits | Extra fee to prioritize processing if the mempool is full. Typically set to zero. |
 | signature       | array of bytes | 65 or 96 bytes | Signature of state transition data. Present on identity-signed and asset-lock-signed transitions (types 0-9, 13, 18, 21, and 23-25): 65 bytes for ECDSA signatures or 96 bytes for BLS signatures. |
 | inputWitnesses  | array | Varies | Address-ownership witnesses. Present on address-authorized transitions (types 10-15); may be empty when the transition has no address inputs. |
-| spendAuthSig<br>bindingSignature | array of bytes | 64 bytes each | Orchard authorization carried by shielded transitions (types 15-22 and 26-28). `spendAuthSig` appears on each action; `bindingSignature` appears at the transition level. See [Shielded Transition Signing](shielded-pool.md#shielded-transition-signing). |
+| spendAuthSig<br>bindingSignature | array of bytes | 64 bytes each | Orchard authorization carried by shielded transitions (types 15-22 and 26-28). `spendAuthSig` appears on each action; `bindingSignature` appears at the transition level. Both also appear in the bundles of [token shielded pool transitions](token.md#token-shielded-pool-transitions) carried in a Batch (type 1). See [Shielded Transition Signing](shielded-pool.md#shielded-transition-signing). |
 
 :::{note}
-The [masternode vote](#masternode-vote) transition does not include the `userFeeIncrease` field.
+The [masternode vote](#masternode-vote) transition does not include the `userFeeIncrease` field. Neither do the shielded transitions other than [Shield](shielded-pool.md#shield) and [Shield from Identity](shielded-pool.md#shield-from-identity): types 16-20, 22, and 26-28 omit it.
 :::
 
 Additionally, the identity-signed state transitions (types 0, 1, 4-9, 21, and 23-25) include:

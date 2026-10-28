@@ -19,10 +19,10 @@ A document action whose [token cost](data-contract-document.md#token-costs) is p
 |-------|------|-------------|
 | 0 | `DocumentOwner` | Fees paid by the identity submitting the transition |
 | 1 | `ContractOwner` | Fees paid by the contract owner |
-| 2 | `PreferContractOwner` | Fees paid by the contract owner if possible, otherwise by the document owner |
+| 2 | `PreferContractOwner` | Fees paid by the contract owner if their balance covers them, otherwise by the document owner |
 
 :::{versionchanged} 5.0.0
-Protocol version 14 acts on `GasFeesPaidBy`. Earlier versions carried the value but ignored it, and the signer always paid. A request for `ContractOwner` is rejected unless the document type offers `ContractOwner`, and `PreferContractOwner` falls back to the document owner when the contract does not offer to pay. See the [resolution rules in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/tokens/gas_fees_paid_by.rs#L51-L83).
+Protocol version 14 acts on `GasFeesPaidBy`. Earlier versions carried the value but ignored it, and the signer always paid. A request for `ContractOwner` is rejected unless the document type offers `ContractOwner`, and `PreferContractOwner` falls back to the document owner when the contract does not offer to pay. At execution, `PreferContractOwner` also falls back to the document owner when the contract owner's balance cannot cover the fee, while a `ContractOwner` request is refused, and nobody is charged, when the contract owner cannot pay ([rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/tokens/gas_fees_paid_by.rs#L34-L48)). See the [resolution rules in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/tokens/gas_fees_paid_by.rs#L51-L83).
 :::
 
 :::{seealso}
@@ -89,6 +89,8 @@ The token transition actions [defined in rs-dpp](https://github.com/dashpay/plat
 
 :::{note}
 The numeric action codes above are for client-side reference ordering only. `TokenTransitionActionType` is not used by the platform backend consensus directly.
+
+The codes follow the order of `TokenTransitionActionType`. The wire (bincode) variant index of the batch [`TokenTransition` enum](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_transition.rs#L75-L129) matches for codes 0-11 but differs for codes 12-17, whose wire indexes are Unshield 12, Shielded Transfer 13, Mint To Pool 14, Burn From Pool 15, Claim To Pool 16, Direct Purchase To Pool 17.
 :::
 
 ### Token Notes
@@ -131,7 +133,7 @@ The token transfer transition extends the [base transition](#token-base-transiti
 | privateEncryptedNote | [PrivateEncryptedNote object](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/tokens/mod.rs#L21-L25) | [<= 2048 bytes](#token-notes) | Optional private encrypted note |
 
 :::{versionadded} 5.0.0
-A token whose configuration sets [`transferable: false`](data-contract-token.md#operational-controls) rejects every transfer transition with [`TokenNotTransferableError`](errors.md) (code 40726).
+A token whose configuration sets [`transferable: false`](data-contract-token.md#operational-controls) rejects every transfer transition with [`TokenNotTransferableError`](errors.md) (code 40726). Such a token also cannot be a document [token cost](data-contract-document.md#token-costs) that pays the contract owner; it can only be burned. Contract registration rejects such a cost ([`NonTransferableTokenPaymentMustBurnError`](errors.md), code 10280, for the contract's own token; code 40726 for another contract's token), and a payment to the contract owner is refused with code 40726.
 :::
 
 Each token transfer transition must comply with the [token transfer transition defined in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/state_transition/state_transitions/document/batch_transition/batched_transition/token_transfer_transition/v0/mod.rs#L39-L55).
@@ -281,7 +283,7 @@ The following rules apply to every token shielded pool transition:
 - The token must have a shielded pool ([`TokenShieldedPoolNotEnabledError`](errors.md), code 40723) and must not be paused. Pausing blocks every pool operation, including transitions that move tokens into the pool.
 - A bundle that spends notes must use an anchor recorded for the token pool, and its nullifiers must be unspent ([`InvalidAnchorError`](errors.md), [`NullifierAlreadySpentError`](errors.md)). An outputs-only bundle's dummy nullifiers must not repeat or already be recorded in the pool.
 - The proof verification fee is charged before the proof is checked, so a batch whose proof fails is still charged and its nonce advances.
-- Transitions that move tokens out of the pool to a visible destination (Unshield and Burn From Pool) require the pool to hold at least the token's [`minimumPoolNotesForOutgoing`](data-contract-token.md#shielded-pool) notes ([`InsufficientPoolNotesError`](errors.md), code 40903). Transfers inside the pool are not limited.
+- Transitions that move tokens out of the pool to a visible destination (Unshield and Burn From Pool) require the pool to hold at least the token's [`minimumPoolNotesForOutgoing`](data-contract-token.md#shielded-pool) notes ([`InsufficientPoolNotesError`](errors.md), code 40903). The same minimum applies to a document [token cost](data-contract-document.md#token-costs) paid from the token's pool ([`$tokenPaymentInfo.shieldedPayment`](document.md#token-payment-info)) and to [Token Unshield With Shielded Fee](shielded-pool.md#token-unshield-with-shielded-fee) (type 27). Transfers inside the pool are not limited.
 
 #### Token Shield Transition
 
@@ -348,12 +350,12 @@ This transition extends the [base transition](#token-base-transition) to include
 | Field | Type | Size | Description |
 | ----- | ---- | ---- | ----------- |
 | distributionType | [TokenDistributionType enum](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/associated_token/token_distribution_key.rs#L33-L43) | Varies | Type of distribution claimed |
-| claimUpTo | unsigned integer | 64 bits | (Optional) For a perpetual distribution, the cycle-aligned moment to claim up to. Ignored for pre-programmed distributions |
+| claimUpTo | unsigned integer | 64 bits | The cycle-aligned moment to claim up to. Required for a perpetual distribution ([`InvalidTokenClaimPropertyMismatch`](errors.md) when missing) and ignored for other distribution types |
 | actions | array | Varies | Orchard [actions](shielded-pool.md#actions) of the bundle in the token's shielded pool |
 | anchor | array of bytes | 32 bytes | [Anchor](shielded-pool.md#anchors) of the token pool's note commitment tree |
 | proof | array of bytes | Varies | Halo 2 proof |
 | bindingSignature | array of bytes | 64 bytes | RedPallas binding signature |
-| publicNote | string | [<= 2048 bytes](#token-notes) | Optional public note. In a group action, only the proposer may set it |
+| publicNote | string | [<= 2048 bytes](#token-notes) | Optional public note |
 
 Sighash `extra_data`: [`0x82` || `tokenId` || `ownerId`](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/shielded/sighash.rs#L755-L767). The claim must not push the total supply above `maxSupply`.
 

@@ -133,6 +133,10 @@ Token configuration controls behavioral aspects of token operations, including s
 | `baseSupply` | unsigned integer | 0 | Initial supply of tokens created at contract deployment |
 | `maxSupply` | unsigned integer | null | Maximum number of tokens that can ever exist (null for unlimited) |
 
+:::{versionchanged} 5.0.0
+From protocol version 14, a token added to an existing contract by a [contract update](data-contract.md#data-contract-update) is set up like a token registered with the contract: its `baseSupply` is minted to the token's `newTokensDestinationIdentity` (or to the contract owner when none is set), and the storage for its distributions and shielded pool is created. Earlier versions did neither, and nothing is minted retroactively for a token added under an earlier version. See the [contract update in rs-drive](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-drive/src/drive/contract/update/update_contract/v2/mod.rs#L251-L343).
+:::
+
 ### Operational Controls
 
 | Property | Type | Default | Description |
@@ -172,16 +176,17 @@ A token can have its own [shielded pool](shielded-pool.md) that holds that token
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `hasShieldedPool` | boolean | false | Whether the token has its own shielded pool. Fixed when the token is created |
-| `minimumPoolNotesForOutgoing` | unsigned integer | null | Number of notes the token's pool must hold before tokens may leave it for a visible destination (unshielding to an identity, burning from the pool, or paying a document's token cost from the pool). Transfers inside the pool are not limited. `null` means no threshold. At most [250](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L188) |
+| `minimumPoolNotesForOutgoing` | unsigned integer | null | Number of notes the token's pool must hold before tokens may leave it for a visible destination (unshielding to an identity, burning from the pool, or paying a document's token cost from the pool). Transfers inside the pool are not limited. `null` or `0` means no threshold. At most [250](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L188) |
 | `minimumPoolNotesForOutgoingChangeRules` | object | No one | [Change control rules](#change-rule-structure) for changing `minimumPoolNotesForOutgoing` with a [token config update](token.md#token-config-update-transition) |
 
 A token with `hasShieldedPool: true` must meet the following [constraints](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/associated_token/token_configuration/mod.rs#L100-L149), checked on contract create and update:
 
 - `freezeRules`, `unfreezeRules`, and `destroyFrozenFundsRules` must each have `authorizedToMakeChange` and `adminActionTakers` set to `{"$type": "noOne"}`, because notes in the pool belong to no identity and cannot be frozen. Otherwise registration fails with `TokenShieldedPoolIncompatibleRulesError`.
 - `transferable` must be `true`. Otherwise registration fails with `NonTransferableTokenShieldedPoolError`.
-- `minimumPoolNotesForOutgoing`, when set, must not exceed 250.
 
-The `minimumPoolNotesForOutgoing` threshold items can only be applied to a token that has a shielded pool. A format version `1` configuration rejects unknown keys. See the [token configuration version 1 in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/associated_token/token_configuration/v1/mod.rs#L37-L72).
+In every format version `1` configuration, with or without a pool, `minimumPoolNotesForOutgoing` must not exceed 250 (`KeyWrongBounds`), checked on contract create and update ([rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/associated_token/token_configuration/mod.rs#L180-L200)).
+
+The `minimumPoolNotesForOutgoing` threshold items can only be applied to a token that has a shielded pool. Both configuration format versions reject unknown keys ([version 0](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/associated_token/token_configuration/v0/mod.rs#L36-L45), [version 1](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/associated_token/token_configuration/v1/mod.rs#L31-L36)), so a key such as `hasShieldedPool` next to `"$formatVersion": "0"` is rejected rather than ignored. See the [token configuration version 1 in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/associated_token/token_configuration/v1/mod.rs#L37-L72).
 
 **Example:**
 
@@ -563,13 +568,17 @@ Pre-programmed distribution allows scheduling specific token allocations at pred
 }
 ```
 
+:::{versionchanged} 5.0.0
+From protocol version 14, a release whose amounts sum to more than `i64::MAX` is rejected with [`PreProgrammedDistributionAmountOverLimitError`](errors.md) (code 10277). The check runs on contract create and, for tokens that a contract update adds, on contract update. See the [validation in rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/associated_token/token_pre_programmed_distribution/methods/validate_amounts/v0/mod.rs#L10-L31).
+:::
+
 ### Once-Per-Identity Distribution
 
 :::{versionadded} 5.0.0
 Protocol version 14 added the once-per-identity distribution.
 :::
 
-A once-per-identity distribution lets every identity claim a fixed amount of the token exactly once, for example for an airdrop. Any identity can submit a [token claim](token.md#token-claim-transition) with distribution type `OncePerIdentity`. The first claim mints `amount` to the claimant, and later claims by the same identity are rejected. The total paid out is limited only by the token's `maxSupply`, so set `maxSupply` to bound the distribution.
+A once-per-identity distribution lets every identity claim a fixed amount of the token exactly once, for example for an airdrop. Any identity can submit a [token claim](token.md#token-claim-transition) with distribution type `OncePerIdentity`, or a [claim to pool](token.md#token-claim-to-pool-transition) to receive the amount in the token's shielded pool instead. The first claim mints `amount` to the claimant, and later claims by the same identity are rejected. The total paid out is limited only by the token's `maxSupply`, so set `maxSupply` to bound the distribution.
 
 ```json
 "distributionRules": {

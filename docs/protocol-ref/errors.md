@@ -15,7 +15,7 @@ Platform error codes are organized into four categories. Each category may be fu
 | [Basic](#basic-errors)                | 10000 - 11099 | Errors encountered while validating structure and data |
 | [Signature](#signature-errors) | 20000 - 20999 | Errors encountered while validating identity existence and state transition signature |
 | [Fee](#fee-errors)             | 30000 - 30999 | Errors encountered while validating an identity's balance is sufficient to pay fees |
-| [State](#state-errors)         | 40000 - 41299 | Errors encounter while validating state transitions against the platform state |
+| [State](#state-errors)         | 40000 - 41299 | Errors encountered while validating state transitions against the platform state |
 
 ## Basic Errors
 
