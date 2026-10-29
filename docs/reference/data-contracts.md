@@ -185,12 +185,12 @@ The following example (from the [DPNS contract's `domain` document](https://gith
 Requires protocol version 14.
 :::
 
-An `indexOnly` document type is never written to primary storage. Its index entries *are* the rows: each terminates in a value keyed by the index's [`terminal`](#indexonly-index-keywords) property rather than a reference keyed by a document ID. Only what the indices hold exists and is recoverable, which makes the type cheaper to store at the cost of being queryable only along its declared indices.
+An `indexOnly` document type is never written to primary storage. Its index entries *are* the rows: each terminates in a value keyed by the index's [`terminal`](#indexonly-index-keywords) rather than a reference keyed by a document ID. Only what the indices hold exists and is recoverable, which makes the type cheaper to store at the cost of being queryable only along its declared indices.
 
 Declaring `indexOnly: true` carries co-requirements:
 
-* Every property must be required and appear in at least one index. The exception is a property in a [`skipIfAbsent`](#indexonly-index-keywords) index's skip set.
-* Every index must include `$ownerId`, either as one of its properties or as its `terminal`.
+* Every property must be required and appear in at least one index that sets neither `skipIfAbsent` nor `outlivesDelete`. The exception is a property in a [`skipIfAbsent`](#indexonly-index-keywords) skip set, which may be optional.
+* Except for a `summableOffCountIndex` index, every index must include `$ownerId`, either as one of its properties or in its `terminal`.
 * `documentsMutable` must be false.
 * Transfers, trading, history, and transient properties are not allowed.
 * Document-type-level aggregate keywords are not allowed; use the [index-level flags](#aggregate-index-flags) instead.
@@ -445,7 +445,7 @@ Bytes written under a `ttl` index are charged as processing at the [TTL ephemera
 
 Indices may also declare `integerRange`, which buckets the first index property's integer value into fixed-length windows, and, on `indexOnly` types, `summableOffCountIndex` and (for a `timeRange` index with a `ttl`) `outlivesDelete`. See [Optional Index Fields](../protocol-ref/data-contract-document.md#optional-index-fields).
 
-Any index may declare `skipIfAbsent`, so that a document omitting a property of the index's skip set writes no entry and the index holds only documents carrying every skip property. `true` makes the skip set every optional property of the index; an array names the skip set explicitly. A skip property may sit at any position in the index and must not be listed in `required`. An absent property is distinct from an empty value: absence skips the index, while any present value indexes normally. On a stored type, a skip index cannot be contested or set `nullSearchable: false`; `indexOnly` types add the [rules below](#indexonly-index-keywords).
+An index may declare `skipIfAbsent`, so that a document omitting a property of the index's skip set writes no entry and the index holds only documents carrying every skip property. `true` makes the skip set every optional property of the index; an array names the skip set explicitly. A skip property may sit at any position in the index and must not be listed in `required`. An absent property is distinct from an empty value: absence skips the index, while any present value indexes normally. On a stored type, a skip index cannot be contested or set `nullSearchable: false`; `indexOnly` types add the [rules below](#indexonly-index-keywords).
 
 #### indexOnly index keywords
 
@@ -457,7 +457,7 @@ Requires protocol version 14.
 
 | Keyword | Type | Description |
 |-|-|-|
-| skipIfAbsent | boolean or array | The skip set must hold every optional property of the index, and every optional property needs a skip index whose skip set is that property alone. This is the only way an `indexOnly` property may be optional. |
+| skipIfAbsent | boolean or array | The skip set must hold every optional property of the index, and every optional property needs a skip index whose skip set is that property alone and that has no `timeRange`. This is the only way an `indexOnly` property may be optional. |
 | terminal | string or array | The property, or ordered list of up to 10 properties, whose values key each index entry - the analog of a document ID. Each component is `$ownerId` (the default) or a schema property an index could hold (no arrays or objects); every component but the last must be fixed width, and the whole key is at most 255 bytes. Must not repeat one of the index's properties. |
 | preallocated | boolean | When true, creating a referenced document also creates this index's trees for entries referencing it, paid by that document's creator, so every entry insert costs the same as the first. Every index property must be either the referring property of a same-contract `permanentDocument` or `moderatedDocument` reference or a referring value of that reference's `where`. |
 
@@ -473,7 +473,7 @@ For performance and security reasons, indices have the following constraints. Th
 | Maximum number of properties in a single index | [10](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v3/document-meta.json#L2087) |
 | Maximum length of indexed string property | [63](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/mod.rs#L77) |
 | Maximum length of indexed byte array property | [255](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/mod.rs#L78) |
-| Maximum number of indexed array items | [1024](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/mod.rs#L79) |
+| Maximum number of elements in an indexed typed array | [16](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L198), or [4](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L199) when the index also has a `timeRange` or `integerRange` (protocol version 14) |
 | Usage of `$id` in an index [disallowed](https://github.com/dashpay/platform/pull/178) | N/A |
 
 **Example**  
