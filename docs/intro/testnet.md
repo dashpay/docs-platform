@@ -25,6 +25,9 @@ The Dash Platform features available on testnet include:
 - [Documents](../explanations/platform-protocol-document.md): used to store/update/delete data associated with data contracts
 - [DashPay](../explanations/dashpay.md): a data contract enabling a decentralized application that creates bidirectional direct settlement payment channels between identities and supports contact (name) based payments
 - [Tokens](../explanations/tokens.md): creation and management of tokens (similar to ERC-20 style assets) using data contracts, without writing smart contracts
+- [NFTs](../explanations/nft.md): unique, ownable documents that can be transferred, traded, and optionally made mutable or deletable
+- [Platform addresses](../protocol-ref/address-system.md): holding and transferring credits directly at addresses, including funding identities, without requiring an existing identity
+- [Shielded pool](../explanations/shielded-pool.md): a privacy layer for holding and moving credits without revealing balances, sender, or recipient
 
 ## Getting involved
 

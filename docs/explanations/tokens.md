@@ -326,7 +326,7 @@ Creating a token on Dash Platform consists of creating a data contract, register
 
 When a contract that declares a token is registered, Platform automatically mints the token's configured base supply to the contract owner (or to the destination configured for new tokens). A single contract may declare more than one token; each token is identified by its position within the contract and configured independently. Ongoing changes to token balances - including further minting, burning, transfers, freezes, and claims - are performed through the [token state transitions](#actions).
 
-A token can also be added to a contract that is already registered, by updating the contract to declare a token at a previously unused position. Token positions that already exist cannot be altered, and their configuration cannot be modified by a contract update. All post-registration changes to an existing token must use the [token config update](#configuration-updates) action.
+A token can also be added to a contract that is already registered, by updating the contract to declare a token at a previously unused position. Platform sets up the added token as it does at registration: it mints the token's base supply to the contract owner (or to the destination configured for new tokens) and creates the storage for its distributions. Token positions that already exist cannot be altered, and their configuration cannot be modified by a contract update. All post-registration changes to an existing token must use the [token config update](#configuration-updates) action.
 
 ### Contract Setup
 

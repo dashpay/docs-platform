@@ -35,7 +35,7 @@ nvm install 20.18
 ### Docker
 
 :::{warning}
-Only complete the following steps if you do not already have Docker installed. Otherwise, just make sure you have a version that meets the requirements in the [Platform book's Getting Started section](https://github.com/dashpay/platform/blob/master/book/src/getting-started.md).
+Only complete the following steps if you do not already have Docker installed. Otherwise, just make sure you have a version that meets the requirements in the [Platform book's Getting Started section](https://github.com/dashpay/platform/blob/v5.0.1/book/src/getting-started.md).
 :::
 
 ``` shell
@@ -65,7 +65,7 @@ Execute the following script to install Rust. Use the default options during the
 ``` shell
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 . "$HOME/.cargo/env"
-rustup default 1.92
+rustup default 1.98.1
 ```
 
 ### WASM CLI
@@ -214,29 +214,17 @@ rm -rf ~/.dashmate          # Deletes the Dashmate configuration
 
 ## Use JS SDK
 
-To connect to Dash Platform with the JavaScript SDK, use the `dapiAddresses` option and allow
-self-signed certificates as shown in this example:
+To connect to the local network with the [Dash Evo SDK](https://www.npmjs.com/package/@dashevo/evo-sdk), use the `localTrusted()` factory method. It connects to the local network's DAPI and uses the quorum sidecar that `yarn setup` enables on the seed node. See [Connect to a Local Devnet](./connecting-to-testnet.md#connect-to-a-local-devnet) for more detail. Install the SDK with `npm install @dashevo/evo-sdk` and save the example as an `.mjs` file, since it uses ES modules and top-level `await`.
 
 ```js
-const Dash = require('dash');
+import { EvoSDK } from '@dashevo/evo-sdk';
 
-const client = new Dash.Client({
-  dapiAddresses: [
-    {
-      protocol: 'https',
-      host: '127.0.0.1:2443',
-      allowSelfSignedCertificate: true, // For self-signed certs on local devnet
-    },
-  ],
-});
-
-async function connect() {
-  const bestBlockHash = await client.getDAPIClient().core.getBestBlockHash();
-  return bestBlockHash;
+try {
+  const sdk = EvoSDK.localTrusted();
+  await sdk.connect();
+  const status = await sdk.system.status();
+  console.log('Connected. System status:\n', status.toJSON());
+} catch (e) {
+  console.error('Failed to fetch system status:', e.message);
 }
-
-connect()
-  .then((hash) => console.log('Connected. Best block hash:\n', hash))
-  .catch((err) => console.error('Something went wrong:\n', err))
-  .finally(() => client.disconnect());
 ```

@@ -26,30 +26,7 @@ Run the following command to start the setup wizard, then accept the default val
 dashmate setup local
 ```
 
-Example (partial) output of the setup wizard showing important information:
-
-``` text
-  ✔ Initialize SDK
-    › HD private key: tprv8ZgxMBicQKsPfLTCjh8vdHkDHYM369tUeQ4aqpV9GzUfQyBKutfstB1sDfQyLERACTEYy5Qjph42gBiqqnqYmXJZZqRc4PQssGzbvwJXHnN
-  ✔ Register DPNS identity
-    › DPNS identity: 6whgUd1LzwzU4ob7K8FGCLV765K7dp2JbEmVgdTQEFxD
-  ✔ Register DPNS contract
-    › DPNS contract ID: EpCvWuoh3JcFetFY83HdwuzRUvwxF2hc3mU19MtBg2kK
-  ✔ Obtain DPNS contract commit block height
-    › DPNS contract block height: 5
-  ✔ Register top level domain "dash"
-  ✔ Register identity for Dashpay
-    › Dashpay's owner identity: 2T7kLcbJzQrLhBV6BferW42Jimb3BJ5zAAore42mfNyE
-  ✔ Register Dashpay Contract
-    › Dashpay contract ID: EAv8ePXREdJ719ntcRiKuEYxv9XooMwL1mJmPHMGuW9r
-  ✔ Obtain Dashpay contract commit block height
-    › Dashpay contract block height: 15
-
-```
-
-:::{note}
-Make a note of the key and identity information displayed during setup as they may be required in the future.
-:::
+The wizard creates a config for each masternode plus a `local_seed` node that mines blocks, then registers the masternodes on the local Core network and configures Tenderdash and SSL certificates for them. System data contracts such as DPNS and DashPay are created automatically when the local Platform chain starts, so there are no keys or identities to record from setup.
 
 ### Operation
 
@@ -69,7 +46,7 @@ dashmate group status
 
 ### Mining Dash
 
-During development it may be necessary to obtain Dash to create and topup [identities](../../explanations/identity.md). This can be done using the dashmate `wallet:mint` command. First obtain an address to fund via the [Create and Fund a Wallet](../../tutorials/create-and-fund-a-wallet.md) tutorial and then mine Dash to it as shown below:
+During development it may be necessary to obtain Dash to create and topup [identities](../../explanations/identity.md). This can be done using the dashmate `wallet mint` command, which mines Dash to a Dash Core address. Provide a Core address you control, or omit `--address` to have dashmate generate a new address and private key. The Platform address created in the [Create and Fund a Wallet](../../tutorials/create-and-fund-a-wallet.md) tutorial cannot receive mined Dash directly.
 
 ::::{tab-set}
 :::{tab-item} Mine to provided address
@@ -88,14 +65,14 @@ dashmate group start
 :::{tab-item} Mine to new address
 ```shell
 # Stop the devnet first
-dashmate group:stop
+dashmate group stop
 
 # Mine 10 Dash to a random address/key
 # The address and private key will be displayed
-dashmate wallet:mint 10 --config=local_seed
+dashmate wallet mint 10 --config=local_seed
 
 # Restart the devnet
-dashmate group:start
+dashmate group start
 ```
 :::
 ::::
@@ -145,10 +122,10 @@ To setup a testnet masternode, please refer to the comprehensive documentation o
     </div>
 ```
 
-A full node that with all Platform services can be started by simply running the setup command with the [node type setup parameter](https://github.com/dashpay/platform/tree/master/packages/dashmate#node-setup) set to  `fullnode` and then starting the node.
+A full node with all Platform services can be started by running the [setup command](https://github.com/dashpay/platform/blob/v5.0.1/packages/dashmate/docs/commands/setup.md), selecting `evolution fullnode` when prompted for the node type, and then starting the node.
 
 ``` text
-dashmate setup testnet fullnode
+dashmate setup testnet
 dashmate start
 ```
 
