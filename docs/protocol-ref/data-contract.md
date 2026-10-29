@@ -3128,7 +3128,7 @@ These security options can be set at the root level of the data contract or the 
 
 **Example**
 
-The following example (from the [DashPay contract's `contactRequest` document](https://github.com/dashpay/platform/blob/v5.0.1/packages/dashpay-contract/schema/v1/dashpay.schema.json#L142-L146)) demonstrates the use of both key-related options at the document level:
+The following example (from the [DashPay contract's `contactRequest` document](https://github.com/dashpay/platform/blob/v5.0.1/packages/dashpay-contract/schema/v2/dashpay.schema.json#L166-L170)) demonstrates the use of both key-related options at the document level:
 
 ``` json
 "contactRequest": {
