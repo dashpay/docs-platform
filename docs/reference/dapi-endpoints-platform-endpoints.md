@@ -77,9 +77,9 @@ applied by the server and cannot be raised by the caller:
 
 ### Data Proofs and Metadata
 
-Platform gRPC endpoints can provide [proofs](https://github.com/dashpay/platform/blob/master/packages/dapi-grpc/protos/platform/v0/platform.proto#L142-L149) so the data returned for a request can be verified as being valid. When requesting proofs, the data requested will be encoded as part of the proof in the response. Proofs are supported in the [js-evo-sdk](https://github.com/dashpay/platform/tree/master/packages/js-evo-sdk) and via the low-level [dapi-grpc library](https://github.com/dashpay/platform/tree/master/packages/dapi-grpc).
+Platform gRPC endpoints can provide [proofs](https://github.com/dashpay/platform/blob/v5.0.1/packages/dapi-grpc/protos/platform/v0/platform.proto#L165-L172) so the data returned for a request can be verified as being valid. When requesting proofs, the data requested will be encoded as part of the proof in the response. Proofs are supported in the [js-evo-sdk](https://github.com/dashpay/platform/tree/master/packages/js-evo-sdk) and via the low-level [dapi-grpc library](https://github.com/dashpay/platform/tree/master/packages/dapi-grpc).
 
-Some [additional metadata](https://github.com/dashpay/platform/blob/master/packages/dapi-grpc/protos/platform/v0/platform.proto#L153-L160) is also provided with responses:
+Some [additional metadata](https://github.com/dashpay/platform/blob/v5.0.1/packages/dapi-grpc/protos/platform/v0/platform.proto#L176-L183) is also provided with responses:
 
 | Metadata field          | Description                                           |
 | :---------------------- | :---------------------------------------------------- |
@@ -107,7 +107,7 @@ encoder](https://base64.guru/converter/encode/hex).
 
 The *voter* and *operator* identities use derived IDs instead: `SHA-256(protx_hash || voting_address)`
 for the voter identity and `SHA-256(protx_hash || operator_public_key)` for the operator identity
-([source](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-dpp/src/identifier/mod.rs#L5-L31)).
+([source](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/identifier/mod.rs#L5-L31)).
 Encoding the protx hash alone will not produce a voter or operator identity ID.
 
 ```{eval-rst}

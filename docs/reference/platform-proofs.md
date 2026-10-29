@@ -75,7 +75,7 @@ not need to work at this level.
 At protocol version 13 and above, the `grovedbProof` returned by
 [`getRecentCompactedAddressBalanceChanges`](../reference/dapi-endpoints-platform-endpoints.md#getrecentcompactedaddressbalancechanges)
 is not a single GroveDB proof. It is a [bincode envelope carrying two independent GroveDB
-proofs](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-drive/src/verify/address_funds/verify_compacted_address_balance_changes/mod.rs#L21-L30):
+proofs](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-drive/src/verify/address_funds/verify_compacted_address_balance_changes/mod.rs#L22-L31):
 
 - a **predecessor proof**, which authenticates which compacted range contains the requested start height, and
 - a **forward proof**, verified against a query derived only from that authenticated result.

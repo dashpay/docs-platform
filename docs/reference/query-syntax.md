@@ -30,8 +30,8 @@ Valid fields consist of the indices defined for the document being queried. For 
 
 | Index Field(s) | Index Type | Unique |
 | - | - | :-: |
-| [normalizedParentDomainName, normalizedLabel](https://github.com/dashpay/platform/blob/master/packages/dpns-contract/schema/v2/dpns-contract-documents.json#L12-L33) | Compound | Yes |
-| [records.identity](https://github.com/dashpay/platform/blob/master/packages/dpns-contract/schema/v2/dpns-contract-documents.json#L34-L42) | Single Field | No |
+| [normalizedParentDomainName, normalizedLabel](https://github.com/dashpay/platform/blob/v5.0.1/packages/dpns-contract/schema/v2/dpns-contract-documents.json#L12-L33) | Compound | Yes |
+| [records.identity](https://github.com/dashpay/platform/blob/v5.0.1/packages/dpns-contract/schema/v2/dpns-contract-documents.json#L34-L42) | Single Field | No |
 
 ```{eval-rst}
 ..
@@ -277,7 +277,7 @@ On the raw gRPC layer, `SUM` / `AVG` integer values are delivered to JavaScript 
 
 ### Aggregate query limits
 
-The `limit` modifier behaves differently in aggregate result modes than it does when returning `DOCUMENTS`, and some `select` × `groupBy` combinations reject it outright. On the wire, [`limit` is an optional field](https://github.com/dashpay/platform/blob/v4.1.0/packages/dapi-grpc/protos/platform/v0/platform.proto#L958-L1002):
+The `limit` modifier behaves differently in aggregate result modes than it does when returning `DOCUMENTS`, and some `select` × `groupBy` combinations reject it outright. On the wire, [`limit` is an optional field](https://github.com/dashpay/platform/blob/v5.0.1/packages/dapi-grpc/protos/platform/v0/platform.proto#L1786-L1830):
 
 - Omit `limit` to request the server's default.
 - Send a positive value to request an explicit cap.
@@ -305,7 +305,7 @@ How a positive `limit` is interpreted depends on `groupBy`:
 
 On range-grouped aggregates, an oversized `limit` is handled differently depending on whether a proof is requested. With `prove: true`, a `limit` above the node's configured maximum is rejected with `InvalidLimit` so that proof bytes stay deterministic. With `prove: false`, the limit is silently clamped to that maximum instead. With the default maximum of 100, for example, a caller requesting 500 groups receives at most 100 with no error, which can look like missing data.
 
-Compound carrier-aggregate shapes that pair an `In` field with a range field and request a proof cap the outer range walk at [10 entries](https://github.com/dashpay/platform/blob/v4.1.0/packages/rs-drive/src/query/drive_document_count_query/mod.rs#L127). This is a hard ceiling: a `limit` above it is rejected, and callers needing more results issue repeated queries over disjoint outer-range windows.
+Compound carrier-aggregate shapes that pair an `In` field with a range field and request a proof cap the outer range walk at [10 entries](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-drive/src/query/drive_document_count_query/mod.rs#L129). This is a hard ceiling: a `limit` above it is rejected, and callers needing more results issue repeated queries over disjoint outer-range windows.
 
 ### Ranked aggregate queries
 
@@ -325,7 +325,7 @@ The `orderBy` clause must use the field spelling shown above; naming the aggrega
 
 `desc` walks the axis from the largest aggregate down (the "top n" reading); `asc` walks from the smallest up (the "bottom n" reading). Groups holding equal aggregate values are returned in group-key order in the direction of the walk.
 
-`limit` is required and must be between 1 and [100](https://github.com/dashpay/platform/blob/v5.0-dev/packages/rs-drive/src/query/drive_document_ranked_query/mod.rs#L142). This is a hard ceiling rather than a clamp: a larger limit is rejected with `InvalidLimit`, because the limit is part of the traversal a client re-executes when verifying the proof.
+`limit` is required and must be between 1 and [100](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-drive/src/query/drive_document_ranked_query/mod.rs#L142). This is a hard ceiling rather than a clamp: a larger limit is rejected with `InvalidLimit`, because the limit is part of the traversal a client re-executes when verifying the proof.
 
 `offset` skips that many ranks before the returned page, so `limit: 1, offset: 4` returns the fifth-ranked group. The skip is counted from subtree aggregates rather than walked, so there is deliberately no ceiling on it. The response reports the skip actually performed, which can be smaller than the requested offset when the groups run out. Cursors (`startAt` / `startAfter`) are rejected in ranked mode, which makes `offset` the only way to page a ranked result.
 
@@ -343,7 +343,7 @@ A having-range query filters grouped aggregates by their aggregate value, return
 
 The operator must describe one contiguous range - `==`, `>`, `>=`, `<`, `<=`, `Between`, or a `BetweenExclude*` variant. `!=` and `in` are rejected, because neither describes a contiguous range of the axis. Multi-clause `having` is also rejected.
 
-As with ranked queries, `limit` must be between 1 and [100](https://github.com/dashpay/platform/blob/v5.0-dev/packages/rs-drive/src/query/drive_document_having_query/mod.rs#L119), and the same ranking-axis index flags apply.
+As with ranked queries, `limit` must be between 1 and [100](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-drive/src/query/drive_document_having_query/mod.rs#L119), and the same ranking-axis index flags apply.
 
 Having-range queries support neither `offset` nor cursors. To continue past a page cut short by the limit, tighten the `having` bound past the last aggregate value seen. This cannot cross a tie: several groups sharing the boundary aggregate value must fit inside one limit.
 

@@ -187,7 +187,7 @@ Testnet Block Explorer <https://insight.testnet.networks.dash.org/insight/>
 Testnet Faucet <https://faucet.testnet.networks.dash.org/>
 Evo SDK Playground <https://evo-sdk.dash.org/playground>
 Dash Platform Book <https://dashpay.github.io/platform/>
-Previous Version of Docs <https://docs.dash.org/projects/platform/en/4.0.0/docs/>
+Previous Version of Docs <https://docs.dash.org/projects/platform/en/4.1.0/docs/>
 ```
 
 ```{toctree}
