@@ -189,7 +189,7 @@ An `indexOnly` document type is never written to primary storage. Its index entr
 
 Declaring `indexOnly: true` carries co-requirements:
 
-* Every property must be required and appear in at least one index. The single exception is the optional first property of a [`skipIfAbsent`](#indexonly-index-keywords) index.
+* Every property must be required and appear in at least one index. The exception is a property in a [`skipIfAbsent`](#indexonly-index-keywords) index's skip set.
 * Every index must include `$ownerId`, either as one of its properties or as its `terminal`.
 * `documentsMutable` must be false.
 * Transfers, trading, history, and transient properties are not allowed.
@@ -233,7 +233,7 @@ There are a variety of constraints currently defined for performance and securit
 | Maximum number of properties | [100](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v3/document-meta.json#L2762) |
 | Minimum property name length | [1](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v3/document-meta.json#L2740) |
 | Maximum property name length | [64](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v3/document-meta.json#L2740) |
-| Property name characters     | Alphanumeric (`A-Z`, `a-z`, `0-9`)<br>Underscore (`_`)<br>Hyphen (`-`) is refused from protocol version 14 (5.0.0) |
+| Property name characters     | Alphanumeric (`A-Z`, `a-z`, `0-9`)<br>Underscore (`_`)<br>Hyphen (`-`) allowed only before protocol version 14 |
 
 #### Assigning property `position`
 
@@ -321,7 +321,7 @@ The `indices` array consists of one or more objects that each contain:
 * An optional `nullSearchable` element that indicates whether the index allows searching for NULL values. If nullSearchable is false (default: true) and all properties of the index are null then no reference is added.
 * An optional `contested` element that configures a masternode-voting contest over documents whose field values match a defined pattern (see [Contested indices](#contested-indices)). It is an object composed of `fieldMatches` (field and `regexPattern` conditions) and a `resolution` method.
 * Optional aggregate flags that let the index answer `COUNT` / `SUM` / `AVG` queries without walking every document (see [Aggregate index flags](#aggregate-index-flags)).
-* Optional ranked, time-range, and `indexOnly` keywords added at protocol version 14 (see [Ranked index flags](#ranked-index-flags) and [indexOnly index keywords](#indexonly-index-keywords)).
+* Optional ranked, time-range, `skipIfAbsent`, and `indexOnly` keywords added at protocol version 14 (see [Ranked index flags](#ranked-index-flags) and [indexOnly index keywords](#indexonly-index-keywords)).
 
 :::{code-block} json
 :force:
@@ -344,9 +344,9 @@ The `indices` array consists of one or more objects that each contain:
     "rankedCountable": true|false|{ "at": "<property>" },
     "rankedSummable": true|false,
     "rankedAverageable": true|false,
-    "timeRange": { "on": "<$createdAt|$updatedAt|$transferredAt>", "range": <seconds>, "step": <seconds>, "phase": <seconds> },
+    "timeRange": { "on": "<$createdAt|$updatedAt|$transferredAt>", "range": <seconds>, "step": <seconds>, "phase": <seconds>, "ttl": <seconds> },
     "integerRange": { "on": "<integer property>", "range": <number>, "step": <number>, "phase": <number> },
-    "terminal": "$ownerId"|"<identifier property>",
+    "terminal": "$ownerId"|"<property>"|["<property>", ...],
     "preallocated": true|false,
     "skipIfAbsent": true|false|["<property>", ...],
     "outlivesDelete": true|false,
@@ -437,10 +437,15 @@ An index may also declare a `timeRange` transform, which buckets the first index
 | range | integer | Yes | Window length in seconds. Must be an exact multiple of `step`. |
 | step | integer | Yes | Spacing between consecutive window starts, in seconds. When `range` is greater than `step` the windows overlap. |
 | phase | integer | No | Offset of the grid's origin, in seconds. Must be less than `step` and less than one year. Defaults to 0. |
+| ttl | integer | No | Entry lifetime in seconds, measured from the start of its window. Must be at least `range` and at most [604,800](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L190) (one week) at protocol version 14. Indices that bucket the same timestamp on the same grid must all declare the same `ttl` or all omit it. Expired windows cannot be queried. Omit it for entries that live forever. |
 
 The stored key is each window's start as a millisecond timestamp. Several indices may bucket the same timestamp with different grids; each grid gets its own subtree. At most 24 windows may overlap a single timestamp at protocol version 14. A time-range index may be unique only when `range` equals `step` and `on` is `$createdAt`, and it cannot be contested. A single-property time-range index cannot be ranked, because its only level is the bucketed one, and a time-range index cannot declare `preallocated`. Query these windows with the [`inTimeRange` operator](../reference/query-syntax.md#time-range-selection).
 
-Indices may also declare `integerRange`, which buckets the first index property's integer value into fixed-length windows, and, on `indexOnly` types, `outlivesDelete` and `summableOffCountIndex`. See [Optional Index Fields](../protocol-ref/data-contract-document.md#optional-index-fields).
+Bytes written under a `ttl` index are charged as processing at the [TTL ephemeral rate](../protocol-ref/protocol-constants.md#storage) instead of as storage, and are not refunded when removed.
+
+Indices may also declare `integerRange`, which buckets the first index property's integer value into fixed-length windows, and, on `indexOnly` types, `summableOffCountIndex` and (for a `timeRange` index with a `ttl`) `outlivesDelete`. See [Optional Index Fields](../protocol-ref/data-contract-document.md#optional-index-fields).
+
+Any index may declare `skipIfAbsent`, so that a document omitting a property of the index's skip set writes no entry and the index holds only documents carrying every skip property. `true` makes the skip set every optional property of the index; an array names the skip set explicitly. A skip property may sit at any position in the index and must not be listed in `required`. An absent property is distinct from an empty value: absence skips the index, while any present value indexes normally. On a stored type, a skip index cannot be contested or set `nullSearchable: false`; `indexOnly` types add the [rules below](#indexonly-index-keywords).
 
 #### indexOnly index keywords
 
@@ -448,13 +453,13 @@ Indices may also declare `integerRange`, which buckets the first index property'
 Requires protocol version 14.
 :::
 
-These keywords apply only to [`indexOnly` document types](#document-configuration).
+`terminal` and `preallocated` apply only to [`indexOnly` document types](#document-configuration), which also add rules to `skipIfAbsent`. See [Index-Only Options](../protocol-ref/data-contract-document.md#index-only-options) for details.
 
 | Keyword | Type | Description |
 |-|-|-|
-| terminal | string | Names the property supplying this index entry's member key, the analog of a document ID under the index's storage marker. Either `$ownerId` (the default) or an identifier property carrying a `refersTo` declaration targeting an identity, contract, token, or permanent document - `identityPublicKey` references are not admitted. Must not repeat one of the index's listed properties. |
-| preallocated | boolean | When true, creating a referenced document also creates this index's dynamic trees for entries referencing it, paid by the referenced document's creator, so every entry insert costs the same as the first. Only valid when the index path is fully determined by a same-contract `permanentDocument` `refersTo` declaration. |
-| skipIfAbsent | boolean | When true, a document omitting this index's first property writes no entry, so the index holds only documents carrying it. The first property is the skip trigger and must be a top-level property not listed in `required` - the only way an `indexOnly` property may be optional. An absent trigger is distinct from an empty value: absence skips the index, while any present value indexes normally. |
+| skipIfAbsent | boolean or array | The skip set must hold every optional property of the index, and every optional property needs a skip index whose skip set is that property alone. This is the only way an `indexOnly` property may be optional. |
+| terminal | string or array | The property, or ordered list of up to 10 properties, whose values key each index entry - the analog of a document ID. Each component is `$ownerId` (the default) or a schema property an index could hold (no arrays or objects); every component but the last must be fixed width, and the whole key is at most 255 bytes. Must not repeat one of the index's properties. |
+| preallocated | boolean | When true, creating a referenced document also creates this index's trees for entries referencing it, paid by that document's creator, so every entry insert costs the same as the first. Every index property must be either the referring property of a same-contract `permanentDocument` or `moderatedDocument` reference or a referring value of that reference's `where`. |
 
 #### Index Constraints
 
