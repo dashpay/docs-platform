@@ -295,8 +295,8 @@ curl -k --request POST \
 
 ## Deprecated Endpoints
 
-The following endpoints were recently deprecated. See the [previous version of this
-documentation](https://docs.dash.org/projects/platform/en/2.0.0/docs/reference/dapi-endpoints-json-rpc-endpoints.html)
+The following endpoints are deprecated. See the [previous version of this
+documentation](https://docs.dash.org/projects/platform/en/4.1.0/docs/reference/dapi-endpoints-json-rpc-endpoints.html)
 for older references.
 
 ### getMnListDiff
