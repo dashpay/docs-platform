@@ -213,8 +213,9 @@ Platform status.
 | [`subscribeTo` `TransactionsWithProofs`](../reference/dapi-endpoints-core-grpc-endpoints.md#subscribetotransactionswithproofs) | **Updated in Dash Platform v5.0.0**<br>Returns transactions matching the provided bloom filter along with the associated [`islock` message](https://docs.dash.org/en/stable/docs/core/reference/p2p-network-instantsend-messages.html#islock) and [merkle block](https://docs.dash.org/en/stable/docs/core/reference/p2p-network-data-messages.html#merkleblock). Supports Dash Core v24 blocks and transactions. |
 
 :::{note}
-The previous version of documentation can be [viewed
-here](https://docs.dash.org/projects/platform/en/4.1.0/docs/reference/dapi-endpoints.html).
+See the [previous version of this
+documentation](https://docs.dash.org/projects/platform/en/4.1.0/docs/reference/dapi-endpoints.html)
+for older endpoints.
 :::
 
 ```{toctree}
