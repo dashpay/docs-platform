@@ -329,7 +329,7 @@ The following options apply to document types with [`indexOnly: true`](#document
 
 | Option | Behavior and constraints |
 | --- | --- |
-| `skipIfAbsent` | On an `indexOnly` type, the skip set must hold every optional property of the index, every optional property needs a skip index whose skip set is that property alone, and at least one index without `$createdAt` must not use `skipIfAbsent`. |
+| `skipIfAbsent` | On an `indexOnly` type, the skip set must hold every optional property of the index, every optional property needs a skip index whose skip set is that property alone and that has no `timeRange`, and at least one index without `$createdAt` must not use `skipIfAbsent`. |
 | `terminal` | The property, or ordered list of up to 10 properties, whose values key each index entry. Each component is `$ownerId` (the default) or a schema property an index could hold (no arrays or objects); every component but the last must be fixed width, and the whole key is at most 255 bytes. It must not repeat an index property. An index with no properties is keyed by its terminal alone. |
 | `preallocated` | Creates the index trees for entries referencing a document when that document is created, paid by that document's creator. Every index property must be either the referring property of a same-contract `permanentDocument` or `moderatedDocument` reference or a referring value of that reference's `where`. It cannot be combined with `timeRange`. |
 
@@ -337,7 +337,7 @@ The following options apply to document types with [`indexOnly: true`](#document
 
 Contested unique indices provide a way for multiple identities to compete for ownership when a new document field matches a predefined pattern. This system enables fair distribution of valuable documents, such as [premium DPNS names](../explanations/dpns.md#conflict-resolution), through community-driven decision-making.
 
-A two week contest begins when a match occurs. For the first week, additional contenders can join by paying the [contested document vote resolution fund](protocol-constants.md#voting) fee (0.1 Dash from protocol version 14; 0.2 Dash in earlier versions). During this period, masternodes and evonodes vote on the outcome. The contest can result in the awarding of the document to the winner, a locked vote where no document is awarded, or potentially a restart of the contest if specific conditions are met.
+A two week contest begins when a match occurs. For the first week, additional contenders can join by paying the [contested document vote resolution fund](protocol-constants.md#voting) fee (0.1 Dash from protocol version 14; 0.2 Dash in earlier versions). Starting in protocol version 14, the fee [doubles](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/fee/vote_resolution_fund_fees/v2.rs#L14-L15) for every 50 contenders beyond the first 250, and a contest accepts at most [1,000](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-platform-version/src/version/system_limits/v4.rs#L177) contenders. During this period, masternodes and evonodes vote on the outcome. The contest can result in the awarding of the document to the winner, a locked vote where no document is awarded, or potentially a restart of the contest if specific conditions are met.
 
 The table below describes the properties used to configure a contested index:
 
@@ -405,7 +405,7 @@ Documents support the following configuration options to provide flexibility in 
 | `keepsTransferHistory`               | boolean  | If true, transfers of these documents are recorded in the [document history contract](#document-history-flags). Default: false. |
 | `keepsPurchaseHistory`               | boolean  | If true, purchases of these documents are recorded in the [document history contract](#document-history-flags). Default: false. |
 | `keepsPricingHistory`                | boolean  | If true, price updates on these documents are recorded in the [document history contract](#document-history-flags). Default: false. |
-| `indexOnly`                          | boolean  | **Added in 5.0.0.** If true, documents of this type are stored only as index entries; there is no primary document row. Requires `documentsMutable: false`, `transferable: 0`, `tradeMode: 0`, no history flags, no `transient` properties, no document-type aggregate flags, at least one index, and every property required (except a [`skipIfAbsent`](#index-only-options) skip property) and indexed (except `entryPayload` properties). Indices on such a type cannot be `unique`, `contested`, or set `nullSearchable: false`, may index no system properties other than `$ownerId` and `$createdAt`, and, except a `summableOffCountIndex` index, must include `$ownerId` as a property or as its terminal. Default: false. |
+| `indexOnly`                          | boolean  | **Added in 5.0.0.** If true, documents of this type are stored only as index entries; there is no primary document row. Requires `documentsMutable: false`, `transferable: 0`, `tradeMode: 0`, no history flags, no `transient` properties, no document-type aggregate flags, at least one index, and every property required (except a [`skipIfAbsent`](#index-only-options) skip property) and, unless it is such a skip property or an `entryPayload` property, held by an index that sets neither `skipIfAbsent` nor `outlivesDelete`. Indices on such a type cannot be `unique`, `contested`, or set `nullSearchable: false`, may index no system properties other than `$ownerId` and `$createdAt`, and, except a `summableOffCountIndex` index, must include `$ownerId` as a property or as its terminal. Default: false. |
 | `entryPayload` | array of strings | **Added in 5.0.0.** Only on `indexOnly` types. 1-16 unique top-level property names whose values are stored in the value of every index entry instead of in a key. Listed properties must be required, bounded (`maxItems` on byte arrays, `maxLength` on strings), scalar, and not used by any index as a property or terminal component. Fixed when the document type is created. |
 | [`ttl`](#document-removal) | integer | **Added in 5.0.0.** Time to live in seconds. Platform deletes each document once its `$createdAt` plus `ttl` has passed. |
 | [`deleteConstraints`](#document-removal) | object | **Added in 5.0.0.** Named rules the stored document must meet before its owner may delete it. |
@@ -656,7 +656,7 @@ The flags are read only when the contract validates against the v2 or later docu
 There are a variety of keyword constraints currently defined for performance and security reasons. The
 following constraints apply to document definitions. Unless otherwise noted, these
 constraints are defined in the platform's JSON Schema rules (e.g., [rs-dpp document meta
-schema](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v0/document-meta.json)).
+schema](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/schema/meta_schemas/document/v3/document-meta.json)).
 
 | Keyword | Constraint |
 | ------- | ---------- |
