@@ -6453,6 +6453,10 @@ grpcurl -proto protos/platform/v0/platform.proto \
 
 A nullifier's `is_spent` field is omitted from the response when `false` (proto3 default), so an entry without `is_spent` indicates the nullifier has not been spent.
 
+## Deprecated Endpoints
+
+There are no recently deprecated endpoints. For older endpoints, see the [previous version of this documentation](https://docs.dash.org/projects/platform/en/4.1.0/docs/reference/dapi-endpoints-platform-endpoints.html).
+
 ## Code Reference
 
 Implementation details related to the information on this page can be found in:

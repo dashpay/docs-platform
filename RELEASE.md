@@ -8,6 +8,7 @@ Per-release tasks for the docs. For editing conventions, see [CLAUDE.md](CLAUDE.
 2. For each affected endpoint, update both the detail page (`docs/reference/dapi-endpoints-*.md`) and the matching row on the overview page (`docs/reference/dapi-endpoints.md`), with the bold version annotation on the overview row.
 3. Demote the previous release's bold annotations on the overview page to italics.
 4. Re-run example requests against testnet and refresh response examples if necessary. Testnet state may have been wiped, so even unchanged endpoints may have stale data.
+5. Keep a `## Deprecated Endpoints` section (just before `## Code Reference`) on each endpoint detail page. List endpoints deprecated or removed in this release, each with an `attention` admonition naming the release and any replacement. Drop endpoints carried over from earlier releases; the previous-version docs still cover them. When nothing was deprecated, use: "There are no recently deprecated endpoints. For older endpoints, see the [previous version of this documentation](<previous-version link>)." Use descriptive link text, not "here".
 
 ## Update "Previous version" links
 
