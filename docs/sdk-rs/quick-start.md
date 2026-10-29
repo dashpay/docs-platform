@@ -37,7 +37,8 @@ Check if Rust is installed correctly by running:
 rustc --version
 ```
 
-You should see the installed version of Rust.
+You should see the installed version of Rust. The Dash SDK requires Rust 1.98 or newer. If an older
+version is installed, update it by running `rustup update`.
 
 ### Install Dash Core
 
@@ -98,9 +99,9 @@ Add the following dependencies to `Cargo.toml`:
 
 ``` toml
 [dependencies]
-dash-sdk = { git = "https://github.com/dashpay/platform" }
-dpp = { git = "https://github.com/dashpay/platform", features = ["client",] }
-rs-dapi-client = { git = "https://github.com/dashpay/platform" }
+dash-sdk = { git = "https://github.com/dashpay/platform", tag = "v5.0.1" }
+dpp = { git = "https://github.com/dashpay/platform", tag = "v5.0.1", features = ["client",] }
+rs-dapi-client = { git = "https://github.com/dashpay/platform", tag = "v5.0.1" }
 tokio = { version = "1", features = ["full"] }
 ```
 
@@ -109,19 +110,18 @@ Open `src/main.rs` and replace the contents with this code:
 ```rust
 use dash_sdk::{
     platform::{Fetch, Identifier},
-    sdk::Uri,
     Sdk, SdkBuilder,
 };
 use dpp::{
     identity::accessors::IdentityGettersV0, platform_value::string_encoding::Encoding,
     prelude::Identity,
 };
-use rs_dapi_client::AddressList;
+use rs_dapi_client::{Address, AddressList};
 use std::error::Error;
 
 pub fn setup_sdk() -> Result<Sdk, Box<dyn Error>> {
     let dapi_addresses = "https://52.42.202.128:1443";
-    let sdk = SdkBuilder::new(AddressList::from_iter([dapi_addresses.parse::<Uri>()?]))
+    let sdk = SdkBuilder::new(AddressList::from_iter([dapi_addresses.parse::<Address>()?]))
         // Update the username and password parameters to match your Core dash.conf values
         .with_core("127.0.0.1", 19998, "user", "pass")
         .build()
@@ -189,11 +189,11 @@ Add the following dependencies to `Cargo.toml`:
 
 ``` toml
 [dependencies]
-dash-sdk = { git = "https://github.com/dashpay/platform" }
+dash-sdk = { git = "https://github.com/dashpay/platform", tag = "v5.0.1" }
 tokio = { version = "1", features = ["full"] }
-dapi-grpc = { git = "https://github.com/dashpay/platform", features = ["client",] }
-rs-dapi-client = { git = "https://github.com/dashpay/platform" }
-dpp = { git = "https://github.com/dashpay/platform", features = ["client",] }
+dapi-grpc = { git = "https://github.com/dashpay/platform", tag = "v5.0.1", features = ["client",] }
+rs-dapi-client = { git = "https://github.com/dashpay/platform", tag = "v5.0.1" }
+dpp = { git = "https://github.com/dashpay/platform", tag = "v5.0.1", features = ["client",] }
 ```
 
 Open `src/main.rs` and replace the contents with this code:
@@ -207,13 +207,13 @@ use dapi_grpc::platform::v0::{
 use dash_sdk::platform::Identifier;
 use dash_sdk::{Sdk, SdkBuilder};
 use dpp::platform_value::string_encoding::Encoding;
-use rs_dapi_client::{DapiRequest, Uri};
+use rs_dapi_client::{Address, DapiRequest, IntoInner};
 use std::error::Error;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     let sdk = SdkBuilder::new(rs_dapi_client::AddressList::from_iter([
-        "https://52.42.202.128:1443".parse::<Uri>()?,
+        "https://52.42.202.128:1443".parse::<Address>()?,
     ]))
     .build()
     .expect("Failed to build SDK");
@@ -245,7 +245,8 @@ async fn fetch_identity(identity_id: Identifier, sdk: &Sdk) -> Result<(), Box<dy
 
     let identity_response = request
         .execute(sdk, rs_dapi_client::RequestSettings::default())
-        .await;
+        .await
+        .into_inner();
     println!("Identity fetch result: {:?}", identity_response);
 
     match identity_response {

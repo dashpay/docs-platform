@@ -16,12 +16,13 @@ For the current monorepo layout and lower-level implementation details, see the
 
 ### Cargo.toml
 
-To use this crate, define it as a dependency in your `Cargo.toml`:
+To use this crate, define it as a dependency in your `Cargo.toml`. The SDK requires Rust 1.98 or
+newer.
 
 ```toml
 [dependencies]
 
-dash-sdk = { git="https://github.com/dashpay/platform" }
+dash-sdk = { git="https://github.com/dashpay/platform", tag="v5.0.1" }
 ```
 
 ### Examples
