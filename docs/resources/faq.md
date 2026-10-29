@@ -118,13 +118,14 @@ Any name meeting the following criteria is considered premium:
 
 These names require a two-week waiting period during which masternodes and evonodes vote to
 determine who (if anyone) receives the name. To pay for the voting, anyone requesting the name must
-pay a 0.2 DASH name request fee.
+pay a name request fee (see [conflict resolution](../explanations/dpns.md#conflict-resolution) for
+the current amount).
 :::
 
 :::{dropdown} What happens if no one votes for a contested username request?
 
 If no one votes, a single uncontested request receives the name. If multiple identities requested
-it, the winner is resolved deterministically by the protocol (based on document creation order).
+it, the name goes to the identity that requested it first.
 :::
 
 :::{dropdown} How do I prove my identity if requesting a contested name?
@@ -152,9 +153,9 @@ in future updates, but the exact details have not been defined.
 
 :::{dropdown} What happens if there is a tie vote?
 
-If there is a tie, the name is awarded deterministically by the protocol (based on document
-creation order) rather than to whoever requested it first. If there is a tie between votes for an
-identity and votes to lock the name, the identity receives the name.
+If identities tie for the most votes, the name goes to whichever of them requested it first. If
+there is a tie between votes for an identity and votes to lock the name, the identity receives the
+name.
 :::
 
 :::{dropdown} Can usernames be transferred?
