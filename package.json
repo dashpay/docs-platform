@@ -5,7 +5,7 @@
     "build:sdk": "esbuild scripts/evo-sdk-entry.js --bundle --format=esm --platform=browser --target=es2022 --minify --outfile=_static/vendor/evo-sdk.js"
   },
   "dependencies": {
-    "@dashevo/evo-sdk": "4.1.1"
+    "@dashevo/evo-sdk": "5.0.1"
   },
   "devDependencies": {
     "esbuild": "0.25.9"
