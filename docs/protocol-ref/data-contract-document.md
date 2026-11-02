@@ -244,6 +244,10 @@ From protocol version 14, an index property may also be a derived property, `<re
 
 Index objects do not accept any properties beyond those listed above. Starting with Dash Platform 5.0.0 (protocol version 14), index objects also accept the ranked aggregate keywords, `timeRange`, `integerRange`, `skipIfAbsent`, and the `indexOnly`-specific keywords `terminal`, `preallocated`, `outlivesDelete`, and `summableOffCountIndex`. Under earlier protocol versions those keywords are rejected.
 
+:::{versionchanged} 5.0.0
+Index keys on unsigned integer properties, including derived index properties of an unsigned type, sort in numeric order ([rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/document_type/property/mod.rs#L3455-L3473)). Earlier protocol versions flipped the top bit of these keys as for a signed value, so values in the upper half of the type's range (128 and above for a `u8`) sorted below smaller ones, affecting range queries, ordering, and range counts and sums. Existing keys are rewritten when protocol version 14 activates ([rs-drive](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-drive/src/drive/contract/migration/rekey_unsigned_integer_index_values.rs#L21-L59)). The `$` system fields, the vote poll paths of contested indices, and an unsigned property that ends a `rangeSummable` index keep the earlier keys. That last property keeps them in every index of its document type, not only in the `rangeSummable` index ([rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/document_type/property/mod.rs#L3200-L3208)). An `integerRange` cannot bucket a property that keeps the earlier keys ([rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/document_type/class_methods/try_from_schema/v3/mod.rs#L1344-L1385)).
+:::
+
 The following template shows the required shape and commonly used optional fields:
 
 :::{code-block} json

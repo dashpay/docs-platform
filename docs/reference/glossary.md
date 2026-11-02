@@ -182,7 +182,7 @@ Layer 2 blockchain that propagates platform data among masternodes, propagates p
 
 ## Platform State
 
-All Platform data including contracts, documents (user data), [tokens](#token), groups, credit balance, [identity](#identity) (username), [address](#platform-address) balances, [shielded pool](#shielded-pool) state, and masternode voting/contested resource state. Platform state also includes protocol bookkeeping such as fee and epoch pools, pre-funded specialized balances, spent asset lock transactions, saved block transactions, withdrawal transactions, and proposer-desired protocol versions.
+All Platform data including contracts, documents (user data), [tokens](#token), groups, [contract groups](../explanations/platform-protocol-data-contract.md#contract-groups), credit balance, [identity](#identity) (username), [address](#platform-address) balances, [shielded pool](#shielded-pool) state, and masternode voting/contested resource state. Platform state also includes protocol bookkeeping such as fee and epoch pools, pre-funded specialized balances, spent asset lock transactions, saved block transactions, withdrawal transactions, and proposer-desired protocol versions.
 
 ## practical Byzantine Fault Tolerance (pBFT)
 

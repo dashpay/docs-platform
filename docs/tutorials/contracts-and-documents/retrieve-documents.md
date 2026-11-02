@@ -111,8 +111,8 @@ Note: When using `.toJSON()`, binary data is displayed as a base64 string (since
   "$creatorId": null,
   "$dataContractId": "FW3DHrQiG24VqzPY4ARenMgjEPpBNuEQTZckV8hbVCG4",
   "$type": "note",
-  "$entropy": "jsO295ymKBeMAiAwrSsaDX7qjYD/9i+Q8g9MIDx/xik="
-  "message": "Tutorial Test @ Wed, 04 Mar 2026 22:37:48 GMT",
+  "$entropy": "jsO295ymKBeMAiAwrSsaDX7qjYD/9i+Q8g9MIDx/xik=",
+  "message": "Tutorial Test @ Wed, 04 Mar 2026 22:37:48 GMT"
 }
 ```
 

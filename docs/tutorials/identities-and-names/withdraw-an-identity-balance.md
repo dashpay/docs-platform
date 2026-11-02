@@ -32,7 +32,7 @@ console.log('Identity balance before withdrawal:', identity.balance);
 // Default: testnet faucet address. Replace or override via WITHDRAWAL_ADDRESS.
 const toAddress =
   process.env.WITHDRAWAL_ADDRESS || 'yXWJGWuD4VBRMp9n2MtXQbGpgSeWyTRHme';
-const amount = 1000000n; // Credits to withdraw (protocol minimum)
+const amount = 1190000n; // Credits to withdraw (protocol minimum)
 const amountDash = Number(amount) / (1000 * 100000000);
 
 console.log(`Withdrawing ${amount} credits (${amountDash} DASH)`);
@@ -53,4 +53,4 @@ try {
 
 ## What's Happening
 
-After connecting to the client, we get the transfer key signer using `keyManager.getTransfer()` and log the identity's current balance. We also convert the credit amount to Dash for display (1000 credits = 1 duff = 0.00000001 DASH). We then call `sdk.identities.creditWithdrawal()` with the identity, withdrawal amount in credits, the destination Core chain address, and the signer to authorize the withdrawal. The remaining credit balance is logged to confirm the withdrawal succeeded.
+After connecting to the client, we get the transfer key signer using `keyManager.getTransfer()` and log the identity's current balance. We also convert the credit amount to Dash for display (1000 credits = 1 duff = 0.00000001 DASH). The withdrawal amount must cover the [minimum withdrawal](../../protocol-ref/protocol-constants.md#withdrawal-constants) plus the Core transaction fee, which is deducted from the withdrawn amount, so slightly less Dash arrives at the destination address. We then call `sdk.identities.creditWithdrawal()` with the identity, withdrawal amount in credits, the destination Core chain address, and the signer to authorize the withdrawal. The remaining credit balance is logged to confirm the withdrawal succeeded.

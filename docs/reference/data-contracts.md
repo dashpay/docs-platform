@@ -294,6 +294,10 @@ The following example (excerpt from the DPNS contract's `domain` document) demon
 
 Each document may have transient fields that require validation but do not need to be stored by the system once validated. Transient fields are defined in the `transient` array. The `transient` object should only be included for documents with at least one transient property.
 
+:::{versionchanged} 5.0.0
+A replace also drops transient properties, and each entry must name a top-level property. No index, `findBy`, `where` (on its referenced side), `encryptedFor`, or `generatedFrom` may read a transient property. See [Transient Properties](../protocol-ref/data-contract-document.md#transient-properties) in the protocol reference.
+:::
+
 **Example**  
 
 The following example (from the [DPNS contract's `domain` document](https://github.com/dashpay/platform/blob/master/packages/dpns-contract/schema/v2/dpns-contract-documents.json)) demonstrates a document that has 1 transient field:

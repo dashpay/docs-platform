@@ -3417,10 +3417,12 @@ of a data contract can be updated:
 - Adding a new group at a previously unused position
 - Changing the `keywords` array
 - Changing the `description`
-- Enabling `sizedIntegerTypes`. This is a one-way change; it cannot be disabled once enabled
+- Enabling `sizedIntegerTypes`. This is a one-way change; it cannot be disabled once enabled. From 5.0.0, it cannot be enabled if that would change the stored type of an existing integer property (see below), so it can only be enabled while every existing integer property would still be stored as a signed 64-bit integer
 - Changing `canBeDeleted` from `true` to `false` on a document type whose `documentsKeepHistory` is `true`
 - Adding properties to a document type's `immutable` list, or removing the condition from a conditional `immutable` entry (added in 5.0.0)
 - Changing the moderators of a contract that is not elected (added in 5.0.0). See [Moderation Config Updates](#moderation-config-updates) for what cannot change.
+
+An update cannot change how existing values are stored. A byte array property cannot switch between fixed size (`minItems` equal to `maxItems`) and variable size, or change its fixed size. From 5.0.0, an integer property also keeps its stored width and signedness, which its `minimum`, `maximum`, or `enum` values select when `sizedIntegerTypes` is enabled: raising `maximum` past the type's range, lowering `minimum` below 0, removing a bound, or adding `enum` values outside the type's range is refused when it changes the type, while bound changes that keep the type are allowed ([rs-dpp](https://github.com/dashpay/platform/blob/v5.0.1/packages/rs-dpp/src/data_contract/document_type/methods/validate_update/v1/mod.rs#L179-L231)). Also from 5.0.0, the elements of a typed array keep their encoding in the same way, and on a document type with a [`ttl`](./data-contract-document.md#document-removal), the `maxItems` of an indexed typed array cannot be raised.
 
 Existing tokens and groups cannot be removed or modified once the contract is registered.
 

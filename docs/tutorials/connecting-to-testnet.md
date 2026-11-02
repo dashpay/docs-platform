@@ -89,7 +89,7 @@ try {
 ```
 
 :::{note}
-The WASM-based SDK currently only supports connecting to known networks (testnet, mainnet, local) via the built-in factory methods. Connecting to remote devnets with custom addresses is not yet supported.
+To connect to a remote devnet, use `EvoSDK.devnetTrusted('<devnet name>')`, which fetches the devnet's quorum information for proof verification, or `EvoSDK.devnet('<devnet name>', { addresses: [...] })` without proof verification. To target specific DAPI nodes on any network, use `EvoSDK.withAddresses(['https://<ip>:<port>'], '<network>')`.
 :::
 
 ## Connect Directly to DAPI (Optional)
@@ -98,7 +98,7 @@ The WASM-based SDK currently only supports connecting to known networks (testnet
 Normally, the Dash SDK or another library should be used to interact with DAPI. Connecting directly may be helpful for debugging in some cases, but generally is not required.
 :::
 
-The example below demonstrates retrieving the hash of the best block hash directly from a DAPI node via command line and several languages:
+The example below demonstrates retrieving the hash of the block at height 100 directly from a DAPI node via command line and several languages:
 
 ::::{tab-set}
 :::{tab-item} Curl

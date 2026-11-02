@@ -85,7 +85,7 @@ try {
 
 ## What's Happening
 
-After connecting to the client, we get the transfer key signer with `keyManager.getTransfer()`. Token transfers are authorized with the identity's transfer key rather than its auth key.
+After connecting to the client, we get the transfer key signer with `keyManager.getTransfer()`. Token transfers can be signed with the identity's transfer key; an authentication key is also accepted.
 
 We derive the token ID with `sdk.tokens.calculateId()` and read the recipient's balance before the transfer so the change is visible. A guard rejects transfers where the recipient matches the sender, since an identity cannot transfer tokens to itself.
 
