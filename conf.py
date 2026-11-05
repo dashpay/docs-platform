@@ -51,7 +51,8 @@ exclude_patterns = [
     'img/dev/gifs/README.md',
     'docs/other',
     'docs/ai-prompt.md',
-    'platform-src'
+    'platform-src',
+    'audit-results'
 ]
 
 # The master toctree document.
