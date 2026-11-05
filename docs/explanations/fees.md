@@ -60,6 +60,8 @@ In an attempt to minimize Dash Platform's storage requirements, users are incent
 
 Distribution is front-loaded rather than spread evenly across those 50 years, so the refundable remainder falls fastest in the early years. Removals below a small minimum byte threshold are not refunded at all. See the [protocol constants reference](../protocol-ref/protocol-constants.md) for the storage era counts and the refund threshold.
 
+Documents of a type that declares a [time to live](./platform-protocol-document.md#document-delete) (`ttl`) are the exception. They do not pay the permanent storage rate. Instead, each byte is priced by how long the document lives, and the document also prepays the cost of its automatic deletion. Because nothing is stored permanently, deleting such a document refunds nothing. See [Document TTL](../protocol-ref/protocol-constants.md#document-ttl) for the rates.
+
 ## Minimum and Fixed Fees
 
 In addition to the usage-based costs above, most identity- and address-funded transitions require a protocol-defined minimum balance before processing. This is a balance floor rather than a flat charge; the fee actually deducted is still the storage and processing total.
