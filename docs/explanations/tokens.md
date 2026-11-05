@@ -75,9 +75,10 @@ The initial token implementation includes all actions required to create, use, a
 
 #### Claim
 
-- Claim tokens that have been allocated to an identity by a [distribution rule](#distribution-rules) but not yet credited to its balance. Claim covers both:
+- Claim tokens that have been allocated to an identity by a [distribution rule](#distribution-rules) but not yet credited to its balance. Claim covers:
   - **Perpetual distributions** - tokens continuously emitted on a block, time, or epoch schedule that recipients must pull in order to take ownership.
   - **Pre-programmed distributions** - tokens scheduled for specific recipients at specific times that recipients must claim to receive.
+  - **Once-per-identity distributions** - a fixed amount that any identity may claim exactly once, for example for an airdrop.
 - Each claim collects a bounded number of unclaimed perpetual distribution intervals (128 for variable-rate distribution functions), so recipients with a long backlog may need to claim more than once to collect everything owed.
 
 #### Emergency Action
@@ -253,7 +254,7 @@ following table summarizes the configurable rules and their default authorized p
 
 ##### Distribution Rules
 
-Tokens have distribution rules to define how new tokens are introduced over time. The three
+Tokens have distribution rules to define how new tokens are introduced over time. The
 distribution options are summarized below:
 
 | Method | Description |  Example |  Notes |
@@ -261,6 +262,7 @@ distribution options are summarized below:
 | Manual Minting      | Authorized users/groups can create new tokens until `maxSupply` is reached | On-demand minting | - Requires proper configuration to enable<br>- Minting actions may be logged or controlled via permissions |
 | Programmed Distribution | A fixed number of tokens are allocated to designated identities at explicit timestamps, and the recipients must [claim](#claim) them to receive the tokens | *On Jan 1, 2047, allocate `X` tokens to the provided identity* | - Schedules token release at known times<br>- Each entry is a one-time allocation at a fixed timestamp; there is no recurrence option<br>- The schedule is set when the contract is registered and cannot be changed later |
 | [Perpetual Distribution](../protocol-ref/data-contract-token.md#perpetual-distribution-options) | Scheduled release of tokens based on block, time, or epoch intervals | *Emit 100 tokens every 20 blocks*, or *Halve the emission every year* | - Offers ongoing, dynamic token emission patterns.<br>- Supports variable rates (e.g., linear, steps).<br>- Emissions accrue on schedule and are always collected by the recipient via a [claim](#claim). |
+| [Once-per-identity Distribution](../protocol-ref/data-contract-token.md#once-per-identity-distribution) | Every identity may [claim](#claim) a fixed amount of the token once | *Airdrop 10 tokens to any identity that claims them* | - Set when the token is created and cannot be changed later<br>- Total payout is bounded only by `maxSupply`, so set a maximum supply<br>- Enabling it adds a [registration fee](../protocol-ref/data-contract-token.md#token-creation-fees) |
 
 Dash Platform also supports three options to control the destination for newly minted tokens:
 

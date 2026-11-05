@@ -43,10 +43,12 @@ version is installed, update it by running `rustup update`.
 ### Install Dash Core
 
 The Rust SDK is the best fit when you want proof-aware Platform access and tighter integration with
-the current Rust codebase. Many workflows still assume access to a Dash Core full node for proof
-verification and wallet-related operations. Follow the instructions below to install Dash Core and
-run it on testnet. **Note:** it is possible, although not recommended, to retrieve data from Dash
-Platform without proof verification.
+the current Rust codebase. It requests and verifies proofs by default, which requires a source of
+quorum public keys. The example below gets them from a local Dash Core node, so follow the
+instructions below to install Dash Core and run it on testnet. To verify proofs without running
+Dash Core, see [Using Dash Platform without Dash Core](#using-dash-platform-without-dash-core).
+**Note:** it is possible, although not recommended, to retrieve data from Dash Platform without
+proof verification.
 
 - [Dash Core installation instructions](inv:user:std#dashcore-installation)
 - [Running Dash Core on Testnet](inv:user:std#dashcore-testnet)
@@ -68,16 +70,17 @@ rpcpassword=<password>
 
 Restart Dash Core to apply the changes.
 
-:::{admonition} **Using Dash Platform without Dash Core**
-:class: attention
-The Rust SDK requests proofs for all data retrieved from Platform. This makes it the recommended
-(most secure) option, but also is why a Dash Core full node is currently required.
+### Using Dash Platform without Dash Core
 
-The [JavaScript SDK](../tutorials/introduction.md) provides access to Dash Platform without
-requiring a full node; however, it **_does not support Dash Platform's proofs_**. The Rust DAPI
-client can also perform read operations without a full node if proofs are not requested. See the
-[DAPI client example](#dapi-client-example) below for details.
-:::
+`SdkBuilder::with_core()` is intended for development. Instead of a Dash Core node, the SDK can
+get quorum public keys from Dash's quorum service by passing a `TrustedHttpContextProvider` (from
+the `rs-sdk-trusted-context-provider` crate) to `SdkBuilder::with_context_provider()`. Proofs are
+still verified, but the quorum keys come from that service rather than from your own node. See the
+[SDK examples](https://github.com/dashpay/platform/tree/v5.0.3/packages/rs-sdk/examples) for usage.
+The [JavaScript SDK](../tutorials/introduction.md) uses the same approach and also verifies proofs.
+
+The Rust DAPI client can also perform read operations without a full node if proofs are not
+requested. See the [DAPI client example](#dapi-client-example) below for details.
 
 ## Create a new project
 
@@ -99,9 +102,9 @@ Add the following dependencies to `Cargo.toml`:
 
 ``` toml
 [dependencies]
-dash-sdk = { git = "https://github.com/dashpay/platform", tag = "v5.0.1" }
-dpp = { git = "https://github.com/dashpay/platform", tag = "v5.0.1", features = ["client",] }
-rs-dapi-client = { git = "https://github.com/dashpay/platform", tag = "v5.0.1" }
+dash-sdk = { git = "https://github.com/dashpay/platform", tag = "v5.0.3" }
+dpp = { git = "https://github.com/dashpay/platform", tag = "v5.0.3", features = ["client",] }
+rs-dapi-client = { git = "https://github.com/dashpay/platform", tag = "v5.0.3" }
 tokio = { version = "1", features = ["full"] }
 ```
 
@@ -189,11 +192,10 @@ Add the following dependencies to `Cargo.toml`:
 
 ``` toml
 [dependencies]
-dash-sdk = { git = "https://github.com/dashpay/platform", tag = "v5.0.1" }
 tokio = { version = "1", features = ["full"] }
-dapi-grpc = { git = "https://github.com/dashpay/platform", tag = "v5.0.1", features = ["client",] }
-rs-dapi-client = { git = "https://github.com/dashpay/platform", tag = "v5.0.1" }
-dpp = { git = "https://github.com/dashpay/platform", tag = "v5.0.1", features = ["client",] }
+dapi-grpc = { git = "https://github.com/dashpay/platform", tag = "v5.0.3", features = ["client",] }
+rs-dapi-client = { git = "https://github.com/dashpay/platform", tag = "v5.0.3" }
+dpp = { git = "https://github.com/dashpay/platform", tag = "v5.0.3", features = ["client",] }
 ```
 
 Open `src/main.rs` and replace the contents with this code:
@@ -204,19 +206,17 @@ use dapi_grpc::platform::v0::{
     get_identity_response::Version as GetIdentityResponseVersion, GetIdentityRequest,
     GetIdentityResponse, ResponseMetadata,
 };
-use dash_sdk::platform::Identifier;
-use dash_sdk::{Sdk, SdkBuilder};
+use dpp::identifier::Identifier;
 use dpp::platform_value::string_encoding::Encoding;
-use rs_dapi_client::{Address, DapiRequest, IntoInner};
+use rs_dapi_client::{Address, AddressList, DapiClient, DapiRequest, IntoInner, RequestSettings};
 use std::error::Error;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-    let sdk = SdkBuilder::new(rs_dapi_client::AddressList::from_iter([
-        "https://52.42.202.128:1443".parse::<Address>()?,
-    ]))
-    .build()
-    .expect("Failed to build SDK");
+    let client = DapiClient::new(
+        AddressList::from_iter(["https://52.42.202.128:1443".parse::<Address>()?]),
+        RequestSettings::default(),
+    );
 
     let identity_id = Identifier::from_string(
         // Replace with the ID of a previously created identity
@@ -224,7 +224,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         Encoding::Base58,
     )?;
 
-    let result = fetch_identity(identity_id, &sdk).await;
+    let result = fetch_identity(identity_id, &client).await;
     match result {
         Ok(_) => println!("Identity fetched successfully."),
         Err(e) => eprintln!("Error fetching identity: {:?}", e),
@@ -233,7 +233,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-async fn fetch_identity(identity_id: Identifier, sdk: &Sdk) -> Result<(), Box<dyn Error>> {
+async fn fetch_identity(identity_id: Identifier, client: &DapiClient) -> Result<(), Box<dyn Error>> {
     let request = GetIdentityRequest {
         version: Some(dapi_grpc::platform::v0::get_identity_request::Version::V0(
             GetIdentityRequestV0 {
@@ -244,7 +244,7 @@ async fn fetch_identity(identity_id: Identifier, sdk: &Sdk) -> Result<(), Box<dy
     };
 
     let identity_response = request
-        .execute(sdk, rs_dapi_client::RequestSettings::default())
+        .execute(client, RequestSettings::default())
         .await
         .into_inner();
     println!("Identity fetch result: {:?}", identity_response);

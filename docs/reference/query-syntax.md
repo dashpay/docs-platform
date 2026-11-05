@@ -228,7 +228,7 @@ The query modifiers described here determine how query results will be sorted an
 
 | Modifier | Effect | Example |
 | - | - | - |
-| `limit` | Restricts the number of documents returned. An omitted value or `0` uses the configured default (100 by default). Positive values cannot exceed the configured maximum (also 100 by default). See [Aggregate query limits](#aggregate-query-limits) for aggregate result modes. | `limit: 10` |
+| `limit` | Restricts the number of documents returned. An omitted value uses the configured default (100 by default); SDK query objects and the v0 `getDocuments` wire also treat `0` as omitted, but the v1 wire rejects it. Positive values cannot exceed the configured maximum (also 100 by default). See [Aggregate query limits](#aggregate-query-limits) for aggregate result modes. | `limit: 10` |
 | `orderBy` | Returns records sorted by the field(s) provided. The `orderBy` fields must match a consecutive run of the index's properties, read from the end of the index (for a compound index, sort by one or more of its trailing fields). Required for `>`, `<`, `>=`, `<=`, `in`, `Between`, `BetweenExcludeBounds`, `BetweenExcludeLeft`, `BetweenExcludeRight`, and `startsWith` queries. Can also be used with equality-only queries to sort by a trailing field of the matched index. | `orderBy: [['normalizedLabel', 'asc']]` |
 | `startAt` | Returns records beginning with the document ID provided | `startAt: '<document ID>'` |
 | `startAfter` | Returns records beginning after the document ID provided | `startAfter: '<document ID>'` |
