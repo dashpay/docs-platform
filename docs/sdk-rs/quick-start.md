@@ -99,9 +99,9 @@ Add the following dependencies to `Cargo.toml`:
 
 ``` toml
 [dependencies]
-dash-sdk = { git = "https://github.com/dashpay/platform", tag = "v5.0.1" }
-dpp = { git = "https://github.com/dashpay/platform", tag = "v5.0.1", features = ["client",] }
-rs-dapi-client = { git = "https://github.com/dashpay/platform", tag = "v5.0.1" }
+dash-sdk = { git = "https://github.com/dashpay/platform", tag = "v5.0.3" }
+dpp = { git = "https://github.com/dashpay/platform", tag = "v5.0.3", features = ["client",] }
+rs-dapi-client = { git = "https://github.com/dashpay/platform", tag = "v5.0.3" }
 tokio = { version = "1", features = ["full"] }
 ```
 
@@ -189,11 +189,11 @@ Add the following dependencies to `Cargo.toml`:
 
 ``` toml
 [dependencies]
-dash-sdk = { git = "https://github.com/dashpay/platform", tag = "v5.0.1" }
+dash-sdk = { git = "https://github.com/dashpay/platform", tag = "v5.0.3" }
 tokio = { version = "1", features = ["full"] }
-dapi-grpc = { git = "https://github.com/dashpay/platform", tag = "v5.0.1", features = ["client",] }
-rs-dapi-client = { git = "https://github.com/dashpay/platform", tag = "v5.0.1" }
-dpp = { git = "https://github.com/dashpay/platform", tag = "v5.0.1", features = ["client",] }
+dapi-grpc = { git = "https://github.com/dashpay/platform", tag = "v5.0.3", features = ["client",] }
+rs-dapi-client = { git = "https://github.com/dashpay/platform", tag = "v5.0.3" }
+dpp = { git = "https://github.com/dashpay/platform", tag = "v5.0.3", features = ["client",] }
 ```
 
 Open `src/main.rs` and replace the contents with this code:

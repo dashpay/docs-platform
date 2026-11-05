@@ -22,7 +22,7 @@ newer.
 ```toml
 [dependencies]
 
-dash-sdk = { git="https://github.com/dashpay/platform", tag="v5.0.1" }
+dash-sdk = { git="https://github.com/dashpay/platform", tag="v5.0.3" }
 ```
 
 ### Examples
